@@ -145,7 +145,8 @@ module.exports = function(app, passport) {
                         user:req.user,
                         opstelling:req.user.opstellingen[etappe-1].opstelling.naam,
                         huidig:huidigetappe.etapstart,
-                        etappe:etappe
+                        etappe:etappe,
+                        deadline:stageStart(etappe)
                     });
                 });
               };

@@ -31,9 +31,18 @@ function currentlyfinish(e){
     currentTime = currentTime.getTime() + (12*60*60*1000) //etappe finish met wat speling voor redirects
     return e>currentTime;
 }
+
+stageStart = function(et){
+    var day = etappetijden[et-1];
+    return day.toDateString() + " " + day.toLocaleTimeString();
+}
+
 var etapstart  = etappetijden.findIndex(currently)+1; //huidige etappe start
 var etapfinish = etappetijden.findIndex(currentlyfinish)+1 //huidige etappe finish
+
+
 
 exports.etapstart  = etapstart;
 exports.etapfinish = etapfinish;
 exports.girostart = etappe1;
+exports.stageStart = stageStart;
