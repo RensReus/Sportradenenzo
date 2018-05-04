@@ -16,6 +16,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var session      = require('express-session');
 var json         = require('json-stringify-safe');
+console.log(process.env)
 
 var configDB = require({
   'url' : process.env.DATABASE_LINK
