@@ -1,0 +1,294 @@
+<!-- views/index.ejs -->
+<!doctype html>
+<html>
+<head>
+    <% include ../partials/head %>
+    <style>
+        .teamselectiedoos {
+            height:600px;
+            overflow:auto;
+            padding:10px;
+        }
+        tr:nth-child(odd) {
+            background: #f9f9f9;
+        }
+        thead th{
+            background: #222;
+            color: #ddd;
+        }
+        th, td {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 5px;
+            padding-right: 5px;
+            text-align: center;
+            font-size: 16px
+        }
+        table#etappetabel tr th,table#etappetabel tr td{
+            font-size: 11px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+        td.links{
+            text-align: left;
+        }
+        .ploegrenner{
+            color:#888;
+            font-size: 9.5pt;
+        }
+        .etapperesultatendoos,.andereresultatendoos{
+            column-gap:10px;
+        }
+        /*De tabel van de popup*/
+        table#teams td,table#teams th{
+            font-size: 9pt;
+            padding: 5px;
+        }
+        .teamspopup {
+            position: absolute;
+            display: inline-block;
+            text-align:left;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .teamspopup .teamspopuptext {
+            visibility: hidden;
+            width: 100%;
+            background-color:#fff;
+            color: #000;
+            text-align: left;
+            border-radius: 0px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 1;
+            top: -25px;
+            right:25%;
+            -moz-box-shadow:    3px 3px 5px 6px #ccc;
+            -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+            box-shadow:         3px 3px 5px 6px #ccc;
+        }
+        .teamspopup .show{
+            position: relative;
+            visibility: visible;
+            animation-name: popupanimatie;
+            animation-duration: 0.2s;
+            animation-fill-mode: backwards;
+        }
+        @keyframes popupanimatie {
+            from {width: 0%; right:0%;opacity: 0;} 
+            to {width: 320%; right:112%;opacity: 1;}
+        }
+        /* Safari 4.0 - 8.0 */
+        @-webkit-keyframes popupanimatie {
+            from {opacity: 0;} 
+            to {opacity: 1;}
+        }
+    </style>
+</head>
+<body onload="checkresultaat(<%=etappe%>)">
+    <% include ../partials/navbarlogout %>
+<div class="container-fluid text-center">    
+    <div class="row content">
+        <div class="col-sm-2 sidenavL"></div>
+        <div class="col-sm-8 text-left" id="contentblok">
+                <div class="bovenrijtje">
+                        <div class="col-sm-4 text-left">
+                            <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
+                                <a href="/giro/etappe<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
+                            <%}else{%>
+                                <%if(huidig<2){%> <!--stuur door naar teamselectie als dat nog kan-->
+                                    <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
+                            <%}}%>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="teamspopup" onclick="teamspopup(<%=etappe%>)">Klik hier voor de andere teams
+                            <span class="teamspopuptext" id="idteamspopup">
+                                <table id=teams>
+                                    <thead>
+                                        <tr><th id='user0'></th><th id='user1'></th><th id='user2'></th><th id='user3'></th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <%for(var i=0;i<10;i++){%>
+                                        <tr><td id='renner<%=i%>u0'></td><td id='renner<%=i%>u1'></td><td id='renner<%=i%>u2'></td><td id='renner<%=i%>u3'></td></tr>
+                                        <%}%>
+                                    </tbody>
+                                </table>
+                            </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-right">
+                            <%if(etappe<21){%>
+                                <a href="/giro/etappe<%=etappe+1%>" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
+                            <%}else{%>
+                                <%if(huidig<0){%> <!--stuur door naar resultatenpagina als dat al kan-->
+                                    <a href="/giro/resultaten" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
+                            <%}}%>
+                        </div>
+                    </div>
+            <div class="col-sm-7 resultatendoos">
+                <table id="resultatentabel">
+                    <thead>
+                        <tr><th>Renner</th><th>Etappe</th><th>Team</th><th><img src="/images/rozetrui.png"></th><th><img src="/images/blauwetrui.png"></th><th><img src="/images/paarsetrui.png"></th><th><img src="/images/wittetrui.png"></th><th>Totaal</th></tr>
+                    </thead>
+                    <tbody>
+                        <% for(var i=0; i<9; i++) { %>
+                            <tr id=resultaatselectie<%=i%>><td id="naamrenner<%=i%>" class="links"><%=opstelling[i]%></td><td id="etapperenner<%=i%>"></td><td id="teamrenner<%=i%>"></td><td id="akrenner<%=i%>"></td><td id="bergrenner<%=i%>"></td><td id="sprintrenner<%=i%>"></td><td id="jongrenner<%=i%>"></td><td id="totaalrenner<%=i%>"></td></tr>
+                        <% } %>
+                        <tr id=resultaatselectietotaal><td>Totaal</td><td id="totaaletappe"></td><td id="totaalteam"></td><td id="totaalak"></td><td id="totaalberg"></td><td id="totaalsprint"></td><td id="totaaljong"></td><td id="totaaltotaal"></td></tr>
+                    </tbody>
+                </table>
+                <table id="resultatentabel">
+                        <thead>
+                            <tr><th>Positie</th><th>Naam</th><th>Score</th></tr>
+                        </thead>
+                        <%for(var i=0; i<scoretabel.length; i++){%>
+                            <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=scoretabel[i].local.username%></td><td><%=totaalscore[i]%></td></tr>
+                        <%}%>
+                    </table>
+            </div>
+            <div class="col-sm-5 klassementswrapper">
+            <div class="col-sm-6 etapperesultatendoos">
+                <table id="etappetabel">
+                    <thead class="topbar" onclick="volledigKlassement(klass)">
+                        <tr ><th></th><th>Daguitslag</th><th>Tijd</th></tr>    
+                    </thead> 
+                    <tbody>
+                        <%for(var i=0;i<Math.min(20,uitslagen.dag.length);i++){%>
+                            <tr><td><%=i+1%></td><td><%=uitslagen.dag[i].naam%></td><td><%=uitslagen.dag[i].tijd%></td></tr>
+                        <%}%>    
+                    </tbody>    
+                </table>    
+            </div>
+            <div class="col-sm-6 andereresultatendoos">
+                    <table id="etappetabel">
+                        <% if(uitslagen.ak.length){ %>
+                                <thead class="topbar">
+                                    <tr><th></th><th>Klassement</th><th>Tijd</th></tr>    
+                                </thead>
+                                <tbody>
+                                        <tr><td><img src="/images/rozetrui.png"></td><td><%=uitslagen.ak[0].naam%></td><td><%=uitslagen.ak[0].tijd%></td></tr>
+                                        <%for(var i=1;i<Math.min(5,uitslagen.ak.length);i++){%>
+                                            <tr><td><%=i+1%></td><td><%=uitslagen.ak[i].naam%></td><td><%=uitslagen.ak[i].tijd%></td></tr>
+                                        <%}%>    
+                                    </tbody>    
+                                     <% } %>
+                        </table>
+                    <table id="etappetabel">
+                        <% if(uitslagen.sprint.length){ %>
+                            <thead class="topbar">
+                                <tr><th></th><th>Puntentrui</th><th>Punten</th></tr>    
+                            </thead>
+                            <tbody>
+                                    <tr><td><img src="/images/paarsetrui.png"></td><td><%=uitslagen.sprint[0].naam%></td><td><%=uitslagen.sprint[0].score%></td></tr>
+                                    <%for(var i=1;i<Math.min(5,uitslagen.sprint.length);i++){%>
+                                        <tr><td><%=i+1%></td><td><%=uitslagen.sprint[i].naam%></td><td><%=uitslagen.sprint[i].score%></td></tr>
+                                    <%}%>    
+                                </tbody>    
+                                 <% } %>
+                    </table>
+                    <table id="etappetabel">
+                        <% if(uitslagen.berg.length){ %>
+                            <thead class="topbar">
+                                <tr><th></th><th>Bergtrui</th><th>Punten</th></tr>    
+                            </thead>
+                            <tbody>
+                                    <tr><td><img src="/images/blauwetrui.png"></td><td><%=uitslagen.berg[0].naam%></td><td><%=uitslagen.berg[0].score%></td></tr>
+                                    <%for(var i=1;i<Math.min(5,uitslagen.berg.length);i++){%>
+                                        <tr><td><%=i+1%></td><td><%=uitslagen.berg[i].naam%></td><td><%=uitslagen.berg[i].score%></td></tr>
+                                    <%}%>    
+                                </tbody>    
+                                    <% } %>   
+                    </table> 
+                    <table id="etappetabel">
+                        <thead class="topbar">
+                            <tr><th></th><th>Jongerentrui</th><th>Tijd</th></tr>    
+                        </thead>
+                        <tbody>
+                                <% if(uitslagen.jong.length){ %>
+                                    <tr><td><img src="/images/wittetrui.png"></td><td><%=uitslagen.jong[0].naam%></td><td><%=uitslagen.jong[0].tijd%></td></tr>
+                                    <% } %>
+                            <%for(var i=1;i<Math.min(5,uitslagen.jong.length);i++){%>
+                                <tr><td><%=i+1%></td><td><%=uitslagen.jong[i].naam%></td><td><%=uitslagen.jong[i].tijd%></td></tr>
+                            <%}%>    
+                        </tbody>    
+                    </table>      
+            </div>
+            </div>
+        </div>
+        <div class="col-sm-2 sidenavR"><div>
+    </div>
+</div>
+<footer class="container-fluid text-center">
+    <p></p>
+</footer>
+<script>
+var teamscalled=0;
+function checkresultaat(etappe){
+    $.ajax({
+		type: 'POST',
+        data: JSON.stringify({"etappe":etappe,"toevoegen":"etapperesultaat"}),
+		contentType: 'application/json',
+        url: '/giro/etappe*',
+        cache: false,
+        dataType:"json",
+        success: function (res) { //{renners : array, kopman : string}
+            var totaaltotaal=0;
+            for(var i=0;i<res.renners.length;i++){
+                if(res.renners[i]._id==res.kopman){ //Kijken of de renner de kopman is
+                    $("#naamrenner" + i).html(res.renners[i].naam + "<img src='/images/rozetrui.png'>")
+                    $("#etapperenner" + i).html(res.renners[i].punten.dag[etappe-1]*1.5);
+                    $("#teamrenner" + i).html(res.renners[i].punten.team.totaal[etappe-1]);
+                    $("#akrenner" + i).html(res.renners[i].punten.ak[etappe-1]);
+                    $("#bergrenner" + i).html(res.renners[i].punten.berg[etappe-1]);
+                    $("#sprintrenner" + i).html(res.renners[i].punten.sprint[etappe-1]);
+                    $("#jongrenner" + i).html(res.renners[i].punten.jong[etappe-1]);
+                    $("#totaalrenner" + i).html(res.renners[i].punten.totaal[etappe-1]+(res.renners[i].punten.dag[etappe-1]*0.5));
+                    totaaltotaal+=res.renners[i].punten.totaal[etappe-1]+(res.renners[i].punten.dag[etappe-1]*0.5); //50% dagbonus voor de kopman
+                }else{                   
+                    $("#naamrenner" + i).html(res.renners[i].naam)
+                    $("#etapperenner" + i).html(res.renners[i].punten.dag[etappe-1]);
+                    $("#teamrenner" + i).html(res.renners[i].punten.team.totaal[etappe-1]);
+                    $("#akrenner" + i).html(res.renners[i].punten.ak[etappe-1]);
+                    $("#bergrenner" + i).html(res.renners[i].punten.berg[etappe-1]);
+                    $("#sprintrenner" + i).html(res.renners[i].punten.sprint[etappe-1]);
+                    $("#jongrenner" + i).html(res.renners[i].punten.jong[etappe-1]);
+                    $("#totaalrenner" + i).html(res.renners[i].punten.totaal[etappe-1]);
+                    totaaltotaal+=res.renners[i].punten.totaal[etappe-1];
+                }
+            }
+            $("#totaaltotaal").html("<strong>" + totaaltotaal + "</strong>");
+        }			
+    });
+}
+function teamspopup(etappe) {
+    var teamspopup = document.getElementById("idteamspopup");
+    teamspopup.classList.toggle("show");
+    if(teamscalled==0){
+    $.ajax({
+		type: 'POST',
+        data: JSON.stringify({"etappe":etappe,"toevoegen":"teamspopup"}),
+		contentType: 'application/json',
+        url: '/giro/etappe*',
+        cache: false,
+        dataType:"json",
+        success: function (users) {
+            for(var i=0;i<users.length;i++){
+                $("#user" + i).html(users[i].local.username);
+                for(var j=0;j<10;j++){
+                $("#renner" + j + "u" + i).html(users[i].opstellingen[etappe-1].opstelling.naam[j]);
+                }
+            }
+            teamscalled=1;
+        }			
+    });
+    }    
+}
+function volledigKlassement(Klassement){
+    document.getElementsByClass("topbar").style.color = "blue";
+}
+</script>
+</body>
+</html>

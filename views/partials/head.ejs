@@ -1,0 +1,204 @@
+<!-- views/partials/head.ejs 
+Sportradenenzo huisstijl voor gebruik op elke pagina-->
+<title>Sport raden enzo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style>
+    .navbar {
+        margin-bottom: 0;
+        border-radius: 0;
+    }
+    .row.content {
+        height: 900px;  
+    }
+    div#contentblok {
+        height: 100%;
+    }
+    .bovenrijtje {
+        height: 60px;
+        padding-bottom: 90px;
+        padding-top: 0px;
+    }
+    .sidenavL:before {
+        content: "";
+        z-index: -1;
+        display:block;
+        background-image: url("/images/TijdritTomL.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center; 
+        position:relative;
+        right: 16px;
+        height: 100%;
+        filter:blur(0.5px);
+    }
+    .sidenavL {
+        padding-top: 0px;
+        height: 100%;
+        z-index: 0;
+    }
+    .sidenavR:before {
+        content: "";
+        z-index: -1;
+        display:block;
+        background-image: url("/images/TijdritTomR.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        position:relative;
+        left: 15px;
+        height: 100%;
+        filter:blur(0.5px);
+    }
+    .sidenavR {
+        padding-top: 0px;
+        height: 100%;
+        z-index: 0;
+    }
+    .etappebutton {
+        text-decoration: none;
+        color: #fff;
+        background-color: #006CCB;
+        font-size: 18px;
+        padding: 14px 20px;
+        border-radius: 6px;
+        text-align: center;
+        display: inline-block;
+    }
+    .etappebutton:hover {
+        text-decoration: none;
+        color: #fff;
+        background-color: #229CDD;        
+    }
+    footer {
+        background-color: #555;
+        color: white;
+        padding: 5px;
+    }
+    .text-left {
+        background-color: #ffffff;
+        padding-top: 10px;
+    }
+    .text-right {
+        text-align: right;
+        background-color: #ffffff;
+        padding-top: 10px;
+    }
+    table#teamselectietabel tr{
+        cursor: pointer;
+        border-collapse: collapse;
+        border: 2px solid #666;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    } 
+    table#teamselectietabel tr:hover{
+        background-color: #ddd;
+    }
+    #zoekbalk{
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+    }
+    table#scoretabel{
+        border-color:#000;
+        border-style: solid;
+        border-width: 2px;
+    }
+    table#scoretabel tr#scoretab0 td{
+        background-color: #ffc400;
+        min-height: 80px;
+    }
+    table#scoretabel td{
+        min-width: 80px;
+        min-height: 40px;
+        font-size: 18px;
+        padding: 5px;
+        text-align:center;
+    }
+    table#scoretabel th{
+        color: #fff;
+        background-color: #000;
+        font-size: 18px;
+        padding: 5px;
+        text-align:center;
+        background: #7d7e7d; /* Old browsers */
+        background: -moz-linear-gradient(top, #7d7e7d 0%, #0e0e0e 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, #7d7e7d 0%,#0e0e0e 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, #7d7e7d 0%,#0e0e0e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
+    }
+
+    table#userteamtabel td,table#userteamtabel tr{
+        border: 2px solid #333;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    table#userteamtabel td{
+        width: 200px;
+        height: 50px;
+        text-align:center;
+    }
+    table#resultatentabel tr{
+        
+    }
+    
+    ul#etappekieslijst {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul#etappekieslijst li{
+        position: relative;
+        padding: 12px 8px 12px 40px;
+        list-style-type: none;
+        background: #eee;
+        font-size: 15px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    ul#etappekieslijst li:nth-child(odd) {
+        background: #f9f9f9;
+    }
+
+    @media screen and (max-width: 576px) {
+        .sidenavR {   
+            display: none;
+        }
+        .sidenavL {   
+            display: none;
+        }
+    }
+    .ploegrenner{
+            color:#888;
+            font-size: 9.5pt;
+    }
+    tr.rennerselected{
+        color: #888;
+        background: #fdd
+    }
+    tr.rennerselected:hover{
+        color: #888;
+        background: #fdd
+    }
+    tr td.rennerselected{
+        color: #888;
+        background: #fdd
+    }
+</style>
+

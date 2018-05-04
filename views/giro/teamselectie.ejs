@@ -1,0 +1,173 @@
+<!-- views/index.ejs -->
+<!doctype html>
+<html>
+<head>
+    <% include ../partials/head %>
+    <style>
+        .teamselectiedoos {
+            height:600px;
+            overflow:auto;
+            padding:10px;
+        }
+        thead{
+            background: #222;
+            color: #ddd;
+        }
+        th, td {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 5px;
+            padding-right: 5px;
+            text-align: left;
+        }
+        tbody tr td:hover{
+            background:#ddd;
+        }
+    </style>
+</head>
+<body onload="updateuserteam(<%=user.teamselectie%>)">
+    <% include ../partials/navbarlogout %>
+<div class="container-fluid text-center">    
+<div class="row content">
+    <div class="col-sm-2 sidenavL"></div>
+    <div class="col-sm-8 text-left" id="contentblok">
+        <div class="bovenrijtje">
+            <div class="col-sm-6 text-left">
+                <a href="/profile" class="etappebutton">◄ &nbsp; &nbsp; Profiel</a>
+            </div>
+            <div class="col-sm-6 text-right">
+                <div id="etappeknopenabler">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8 userteamdoos" id="userteamdoos">
+            <table id="userteamtabel">
+                <thead>
+                </thead>
+                <tbody>
+                <%for(i=1; i<21; i+=2){%>
+                    <tr>
+                        <td id="userselectie<%=i-1%>" onclick="verwijderrenner(<%=i-1%>)"></td>
+                        <td id="userselectie<%=i%>" onclick="verwijderrenner(<%=i%>)"></td>
+                    </tr>
+                <%}%>
+                </tbody>
+            </table>
+            <h1 id="geld">Budget: €<%=user.teamselectie.geld%></h1>
+        </div>
+        <div class="col-sm-4 teamselectiedoos">
+            <input type="text" id="zoekbalk" onkeyup="zoekrenner()" placeholder="Zoek een renner, ploeg, of prijs" title="Type in a name">    
+            <table id="teamselectietabel">
+                <thead>
+                    <tr class=teamtabelhead><td>Renner</td><td>Prijs</td></tr>
+                </thead>    
+                <tbody>
+                <% for(var i=0; i<renners.length; i++) { %>
+                    <tr id="<%=renners[i]._id%>" onclick="klikrenner('<%=renners[i]._id%>')"><td span=2><%=renners[i].naam%><br/><span class=ploegrenner><%=renners[i].team%></span></td><td>€<%=renners[i].prijs%></td></tr>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-2 sidenavR"><div>
+</div>
+</div>
+<footer class="container-fluid text-center">
+    <p></p>
+</footer>
+<script>
+var NUMBER_OF_REQUESTS = 0;
+setInterval(function(){ 
+    NUMBER_OF_REQUESTS = 0;
+}, 500);
+function klikrenner(id){
+    $.ajax({
+        beforeSend: function canSendAjaxRequest()
+        {
+            var can_send = NUMBER_OF_REQUESTS < 1;
+            NUMBER_OF_REQUESTS++;
+            return can_send;
+        },
+		type: 'POST',
+        data: JSON.stringify({ "id": id, "toevoegen": true}), //renner toevoegen
+		contentType: 'application/json',
+        url: '/giro/teamselectie',
+        cache: false,
+        dataType:"json",
+        async:false,
+        success: function (userrenners) {
+            for(i=0;i<userrenners.length;i++){
+                $("#" + userrenners[i]._id).addClass("rennerselected");
+                $("#userselectie" + i).html(userrenners[i].naam + "<br/><span class=ploegrenner>" + userrenners[i].team + "</span><br/>" + userrenners[i].prijs);
+            }
+            if(userrenners.length>19){
+                $("#etappeknopenabler").html('<a href="/giro/etappe1" class="etappebutton">Etappe 1 &nbsp; &nbsp; ►</a>');
+            }
+            $( "#geld" ).load(window.location.href + " #geld" );
+        }		
+    });
+}
+
+function verwijderrenner(id){
+   //if(naam!=null){ //eventueel weer toevoegen maar werkt ook zonder
+    $.ajax({
+        beforeSend: function canSendAjaxRequest()
+        {
+            var can_send = NUMBER_OF_REQUESTS < 1;
+            NUMBER_OF_REQUESTS++;
+            return can_send;
+        },
+		type: 'POST',
+        data: JSON.stringify({"id": id, "toevoegen": false}), //renner verwijderen
+		contentType: 'application/json',
+        url: '/giro/teamselectie',
+        cache: false,
+        dataType:"json",
+        async:false,
+        success: function (userrenners,idverwijderde) {
+            for(var i=0;i<userrenners.length;i++){
+                $("#" + idverwijderde).removeClass("rennerselected");
+                $("#userselectie" + i).html(userrenners[i].naam + "<br/><span class=ploegrenner>" + userrenners[i].team + "</span><br/>" + userrenners[i].prijs);
+            }
+            for(var i=userrenners.length;i<20;i++){
+                $("#userselectie" + i).html("");
+            }
+            $( "#geld" ).load(window.location.href + " #geld" );
+            if(userrenners.length<20){
+                $("#etappeknopenabler").html('');
+            }
+        }			
+    });
+    //}
+}
+function updateuserteam(teamselectie){
+    for(id=0;id<teamselectie.userrenners.length;id++){
+        $("#" + teamselectie.userrenners[id]._id).addClass("rennerselected");
+        $("#userselectie" + id).html(teamselectie.userrenners[id].naam + "<br/><span class=ploegrenner>" + teamselectie.userrenners[id].team + "</span><br/>" + teamselectie.userrenners[id].prijs);
+    }
+    if(teamselectie.userrenners.length>19){
+        $("#etappeknopenabler").html('<a href="/giro/etappe1" class="etappebutton">Etappe 1 &nbsp; &nbsp; ►</a>');
+    }
+}
+
+function zoekrenner() {
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("zoekbalk");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("teamselectietabel");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }       
+  }
+}
+</script>
+</body>
+</html>

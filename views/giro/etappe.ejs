@@ -1,0 +1,276 @@
+<!-- views/index.ejs -->
+<!doctype html>
+<html>
+<head>
+    <% include ../partials/head %>
+    <style>
+        .teamselectiedoos {
+            height:600px;
+            overflow:auto;
+            padding:10px;
+        }    
+        thead{
+            background: #222;
+            color: #ddd;
+        }
+        th, td {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 5px;
+            padding-right: 5px;
+            text-align: left;
+        }
+        tbody tr td:hover{
+            background:#ddd;
+        }
+        #etappekieslijst tr td{
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 5px;
+            padding-right: 5px;
+            text-align: center;
+            height:56px;
+        }
+        #etappekieslijst tr td:hover{
+            background:#fff;
+        }
+        #etappekieslijst td.etappelijst{
+            width:300px;
+        }
+        #etappekieslijst td.etappelijst:hover{
+            background:#ddd;
+        }
+        #etappekieslijst tr:nth-child(odd) {
+            background: #f9f9f9;
+        }
+
+        .radioknop{
+            padding-top:15px;
+            padding-bottom:7px;
+            text-align:center;
+            width:66px;
+        }
+        .radioknop:nth-child(odd) {
+            background: #f9f9f9;
+        }
+        .radioknoppen input{
+            margin:0;padding:0;
+            -webkit-appearance:none;
+            -moz-appearance:none;
+        }
+
+        .kopman{background-image:url(/images/rozetrui.png);}
+
+        .radioknoppen input:active +.kopmanknoppen{
+            opacity: .9;
+        }
+        .radioknoppen input:checked +.kopmanknoppen{
+            -webkit-filter: none;
+            -moz-filter: none;
+            filter: none;
+        }
+        .kopmanknoppen{
+            cursor:pointer;
+            background-size:contain;
+            background-repeat:no-repeat;
+            display:inline-block;
+            width:30px;height:24px;
+            -webkit-transition: all 100ms ease-in;
+            -moz-transition: all 100ms ease-in;
+            transition: all 100ms ease-in;
+            -webkit-filter: brightness(1.8) grayscale(1) opacity(.7);
+            -moz-filter: brightness(1.8) grayscale(1) opacity(.7);
+            filter: brightness(1.8) grayscale(1) opacity(.7);
+        }
+        .kopmanknoppen:hover{
+            -webkit-filter: brightness(1.2) grayscale(.5) opacity(.9);
+            -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
+            filter: brightness(1.2) grayscale(.5) opacity(.9);
+        }
+
+    </style>
+</head>
+<body onload="updateuserteam(<%=etappe%>)">
+    <% include ../partials/navbarlogout %>
+<div class="container-fluid text-center">    
+    <div class="row content">
+        <div class="col-sm-2 sidenavL"></div>
+        <div class="col-sm-8 text-left" id="contentblok">
+            <div class="bovenrijtje">
+                <div class="col-sm-6 text-left">
+                    <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
+                        <a href="/giro/etappe<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
+                    <%}else{%>
+                        <%if(huidig<2){%> <!--stuur door naar teamselectie als dat nog kan-->
+                            <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
+                    <%}}%>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <%if(etappe<21){%>
+                        <a href="/giro/etappe<%=etappe+1%>" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
+                    <%}else{%>
+                        <%if(huidig<0){%> <!--stuur door naar resultatenpagina als dat al kan-->
+                            <a href="/giro/resultaten" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
+                    <%}}%>
+                </div>
+            </div>
+            <div class="col-sm-7 userteamdoos">
+                <table id="userteamtabel">
+                    <thead>
+                    </thead>
+                    <tbody>
+                        <% for(var i=1; i<21; i+=2) { %>
+                            <tr>
+                            <td id="<%=user.teamselectie.userrenners[i-1]._id%>" onclick="kiesrenner(<%=i-1%>,<%=etappe%>)"><%=user.teamselectie.userrenners[i-1].naam%>
+                            <br/><span class=ploegrenner><%=user.teamselectie.userrenners[i-1].team%></span></td>
+                            <td id="<%=user.teamselectie.userrenners[i]._id%>" width="200" onclick="kiesrenner(<%=i%>,<%=etappe%>)"><%=user.teamselectie.userrenners[i].naam%>
+                            <br/><span class=ploegrenner><%=user.teamselectie.userrenners[i].team%></span></td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <form>
+                <div class="col-sm-1 radioknoppen">
+                    <%for(i=0;i<9;i++){%>
+                    <div class="radioknop">
+                    <input id="kopman<%=i%>" type="radio" name="kopmannen" onchange="kieskopman(<%=i%>,<%=etappe%>)">
+                    <label class="kopmanknoppen kopman" for="kopman<%=i%>"></label>
+                    </div>
+                    <%}%>
+                </div>  
+            </form>  
+            <div class="col-sm-4 etappekiesdoos">
+            <table id="etappekieslijst">
+                    <%for(i=0;i<9;i++){%>
+                    <tr><td onclick="verwijderrenner(<%=i%>,<%=etappe%>)" id='etappelijst<%=i%>' class="etappelijst"></td></tr>
+                    <%}%>
+            </table>
+            </div>
+        </div>
+        <div class="col-sm-2 sidenavR"><div>
+    </div>
+</div>
+<footer class="container-fluid text-center">
+    <p></p>
+</footer>
+<script>
+var NUMBER_OF_REQUESTS = 0;
+setInterval(function(){ 
+    NUMBER_OF_REQUESTS = 0;
+}, 500);
+function kiesrenner(id,etappe){
+    $.ajax({
+        beforeSend: function canSendAjaxRequest()
+        {
+            var can_send = NUMBER_OF_REQUESTS < 1;
+            NUMBER_OF_REQUESTS++;
+            return can_send;
+        },
+		type: 'POST',
+        data: JSON.stringify({"id":id, "etappe":etappe, "toevoegen": true}),
+		contentType: 'application/json',
+        url: '/giro/etappe*',
+        cache: false,
+        async:false,
+        dataType:"json",
+        success: function (opstelling) { //user.opstellingen[req.body.etappe-1].opstelling
+            for(i=0;i<opstelling._id.length;i++){ //vul de nieuwe opstelling in
+                $("#etappelijst" + i).html(opstelling.naam[i]);
+                $("#" + opstelling._id[i]).addClass("rennerselected");
+                $("#kopman"+i).prop('disabled', false);
+            }
+        }			
+    });
+    
+}
+
+function verwijderrenner(id,etappe){
+    $.ajax({
+        beforeSend: function canSendAjaxRequest()
+        {
+            var can_send = NUMBER_OF_REQUESTS < 1;
+            NUMBER_OF_REQUESTS++;
+            return can_send;
+        },
+		type: 'POST',
+        data: JSON.stringify({"id": id, "etappe":etappe, "toevoegen": false}),
+		contentType: 'application/json',
+        url: '/giro/etappe*',
+        cache: false,
+        async:false,
+        dataType:"json",
+        success: function (opstellingen) { //{opstelling,idverwijderde,kopman}
+            for(var i=0;i<opstellingen.opstelling._id.length;i++){
+                $("#" + opstellingen.opstelling._id[i]).addClass("rennerselected");
+                $("#etappelijst" + i).html(opstellingen.opstelling.naam[i]); //Vul de etappelijst met de renners
+                $("#kopman"+i).prop('disabled', false); //Zorg dat de kopmanknop voor deze renners werkt
+                if(opstellingen.opstelling._id[i]==opstellingen.kopman){ //Zoek naar de kopman
+                    $("#kopman"+i).prop('checked', true); //Check als deze is gevonden
+                }else{$("#kopman"+i).prop('checked', false);} //Anders uncheck als het nodig is
+            }
+            for(var i=opstellingen.opstelling._id.length;i<10;i++){
+                $("#etappelijst" + i).html(""); //Maak alle plekken waar geen renners voor zijn leeg
+                $("#kopman"+i).prop('disabled', true); //Disable de kopmanknop voor deze plekken
+                $("#kopman"+i).prop('checked', false); //Uncheck ook als het nodig is
+            }
+            $("#" + opstellingen.idverwijderde).removeClass("rennerselected"); //Unselect de verwijderde renner
+        }					
+    });
+}
+
+function kieskopman(id,etappe){
+    $.ajax({
+        beforeSend: function canSendAjaxRequest()
+        {
+            var can_send = NUMBER_OF_REQUESTS < 1;
+            NUMBER_OF_REQUESTS++;
+            return can_send;
+        },
+		type: 'POST',
+        data: JSON.stringify({"id": id, "etappe":etappe, "toevoegen": "kopman"}),
+		contentType: 'application/json',
+        url: '/giro/etappe*',
+        cache: false,
+        async:false,
+        dataType:"json",
+        success: function (opstelling) {}					
+    });    
+}
+
+function updateuserteam(etappe){
+    $.ajax({
+        beforeSend: function canSendAjaxRequest()
+        {
+            var can_send = NUMBER_OF_REQUESTS < 1;
+            NUMBER_OF_REQUESTS++;
+            return can_send;
+        },       
+		type: 'POST',
+        data: JSON.stringify({"etappe":etappe, "toevoegen": "laden"}),
+		contentType: 'application/json',
+        url: '/giro/etappe*',
+        cache: false,
+        async:false,
+        dataType:"json",
+        success: function (opstellingen) { 
+            for(var i=0;i<opstellingen.opstelling._id.length;i++){
+                $("#" + opstellingen.opstelling._id[i]).addClass("rennerselected");
+                $("#etappelijst" + i).html(opstellingen.opstelling.naam[i]); //Vul de etappelijst met de renners
+                $("#kopman"+i).prop('disabled', false); //Zorg dat de kopmanknop voor deze renners werkt
+                if(opstellingen.opstelling._id[i]==opstellingen.kopman){ //Zoek naar de kopman
+                    $("#kopman"+i).prop('checked', true); //Check als deze is gevonden
+                }else{$("#kopman"+i).prop('checked', false);} //Anders uncheck als het nodig is
+            }
+            for(var i=opstellingen.opstelling.length;i<10;i++){
+                $("#" + opstelling._id[i]).removeClass("rennerselected");
+                $("#etappelijst" + i).html(""); //Maak alle plekken waar geen renners voor zijn leeg
+                $("#kopman"+i).prop('disabled', true); //Disable de kopmanknop voor deze plekken
+                $("#kopman"+i).prop('checked', false); //Uncheck ook als het nodig is
+            }
+        }			
+    });
+}
+</script>
+</body>
+</html>
