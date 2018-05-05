@@ -1,5 +1,4 @@
-
-  // set up ======================================================================
+// set up ======================================================================
 var http = require('http');
 var express = require('express');
 var app = express();
@@ -17,7 +16,8 @@ var bodyParser   = require('body-parser');
 var session      = require('express-session');
 var json         = require('json-stringify-safe');
 
-var configDB = { 'url' : process.env.DATABASE_LINK };//
+//var configDB = { 'url' : process.env.DATABASE_LINK};
+var configDB = require('./config/database');
 
 var functies = require('./functies');
 var scrape = require('./scrape');
@@ -37,7 +37,7 @@ app.use(bodyParser.urlencoded({
 }));// get information from html forms
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 
-var huidigetappe = require('./app/girodata'); //haal huidige etappe op
+var girodata = require('./app/girodata'); //haal huidige etappe op
 
 // required for passport
 app.use(session({ 
@@ -168,26 +168,22 @@ app.post('/giro/etappe', function(req,res){
 });
 
 //Goed doorverwijzen van /giro gebaseerd op welke etappe bezig is=========================================================
-var etap=huidigetappe.etapstart; //etap geeft aan welke etappe is gestart
 app.get('/giro', function(req, res) { //algemene giro pagina
-  if(etap!=-1&&etap!=1){ //als 1 moet naar teamselectie als -1 dan is giro (bijna) voorbij
-    res.redirect('/giro/etappe'+huidigetappe.etapfinish); //nog X uur naar de juiste etappe verwijzen als deze is gestart
-  }
-  if(etap==1){
+  if(currentDisplay()===0){
     res.redirect('/giro/teamselectie');
-  }
-  if(etap==-1){
-    if(huidigetappe.etapfinish!=-1){
-      res.redirect('/giro/etappe'+huidigetappe.etapfinish);
-    }else{
+  }else if (currentDisplay()===22){
     res.redirect('/giro/eindresultaat');
-    }
+  }else{
+    res.redirect('/giro/etappe'+currentDisplay());//go to currentDisplay etappe (opstelling of resultaten)
   }
 });
-
 app.post('/giro/etappe*', function(req, res){
 //Posts van etappe.ejs heeft hetzelfde adres als etapperesultaat.ejs=======================================================
-  if(etap<=etappe&&etap!=-1){ //Kijken of de deadline nog niet is geweest
+  var queryStart = req.originalUrl.indexOf("etappe") + 6;
+  var queryEnd   = req.originalUrl.length + 1; //Query eindigen op einde url
+  var query = req.originalUrl.slice(queryStart, queryEnd - 1); //Het nummer isoleren 
+  var etappe = parseInt(query,10); //String omzetten naar int (decimaal)
+  if(!displayResults(etappe)){ //Kijken of de deadline nog niet is geweest
     if(req.body.toevoegen==true){ //kijk of er een renner wordt toegevoegd aan de etappeselectie
       User.findOne(req.user._id, function(err, user) {
         //Zorgen dat er een array is om de functies op uit te voeren

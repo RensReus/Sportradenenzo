@@ -101,7 +101,7 @@
                     <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
                         <a href="/giro/etappe<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
                     <%}else{%>
-                        <%if(huidig<2){%> <!--stuur door naar teamselectie als dat nog kan-->
+                        <%if(huidig<1){%> <!--stuur door naar teamselectie als dat nog kan-->
                             <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
                     <%}}%>
                 </div>
@@ -112,7 +112,7 @@
                     <%if(etappe<21){%>
                         <a href="/giro/etappe<%=etappe+1%>" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
                     <%}else{%>
-                        <%if(huidig<0){%> <!--stuur door naar resultatenpagina als dat al kan-->
+                        <%if(huidig>21){%> <!--stuur door naar resultatenpagina als dat al kan-->
                             <a href="/giro/resultaten" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
                     <%}}%>
                 </div>
