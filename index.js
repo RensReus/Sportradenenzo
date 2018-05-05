@@ -16,11 +16,11 @@ var bodyParser   = require('body-parser');
 var session      = require('express-session');
 var json         = require('json-stringify-safe');
 
-if (fs.existsSync('./config/database.js')){ //Kijken of er een config is
-  var configDB = require('./config/database');
-}else{
-  var configDB = { 'url' : process.env.DATABASE_LINK}; //Zo niet gebruik heroku ding
-};
+//if (fs.existsSync('./config/database.js')){ //Kijken of er een config is
+//  var configDB = require('./config/database');
+//}else{
+//  var configDB = { 'url' : process.env.DATABASE_LINK}; //Zo niet gebruik heroku ding
+//};
 
 var functies = require('./functies');
 var scrape = require('./scrape');
