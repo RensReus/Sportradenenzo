@@ -285,11 +285,17 @@ getResult = function(et,callback){
                                 if(index===rennersDag.length-1){// als laaste renner dan calculate user en continue code
                                     console.log("renners et: %s done",et);
                                     calculateUserScores(et);
+                                    console.log("length not 0");
                                     callback();
                                 }
                             });
                         }
                     })
+                    if(renners.length===0){ // zorgt dat callback wordt aangeroepen als er geen renners in de uitslag staan
+                        calculateUserScores(et);
+                        console.log("length 0");
+                        callback();
+                    }
                 });
             }
             etappe.uitslagen.dag = etappeDag;

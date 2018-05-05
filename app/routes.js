@@ -99,8 +99,12 @@ module.exports = function(app, passport) {
             if(displayResults(etappe)){ //returns true if etappe finished
                 Etappe.findOne({'_id' : etappe},'uitslagen creationTime', function (err, uitslag) {
                     if (err) throw err;
+                    var scrapePause = 12*60*60*1000; //default 12 uur
+                    if(etappe == currentDisplay()) // indien het in de eerste 12 uur na de etappe start is ieder 5 min
+                        scrapePause = 5*60*1000;
                     if(uitslag.creationTime + 5*60*1000 < new Date().getTime() || uitslag == null){
                         getResult(etappe,function(){
+                            console.log("callback was run")
                             User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore',{sort: {'profieldata.poulescore': -1}}, function (err, users) {
                                 var totaalscore = [];
                                 for(var i=0;i<users.length;i++){
