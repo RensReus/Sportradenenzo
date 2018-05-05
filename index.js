@@ -16,8 +16,8 @@ var bodyParser   = require('body-parser');
 var session      = require('express-session');
 var json         = require('json-stringify-safe');
 
-//var configDB = { 'url' : process.env.DATABASE_LINK};
-var configDB = require('./config/database');
+var configDB = { 'url' : process.env.DATABASE_LINK};
+//var configDB = require('./config/database');
 
 var functies = require('./functies');
 var scrape = require('./scrape');
