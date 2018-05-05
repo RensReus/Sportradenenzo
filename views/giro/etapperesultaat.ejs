@@ -144,8 +144,8 @@
                         <thead>
                             <tr><th>Positie</th><th>Naam</th><th>Totaal</th><th>Dag</th></tr>
                         </thead>
-                        <%for(var i=0; i<scoretabel.length; i++){%>
-                            <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=scoretabel[i].local.username%></td><td><%=totaalscore[i]%></td><td><%=dagscore[i]%></td></tr>
+                        <%for(var i=0; i<users.length; i++){%>
+                            <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=users[i].local.username%></td><td><%=users[i].profieldata.totaalscore%></td><td><%=dagscore[i]%></td></tr>
                         <%}%>
                     </table>
             </div>

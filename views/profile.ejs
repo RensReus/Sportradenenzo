@@ -41,8 +41,8 @@
                 <div class="col-sm-4 text-left">
                 <table id="scoretabel">
                     <tr id="scorehead"><th>Positie</th><th>Naam</th><th>Score</th></tr>
-                    <%for(var i=0; i<scoretabel.length; i++){%>
-                        <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=scoretabel[i].local.username%></td><td><%=totaalscore[i]%></td></tr>
+                    <%for(var i=0; i<users.length; i++){%>
+                        <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=users[i].local.username%></td><td><%=users[i].profieldata.totaalscore%></td></tr>
                     <%}%>
                 </table>
                 </div>

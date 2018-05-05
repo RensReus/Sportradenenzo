@@ -210,7 +210,7 @@ app.post('/giro/etappe*', function(req, res){
           });
         }else{res.send();} //Renner zit al in selectie
         }else{res.send();} //Team zit vol
-        res.send(JSON.stringify(user.opstellingen[req.body.etappe-1].opstelling)); //Stuur update terug naar de client
+        res.json(user.opstellingen[req.body.etappe-1].opstelling); //Stuur update terug naar de client
       });
     }
     if(req.body.toevoegen==false){ //renner wordt verwijderd uit selectie
@@ -249,11 +249,9 @@ app.post('/giro/etappe*', function(req, res){
 //Posts van etapperesultaat.ejs heeft hetzelfde adres als etappe.ejs=======================================================
   }else{
     if(req.body.toevoegen=="etapperesultaat"){
-      console.log("ETAPPE RESULTAAT")
       User.findOne(req.user._id, function(err, user) {
         Renner.find({'_id' : {"$in" : user.opstellingen[req.body.etappe-1].opstelling._id}},'_id naam punten', function(err,renners){
           if(err) throw err;
-          console.log(renners)
           res.json({'renners' : renners, 'kopman' : user.opstellingen[req.body.etappe-1].kopman});
         });
       });

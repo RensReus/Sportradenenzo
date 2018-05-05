@@ -14,7 +14,8 @@ var userSchema = mongoose.Schema({
     profieldata     : {
         favwieler   : {type: String, default: "Bram Tankink"},
         favclub     : {type: String, default: "De Bram Tankink Fanclub"},
-        poulescore  : {type: Array, default: new Array(22).fill(0)}
+        poulescore  : {type: Array, default: new Array(22).fill(0)},
+        totaalscore : Number
     },
     teamselectie    : {
         userrenners : {type: Array, default: new Array(0).fill({'_id':String,'naam':String,'team':String,'prijs':Number})},

@@ -49,16 +49,12 @@ module.exports = function(app, passport) {
     // we will want this protected so you have to be logged in to visit
     // we will use route middleware to verify this (the isLoggedIn function)
     app.get('/profile', isLoggedIn, function(req, res) {
-    User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore',{sort: {'profieldata.poulescore': -1}}, function (err, users) {
-        var totaalscore = [];
-        for(var i=0;i<users.length;i++){
-            totaalscore.push(users[i].profieldata.poulescore.reduce((a, b) => a + b, 0));
-        }
+    User.find({'profieldata.poulescore' : {$exists: true}}, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
+        console.log(users)
         if (err) throw err;
         res.render('profile.ejs', {
             user : req.user, // get the user out of session and pass to template
-            scoretabel : users, //[{id,local{username}},...]
-            totaalscore:totaalscore
+            users : users, //[{id,local{username}},...]
         });
     });
     });
@@ -105,11 +101,9 @@ module.exports = function(app, passport) {
                     if(uitslag.creationTime + 5*60*1000 < new Date().getTime() || uitslag == null){
                         getResult(etappe,function(){
                             console.log("callback was run")
-                            User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore',{sort: {'profieldata.poulescore': -1}}, function (err, users) {
-                                var totaalscore = [];
+                            User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
                                 var dagscore = [];
                                 for(var i=0;i<users.length;i++){
-                                    totaalscore.push(users[i].profieldata.poulescore.reduce((a, b) => a + b, 0));
                                     dagscore.push(users[i].profieldata.poulescore[etappe-1]);
                                 }
                                 if (err) throw err;
@@ -119,18 +113,15 @@ module.exports = function(app, passport) {
                                     etappe:etappe,
                                     uitslagen:uitslag.uitslagen,
                                     user : req.user, // get the user out of session and pass to template
-                                    scoretabel : users, //[{id,local{username}},...]
-                                    totaalscore:totaalscore,
+                                    users : users, //[{id,local{username}},...]
                                     dagscore:dagscore
                                 });
                             });
                         });
                     }else{
-                        User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore', function (err, users) {
-                            var totaalscore = [];
+                        User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
                             var dagscore = [];
                             for(var i=0;i<users.length;i++){
-                                totaalscore.push(users[i].profieldata.poulescore.reduce((a, b) => a + b, 0));
                                 dagscore.push(users[i].profieldata.poulescore[etappe-1]);
                             }
                             if (err) throw err;
@@ -140,8 +131,7 @@ module.exports = function(app, passport) {
                                 etappe:etappe,
                                 uitslagen:uitslag.uitslagen,
                                 user : req.user, // get the user out of session and pass to template
-                                scoretabel : users, //[{id,local{username}},...]
-                                totaalscore:totaalscore,
+                                users : users, //[{id,local{username}},...]
                                 dagscore:dagscore
                             });
                         });

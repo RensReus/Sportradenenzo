@@ -23,6 +23,7 @@ calculateUserScores = function(et){
                         }
                     });
                     user.profieldata.poulescore.set(et-1,punten);
+                    user.profieldata.totaalscore=user.profieldata.poulescore.reduce((a, b) => a + b);
                     user.save(function(err,result) {//save score
                         if (err) throw err;
                     });
