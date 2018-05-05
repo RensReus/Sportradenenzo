@@ -48,10 +48,10 @@ currentDisplay = function(){ //return de etappe om te weergeven
         }
         if(now>etappetijden[i].getTime()){//als minder dan 12 uur na de start
             if(now<etappetijden[i].getTime()+12*60*60*1000){
-                return (i+1); // return de recent gestartte etappe
+                return (parseInt(i)+1); // return de recent gestartte etappe
             }
             else{ // niet binnen 12 uur
-                return (i+2);// return de volgende etappe
+                return (parseInt(i)+2);// return de volgende etappe
             }
         }
         

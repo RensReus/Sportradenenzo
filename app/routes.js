@@ -17,32 +17,30 @@ module.exports = function(app, passport) {
     // =====================================
     // show the login form
     app.get('/login', function(req, res) {
-
-    // render the page and pass in any flash data if it exists
-    res.render('login.ejs', { message: req.flash('loginMessage') }); 
+        // render the page and pass in any flash data if it exists
+        res.render('login.ejs', { message: req.flash('loginMessage') }); 
     });
 
     // process the login form
     app.post('/login', passport.authenticate('local-login', {
-    successRedirect : '/profile', // redirect to the secure profile section
-    failureRedirect : '/login', // redirect back to the signup page if there is an error
-    failureFlash : true // allow flash messages
+        successRedirect : '/profile', // redirect to the secure profile section
+        failureRedirect : '/login', // redirect back to the signup page if there is an error
+        failureFlash : true // allow flash messages
     }));    
     // =====================================
     // SIGNUP ==============================
     // =====================================
     // show the signup form
     app.get('/signup', function(req, res) {
-
-    // render the page and pass in any flash data if it exists
-    res.render('signup.ejs', { message: req.flash('signupMessage') });
+        // render the page and pass in any flash data if it exists
+        res.render('signup.ejs', { message: req.flash('signupMessage') });
     });
 
     // process the signup form
     app.post('/signup', passport.authenticate('local-signup', {
-    successRedirect : '/profile', // redirect to the secure profile section
-    failureRedirect : '/signup', // redirect back to the signup page if there is an error
-    failureFlash : true // allow flash messages
+        successRedirect : '/profile', // redirect to the secure profile section
+        failureRedirect : '/signup', // redirect back to the signup page if there is an error
+        failureFlash : true // allow flash messages
     }));
 
     // =====================================
@@ -67,6 +65,7 @@ module.exports = function(app, passport) {
 
     app.get('/giro/teamselectie', isLoggedIn, function(req, res) {
     if(!currentDisplay()){//returns 0 before start
+        console.log(currentDisplay())
         Renners.find({'prijs' : {$exists: true}},'_id naam team prijs', {sort: {'prijs': -1}}, function (err, renners) {
             if (err) throw err;
             res.render('./giro/teamselectie.ejs', {
@@ -83,6 +82,7 @@ module.exports = function(app, passport) {
     });
     //Voor de aanvraag van een etappe pagina------------------------------------------
     app.get('/giro/etappe*', isLoggedIn, function(req, res){
+        console.log("GIRO ETAPPE WORDT GEGET")
         User.findOne(req.user._id, function(err, user) {
             if(user.teamselectie.userrenners.length<20){
                 res.redirect("/giro/teamselectie")
@@ -107,8 +107,10 @@ module.exports = function(app, passport) {
                             console.log("callback was run")
                             User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore',{sort: {'profieldata.poulescore': -1}}, function (err, users) {
                                 var totaalscore = [];
+                                var dagscore = [];
                                 for(var i=0;i<users.length;i++){
                                     totaalscore.push(users[i].profieldata.poulescore.reduce((a, b) => a + b, 0));
+                                    dagscore.push(users[i].profieldata.poulescore[etappe-1]);
                                 }
                                 if (err) throw err;
                                 res.render('./giro/etapperesultaat.ejs', {
@@ -118,14 +120,17 @@ module.exports = function(app, passport) {
                                     uitslagen:uitslag.uitslagen,
                                     user : req.user, // get the user out of session and pass to template
                                     scoretabel : users, //[{id,local{username}},...]
-                                    totaalscore:totaalscore
+                                    totaalscore:totaalscore,
+                                    dagscore:dagscore
                                 });
                             });
                         });
                     }else{
-                        User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore',{sort: {'profieldata.poulescore': -1}}, function (err, users) {
+                        User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore', function (err, users) {
                             var totaalscore = [];
                             var dagscore = [];
+                            console.log(users)
+                            console.log(users.length)
                             for(var i=0;i<users.length;i++){
                                 totaalscore.push(users[i].profieldata.poulescore.reduce((a, b) => a + b, 0));
                                 dagscore.push(users[i].profieldata.poulescore[etappe-1]);

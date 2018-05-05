@@ -16,8 +16,8 @@ var bodyParser   = require('body-parser');
 var session      = require('express-session');
 var json         = require('json-stringify-safe');
 
-var configDB = { 'url' : process.env.DATABASE_LINK};
-// var configDB = require('./config/database');
+//var configDB = { 'url' : process.env.DATABASE_LINK};
+var configDB = require('./config/database');
 
 var functies = require('./functies');
 var scrape = require('./scrape');
@@ -169,6 +169,7 @@ app.post('/giro/etappe', function(req,res){
 
 //Goed doorverwijzen van /giro gebaseerd op welke etappe bezig is=========================================================
 app.get('/giro', function(req, res) { //algemene giro pagina
+  console.log(currentDisplay())
   if(currentDisplay()===0){
     res.redirect('/giro/teamselectie');
   }else if (currentDisplay()===22){
@@ -177,6 +178,7 @@ app.get('/giro', function(req, res) { //algemene giro pagina
     res.redirect('/giro/etappe'+currentDisplay());//go to currentDisplay etappe (opstelling of resultaten)
   }
 });
+
 app.post('/giro/etappe*', function(req, res){
 //Posts van etappe.ejs heeft hetzelfde adres als etapperesultaat.ejs=======================================================
   var queryStart = req.originalUrl.indexOf("etappe") + 6;
