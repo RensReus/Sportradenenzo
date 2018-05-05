@@ -16,8 +16,11 @@ var bodyParser   = require('body-parser');
 var session      = require('express-session');
 var json         = require('json-stringify-safe');
 
-var configDB = { 'url' : process.env.DATABASE_LINK};
-//var configDB = require('./config/database');
+if (fs.existsSync('./config/database.js')){ //Kijken of er een config is
+  var configDB = require('./config/database');
+}else{
+  var configDB = { 'url' : process.env.DATABASE_LINK}; //Zo niet gebruik heroku ding
+};
 
 var functies = require('./functies');
 var scrape = require('./scrape');
@@ -140,7 +143,7 @@ app.post('/giro/teamselectie',function(req,res){
     user.save(function(err) {
       if (err) throw err;
     });
-    res.send(JSON.stringify(user.teamselectie.userrenners));
+    res.json(user.teamselectie.userrenners);
     }else{res.send();} //renner zit al in team  
     }else{res.send();} //geen geld
     });
@@ -157,7 +160,7 @@ app.post('/giro/teamselectie',function(req,res){
       user.save(function(err){
         if(err) throw err;
       });
-      res.send(JSON.stringify(user.teamselectie.userrenners,idverwijderde));
+      res.json(user.teamselectie.userrenners,idverwijderde);
       };
     });
   };
@@ -185,7 +188,7 @@ app.post('/giro/etappe*', function(req, res){
   var queryEnd   = req.originalUrl.length + 1; //Query eindigen op einde url
   var query = req.originalUrl.slice(queryStart, queryEnd - 1); //Het nummer isoleren 
   var etappe = parseInt(query,10); //String omzetten naar int (decimaal)
-  if(!displayResults(etappe)){ //Kijken of de deadline nog niet is geweest
+  if(!displayResults(req.body.etappe)){ //Kijken of de deadline nog niet is geweest
     if(req.body.toevoegen==true){ //kijk of er een renner wordt toegevoegd aan de etappeselectie
       User.findOne(req.user._id, function(err, user) {
         //Zorgen dat er een array is om de functies op uit te voeren
@@ -222,7 +225,7 @@ app.post('/giro/etappe*', function(req, res){
         user.markModified('opstellingen')
         user.save(function(err){
           if(err) throw err;
-          res.send(JSON.stringify({'opstelling':user.opstellingen[req.body.etappe-1].opstelling,'idverwijderde':idverwijderde,'kopman':user.opstellingen[req.body.etappe-1].kopman})); //Stuur update terug naar user
+          res.json({'opstelling':user.opstellingen[req.body.etappe-1].opstelling,'idverwijderde':idverwijderde,'kopman':user.opstellingen[req.body.etappe-1].kopman}); //Stuur update terug naar user
         });
       };
       });
@@ -230,7 +233,7 @@ app.post('/giro/etappe*', function(req, res){
     if(req.body.toevoegen=="laden"){ //Het laden van de opstelling bij het laden van een etappe pagina
       User.findOne(req.user._id, function(err, user) {
         if(err) throw err;
-        res.send(JSON.stringify(user.opstellingen[req.body.etappe-1]));
+        res.json(user.opstellingen[req.body.etappe-1]);
       }); 
     };
     if(req.body.toevoegen=="kopman"){ //Het kiezen van een kopman
@@ -246,10 +249,12 @@ app.post('/giro/etappe*', function(req, res){
 //Posts van etapperesultaat.ejs heeft hetzelfde adres als etappe.ejs=======================================================
   }else{
     if(req.body.toevoegen=="etapperesultaat"){
+      console.log("ETAPPE RESULTAAT")
       User.findOne(req.user._id, function(err, user) {
         Renner.find({'_id' : {"$in" : user.opstellingen[req.body.etappe-1].opstelling._id}},'_id naam punten', function(err,renners){
           if(err) throw err;
-          res.send(JSON.stringify({'renners' : renners, 'kopman' : user.opstellingen[req.body.etappe-1].kopman}));
+          console.log(renners)
+          res.json({'renners' : renners, 'kopman' : user.opstellingen[req.body.etappe-1].kopman});
         });
       });
     }else{

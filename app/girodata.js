@@ -61,7 +61,7 @@ currentDisplay = function(){ //return de etappe om te weergeven
 
 displayResults = function(etappe){
     var now = new Date().getTime();
-    if(now>etappetijden[etappe-1]){// als na etappe start
+    if(now>etappetijden[etappe-1].getTime()){// als na etappe start
         return true;//display results
     }
     return false;//display opstelling

@@ -129,8 +129,6 @@ module.exports = function(app, passport) {
                         User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore', function (err, users) {
                             var totaalscore = [];
                             var dagscore = [];
-                            console.log(users)
-                            console.log(users.length)
                             for(var i=0;i<users.length;i++){
                                 totaalscore.push(users[i].profieldata.poulescore.reduce((a, b) => a + b, 0));
                                 dagscore.push(users[i].profieldata.poulescore[etappe-1]);
