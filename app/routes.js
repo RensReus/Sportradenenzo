@@ -125,8 +125,10 @@ module.exports = function(app, passport) {
                     }else{
                         User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore',{sort: {'profieldata.poulescore': -1}}, function (err, users) {
                             var totaalscore = [];
+                            var dagscore = [];
                             for(var i=0;i<users.length;i++){
                                 totaalscore.push(users[i].profieldata.poulescore.reduce((a, b) => a + b, 0));
+                                dagscore.push(users[i].profieldata.poulescore[etappe-1]);
                             }
                             if (err) throw err;
                             res.render('./giro/etapperesultaat.ejs', {
@@ -136,7 +138,8 @@ module.exports = function(app, passport) {
                                 uitslagen:uitslag.uitslagen,
                                 user : req.user, // get the user out of session and pass to template
                                 scoretabel : users, //[{id,local{username}},...]
-                                totaalscore:totaalscore
+                                totaalscore:totaalscore,
+                                dagscore:dagscore
                             });
                         });
                     }

@@ -142,10 +142,10 @@
                 </table>
                 <table id="resultatentabel">
                         <thead>
-                            <tr><th>Positie</th><th>Naam</th><th>Score</th></tr>
+                            <tr><th>Positie</th><th>Naam</th><th>Totaal</th><th>Dag</th></tr>
                         </thead>
                         <%for(var i=0; i<scoretabel.length; i++){%>
-                            <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=scoretabel[i].local.username%></td><td><%=totaalscore[i]%></td></tr>
+                            <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=scoretabel[i].local.username%></td><td><%=totaalscore[i]%></td><td><%=dagscore[i]%></td></tr>
                         <%}%>
                     </table>
             </div>
