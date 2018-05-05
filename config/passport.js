@@ -35,12 +35,11 @@ module.exports = function(passport) {
 
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
-        usernameField : 'username',
-        emailField : 'email',
+        usernameField : 'email',
         passwordField : 'password',
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
-    function(req, username, email, password, done) {
+    function(req, email, password, done) {
 
         // asynchronous
         // User.findOne wont fire unless data is sent back
@@ -57,33 +56,26 @@ module.exports = function(passport) {
             if (user) {
                 return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
             } else {
-                User.findOne({ 'local.username' :  username }, function(err, user) {
+
+                // if there is no user with that email
+                // create the user
+                var newUser            = new User();
+
+                // set the user's local credentials
+                newUser.local.email    = email;
+                newUser.local.password = newUser.generateHash(password);
+
+                // save the user
+                newUser.save(function(err) {
                     if (err)
-                        return done(err);
-                    if (user) {
-                        return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
-                    } else {
-                    // if there is no user with that email and username
-                    // create the user
-                    var newUser            = new User();
-
-                    // set the user's local credentials
-                    newUser.local.username = username;
-                    newUser.local.email    = email;
-                    newUser.local.password = newUser.generateHash(password);
-
-                    // save the user
-                    newUser.save(function(err) {
-                        if (err)
-                            throw err;
-                        return done(null, newUser);
-                    });
-                    }
+                        throw err;
+                    return done(null, newUser);
                 });
             }
-            });
+        });    
         });
-        }));
+    }));
+
     // =========================================================================
     // LOCAL LOGIN =============================================================
     // =========================================================================
@@ -93,7 +85,6 @@ module.exports = function(passport) {
     passport.use('local-login', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'email',
-        emailField : 'email',
         passwordField : 'password',
         passReqToCallback : true  //allows us to pass back the entire request to the callback
     },
@@ -117,7 +108,5 @@ module.exports = function(passport) {
             // all is well, return successful user
             return done(null, user);
         });
-
     }));
-
 };
