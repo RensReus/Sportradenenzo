@@ -102,30 +102,36 @@ module.exports = function(app, passport) {
                             console.log("callback was run")
                             User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
                                 var dagscore = users.map(user => user.profieldata.poulescore[etappe-1]);
+                                var teamrenners = req.user.teamselectie.userrenners.map(renner => renner._id)
                                 if (err) throw err;
                                 res.render('./giro/etapperesultaat.ejs', {
                                     opstelling:req.user.opstellingen[etappe-1].opstelling.naam,
+                                    opstellingIDs:req.user.opstellingen[etappe-1].opstelling._id,
                                     huidig:currentDisplay(),
                                     etappe:etappe,
                                     uitslagen:uitslag.uitslagen,
                                     user : req.user, // get the user out of session and pass to template
                                     users : users, //[{id,local{username}},...]
-                                    dagscore:dagscore
+                                    dagscore:dagscore,
+                                    teamrenners
                                 });
                             });
                         });
                     }else{
                         User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
                             var dagscore = users.map(user => user.profieldata.poulescore[etappe-1]);
+                            var teamrenners = req.user.teamselectie.userrenners.map(renner => renner._id)                            
                             if (err) throw err;
                             res.render('./giro/etapperesultaat.ejs', {
                                 opstelling:req.user.opstellingen[etappe-1].opstelling.naam,
+                                opstellingIDs:req.user.opstellingen[etappe-1].opstelling._id,
                                 huidig:currentDisplay(),
                                 etappe:etappe,
                                 uitslagen:uitslag.uitslagen,
                                 user : req.user, // get the user out of session and pass to template
                                 users : users, //[{id,local{username}},...]
-                                dagscore:dagscore
+                                dagscore:dagscore,
+                                teamrenners
                             });
                         });
                     }
