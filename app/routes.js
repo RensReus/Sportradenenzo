@@ -78,7 +78,6 @@ module.exports = function(app, passport) {
     });
     //Voor de aanvraag van een etappe pagina------------------------------------------
     app.get('/giro/etappe*', isLoggedIn, function(req, res){
-        console.log("GIRO ETAPPE WORDT GEGET")
         User.findOne(req.user._id, function(err, user) {
             if(user.teamselectie.userrenners.length<20){
                 res.redirect("/giro/teamselectie")

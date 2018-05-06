@@ -172,7 +172,6 @@ app.post('/giro/etappe', function(req,res){
 
 //Goed doorverwijzen van /giro gebaseerd op welke etappe bezig is=========================================================
 app.get('/giro', function(req, res) { //algemene giro pagina
-  console.log(currentDisplay())
   if(currentDisplay()===0){
     res.redirect('/giro/teamselectie');
   }else if (currentDisplay()===22){

@@ -41,17 +41,16 @@ var etapstart  = etappetijden.findIndex(currently)+1; //huidige etappe start
 var etapfinish = etappetijden.findIndex(currentlyfinish)+1 //huidige etappe finish
 
 currentDisplay = function(){ //return de etappe om te weergeven 
-    var now = new Date().getTime();
-    for (i in etappetijden){
-        if(now<etappetijden[0].getTime()){
+    var now = parseInt(new Date().getTime());
+    for (var i=etappetijden.length-1;i>-1;i--){
+        if(now<parseInt(etappetijden[0].getTime())){
             return 0; //voor de start van etappe 1 dus display teamselectie of et 1
         }
-        if(now>etappetijden[i].getTime()){//als minder dan 12 uur na de start
-            if(now<etappetijden[i].getTime()+12*60*60*1000){
-                return (parseInt(i)+1); // return de recent gestartte etappe
-            }
-            else{ // niet binnen 12 uur
-                return (parseInt(i)+2);// return de volgende etappe
+        if(now>parseInt(etappetijden[i].getTime())){//als minder dan 12 uur na de start
+            if(now<(parseInt(etappetijden[i].getTime())+12*60*60*1000)){
+                return (i+1); // return de recent gestartte etappe
+            }else{ // niet binnen 12 uur
+                return (i+2);// return de volgende etappe
             }
         }
         
