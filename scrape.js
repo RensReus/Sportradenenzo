@@ -33,11 +33,9 @@ getStartlist = function(callback){
                         console.log("% staat niet in Prijslijst",ID);
                     var rider = {_id : ID, naam : name, team : teamName, land : country, prijs : prijs};
                     Renner.findOne({'_id':ID}, function(err, renner){
-                        if (err)
-                        throw err;
+                        if (err) throw err;
                         if (renner=="" || renner==null){
                             renner = new Renner(rider);
-                            
                         }else{
                             renner._id = ID;
                             renner.naam = name;

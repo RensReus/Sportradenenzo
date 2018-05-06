@@ -58,13 +58,8 @@ currentDisplay = function(){ //return de etappe om te weergeven
     return 22;// als er niks voldaan wordt return eindklassement
 }
 
-displayResults = function(etappe){
-    var now = new Date().getTime();
-    if(now>etappetijden[etappe-1].getTime()){// als na etappe start
-        return true;//display results
-    }
-    return false;//display opstelling
-}
+displayResults = etappe => new Date()>etappetijden[etappe-1];
+
 
 module.exports.displayResults = displayResults;
 module.exports.currentDisplay = currentDisplay;

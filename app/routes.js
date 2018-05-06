@@ -101,10 +101,7 @@ module.exports = function(app, passport) {
                         getResult(etappe,function(){
                             console.log("callback was run")
                             User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
-                                var dagscore = [];
-                                for(var i=0;i<users.length;i++){
-                                    dagscore.push(users[i].profieldata.poulescore[etappe-1]);
-                                }
+                                var dagscore = users.map(user => user.profieldata.poulescore[etappe-1]);
                                 if (err) throw err;
                                 res.render('./giro/etapperesultaat.ejs', {
                                     opstelling:req.user.opstellingen[etappe-1].opstelling.naam,
@@ -119,10 +116,7 @@ module.exports = function(app, passport) {
                         });
                     }else{
                         User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
-                            var dagscore = [];
-                            for(var i=0;i<users.length;i++){
-                                dagscore.push(users[i].profieldata.poulescore[etappe-1]);
-                            }
+                            var dagscore = users.map(user => user.profieldata.poulescore[etappe-1]);
                             if (err) throw err;
                             res.render('./giro/etapperesultaat.ejs', {
                                 opstelling:req.user.opstellingen[etappe-1].opstelling.naam,
