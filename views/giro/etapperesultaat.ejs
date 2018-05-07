@@ -18,6 +18,7 @@
             text-align: center;
             font-size: 17px
         }
+        /*de kolommen die sorteerbaar zijn*/
         table#poulestand th.sortable{
             cursor: pointer;
         }
@@ -66,6 +67,7 @@
         }
         table#etappetabel td.opgesteld{
             font-weight: bold;
+            cursor: pointer;
         }
 
         table#etappetabel td.nietopgesteld{
@@ -157,11 +159,11 @@
                     <tbody>
                         <%for(var i=0;i<Math.min(20,uitslagen.dag.length);i++){%>
                             <% if(opstellingIDs.includes(uitslagen.dag[i]._id)){%>
-                                <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.dag[i].naam%></td><td><%=uitslagen.dag[i].tijd%></td></tr>
+                                <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.dag[i]._id%>"><%=uitslagen.dag[i].naam%></a></td><td><%=uitslagen.dag[i].tijd%></td></tr>
                             <%}else if(teamrenners.includes(uitslagen.dag[i]._id)){%>
-                                <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.dag[i].naam%></td><td><%=uitslagen.dag[i].tijd%></td></tr>
+                                <tr><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.dag[i]._id%>"><%=uitslagen.dag[i].naam%></a></td><td><%=uitslagen.dag[i].tijd%></td></tr>
                             <%}else{%>
-                                <tr><td><%=i+1%></td><td><%=uitslagen.dag[i].naam%></td><td><%=uitslagen.dag[i].tijd%></td></tr>
+                                <tr><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.dag[i]._id%>"><%=uitslagen.dag[i].naam%></a></td><td><%=uitslagen.dag[i].tijd%></td></tr>
                             <%}%>
                         <%}%>    
                     </tbody>    
@@ -175,19 +177,19 @@
                         </thead>
                         <tbody>
                             <% if(opstellingIDs.includes(uitslagen.ak[0]._id)){%>
-                                <tr><td><img src="/images/rozetrui.png"></td><td class="opgesteld"><%=uitslagen.ak[0].naam%></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
+                                <tr><td><img src="/images/rozetrui.png"></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.ak[0]._id%>"><%=uitslagen.ak[0].naam%></a></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
                             <%}else if(teamrenners.includes(uitslagen.ak[0]._id)){%>
-                                <tr><td><img src="/images/rozetrui.png"></td><td class="nietopgesteld"><%=uitslagen.ak[0].naam%></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
+                                <tr><td><img src="/images/rozetrui.png"></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.ak[0]._id%>"><%=uitslagen.ak[0].naam%></a></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
                             <%}else{%>
-                                <tr><td><img src="/images/rozetrui.png"></td><td><%=uitslagen.ak[0].naam%></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
+                                <tr><td><img src="/images/rozetrui.png"></td><td><a href="/giro/renner/<%=uitslagen.ak[0]._id%>"><%=uitslagen.ak[0].naam%></a></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
                             <%}%>  
                             <%for(var i=1;i<Math.min(5,uitslagen.ak.length);i++){%>
                                 <% if(opstellingIDs.includes(uitslagen.ak[i]._id)){%>
-                                    <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.ak[i].naam%></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
+                                    <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
                                 <%}else if(teamrenners.includes(uitslagen.ak[i]._id)){%>
-                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.ak[i].naam%></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
+                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
                                 <%}else{%>
-                                    <tr><td><%=i+1%></td><td><%=uitslagen.ak[i].naam%></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
+                                    <tr><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
                                 <%}%>   
                             <%}%> 
                         </tbody>    
@@ -202,19 +204,19 @@
                         </thead>
                         <tbody>
                             <% if(opstellingIDs.includes(uitslagen.sprint[0]._id)){%>
-                                <tr><td><img src="/images/paarsetrui.png"></td><td class="opgesteld"><%=uitslagen.sprint[0].naam%></td><td><%=uitslagen.sprint[0].score%></td></tr>
+                                <tr><td><img src="/images/paarsetrui.png"></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.sprint[0]._id%>"><%=uitslagen.sprint[0].naam%></a></td><td><%=uitslagen.sprint[0].score%></td></tr>
                             <%}else if(teamrenners.includes(uitslagen.sprint[0]._id)){%>
-                                <tr><td><img src="/images/paarsetrui.png"></td><td class="nietopgesteld"><%=uitslagen.sprint[0].naam%></td><td><%=uitslagen.sprint[0].score%></td></tr>
+                                <tr><td><img src="/images/paarsetrui.png"></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.sprint[0]._id%>"><%=uitslagen.sprint[0].naam%></a></td><td><%=uitslagen.sprint[0].score%></td></tr>
                             <%}else{%>
-                                <tr><td><img src="/images/paarsetrui.png"></td><td><%=uitslagen.sprint[0].naam%></td><td><%=uitslagen.sprint[0].score%></td></tr>
+                                <tr><td><img src="/images/paarsetrui.png"></td><td><a href="/giro/renner/<%=uitslagen.sprint[0]._id%>"><%=uitslagen.sprint[0].naam%></a></td><td><%=uitslagen.sprint[0].score%></td></tr>
                             <%}%>  
                             <%for(var i=1;i<Math.min(5,uitslagen.sprint.length);i++){%>
                                 <% if(opstellingIDs.includes(uitslagen.sprint[i]._id)){%>
-                                    <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.sprint[i].naam%></td><td><%=uitslagen.sprint[i].score%></td></tr>
+                                    <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a></td><td><%=uitslagen.sprint[i].score%></td></tr>
                                 <%}else if(teamrenners.includes(uitslagen.sprint[i]._id)){%>
-                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.sprint[i].naam%></td><td><%=uitslagen.sprint[i].score%></td></tr>
+                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a></td><td><%=uitslagen.sprint[i].score%></td></tr>
                                 <%}else{%>
-                                    <tr><td><%=i+1%></td><td><%=uitslagen.sprint[i].naam%></td><td><%=uitslagen.sprint[i].score%></td></tr>
+                                    <tr><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a></td><td><%=uitslagen.sprint[i].score%></td></tr>
                                 <%}%>    
                             <%}%>
                         </tbody>    
@@ -229,19 +231,19 @@
                         </thead>
                         <tbody>
                             <% if(opstellingIDs.includes(uitslagen.berg[0]._id)){%>
-                                <tr><td><img src="/images/blauwetrui.png"></td><td class="opgesteld"><%=uitslagen.berg[0].naam%></td><td><%=uitslagen.berg[0].score%></td></tr>
+                                <tr><td><img src="/images/blauwetrui.png"></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.berg[0]._id%>"><%=uitslagen.berg[0].naam%></a></td><td><%=uitslagen.berg[0].score%></td></tr>
                             <%}else if(teamrenners.includes(uitslagen.berg[0]._id)){%>
-                                <tr><td><img src="/images/blauwetrui.png"></td><td class="nietopgesteld"><%=uitslagen.berg[0].naam%></td><td><%=uitslagen.berg[0].score%></td></tr>
+                                <tr><td><img src="/images/blauwetrui.png"></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.berg[0]._id%>"><%=uitslagen.berg[0].naam%></a></td><td><%=uitslagen.berg[0].score%></td></tr>
                             <%}else{%>
-                                <tr><td><img src="/images/blauwetrui.png"></td><td><%=uitslagen.berg[0].naam%></td><td><%=uitslagen.berg[0].score%></td></tr>
+                                <tr><td><img src="/images/blauwetrui.png"></td><td><a href="/giro/renner/<%=uitslagen.berg[0]._id%>"><%=uitslagen.berg[0].naam%></a></td><td><%=uitslagen.berg[0].score%></td></tr>
                             <%}%>  
-                            <%for(var i=1;i<Math.min(5,uitslagen.berg.length);i++){%>
+                            <%for(var i=1;i<Math.min(3,uitslagen.berg.length);i++){%>
                                 <% if(opstellingIDs.includes(uitslagen.berg[i]._id)){%>
-                                    <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.berg[i].naam%></td><td><%=uitslagen.berg[i].score%></td></tr>
+                                    <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></td><td><%=uitslagen.berg[i].score%></td></tr>
                                 <%}else if(teamrenners.includes(uitslagen.berg[i]._id)){%>
-                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.berg[i].naam%></td><td><%=uitslagen.berg[i].score%></td></tr>
+                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></td><td><%=uitslagen.berg[i].score%></td></tr>
                                 <%}else{%>
-                                    <tr><td><%=i+1%></td><td><%=uitslagen.berg[i].naam%></td><td><%=uitslagen.berg[i].score%></td></tr>
+                                    <tr><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></td><td><%=uitslagen.berg[i].score%></td></tr>
                                 <%}%>    
                             <%}%>
                         </tbody>    
@@ -256,19 +258,19 @@
                         </thead>
                         <tbody>
                             <% if(opstellingIDs.includes(uitslagen.jong[0]._id)){%>
-                                <tr><td><img src="/images/wittetrui.png"></td><td class="opgesteld"><%=uitslagen.jong[0].naam%></td><td><%=uitslagen.jong[0].tijd%></td></tr>
+                                <tr><td><img src="/images/wittetrui.png"></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.jong[0]._id%>"><%=uitslagen.jong[0].naam%></a></td><td><%=uitslagen.jong[0].tijd%></td></tr>
                             <%}else if(teamrenners.includes(uitslagen.jong[0]._id)){%>
-                                <tr><td><img src="/images/wittetrui.png"></td><td class="nietopgesteld"><%=uitslagen.jong[0].naam%></td><td><%=uitslagen.jong[0].tijd%></td></tr>
+                                <tr><td><img src="/images/wittetrui.png"></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.jong[0]._id%>"><%=uitslagen.jong[0].naam%></a></td><td><%=uitslagen.jong[0].tijd%></td></tr>
                             <%}else{%>
-                                <tr><td><img src="/images/wittetrui.png"></td><td><%=uitslagen.jong[0].naam%></td><td><%=uitslagen.jong[0].tijd%></td></tr>
+                                <tr><td><img src="/images/wittetrui.png"></td><td><a href="/giro/renner/<%=uitslagen.jong[0]._id%>"><%=uitslagen.jong[0].naam%></a></td><td><%=uitslagen.jong[0].tijd%></td></tr>
                             <%}%>
                             <%for(var i=1;i<Math.min(5,uitslagen.jong.length);i++){%>
                                 <% if(opstellingIDs.includes(uitslagen.jong[i]._id)){%>
-                                    <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.jong[i].naam%></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
+                                    <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
                                 <%}else if(teamrenners.includes(uitslagen.jong[i]._id)){%>
-                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.jong[i].naam%></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
+                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
                                 <%}else{%>
-                                    <tr><td><%=i+1%></td><td><%=uitslagen.jong[i].naam%></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
+                                    <tr><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
                                 <%}%>
                             <%}%>
                         </tbody>    
