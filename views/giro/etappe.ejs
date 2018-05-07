@@ -8,10 +8,6 @@
             height:600px;
             overflow:auto;
             padding:10px;
-        }    
-        thead{
-            background: #222;
-            color: #ddd;
         }
         th, td {
             padding-top: 10px;
@@ -92,12 +88,9 @@
 </head>
 <body onload="updateuserteam(<%=etappe%>)">
     <% include ../partials/navbarlogout %>
-<div class="container-fluid text-center">    
-    <div class="row content">
-        <div class="col-sm-2 sidenavL"></div>
-        <div class="col-sm-8 text-left" id="contentblok">
+        <div class="col-sm-12 text-left" id="contentblok">
             <div class="bovenrijtje">
-                <div class="col-sm-6 text-left">
+                <div class="col-sm-4 text-left">
                     <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
                         <a href="/giro/etappe<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
                     <%}else{%>
@@ -105,10 +98,10 @@
                             <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
                     <%}}%>
                 </div>
-                <div>
+                <div class="col-sm-4">
                     Deadline: <%=deadline%>
                 </div>
-                <div class="col-sm-6 text-right">
+                <div class="col-sm-4 text-right">
                     <%if(etappe<21){%>
                         <a href="/giro/etappe<%=etappe+1%>" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
                     <%}else{%>
@@ -150,10 +143,8 @@
                     <%}%>
             </table>
             </div>
+            <img style="width:60%;margin-left: 20%;margin-top:30px;" src="/images/profiel<%=etappe%>.jpg">
         </div>
-        <div class="col-sm-2 sidenavR"><div>
-    </div>
-</div>
 <footer class="container-fluid text-center">
     <p></p>
 </footer>

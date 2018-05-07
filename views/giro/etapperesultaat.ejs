@@ -4,17 +4,8 @@
 <head>
     <% include ../partials/head %>
     <style>
-        .teamselectiedoos {
-            height:600px;
-            overflow:auto;
-            padding:10px;
-        }
         tr:nth-child(odd) {
             background: #f9f9f9;
-        }
-        thead th{
-            background: #222;
-            color: #ddd;
         }
         th, td {
             padding-top: 10px;
@@ -22,12 +13,7 @@
             padding-left: 5px;
             padding-right: 5px;
             text-align: center;
-            font-size: 16px
-        }
-        table#etappetabel tr th,table#etappetabel tr td{
-            font-size: 11px;
-            padding-top: 5px;
-            padding-bottom: 5px;
+            font-size: 17px
         }
         table#poulestand th.sortable{
             cursor: pointer;
@@ -36,13 +22,7 @@
         td.links{
             text-align: left;
         }
-        .ploegrenner{
-            color:#888;
-            font-size: 9.5pt;
-        }
-        .etapperesultatendoos,.andereresultatendoos{
-            column-gap:10px;
-        }
+        
         /*De tabel van de popup*/
         table#teams td,table#teams th{
             font-size: 9pt;
@@ -102,67 +82,71 @@
 </head>
 <body onload="checkresultaat(<%=etappe%>)">
     <% include ../partials/navbarlogout %>
-<div class="container-fluid text-center">    
-    <div class="row content">
-        <div class="col-sm-2 sidenavL"></div>
-        <div class="col-sm-8 text-left" id="contentblok">
-                <div class="bovenrijtje">
-                        <div class="col-sm-4 text-left">
-                            <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
-                                <a href="/giro/etappe<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
-                            <%}else{%>
-                                <%if(huidig<0){%> <!--stuur door naar teamselectie als dat nog kan-->
-                                    <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
-                            <%}}%>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="teamspopup" onclick="teamspopup(<%=etappe%>)">Klik hier voor de andere teams
-                            <span class="teamspopuptext" id="idteamspopup">
-                                <table id=teams>
-                                    <thead>
-                                        <tr><th id='user0'></th><th id='user1'></th><th id='user2'></th><th id='user3'></th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <%for(var i=0;i<10;i++){%>
-                                        <tr><td id='renner<%=i%>u0'></td><td id='renner<%=i%>u1'></td><td id='renner<%=i%>u2'></td><td id='renner<%=i%>u3'></td></tr>
-                                        <%}%>
-                                    </tbody>
-                                </table>
-                            </span>
-                            </div>
-                        </div>
-                        <div class="col-sm-4 text-right">
-                            <%if(etappe<21){%>
-                                <a href="/giro/etappe<%=etappe+1%>" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
-                            <%}else{%>
-                                <%if(huidig<0){%> <!--stuur door naar resultatenpagina als dat al kan-->
-                                    <a href="/giro/resultaten" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
-                            <%}}%>
-                        </div>
-                    </div>
-            <div class="col-sm-7 resultatendoos">
-                <table id="resultatentabel">
-                    <thead>
-                        <tr><th>Renner</th><th>Etappe</th><th>Team</th><th><img src="/images/rozetrui.png"></th><th><img src="/images/blauwetrui.png"></th><th><img src="/images/paarsetrui.png"></th><th><img src="/images/wittetrui.png"></th><th>Totaal</th></tr>
-                    </thead>
-                    <tbody>
-                        <% for(var i=0; i<9; i++) { %>
-                            <tr id=resultaatselectie<%=i%>><td id="naamrenner<%=i%>" class="links"><%=opstelling[i]%></td><td id="etapperenner<%=i%>"></td><td id="teamrenner<%=i%>"></td><td id="akrenner<%=i%>"></td><td id="bergrenner<%=i%>"></td><td id="sprintrenner<%=i%>"></td><td id="jongrenner<%=i%>"></td><td id="totaalrenner<%=i%>"></td></tr>
-                        <% } %>
-                        <tr id=resultaatselectietotaal><td>Totaal</td><td id="totaaletappe"></td><td id="totaalteam"></td><td id="totaalak"></td><td id="totaalberg"></td><td id="totaalsprint"></td><td id="totaaljong"></td><td id="totaaltotaal"></td></tr>
-                    </tbody>
-                </table>
-                <table id="poulestand">
-                        <thead>
-                            <tr><th onclick="sortTableInt(0)" class="sortable">Positie</th><th>Naam</th><th onclick="sortTableInt(2)" class="sortable">Totaal</th><th onclick="sortTableInt(3)" class="sortable">Dag</th></tr>
-                        </thead>
-                        <%for(var i=0; i<users.length; i++){%>
-                            <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=users[i].local.username%></td><td><%=users[i].profieldata.totaalscore%></td><td><%=dagscore[i]%></td></tr>
-                        <%}%>
-                    </table>
+    <div class="col-sm-12 text-left" id="contentblok">
+        <div class="bovenrijtje">
+            <div class="col-sm-4 text-left">
+                <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
+                    <a href="/giro/etappe<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
+                <%}else{%>
+                    <%if(huidig<0){%> <!--stuur door naar teamselectie als dat nog kan-->
+                        <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
+                <%}}%>
             </div>
-            <div class="col-sm-5 klassementswrapper">
-            <div class="col-sm-6 etapperesultatendoos">
+            <div class="col-sm-4">
+                <div class="teamspopup" onclick="teamspopup(<%=etappe%>)">Klik hier voor de andere teams
+                    <span class="teamspopuptext" id="idteamspopup">
+                    <table id=teams>
+                        <thead>
+                            <tr><th id='user0'></th><th id='user1'></th><th id='user2'></th><th id='user3'></th></tr>
+                        </thead>
+                        <tbody>
+                            <%for(var i=0;i<10;i++){%>
+                                <tr><td id='renner<%=i%>u0'></td><td id='renner<%=i%>u1'></td><td id='renner<%=i%>u2'></td><td id='renner<%=i%>u3'></td></tr>
+                            <%}%>
+                        </tbody>
+                    </table>
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-4 text-right">
+                <%if(etappe<21){%>
+                    <a href="/giro/etappe<%=etappe+1%>" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
+                <%}else{%>
+                    <%if(huidig<0){%> <!--stuur door naar resultatenpagina als dat al kan-->
+                        <a href="/giro/resultaten" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
+                <%}}%>
+            </div>
+        </div>
+        <div class="col-sm-7 resultatendoos">
+            <table id="resultatentabel">
+                <thead>
+                    <tr><th>Renner</th><th>Etappe</th><th>Team</th><th><img src="/images/rozetrui.png"></th><th><img src="/images/blauwetrui.png"></th><th><img src="/images/paarsetrui.png"></th><th><img src="/images/wittetrui.png"></th><th>Totaal</th></tr>
+                </thead>
+                <tbody>
+                    <% for(var i=0; i<9; i++) { %>
+                        <tr id=resultaatselectie<%=i%>><td id="naamrenner<%=i%>" class="links"><%=opstelling[i]%></td><td id="etapperenner<%=i%>"></td><td id="teamrenner<%=i%>"></td><td id="akrenner<%=i%>"></td><td id="bergrenner<%=i%>"></td><td id="sprintrenner<%=i%>"></td><td id="jongrenner<%=i%>"></td><td id="totaalrenner<%=i%>"></td></tr>
+                    <% } %>
+                    <tr id=resultaatselectietotaal><td>Totaal</td><td id="totaaletappe"></td><td id="totaalteam"></td><td id="totaalak"></td><td id="totaalberg"></td><td id="totaalsprint"></td><td id="totaaljong"></td><td id="totaaltotaal"></td></tr>
+                </tbody>
+            </table>
+            <table id="poulestand">
+                <thead>
+                    <tr><th onclick="sortTableInt(0)" class="sortable">Positie</th><th>Naam</th><th onclick="sortTableInt(2)" class="sortable">Totaal</th><th onclick="sortTableInt(3)" class="sortable">Dag</th></tr>
+                </thead>
+                <%for(var i=0; i<users.length; i++){%>
+                    <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=users[i].local.username%></td><td><%=users[i].profieldata.totaalscore%></td><td><%=dagscore[i]%></td></tr>
+                <%}%>
+            </table>
+        </div>
+        <div class="col-sm-5 klassementswrapper">
+            <div class="btn-group">
+                <button id="klassementknop0" class="klassementbutton selected" onclick="showklassement(0)">Dag</button>
+                <button id="klassementknop1" class="klassementbutton" onclick="showklassement(1)">AK</button>
+                <button id="klassementknop2" class="klassementbutton" onclick="showklassement(2)">Sprint</button>
+                <button id="klassementknop3" class="klassementbutton" onclick="showklassement(3)">Berg</button>
+                <button id="klassementknop4" class="klassementbutton" onclick="showklassement(4)">Jong</button>
+            </div>
+            <span id="klassspan0" class="klassementspan" style="display:block;">
                 <table id="etappetabel">
                     <thead>
                         <tr ><th></th><th>Daguitslag</th><th>Tijd</th></tr>    
@@ -179,118 +163,129 @@
                         <%}%>    
                     </tbody>    
                 </table>    
-            </div>
-            <div class="col-sm-6 andereresultatendoos">
-                    <table id="etappetabel">
-                        <% if(uitslagen.ak.length){ %>
-                                <thead class="topbar">
-                                    <tr><th></th><th>Klassement</th><th>Tijd</th></tr>    
-                                </thead>
-                                <tbody>
-                                    <% if(opstellingIDs.includes(uitslagen.ak[0]._id)){%>
-                                        <tr><td><img src="/images/rozetrui.png"></td><td class="opgesteld"><%=uitslagen.ak[0].naam%></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
-                                    <%}else if(teamrenners.includes(uitslagen.ak[0]._id)){%>
-                                        <tr><td><img src="/images/rozetrui.png"></td><td class="nietopgesteld"><%=uitslagen.ak[0].naam%></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
-                                    <%}else{%>
-                                        <tr><td><img src="/images/rozetrui.png"></td><td><%=uitslagen.ak[0].naam%></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
-                                    <%}%>  
-                                    <%for(var i=1;i<Math.min(5,uitslagen.ak.length);i++){%>
-                                        <% if(opstellingIDs.includes(uitslagen.ak[i]._id)){%>
-                                            <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.ak[i].naam%></td><td><%=uitslagen.ak[i].tijd%></td></tr>
-                                        <%}else if(teamrenners.includes(uitslagen.ak[i]._id)){%>
-                                            <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.ak[i].naam%></td><td><%=uitslagen.ak[i].tijd%></td></tr>
-                                        <%}else{%>
-                                            <tr><td><%=i+1%></td><td><%=uitslagen.ak[i].naam%></td><td><%=uitslagen.ak[i].tijd%></td></tr>
-                                        <%}%>   
-                                    <%}%> 
-                                </tbody>    
-                            <% } %>
-                        </table>
-                    <table id="etappetabel">
-                        <% if(uitslagen.sprint.length){ %>
-                            <thead class="topbar">
-                                <tr><th></th><th>Puntentrui</th><th>Punten</th></tr>    
-                            </thead>
-                            <tbody>
-                                <% if(opstellingIDs.includes(uitslagen.sprint[0]._id)){%>
-                                    <tr><td><img src="/images/paarsetrui.png"></td><td class="opgesteld"><%=uitslagen.sprint[0].naam%></td><td><%=uitslagen.sprint[0].score%></td></tr>
-                                <%}else if(teamrenners.includes(uitslagen.sprint[0]._id)){%>
-                                    <tr><td><img src="/images/paarsetrui.png"></td><td class="nietopgesteld"><%=uitslagen.sprint[0].naam%></td><td><%=uitslagen.sprint[0].score%></td></tr>
+            </span>
+            <span id="klassspan1" class="klassementspan" style="display:none;">
+                <table id="etappetabel">
+                    <% if(uitslagen.ak.length){ %>
+                        <thead class="topbar">
+                            <tr><th></th><th>Klassement</th><th>Tijd</th></tr>    
+                        </thead>
+                        <tbody>
+                            <% if(opstellingIDs.includes(uitslagen.ak[0]._id)){%>
+                                <tr><td><img src="/images/rozetrui.png"></td><td class="opgesteld"><%=uitslagen.ak[0].naam%></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
+                            <%}else if(teamrenners.includes(uitslagen.ak[0]._id)){%>
+                                <tr><td><img src="/images/rozetrui.png"></td><td class="nietopgesteld"><%=uitslagen.ak[0].naam%></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
+                            <%}else{%>
+                                <tr><td><img src="/images/rozetrui.png"></td><td><%=uitslagen.ak[0].naam%></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
+                            <%}%>  
+                            <%for(var i=1;i<Math.min(5,uitslagen.ak.length);i++){%>
+                                <% if(opstellingIDs.includes(uitslagen.ak[i]._id)){%>
+                                    <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.ak[i].naam%></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
+                                <%}else if(teamrenners.includes(uitslagen.ak[i]._id)){%>
+                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.ak[i].naam%></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
                                 <%}else{%>
-                                    <tr><td><img src="/images/paarsetrui.png"></td><td><%=uitslagen.sprint[0].naam%></td><td><%=uitslagen.sprint[0].score%></td></tr>
-                                <%}%>  
-                                <%for(var i=1;i<Math.min(5,uitslagen.sprint.length);i++){%>
-                                    <% if(opstellingIDs.includes(uitslagen.sprint[i]._id)){%>
-                                        <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.sprint[i].naam%></td><td><%=uitslagen.sprint[i].score%></td></tr>
-                                    <%}else if(teamrenners.includes(uitslagen.sprint[i]._id)){%>
-                                        <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.sprint[i].naam%></td><td><%=uitslagen.sprint[i].score%></td></tr>
-                                    <%}else{%>
-                                        <tr><td><%=i+1%></td><td><%=uitslagen.sprint[i].naam%></td><td><%=uitslagen.sprint[i].score%></td></tr>
-                                    <%}%>    
-                                <%}%>
-                            </tbody>    
-                            <% } %>
-                    </table>
-                    <table id="etappetabel">
-                        <% if(uitslagen.berg.length){ %>
-                            <thead class="topbar">
-                                <tr><th></th><th>Bergtrui</th><th>Punten</th></tr>    
-                            </thead>
-                            <tbody>
-                                <% if(opstellingIDs.includes(uitslagen.berg[0]._id)){%>
-                                    <tr><td><img src="/images/blauwetrui.png"></td><td class="opgesteld"><%=uitslagen.berg[0].naam%></td><td><%=uitslagen.berg[0].score%></td></tr>
-                                <%}else if(teamrenners.includes(uitslagen.berg[0]._id)){%>
-                                    <tr><td><img src="/images/blauwetrui.png"></td><td class="nietopgesteld"><%=uitslagen.berg[0].naam%></td><td><%=uitslagen.berg[0].score%></td></tr>
+                                    <tr><td><%=i+1%></td><td><%=uitslagen.ak[i].naam%></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
+                                <%}%>   
+                            <%}%> 
+                        </tbody>    
+                    <%}%>
+                </table>
+            </span>
+            <span id="klassspan2" class="klassementspan" style="display:none;">
+                <table id="etappetabel">
+                    <% if(uitslagen.sprint.length){ %>
+                        <thead class="topbar">
+                            <tr><th></th><th>Puntentrui</th><th>Punten</th></tr>    
+                        </thead>
+                        <tbody>
+                            <% if(opstellingIDs.includes(uitslagen.sprint[0]._id)){%>
+                                <tr><td><img src="/images/paarsetrui.png"></td><td class="opgesteld"><%=uitslagen.sprint[0].naam%></td><td><%=uitslagen.sprint[0].score%></td></tr>
+                            <%}else if(teamrenners.includes(uitslagen.sprint[0]._id)){%>
+                                <tr><td><img src="/images/paarsetrui.png"></td><td class="nietopgesteld"><%=uitslagen.sprint[0].naam%></td><td><%=uitslagen.sprint[0].score%></td></tr>
+                            <%}else{%>
+                                <tr><td><img src="/images/paarsetrui.png"></td><td><%=uitslagen.sprint[0].naam%></td><td><%=uitslagen.sprint[0].score%></td></tr>
+                            <%}%>  
+                            <%for(var i=1;i<Math.min(5,uitslagen.sprint.length);i++){%>
+                                <% if(opstellingIDs.includes(uitslagen.sprint[i]._id)){%>
+                                    <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.sprint[i].naam%></td><td><%=uitslagen.sprint[i].score%></td></tr>
+                                <%}else if(teamrenners.includes(uitslagen.sprint[i]._id)){%>
+                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.sprint[i].naam%></td><td><%=uitslagen.sprint[i].score%></td></tr>
                                 <%}else{%>
-                                    <tr><td><img src="/images/blauwetrui.png"></td><td><%=uitslagen.berg[0].naam%></td><td><%=uitslagen.berg[0].score%></td></tr>
-                                <%}%>  
-                                <%for(var i=1;i<Math.min(5,uitslagen.berg.length);i++){%>
-                                    <% if(opstellingIDs.includes(uitslagen.berg[i]._id)){%>
-                                        <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.berg[i].naam%></td><td><%=uitslagen.berg[i].score%></td></tr>
-                                    <%}else if(teamrenners.includes(uitslagen.berg[i]._id)){%>
-                                        <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.berg[i].naam%></td><td><%=uitslagen.berg[i].score%></td></tr>
-                                    <%}else{%>
-                                        <tr><td><%=i+1%></td><td><%=uitslagen.berg[i].naam%></td><td><%=uitslagen.berg[i].score%></td></tr>
-                                    <%}%>    
-                                <%}%>
-                            </tbody>    
-                        <% } %>   
-                    </table> 
-                    <table id="etappetabel">
-                        <% if(uitslagen.jong.length){ %>
-                            <thead class="topbar">
-                                <tr><th></th><th>Jongerentrui</th><th>Tijd</th></tr>    
-                            </thead>
-                            <tbody>
-                                <% if(opstellingIDs.includes(uitslagen.jong[0]._id)){%>
-                                    <tr><td><img src="/images/wittetrui.png"></td><td class="opgesteld"><%=uitslagen.jong[0].naam%></td><td><%=uitslagen.jong[0].tijd%></td></tr>
-                                <%}else if(teamrenners.includes(uitslagen.jong[0]._id)){%>
-                                    <tr><td><img src="/images/wittetrui.png"></td><td class="nietopgesteld"><%=uitslagen.jong[0].naam%></td><td><%=uitslagen.jong[0].tijd%></td></tr>
+                                    <tr><td><%=i+1%></td><td><%=uitslagen.sprint[i].naam%></td><td><%=uitslagen.sprint[i].score%></td></tr>
+                                <%}%>    
+                            <%}%>
+                        </tbody>    
+                    <% } %>
+                </table>
+            </span>
+            <div id="klassspan3" class="klassementspan" style="display:none;">        
+                <table id="etappetabel">
+                    <% if(uitslagen.berg.length){ %>
+                        <thead class="topbar">
+                            <tr><th></th><th>Bergtrui</th><th>Punten</th></tr>    
+                        </thead>
+                        <tbody>
+                            <% if(opstellingIDs.includes(uitslagen.berg[0]._id)){%>
+                                <tr><td><img src="/images/blauwetrui.png"></td><td class="opgesteld"><%=uitslagen.berg[0].naam%></td><td><%=uitslagen.berg[0].score%></td></tr>
+                            <%}else if(teamrenners.includes(uitslagen.berg[0]._id)){%>
+                                <tr><td><img src="/images/blauwetrui.png"></td><td class="nietopgesteld"><%=uitslagen.berg[0].naam%></td><td><%=uitslagen.berg[0].score%></td></tr>
+                            <%}else{%>
+                                <tr><td><img src="/images/blauwetrui.png"></td><td><%=uitslagen.berg[0].naam%></td><td><%=uitslagen.berg[0].score%></td></tr>
+                            <%}%>  
+                            <%for(var i=1;i<Math.min(5,uitslagen.berg.length);i++){%>
+                                <% if(opstellingIDs.includes(uitslagen.berg[i]._id)){%>
+                                    <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.berg[i].naam%></td><td><%=uitslagen.berg[i].score%></td></tr>
+                                <%}else if(teamrenners.includes(uitslagen.berg[i]._id)){%>
+                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.berg[i].naam%></td><td><%=uitslagen.berg[i].score%></td></tr>
                                 <%}else{%>
-                                    <tr><td><img src="/images/wittetrui.png"></td><td><%=uitslagen.jong[0].naam%></td><td><%=uitslagen.jong[0].tijd%></td></tr>
-                                <%}%>
-                                <%for(var i=1;i<Math.min(5,uitslagen.jong.length);i++){%>
-                                    <% if(opstellingIDs.includes(uitslagen.jong[i]._id)){%>
-                                        <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.jong[i].naam%></td><td><%=uitslagen.jong[i].tijd%></td></tr>
-                                    <%}else if(teamrenners.includes(uitslagen.jong[i]._id)){%>
-                                        <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.jong[i].naam%></td><td><%=uitslagen.jong[i].tijd%></td></tr>
-                                    <%}else{%>
-                                        <tr><td><%=i+1%></td><td><%=uitslagen.jong[i].naam%></td><td><%=uitslagen.jong[i].tijd%></td></tr>
-                                    <%}%>
-                                <%}%>
-                            </tbody>    
-                        <%}%>    
-                    </table>      
+                                    <tr><td><%=i+1%></td><td><%=uitslagen.berg[i].naam%></td><td><%=uitslagen.berg[i].score%></td></tr>
+                                <%}%>    
+                            <%}%>
+                        </tbody>    
+                    <%}%>   
+                </table>
             </div>
-            </div>
+            <span id="klassspan4" class="klassementspan" style="display:none;"> 
+                <table id="etappetabel" {visibility:hidden;}>
+                    <% if(uitslagen.jong.length){ %>
+                        <thead class="topbar">
+                            <tr><th></th><th>Jongerentrui</th><th>Tijd</th></tr>    
+                        </thead>
+                        <tbody>
+                            <% if(opstellingIDs.includes(uitslagen.jong[0]._id)){%>
+                                <tr><td><img src="/images/wittetrui.png"></td><td class="opgesteld"><%=uitslagen.jong[0].naam%></td><td><%=uitslagen.jong[0].tijd%></td></tr>
+                            <%}else if(teamrenners.includes(uitslagen.jong[0]._id)){%>
+                                <tr><td><img src="/images/wittetrui.png"></td><td class="nietopgesteld"><%=uitslagen.jong[0].naam%></td><td><%=uitslagen.jong[0].tijd%></td></tr>
+                            <%}else{%>
+                                <tr><td><img src="/images/wittetrui.png"></td><td><%=uitslagen.jong[0].naam%></td><td><%=uitslagen.jong[0].tijd%></td></tr>
+                            <%}%>
+                            <%for(var i=1;i<Math.min(5,uitslagen.jong.length);i++){%>
+                                <% if(opstellingIDs.includes(uitslagen.jong[i]._id)){%>
+                                    <tr><td><%=i+1%></td><td class="opgesteld"><%=uitslagen.jong[i].naam%></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
+                                <%}else if(teamrenners.includes(uitslagen.jong[i]._id)){%>
+                                    <tr><td><%=i+1%></td><td class="nietopgesteld"><%=uitslagen.jong[i].naam%></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
+                                <%}else{%>
+                                    <tr><td><%=i+1%></td><td><%=uitslagen.jong[i].naam%></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
+                                <%}%>
+                            <%}%>
+                        </tbody>    
+                    <%}%>    
+                </table>
+            </span>      
         </div>
-        <div class="col-sm-2 sidenavR"><div>
     </div>
-</div>
 <footer class="container-fluid text-center">
     <p></p>
 </footer>
 <script>
+function showklassement(klass){ //dag:0 AK:1 sprint:2 berg:3 jong:4
+    for(var i=0;i<5;i++){
+        document.getElementById('klassspan' + i).style.display='none'; //Alles verbergen
+        document.getElementById('klassementknop' + i).classList.remove('selected'); //Knop deselecteren
+    }
+    document.getElementById('klassspan' + klass).style.display='block'; //Juiste klassement laten zien
+    document.getElementById('klassementknop' + klass).classList.add('selected'); //Knop selecteren
+}
 var teamscalled=0;
 function checkresultaat(etappe){
     $.ajax({
