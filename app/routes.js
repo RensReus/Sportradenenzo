@@ -61,7 +61,6 @@ module.exports = function(app, passport) {
 
     app.get('/giro/teamselectie', isLoggedIn, function(req, res) {
     if(!currentDisplay()){//returns 0 before start
-        console.log(currentDisplay())
         Renners.find({'prijs' : {$exists: true}},'_id naam team prijs', {sort: {'prijs': -1}}, function (err, renners) {
             if (err) throw err;
             res.render('./giro/teamselectie.ejs', {
@@ -78,16 +77,13 @@ module.exports = function(app, passport) {
     });
     //Voor de aanvraag van een etappe pagina------------------------------------------
     app.get('/giro/etappe*', isLoggedIn, function(req, res){
-        User.findOne(req.user._id, function(err, user) {
+        User.findOne(req.user._id, function(err, user) {// gaat ooit fout als iemand niet zijn team af heeft voor de start
             if(user.teamselectie.userrenners.length<20){
                 res.redirect("/giro/teamselectie")
             }
         });
         //Request de url en zoek het nummer om te weten welke etappe wordt gevraagd, knippen na etappe
-        var queryStart = req.originalUrl.indexOf("etappe") + 6;
-        var queryEnd   = req.originalUrl.length + 1; //Query eindigen op einde url
-        var query = req.originalUrl.slice(queryStart, queryEnd - 1); //Het nummer isoleren 
-        var etappe = parseInt(query,10); //String omzetten naar int (decimaal)
+        var etappe = parseInt(req.originalUrl.substring(12)); //String omzetten naar int (decimaal)
         if (isNaN(etappe)==true || etappe<1 || etappe>21){ //Kijken of het een nummer is en of het geen ongeldig nummer is
             res.redirect("/giro")//send to currentDisplay
         }else{ 
@@ -99,7 +95,6 @@ module.exports = function(app, passport) {
                         scrapePause = 5*60*1000;
                     if(uitslag.creationTime + 5*60*1000 < new Date().getTime() || uitslag == null){
                         getResult(etappe,function(){
-                            console.log("callback was run")
                             User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
                                 var dagscore = users.map(user => user.profieldata.poulescore[etappe-1]);
                                 var teamrenners = req.user.teamselectie.userrenners.map(renner => renner._id)
@@ -154,7 +149,7 @@ module.exports = function(app, passport) {
     Renners.find({'prijs' : {$exists: true}},'naam team prijs punten', {sort: {'prijs': -1}}, function (err, renners) {
         if(err) throw err;
         res.render('./giro/overzicht.ejs', {
-        renners : renners
+            renners : renners
         });    
     });
     });

@@ -1,0 +1,156 @@
+<!-- views/index.ejs -->
+<!doctype html>
+<html>
+<head>
+    <% include ../partials/head %>
+    <style>
+        .teamselectiedoos {
+            height:600px;
+            overflow:auto;
+            padding:10px;
+        }
+        tr:nth-child(odd) {
+            background: #f9f9f9;
+        }
+        thead th{
+            background: #222;
+            color: #ddd;
+        }
+        th, td {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 5px;
+            padding-right: 5px;
+            text-align: center;
+            font-size: 16px
+        }
+        table#etappetabel tr th,table#etappetabel tr td{
+            font-size: 11px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+        table#poulestand th.sortable{
+            cursor: pointer;
+        }
+
+        td.links{
+            text-align: left;
+        }
+        .ploegrenner{
+            color:#888;
+            font-size: 9.5pt;
+        }
+        .etapperesultatendoos,.andereresultatendoos{
+            column-gap:10px;
+        }
+        /*De tabel van de popup*/
+        table#teams td,table#teams th{
+            font-size: 9pt;
+            padding: 5px;
+        }
+        .teamspopup {
+            position: absolute;
+            display: inline-block;
+            text-align:left;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .teamspopup .teamspopuptext {
+            visibility: hidden;
+            width: 100%;
+            background-color:#fff;
+            color: #000;
+            text-align: left;
+            border-radius: 0px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 1;
+            top: -25px;
+            right:25%;
+            -moz-box-shadow:    3px 3px 5px 6px #ccc;
+            -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+            box-shadow:         3px 3px 5px 6px #ccc;
+        }
+        .teamspopup .show{
+            position: relative;
+            visibility: visible;
+            animation-name: popupanimatie;
+            animation-duration: 0.2s;
+            animation-fill-mode: backwards;
+        }
+        table#etappetabel td.opgesteld{
+            font-weight: bold;
+        }
+
+        table#etappetabel td.nietopgesteld{
+            font-weight: bold;
+            color: grey;
+        }
+        #resultatentable{
+            font-size: 20px;
+        }
+        
+        .rennerNaam{
+            font-size: 40px;
+        }
+
+        @keyframes popupanimatie {
+            from {width: 0%; right:0%;opacity: 0;} 
+            to {width: 320%; right:112%;opacity: 1;}
+        }
+        /* Safari 4.0 - 8.0 */
+        @-webkit-keyframes popupanimatie {
+            from {opacity: 0;} 
+            to {opacity: 1;}
+        }
+    </style>
+</head>
+<body>
+    <% include ../partials/navbarlogout %>
+<div class="container-fluid text-center">    
+    <div class="row content">
+        <div class="col-sm-2 sidenavL"></div>
+        <div class="col-sm-8 text-left" id="contentblok">
+                <div class="bovenrijtje">
+                        <div class="rennerNaam text-left">
+                            <%=renner.naam%>
+                        </div>
+                        <div class="col-sm-4">
+                                <table id="resultatentabel">
+                                        <thead>
+                                                <tr><th>Etappe</th><th>Dag</th><th>Team</th><th><img src="/images/rozetrui.png"></th><th><img src="/images/blauwetrui.png"></th><th><img src="/images/paarsetrui.png"></th><th><img src="/images/wittetrui.png"></th><th>Totaal</th></tr>
+                                        </thead>
+                                        <tbody>
+                                                <% for(var i=0; i<currentStage; i++) { %>
+                                                    <tr><td><%=i+1%></td><td><%=renner.punten.dag[i]%></td><td><%=renner.punten.team.totaal[i]%></td><td><%=renner.punten.ak[i]%></td><td><%=renner.punten.sprint[i]%></td><td><%=renner.punten.berg[i]%></td><td><%=renner.punten.jong[i]%></td><td><%=renner.punten.totaal[i]%></td></tr>
+                                                <% } %>
+                                                <tr><td>Totaal</td><td><%=eval(renner.punten.dag.join('+'))%></td><td><%=eval(renner.punten.team.totaal.join('+'))%></td><td><%=eval(renner.punten.ak.join('+'))%></td><td><%=eval(renner.punten.sprint.join('+'))%></td><td><%=eval(renner.punten.berg.join('+'))%></td><td><%=eval(renner.punten.jong.join('+'))%></td><td><%=eval(renner.punten.totaal.join('+'))%></td></tr>
+                                        </tbody>
+                                    </table>
+                        </div>
+                        <div class="col-sm-4 text-right">
+                            
+                        </div>
+                    </div>
+            <div class="col-sm-7 resultatendoos">
+                
+            </div>
+            <div class="col-sm-5 klassementswrapper">
+            <div class="col-sm-6 etapperesultatendoos">
+                
+            </div>   
+            </div>
+        </div>
+        <div class="col-sm-2 sidenavR"><div>
+    </div>
+</div>
+<footer class="container-fluid text-center">
+    <p></p>
+</footer>
+<script>
+</script>
+</body>
+</html>

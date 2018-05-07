@@ -15,7 +15,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var session      = require('express-session');
 var json         = require('json-stringify-safe');
-
 if (fs.existsSync('./config/database.js')){ //Kijken of er een config is
   var configDB = require('./config/database');
 }else{
@@ -273,10 +272,25 @@ app.post('/giro/etappe*', function(req, res){
    }
 });
 
+app.get('/giro/renner/:rennerID', function(req, res){
+  console.log("renner exists: "+ fs.existsSync('./views/giro/renner.ejs'));
+  Renner.findOne({_id:req.params.rennerID},function(err,renner){
+    if(renner!= undefined){
+      res.render('./giro/renner.ejs',{
+        renner:renner,
+        currentStage:currentDisplay()
+      });
+    }else{
+      res.send("Renner not found");
+    }
+    ;
+  })
+  
+});
+
 app.get('*', function(req, res){
   res.status(404).send('Hier heb ik nog niks mee gedaan je mag  wel /succes en /cool en /page proberen');
 });
-
 
 //app.listen(app.get('port'), function() {
   //console.log("Node app is running at localhost:" + app.get('port'))
