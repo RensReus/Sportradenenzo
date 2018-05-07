@@ -19,6 +19,9 @@
         tbody tr td:hover{
             background:#ddd;
         }
+        #etappekieslijst{
+            width:90%;
+        }
         #etappekieslijst tr td{
             padding-top: 10px;
             padding-bottom: 10px;
@@ -31,7 +34,7 @@
             background:#fff;
         }
         #etappekieslijst td.etappelijst{
-            width:300px;
+            width:100%;
         }
         #etappekieslijst td.etappelijst:hover{
             background:#ddd;
@@ -39,22 +42,34 @@
         #etappekieslijst tr:nth-child(odd) {
             background: #f9f9f9;
         }
+        #etappekieslijst tr:nth-child(even) {
+            background: #fdfdfd;
+        }
+        .etappekiesdoos{
+            padding-left:0;
+        }
 
         .radioknop{
             padding-top:15px;
             padding-bottom:7px;
             text-align:center;
-            width:66px;
+            width:100%x;
+            margin:0;
         }
         .radioknop:nth-child(odd) {
             background: #f9f9f9;
+        }
+        .radioknop:nth-child(even) {
+            background: #fdfdfd;
         }
         .radioknoppen input{
             margin:0;padding:0;
             -webkit-appearance:none;
             -moz-appearance:none;
         }
-
+        .radioknoppen{
+            padding:0;
+        }
         .kopman{background-image:url(/images/rozetrui.png);}
 
         .radioknoppen input:active +.kopmanknoppen{
