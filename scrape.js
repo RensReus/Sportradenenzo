@@ -304,8 +304,9 @@ getResult = function(et,callback){
                                 if (err) throw err;
                                 if(index===rennersDag.length-1){// als laaste renner dan calculate user en continue code
                                     console.log("renners et: %s done",et);
-                                    calculateUserScores(et);
-                                    callback();
+                                    calculateUserScores(et,function(){
+                                        callback();
+                                    });
                                 }
                             });
                         }
@@ -595,8 +596,9 @@ getFinal = function(callback){
                                 if (err) throw err;
                                 if(index===rennersDag.length-1){// als laaste renner dan calculate user en continue code
                                     console.log("renners et: %s done",et);
-                                    calculateUserScores(et);
-                                    callback();
+                                    calculateUserScores(et,function(){
+                                        callback();
+                                    });
                                 }
                             });
                         }
