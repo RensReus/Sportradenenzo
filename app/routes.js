@@ -151,12 +151,17 @@ module.exports = function(app, passport) {
     });
 
     app.get('/giro/overzicht', function(req,res){
-    Renners.find({'prijs' : {$exists: true}},'naam team prijs punten', {sort: {'prijs': -1}}, function (err, renners) {
-        if(err) throw err;
-        res.render('./giro/overzicht.ejs', {
-        renners : renners
-        });    
-    });
+        Renners.find({'prijs' : {$exists: true}},'naam team prijs punten', {sort: {'prijs': -1}}, function (err, renners) {
+            if(err) throw err;
+            User.find({'_id' : {$exists: true}},'teamselectie.userrenners local.username groups.budget', function(err,users){
+                if(err) throw err;
+                res.render('./giro/overzicht.ejs', {
+                    renners : renners,
+                    user:req.user,
+                    users:users
+                });
+            });    
+        });
     });
 
     // =====================================

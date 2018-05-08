@@ -9,45 +9,83 @@
     width: 100%;
     border: 1px solid #ddd;
 }
-
-th {
-    cursor: pointer;
-}
-
-th, td {
-    text-align: left;
-    padding: 16px;
-}
-
-tr:nth-child(even) {
-    background-color: #f2f2f2
-}  
+    div#contentblok
+    {
+        height: 95vh;
+    }
+    .scrolltabel tbody{
+        overflow: auto;
+        width: 100%;
+    }
+    .scrolltabel thead{
+        position: relative;
+        height: 4vh;
+        cursor: pointer;
+    }
+    th, td {
+        text-align: left;
+        padding: 16px;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2
+    }  
+    tr:nth-child(odd) {
+        background-color: #ffffff
+    }  
     </style>
 </head>
 <body>
     <% include ../partials/navbarlogout %>
-<div class="container-fluid text-center">    
-    <div class="row content">
-        <div class="col-sm-2 sidenavL"></div>
-        <div class="col-sm-8 text-left" id="contentblok">
+        <div class="col-sm-12 text-left" id="contentblok">
             <div class="bovenrijtje">
-                <div class="col-sm-6 text-left">
-                    <a href="/profile" class="etappebutton">◄ &nbsp; &nbsp; Profiel</a>
-                </div>
-                <div class="col-sm-6 text-right">
-                    <a href="/giro/etappe1" class="etappebutton">Etappe 1 &nbsp; &nbsp; ►</a>
-                </div>
+                <a href="/profile" class="etappebutton">◄ &nbsp; &nbsp; Profiel</a>
+                <a href="/giro" style="float:right" class="etappebutton">Naar de giro &nbsp; &nbsp; ►</a>
             </div>
-            <table id="overzichttabel">
-                <tr><th onclick="sortTable(0)">Renner</th><th onclick="sortTable(1)">Prijs</th><th onclick="sortTable(2)">Punten</th><th>Prijs per punt</th></tr>
+            <table id="overzichttabel" class="scrolltabel">
+                <thead>
+                <tr>
+                    <th onclick="sortTable(0)" style="width:30%">Renner</th>
+                    <th onclick="sortTableInt(1)" style="width:20%">Selecties</th>
+                    <th onclick="sortTableInt(2)" style="width:10%">Dagpunten</th>
+                    <th onclick="sortTableInt(3)" style="width:15%">Punt per M</th>
+                    <th onclick="sortTableInt(4)" style="width:10%">Prijs</th>
+                </tr>
+                </thead>
+            </table>
+            <div style="height:78.5vh; overflow:auto;">
+                <table>
+                <tbody>
+
                 <%for(var i=0;i<renners.length;i++){%>
-                    <tr><td><%=renners[i].naam%></td><td><%=renners[i].prijs%></td><td><%=renners[i].punten.dag.reduce((a, b) => a + b, 0)%></td><td><%=renners[i].prijs%><</tr>
+                    <tr>
+                    <td style="width:30%"><%=renners[i].naam%></td>
+                    <%var selecties=0;%>
+                    <%var namen="";%>
+                    <%var budgetnamen="";%>
+                    <%for(var j=0;j<users.length;j++){%>
+                        <%for(var k=0;k<users[j].teamselectie.userrenners.length;k++){%>
+                            <%if(users[j].teamselectie.userrenners[k].naam==renners[i].naam){%>
+                                <%if(users[j].groups.budget){%>
+                                    <%selecties++%>
+                                    <%budgetnamen=budgetnamen + " " + users[j].local.username.replace("Budget","")%>
+                                <%}else{%>
+                                    <%selecties++%>
+                                    <%namen=namen + " " + users[j].local.username%>
+                                <%}%>
+                            <%}%>
+                        <%}%>
+                    <%}%>
+                    <td style="width:20%"><%=selecties%><font color="grey"><%=namen%></font><font color="green"><%=budgetnamen%></font></td>
+                    <td style="width:10%"><%=renners[i].punten.dag.reduce((a, b) => a + b, 0)%></td>
+                    <td style="width:15%"><%=Math.round(renners[i].punten.dag.reduce((a, b) => a + b, 0)/(renners[i].prijs/1000000),1)%></td>
+                    <td style="width:10%"><%=renners[i].prijs%></td>
+                    </tr>
                 <%}%>
+                </tbody>
+                </table>
+                </div>
             </table>
         </div>
-        <div class="col-sm-2 sidenavR"><div>
-    </div>
-</div>
 <footer class="container-fluid text-center">
     <p></p>
 </footer>
@@ -88,27 +126,61 @@ function sortTable(n){
     }
 }
 
-function klikrenner(id,naam,prijs){
-}
-
-function zoekrenner() {
-  var input, filter, table, tr, td, i;
-  input = document.getElementById("zoekbalk");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("teamselectietabel");
-  tr = table.getElementsByTagName("tr");
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[0];
-    if (td) {
-      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
+function sortTableInt(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("overzichttabel");
+  switching = true;
+  // Set the sorting direction to descending:
+  dir = "desc"; 
+  /* Make a loop that will continue until
+  no switching has been done: */
+  while (switching) {
+    // Start by saying: no switching is done:
+    switching = false;
+    rows = table.getElementsByTagName("TR");
+    /* Loop through all table rows (except the
+    first, which contains table headers): */
+    for (i = 1; i < (rows.length - 1); i++) {
+      // Start by saying there should be no switching:
+      shouldSwitch = false;
+      /* Get the two elements you want to compare,
+      one from current row and one from the next: */
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      /* Check if the two rows should switch place,
+      based on the direction, asc or desc: */
+      if (dir == "asc") {
+        if (parseInt(x.innerHTML) > parseInt(y.innerHTML)) {
+          // If so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (parseInt(x.innerHTML) < parseInt(y.innerHTML)) {
+          // If so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
       }
-    }       
+    }
+    if (shouldSwitch) {
+        
+      /* If a switch has been marked, make the switch
+      and mark that a switch has been done: */
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      // Each time a switch is done, increase this count by 1:
+      switchcount ++; 
+    } else {
+      /* If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again. */
+      if (switchcount == 0 && dir == "desc") {
+        dir = "asc";
+        switching = true;
+      }
+    }
   }
 }
-
 </script>
 </body>
 </html>
