@@ -146,7 +146,6 @@ module.exports = function(app, passport) {
     });
 
     app.get('/giro/overzicht', function(req,res){
-<<<<<<< HEAD
         Renners.find({'prijs' : {$exists: true}},'naam team prijs punten', {sort: {'prijs': -1}}, function (err, renners) {
             if(err) throw err;
             User.find({'_id' : {$exists: true}},'teamselectie.userrenners local.username groups.budget', function(err,users){
@@ -158,14 +157,6 @@ module.exports = function(app, passport) {
                 });
             });    
         });
-=======
-    Renners.find({'prijs' : {$exists: true}},'naam team prijs punten', {sort: {'prijs': -1}}, function (err, renners) {
-        if(err) throw err;
-        res.render('./giro/overzicht.ejs', {
-            renners : renners
-        });    
-    });
->>>>>>> 4e10a674035f02a02bda5eac393dc4a0a26e5e4b
     });
 
     // =====================================
