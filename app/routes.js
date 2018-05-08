@@ -9,7 +9,8 @@ module.exports = function(app, passport) {
     // HOME PAGE (with login links) ========
     // =====================================
     app.get('/', function(req, res) {
-    res.render('index.ejs'); // load the index.ejs file
+    // res.render('index.ejs'); // load the index.ejs file
+        res.redirect('/login'); // scheelt iedere keer weer klikken en de index pagina istoch kaal
     });
 
     // =====================================
@@ -23,7 +24,7 @@ module.exports = function(app, passport) {
 
     // process the login form
     app.post('/login', passport.authenticate('local-login', {
-        successRedirect : '/profile', // redirect to the secure profile section
+        successRedirect : '/giro', // scheelt ook weer een keer klikken
         failureRedirect : '/login', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));    
@@ -158,6 +159,14 @@ module.exports = function(app, passport) {
             });    
         });
     });
+
+    app.get('/manualupdate/giro/etappe/:id', isLoggedIn, function(req,res){
+        if(req.user.local.admin){
+            res.status(404).send("You are an admin and are allowed to manually update etappe " + req.params.id + ". Helaas dit deze pagina nu nog geen kut");
+        }else{
+            res.redirect('/')
+        }
+    })
 
     // =====================================
     // LOGOUT ==============================

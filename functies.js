@@ -37,7 +37,7 @@ transferUsers = function(){
     User.find({},function(err,users){
         users.forEach(function(user){
             user.update( 
-                {'groups.budget' : false },
+                {'local.admin' : false },
                 {multi:true}, 
                   function(err, numberAffected){  
                   });

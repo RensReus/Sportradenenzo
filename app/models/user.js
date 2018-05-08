@@ -9,7 +9,8 @@ var userSchema = mongoose.Schema({
     local           : {
         username    : String,
         email       : String,
-        password    : String
+        password    : String,
+        admin       : {type: Boolean, default: false}
     },
     profieldata     : {
         favwieler   : {type: String, default: "Bram Tankink"},
