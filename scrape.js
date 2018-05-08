@@ -65,11 +65,13 @@ getResult = function(et,callback){
     request({url:'https://www.procyclingstats.com/race/giro-d-italia/2018/stage-' + et,
     headers: {"Connection": "keep-alive"}}, function (error, response, html) {
         var jongprev = new Array();
-        var akprev = new Array();
-        Etappe.findOne({'_id':et-1}, function(err, etap){
-            jongprev = etap.uitslagen.jong;
-            akprev = etap.uitslagen.ak;
-        })
+        var akprevlength = 176;
+        if(et!=1){
+            Etappe.findOne({'_id':et-1}, function(err, etap){
+                    jongprev = etap.uitslagen.jong;
+                    akprevlength = etap.uitslagen.ak.length;
+            })
+        }
         Etappe.findOne({'_id':et}, function(err, etap){
             if (err) throw err;
             var etappe;
@@ -225,10 +227,11 @@ getResult = function(et,callback){
                         jongDNF++;
                 }
                 var uitslagKompleet = false;
-                var akKomp = rennersAk.length + rennersDNF.length == akprev.length;
+                var akKomp = rennersAk.length + rennersDNF.length == akprevlength;
                 var sprintKomp = rennersSprint.length;
                 var bergKomp = rennersBerg.length;
                 var jongKomp = rennersJong.length + jongDNF == jongprev.length;
+                if(et==1) {jongKomp = true; bergKomp=true;}
                 if( akKomp && sprintKomp && bergKomp && jongKomp){
                     uitslagKompleet = true;
                 }
@@ -341,8 +344,8 @@ getFinal = function(callback){
         var jongprev = new Array();
         var akprev = new Array();
         Etappe.findOne({'_id':et-1}, function(err, etap){
-            jongprev = etap.uitslagen.jong;
-            akprev = etap.uitslagen.ak;
+                jongprev = etap.uitslagen.jong;
+                akprev = etap.uitslagen.ak;
         })
         Etappe.findOne({'_id':et}, function(err, etap){
             if (err) throw err;

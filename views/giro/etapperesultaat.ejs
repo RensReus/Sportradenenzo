@@ -240,7 +240,7 @@
                             <%}else{%>
                                 <tr><td><img src="/images/blauwetrui.png"></td><td><a href="/giro/renner/<%=uitslagen.berg[0]._id%>"><%=uitslagen.berg[0].naam%></a></td><td><%=uitslagen.berg[0].score%></td></tr>
                             <%}%>  
-                            <%for(var i=1;i<Math.min(3,uitslagen.berg.length);i++){%>
+                            <%for(var i=1;i<Math.min(5,uitslagen.berg.length);i++){%>
                                 <% if(opstellingIDs.includes(uitslagen.berg[i]._id)){%>
                                     <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></td><td><%=uitslagen.berg[i].score%></td></tr>
                                 <%}else if(teamrenners.includes(uitslagen.berg[i]._id)){%>

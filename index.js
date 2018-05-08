@@ -9,6 +9,7 @@ var fs = require('fs');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
+var Etappe   = require('./app/models/etappe')
 
 var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -20,6 +21,19 @@ if (fs.existsSync('./config/database.js')){ //Kijken of er een config is
 }else{
   var configDB = { 'url' : process.env.DATABASE_LINK}; //Zo niet gebruik heroku ding
 };
+
+var schedule = require('node-schedule');
+var j = schedule.scheduleJob(' * */5 * * * *', function(){
+  if(displayResults(currentDisplay())){
+    Etappe.findOne({_id:currentDisplay()-3},function(err,etappe){
+      if(!etappe.uitslagKompleet){
+        getResult(currentDisplay()-3,function(){
+          console.log("got results"+currentDisplay());
+        });
+      }
+    })
+  }
+});
 
 var functies = require('./functies');
 var scrape = require('./scrape');
