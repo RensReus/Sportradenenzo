@@ -297,9 +297,9 @@ app.get('*', function(req, res){
 
 var scrapeResults = schedule.scheduleJob(' * */5 * * * *', function(){
   if(displayResults(currentDisplay())){
-    Etappe.findOne({_id:currentDisplay()-3},function(err,etappe){
+    Etappe.findOne({_id:currentDisplay()},function(err,etappe){
       if(!etappe.uitslagKompleet){
-        getResult(currentDisplay()-3,function(){
+        getResult(currentDisplay(),function(){
           console.log("got results"+currentDisplay());
         });
       }
