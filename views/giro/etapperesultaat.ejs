@@ -186,7 +186,7 @@
                             <%}else{%>
                                 <tr><td><img src="/images/rozetrui.png"></td><td><a href="/giro/renner/<%=uitslagen.ak[0]._id%>"><%=uitslagen.ak[0].naam%></a></td><td><%=uitslagen.ak[0].tijd%></td></tr>                                        
                             <%}%>  
-                            <%for(var i=1;i<Math.min(5,uitslagen.ak.length);i++){%>
+                            <%for(var i=1;i<Math.min(20,uitslagen.ak.length);i++){%>
                                 <% if(opstellingIDs.includes(uitslagen.ak[i]._id)){%>
                                     <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
                                 <%}else if(teamrenners.includes(uitslagen.ak[i]._id)){%>
@@ -213,7 +213,7 @@
                             <%}else{%>
                                 <tr><td><img src="/images/paarsetrui.png"></td><td><a href="/giro/renner/<%=uitslagen.sprint[0]._id%>"><%=uitslagen.sprint[0].naam%></a></td><td><%=uitslagen.sprint[0].score%></td></tr>
                             <%}%>  
-                            <%for(var i=1;i<Math.min(5,uitslagen.sprint.length);i++){%>
+                            <%for(var i=1;i<Math.min(10,uitslagen.sprint.length);i++){%>
                                 <% if(opstellingIDs.includes(uitslagen.sprint[i]._id)){%>
                                     <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a></td><td><%=uitslagen.sprint[i].score%></td></tr>
                                 <%}else if(teamrenners.includes(uitslagen.sprint[i]._id)){%>
@@ -240,7 +240,7 @@
                             <%}else{%>
                                 <tr><td><img src="/images/blauwetrui.png"></td><td><a href="/giro/renner/<%=uitslagen.berg[0]._id%>"><%=uitslagen.berg[0].naam%></a></td><td><%=uitslagen.berg[0].score%></td></tr>
                             <%}%>  
-                            <%for(var i=1;i<Math.min(3,uitslagen.berg.length);i++){%>
+                            <%for(var i=1;i<Math.min(10,uitslagen.berg.length);i++){%>
                                 <% if(opstellingIDs.includes(uitslagen.berg[i]._id)){%>
                                     <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></td><td><%=uitslagen.berg[i].score%></td></tr>
                                 <%}else if(teamrenners.includes(uitslagen.berg[i]._id)){%>
@@ -267,7 +267,7 @@
                             <%}else{%>
                                 <tr><td><img src="/images/wittetrui.png"></td><td><a href="/giro/renner/<%=uitslagen.jong[0]._id%>"><%=uitslagen.jong[0].naam%></a></td><td><%=uitslagen.jong[0].tijd%></td></tr>
                             <%}%>
-                            <%for(var i=1;i<Math.min(5,uitslagen.jong.length);i++){%>
+                            <%for(var i=1;i<Math.min(10,uitslagen.jong.length);i++){%>
                                 <% if(opstellingIDs.includes(uitslagen.jong[i]._id)){%>
                                     <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
                                 <%}else if(teamrenners.includes(uitslagen.jong[i]._id)){%>
@@ -296,7 +296,7 @@ function showklassement(klass){ //dag:0 AK:1 sprint:2 berg:3 jong:4
 }
 
 var teamscalled=0;
-function checkresultaat(etappe){
+function checkresultaat(etappe){ //Laat alle behaalde punten in de resultatentabel zien
     $.ajax({
 		type: 'POST',
         data: JSON.stringify({"etappe":etappe,"toevoegen":"etapperesultaat"}),
@@ -333,6 +333,7 @@ function checkresultaat(etappe){
         }			
     });
 }
+
 function teamspopup(etappe) {
     var teamspopup = document.getElementById("idteamspopup");
     teamspopup.classList.toggle("show");
@@ -348,7 +349,11 @@ function teamspopup(etappe) {
             for(var i=0;i<users.length;i++){
                 $("#user" + i).html(users[i].local.username);
                 for(var j=0;j<10;j++){
-                $("#renner" + j + "u" + i).html(users[i].opstellingen[etappe-1].opstelling.naam[j]);
+                    if(users[i].opstellingen[etappe-1].opstelling._id[j]==users[i].opstellingen[etappe-1].opstelling.kopman){ //Kijken of de renner kopman is
+                        $("#renner" + j + "u" + i).html("<strong>" + users[i].opstellingen[etappe-1].opstelling.naam[j] + "</strong>");
+                    }else{
+                        $("#renner" + j + "u" + i).html(users[i].opstellingen[etappe-1].opstelling.naam[j]);
+                    }
                 }
             }
             teamscalled=1;
