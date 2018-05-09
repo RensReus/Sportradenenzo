@@ -64,6 +64,14 @@ getResult = function(et,callback){
     }
     request({url:'https://www.procyclingstats.com/race/giro-d-italia/2018/stage-' + et,
     headers: {"Connection": "keep-alive"}}, function (error, response, html) {
+        var jongprev = new Array();
+        var akprevlength = 176;
+        if(et!=1){
+            Etappe.findOne({'_id':et-1}, function(err, etap){
+                    jongprev = etap.uitslagen.jong;
+                    akprevlength = etap.uitslagen.ak.length;
+            })
+        }
         Etappe.findOne({'_id':et}, function(err, etap){
             if (err) throw err;
             var etappe;
@@ -134,8 +142,8 @@ getResult = function(et,callback){
                             case 'stage'://Dag uitslag
                             $(this).children().eq(1).children().each(function(index, element){//voor iedere renner in de uitslag
                                 var pos = $(this).children().first().text();
-                                if(pos =='DNS'||pos=='DNF'||pos=='NQ'||pos=='DSQ') pos=0;
                                 pos = parseInt(pos);
+                                if(isNaN(pos)) pos=0; //als DNF enzo
                                 var id = $(this).children().eq(1).children().eq(1).attr('href').substring(6);
                                 var name = $(this).children().eq(1).children().eq(1).text();
                                 if(!name.indexOf(" "))//als er een spatie is op plek nu verwijder spatie
@@ -212,6 +220,23 @@ getResult = function(et,callback){
                         }
                     }
                 });
+                ////////// check of resultaten compleet zijn
+                var jongDNF = 0;
+                for(i in rennersDNF){
+                    if(jongprev.map(jongren => jongren._id).includes(rennersDNF[i]))
+                        jongDNF++;
+                }
+                var uitslagKompleet = false;
+                var akKomp = rennersAk.length + rennersDNF.length == akprevlength;
+                var sprintKomp = rennersSprint.length;
+                var bergKomp = rennersBerg.length;
+                var jongKomp = rennersJong.length + jongDNF == jongprev.length;
+                if(et==1) {jongKomp = true; bergKomp=true;}
+                if( akKomp && sprintKomp && bergKomp && jongKomp){
+                    uitslagKompleet = true;
+                }
+                //////////
+
                 Renner.find( { '_id':{$in: rennersDag}}, function(err,renners){
                     renners.forEach(function(renner,index){ //voeg uitslag toe aan renner element en de verzamelde punten
                         if (err) throw err;
@@ -282,15 +307,17 @@ getResult = function(et,callback){
                                 if (err) throw err;
                                 if(index===rennersDag.length-1){// als laaste renner dan calculate user en continue code
                                     console.log("renners et: %s done",et);
-                                    calculateUserScores(et);
-                                    callback();
+                                    calculateUserScores(et,function(){
+                                        callback();
+                                    });
                                 }
                             });
                         }
                     })
                     if(renners.length===0){ // zorgt dat callback wordt aangeroepen als er geen renners in de uitslag staan
-                        calculateUserScores(et);
-                        callback();
+                        calculateUserScores(et,function(){
+                            callback();
+                        });
                     }
                 });
             }
@@ -299,7 +326,7 @@ getResult = function(et,callback){
             etappe.uitslagen.sprint = etappeSprint;
             etappe.uitslagen.jong = etappeJong;
             etappe.uitslagen.berg = etappeBerg;
-        
+            etappe.uitslagKompleet = uitslagKompleet;
             etappe.markModified('uitslagen');
             etappe.save(function(err){
                 if (err) throw err;
@@ -314,6 +341,12 @@ getFinal = function(callback){
     var et = 21;
     request({url:'https://www.procyclingstats.com/race/giro-d-italia/2018/stage-' + et,
     headers: {"Connection": "keep-alive"}}, function (error, response, html) {
+        var jongprev = new Array();
+        var akprev = new Array();
+        Etappe.findOne({'_id':et-1}, function(err, etap){
+                jongprev = etap.uitslagen.jong;
+                akprev = etap.uitslagen.ak;
+        })
         Etappe.findOne({'_id':et}, function(err, etap){
             if (err) throw err;
             var etappe;
@@ -383,8 +416,8 @@ getFinal = function(callback){
                             case 'stage'://Dag uitslag
                             $(this).children().eq(1).children().each(function(index, element){//voor iedere renner in de uitslag
                                 var pos = $(this).children().first().text();
-                                if(pos =='DNS'||pos=='DNF'||pos=='NQ'||pos=='DSQ') pos=0;
                                 pos = parseInt(pos);
+                                if(isNaN(pos)) pos=0; //als DNF enzo
                                 var id = $(this).children().eq(1).children().eq(1).attr('href').substring(6);
                                 var name = $(this).children().eq(1).children().eq(1).text();
                                 if(!name.indexOf(" "))//als er een spatie is op plek nu verwijder spatie
@@ -460,6 +493,23 @@ getFinal = function(callback){
                         }
                     }
                 });
+
+                ////////// check of resultaten compleet zijn
+                var jongDNF = 0;
+                for(i in rennersDNF){
+                    if(jongprev.map(jongren => jongren._id).includes(rennersDNF[i]))
+                        jongDNF++;
+                }
+                var uitslagKompleet = false;
+                var akKomp = rennersAk.length + rennersDNF.length == akprev.length;
+                var sprintKomp = rennersSprint.length;
+                var bergKomp = rennersBerg.length;
+                var jongKomp = rennersJong.length + jongDNF == jongprev.length;
+                if( akKomp && sprintKomp && bergKomp && jongKomp){
+                    uitslagKompleet = true;
+                }
+                //////////
+
                //voeg uitslag toe aan renner element
                 Renner.find( { '_id':{$in: rennersDag}}, function(err,renners){
                     renners.forEach(function(renner,index){
@@ -549,12 +599,18 @@ getFinal = function(callback){
                                 if (err) throw err;
                                 if(index===rennersDag.length-1){// als laaste renner dan calculate user en continue code
                                     console.log("renners et: %s done",et);
-                                    calculateUserScores(et);
-                                    callback();
+                                    calculateUserScores(et,function(){
+                                        callback();
+                                    });
                                 }
                             });
                         }
                     })
+                    if(renners.length===0){ // zorgt dat callback wordt aangeroepen als er geen renners in de uitslag staan
+                        calculateUserScores(et,function(){
+                            callback();
+                        });
+                    }
                 });
             }
             etappe.uitslagen.dag = etappeDag;
@@ -562,6 +618,7 @@ getFinal = function(callback){
             etappe.uitslagen.sprint = etappeSprint;
             etappe.uitslagen.jong = etappeJong;
             etappe.uitslagen.berg = etappeBerg;
+            etappe.uitslagKompleet = uitslagKompleet;
             etappe.markModified('uitslagen');
             etappe.save(function(err){
                 if (err) throw err;

@@ -9,7 +9,8 @@ module.exports = function(app, passport) {
     // HOME PAGE (with login links) ========
     // =====================================
     app.get('/', function(req, res) {
-    res.render('index.ejs'); // load the index.ejs file
+    // res.render('index.ejs'); // load the index.ejs file
+        res.redirect('/login'); // scheelt iedere keer weer klikken en de index pagina istoch kaal
     });
 
     // =====================================
@@ -23,7 +24,7 @@ module.exports = function(app, passport) {
 
     // process the login form
     app.post('/login', passport.authenticate('local-login', {
-        successRedirect : '/profile', // redirect to the secure profile section
+        successRedirect : '/giro', // scheelt ook weer een keer klikken
         failureRedirect : '/login', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));    
@@ -90,46 +91,22 @@ module.exports = function(app, passport) {
             if(displayResults(etappe)){ //returns true if etappe finished
                 Etappe.findOne({'_id' : etappe},'uitslagen creationTime', function (err, uitslag) {
                     if (err) throw err;
-                    var scrapePause = 12*60*60*1000; //default 12 uur
-                    if(etappe == currentDisplay()) // indien het in de eerste 12 uur na de etappe start is ieder 5 min
-                        scrapePause = 5*60*1000;
-                    if(uitslag.creationTime + 5*60*1000 < new Date().getTime() || uitslag == null){
-                        getResult(etappe,function(){
-                            User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
-                                var dagscore = users.map(user => user.profieldata.poulescore[etappe-1]);
-                                var teamrenners = req.user.teamselectie.userrenners.map(renner => renner._id)
-                                if (err) throw err;
-                                res.render('./giro/etapperesultaat.ejs', {
-                                    opstelling:req.user.opstellingen[etappe-1].opstelling.naam,
-                                    opstellingIDs:req.user.opstellingen[etappe-1].opstelling._id,
-                                    huidig:currentDisplay(),
-                                    etappe:etappe,
-                                    uitslagen:uitslag.uitslagen,
-                                    user : req.user, // get the user out of session and pass to template
-                                    users : users, //[{id,local{username}},...]
-                                    dagscore:dagscore,
-                                    teamrenners
-                                });
-                            });
+                    User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
+                        var dagscore = users.map(user => user.profieldata.poulescore[etappe-1]);
+                        var teamrenners = req.user.teamselectie.userrenners.map(renner => renner._id)                            
+                        if (err) throw err;
+                        res.render('./giro/etapperesultaat.ejs', {
+                            opstelling:req.user.opstellingen[etappe-1].opstelling.naam,
+                            opstellingIDs:req.user.opstellingen[etappe-1].opstelling._id,
+                            huidig:currentDisplay(),
+                            etappe,
+                            uitslagen:uitslag.uitslagen,
+                            user : req.user, // get the user out of session and pass to template
+                            users, //[{id,local{username}},...]
+                            dagscore,
+                            teamrenners
                         });
-                    }else{
-                        User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
-                            var dagscore = users.map(user => user.profieldata.poulescore[etappe-1]);
-                            var teamrenners = req.user.teamselectie.userrenners.map(renner => renner._id)                            
-                            if (err) throw err;
-                            res.render('./giro/etapperesultaat.ejs', {
-                                opstelling:req.user.opstellingen[etappe-1].opstelling.naam,
-                                opstellingIDs:req.user.opstellingen[etappe-1].opstelling._id,
-                                huidig:currentDisplay(),
-                                etappe:etappe,
-                                uitslagen:uitslag.uitslagen,
-                                user : req.user, // get the user out of session and pass to template
-                                users : users, //[{id,local{username}},...]
-                                dagscore:dagscore,
-                                teamrenners
-                            });
-                        });
-                    }
+                    });
                 });
             }else{// if false display opstelling selectie
                 User.findOne(req.user._id, function(err, user) { //user zoeken voor edits
@@ -158,6 +135,14 @@ module.exports = function(app, passport) {
             });    
         });
     });
+
+    app.get('/manualupdate/giro/etappe/:id', isLoggedIn, function(req,res){
+        if(req.user.local.admin){
+            res.status(404).send("You are an admin and are allowed to manually update etappe " + req.params.id + ". Helaas dit deze pagina nu nog geen kut");
+        }else{
+            res.redirect('/')
+        }
+    })
 
     // =====================================
     // LOGOUT ==============================

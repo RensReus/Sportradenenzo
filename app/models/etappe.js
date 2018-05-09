@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var etappeSchema = mongoose.Schema({
     _id             : String,
     creationTime    : Number,
+    uitslagKompleet : {type: Boolean, default: false},
     uitslagen       : 
     {
         dag      : [{_id: String,naam: String,team: String,tijd  : String}],
