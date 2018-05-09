@@ -349,7 +349,7 @@ function teamspopup(etappe) {
             for(var i=0;i<users.length;i++){
                 $("#user" + i).html(users[i].local.username);
                 for(var j=0;j<10;j++){
-                    if(users[i].opstellingen[etappe-1].opstelling._id[j]==users[i].opstellingen[etappe-1].opstelling.kopman){ //Kijken of de renner kopman is
+                    if(users[i].opstellingen[etappe-1].opstelling._id[j]==users[i].opstellingen[etappe-1].kopman){ //Kijken of de renner kopman is
                         $("#renner" + j + "u" + i).html("<strong>" + users[i].opstellingen[etappe-1].opstelling.naam[j] + "</strong>");
                     }else{
                         $("#renner" + j + "u" + i).html(users[i].opstellingen[etappe-1].opstelling.naam[j]);
