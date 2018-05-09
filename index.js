@@ -295,7 +295,7 @@ app.get('*', function(req, res){
   res.status(404).send('Hey boi je hebt een 404 error');
 });
 
-var scrapeResults = schedule.scheduleJob(' * */5 * * * *', function(){
+var scrapeResults = schedule.scheduleJob(' 0 */5 * * * *', function(){
   if(displayResults(currentDisplay())){
     Etappe.findOne({_id:currentDisplay()},function(err,etappe){
       if(!etappe.uitslagKompleet){
