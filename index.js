@@ -23,17 +23,6 @@ if (fs.existsSync('./config/database.js')){ //Kijken of er een config is
 };
 
 var schedule = require('node-schedule');
-var j = schedule.scheduleJob(' * */5 * * * *', function(){
-  if(displayResults(currentDisplay())){
-    Etappe.findOne({_id:currentDisplay()-3},function(err,etappe){
-      if(!etappe.uitslagKompleet){
-        getResult(currentDisplay()-3,function(){
-          console.log("got results"+currentDisplay());
-        });
-      }
-    })
-  }
-});
 
 var functies = require('./functies');
 var scrape = require('./scrape');
@@ -303,8 +292,39 @@ app.get('/giro/renner/:rennerID', function(req, res){
 });
 
 app.get('*', function(req, res){
-  res.status(404).send('Hier heb ik nog niks mee gedaan je mag  wel /succes en /cool en /page proberen');
+  res.status(404).send('Hey boi je hebt een 404 error');
 });
+
+var scrapeResults = schedule.scheduleJob(' * */5 * * * *', function(){
+  if(displayResults(currentDisplay())){
+    Etappe.findOne({_id:currentDisplay()-3},function(err,etappe){
+      if(!etappe.uitslagKompleet){
+        getResult(currentDisplay()-3,function(){
+          console.log("got results"+currentDisplay());
+        });
+      }
+    })
+  }
+});
+
+var rule = new schedule.RecurrenceRule();
+rule = girodata.etappetijden;
+
+var copyOpstelling = schedule.scheduleJob(rule,function(){
+  var etappe = currentDisplay();
+  User.find({},function(err,users){
+    users.forEach(function(user){
+      if(!user.opstellingen[etappe-1].opstelling.naam.length){
+        user.opstellingen.set(etappe-1,user.opstellingen[etappe-2]);
+        user.save(function(err) {
+          if (err) throw err;
+        })
+      }
+    })
+  })
+});
+
+
 
 //app.listen(app.get('port'), function() {
   //console.log("Node app is running at localhost:" + app.get('port'))

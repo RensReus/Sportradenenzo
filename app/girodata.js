@@ -63,6 +63,7 @@ displayResults = etappe => new Date()>etappetijden[etappe-1];
 
 module.exports.displayResults = displayResults;
 module.exports.currentDisplay = currentDisplay;
+exports.etappetijden = etappetijden;
 exports.etapstart  = etapstart;
 exports.etapfinish = etapfinish;
 exports.girostart = etappe1;
