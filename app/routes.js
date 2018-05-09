@@ -138,6 +138,10 @@ module.exports = function(app, passport) {
 
     app.get('/manualupdate/giro/etappe/:id', isLoggedIn, function(req,res){
         if(req.user.local.admin){
+            getResult(req.params.id,function(){
+                calculateUserScores(req.params.id,function(){
+                });
+            });
             res.status(404).send("You are an admin and are allowed to manually update etappe " + req.params.id + ". Helaas dit deze pagina nu nog geen kut");
         }else{
             res.redirect('/')

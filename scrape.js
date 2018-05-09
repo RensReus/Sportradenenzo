@@ -97,28 +97,16 @@ getResult = function(et,callback){
                 $(".basic").each(function(kl, element){//Slaat de teams en renner id van de dagwinnaar/klassementsleiders op
                     var end = $(this).children().eq(1).children().first().children().length;
                     if(end){
+                        var columns = new Array();
+                        $(this).children().first().children().first().children().each(function(index,element){
+                            columns.push($(this).text())  
+                        })
+                        var renCol = columns.indexOf("Rider");
+                        var teamCol = columns.indexOf("Team");
                         var klas = cases[kl];
-                        switch(klas){
-                            case 'stage'://Dag uitslag
-                                teamWinners[klas] = $(this).children().eq(1).children().first().children().eq(2).children().eq(0).text();
-                                rennerWinners[klas] = $(this).children().eq(1).children().first().children().eq(1).children().eq(1).attr('href').substring(6);
-                                break;
-                            case 'gc'://Algemeen Klassement
-                                teamWinners[klas] = $(this).children().eq(1).children().first().children().eq(end-3).children().eq(0).text();
-                                rennerWinners[klas] = $(this).children().eq(1).children().first().children().eq(end-4).children().eq(1).attr('href').substring(6)
-                                break;
-                            case 'points'://Sprinter Klassement
-                                teamWinners[klas] = $(this).children().eq(1).children().first().children().eq(end-2).children().eq(0).text();
-                                rennerWinners[klas] = $(this).children().eq(1).children().first().children().eq(end-3).children().eq(1).attr('href').substring(6)
-                                break;
-                            case 'youth'://Jongeren Klassement
-                                teamWinners[klas] = $(this).children().eq(1).children().first().children().eq(end-2).children().eq(0).text();
-                                rennerWinners[klas] = $(this).children().eq(1).children().first().children().eq(end-3).children().eq(1).attr('href').substring(6)
-                                break;
-                            case 'kom'://Berg Klassement
-                                teamWinners[klas] = $(this).children().eq(1).children().first().children().eq(end-2).children().eq(0).text();
-                                rennerWinners[klas] = $(this).children().eq(1).children().first().children().eq(end-3).children().eq(1).attr('href').substring(6)
-                                break;
+                        if(klas!="Teams"){
+                            teamWinners[klas] = $(this).children().eq(1).children().first().children().eq(teamCol).children().eq(1).text();
+                            rennerWinners[klas] = $(this).children().eq(1).children().first().children().eq(renCol).children().eq(1).attr('href').substring(6);
                         }
                     }
                 });
@@ -138,86 +126,67 @@ getResult = function(et,callback){
                     var end = $(this).children().eq(1).children().first().children().length;
                     if(end){
                         var klas = cases[kl];
-                        switch(klas){
-                            case 'stage'://Dag uitslag
-                            $(this).children().eq(1).children().each(function(index, element){//voor iedere renner in de uitslag
-                                var pos = $(this).children().first().text();
-                                pos = parseInt(pos);
-                                if(isNaN(pos)) pos=0; //als DNF enzo
-                                var id = $(this).children().eq(1).children().eq(1).attr('href').substring(6);
-                                var name = $(this).children().eq(1).children().eq(1).text();
-                                if(!name.indexOf(" "))//als er een spatie is op plek nu verwijder spatie
+                        var columns = new Array();
+                        $(this).children().first().children().first().children().each(function(index,element){
+                            columns.push($(this).text())  
+                        })
+                        var renCol = columns.indexOf("Rider");
+                        var teamCol = columns.indexOf("Team");
+                        $(this).children().eq(1).children().each(function(index, element){//voor iedere renner in de uitslag
+                            if(klas!="Teams"){
+                                var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
+                                var name = $(this).children().eq(renCol).children().eq(1).text();
+                                if(!name.indexOf(" "))//als er een spatie is op plek 0 nu verwijder spatie
                                     name = name.substring(1);
-                                var teamName = $(this).children().eq(2).children().eq(0).text();
-                                var time = $(this).children().eq(end-1).children().eq(0).text();
-                                var etappeRenner = {_id : id, naam : name, team : teamName, tijd : time}
-                                if(pos) {//doesn't add rider if pos==0
-                                    rennersDag.push(id);
-                                    etappeDag.push(etappeRenner);
-                                }else{
-                                    rennersDNF.push(id);
-                                    etappeDNF.push(etappeRenner);
-                                }
-                            })
-                            break;
+                                var teamName = $(this).children().eq(teamCol).children().eq(0).text();
+                                var timeCol = columns.indexOf('Time');
+                                var pntCol = columns.indexOf('Pnt');
+                            }
+                            switch(klas){
+                                case 'stage'://Dag uitslag
+                                    var pos = $(this).children().first().text();
+                                    pos = parseInt(pos);
+                                    if(isNaN(pos)) pos=0; //als DNF enzo
+                                    var time = $(this).children().eq(timeCol).children().eq(0).text();
+                                    var etappeRenner = {_id : id, naam : name, team : teamName, tijd : time}
+                                    if(pos) {//doesn't add rider if pos==0
+                                        rennersDag.push(id);
+                                        etappeDag.push(etappeRenner);
+                                    }else{
+                                        rennersDNF.push(id);
+                                        etappeDNF.push(etappeRenner);
+                                    }
+                                break;
 
-                            case 'gc'://Algemeen Klassement
-                            $(this).children().eq(1).children().each(function(index, element){//voor iedere renner in de uitslag
-                                var id = $(this).children().eq(end-4).children().eq(1).attr('href').substring(6);
-                                var name = $(this).children().eq(end-4).children().eq(1).text();
-                                if(!name.indexOf(" "))//als er een spatie is op plek nu verwijder spatie
-                                    name = name.substring(1);
-                                var teamName = $(this).children().eq(end-3).children().eq(0).text();
-                                var time = $(this).children().eq(end-1).children().eq(0).text();
-                                var etappeRenner = {_id : id, naam : name, team : teamName, tijd : time}
-                                rennersAk.push(id);
-                                etappeAk.push(etappeRenner);
-                            })   
-                            break;
+                                case 'gc'://Algemeen Klassement
+                                    var time = $(this).children().eq(timeCol).children().eq(0).text();
+                                    var etappeRenner = {_id : id, naam : name, team : teamName, tijd : time}
+                                    rennersAk.push(id);
+                                    etappeAk.push(etappeRenner);  
+                                break;
 
-                            case 'points'://Sprinter Klassement
-                            $(this).children().eq(1).children().each(function(index, element){//voor iedere renner in de uitslag
-                                var id = $(this).children().eq(end-3).children().eq(1).attr('href').substring(6);
-                                var name = $(this).children().eq(end-3).children().eq(1).text();
-                                if(!name.indexOf(" "))//als er een spatie is op plek nu verwijder spatie
-                                    name = name.substring(1);
-                                var teamName = $(this).children().eq(end-2).children().eq(0).text();
-                                var score = $(this).children().eq(end-1).text();
-                                var etappeRenner = {_id : id, naam : name, team : teamName, score : score}
-                                rennersSprint.push(id);
-                                etappeSprint.push(etappeRenner);
+                                case 'points'://Sprinter Klassement
+                                    var score = $(this).children().eq(pntCol).text();
+                                    var etappeRenner = {_id : id, naam : name, team : teamName, score : score}
+                                    rennersSprint.push(id);
+                                    etappeSprint.push(etappeRenner);   
+                                break;
 
-                            })    
-                            break;
+                                case 'youth'://Jongeren Klassement
+                                    var time = $(this).children().eq(timeCol).children().eq(0).text();
+                                    var etappeRenner = {_id : id, naam : name, team : teamName, tijd : time}
+                                    rennersJong.push(id);
+                                    etappeJong.push(etappeRenner); 
+                                break;
 
-                            case 'youth'://Jongeren Klassement
-                            $(this).children().eq(1).children().each(function(index, element){//voor iedere renner in de uitslag
-                                var id = $(this).children().eq(end-3).children().eq(1).attr('href').substring(6);
-                                var name = $(this).children().eq(end-3).children().eq(1).text();
-                                if(!name.indexOf(" "))//als er een spatie is op plek nu verwijder spatie
-                                    name = name.substring(1);
-                                var teamName = $(this).children().eq(end-2).children().eq(0).text();
-                                var time = $(this).children().eq(end-1).children().eq(0).text();
-                                var etappeRenner = {_id : id, naam : name, team : teamName, tijd : time}
-                                rennersJong.push(id);
-                                etappeJong.push(etappeRenner);
-                            })    
-                            break;
-
-                            case 'kom'://Berg Klassement
-                            $(this).children().eq(1).children().each(function(index, element){//voor iedere renner in de uitslag
-                                var id = $(this).children().eq(end-3).children().eq(1).attr('href').substring(6);
-                                var name = $(this).children().eq(end-3).children().eq(1).text();
-                                if(!name.indexOf(" "))//als er een spatie is op plek nu verwijder spatie
-                                    name = name.substring(1);
-                                var teamName = $(this).children().eq(end-2).children().eq(0).text();
-                                var score = $(this).children().eq(end-1).text();
-                                var etappeRenner = {_id : id, naam : name, team : teamName, score : score}
-                                rennersBerg.push(id);
-                                etappeBerg.push(etappeRenner);
-                            })
-                            break;
-                        }
+                                case 'kom'://Berg Klassement
+                                    var score = $(this).children().eq(pntCol).text();
+                                    var etappeRenner = {_id : id, naam : name, team : teamName, score : score}
+                                    rennersBerg.push(id);
+                                    etappeBerg.push(etappeRenner);
+                                break;
+                            }
+                        })
                     }
                 });
                 ////////// check of resultaten compleet zijn
