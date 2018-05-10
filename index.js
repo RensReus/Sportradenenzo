@@ -282,6 +282,12 @@ app.get('/giro/renner/:rennerID', function(req, res){
   
 });
 
+app.get("/onderweg",function(req,res){
+  getLiveData(currentDisplay(),function(togo){
+    res.send(togo);
+  })
+})
+
 app.get('*', function(req, res){
   console.log(req.originalUrl);
   res.redirect('/profile');

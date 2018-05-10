@@ -60,6 +60,17 @@ transferEtappes = function(){
     });
 }
 
+transferRenners = function(){
+    Renner.find({},function(err,renners){
+        renners.forEach(function(renner){
+            renner.update( 
+                {'uitgevallen' : false },
+                {multi:true}, 
+                  function(err, numberAffected){  
+                  });
+        });
+    });
+}
 
 module.exports.calculateUserScores = calculateUserScores;
 module.exports.transferUsers = transferUsers;

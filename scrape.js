@@ -178,6 +178,16 @@ getResult = function(et,callback){
                         })
                     }
                 });
+                //set renners als uitgevallen
+                Renner.find( { '_id':{$in: rennersDNF}}, function(err,renners){// set uitgevallen to true 
+                    renners.forEach(function(renner,index){
+                        renner.uitgevallen = true;
+                        renner.markModified;
+                        renner.save(function(err,result) {
+                            if (err) throw err;
+                        });
+                    })
+                })
                 ////////// check of resultaten compleet zijn
                 var jongDNF = 0;
                 for(i in rennersDNF){
@@ -380,5 +390,18 @@ getPrijs = function(id){
       });
 }
 
+getLiveData = function(et,callback){
+    request({url:'http://www.giroditalia.it/eng/live/',
+    headers: {"Connection": "keep-alive"}}, function (error, response, html) {
+        var $ = cheerio.load(html);
+        var curpos = $(".cont-km-time").children().first().text();
+        var stagelength = $(".bl_inline").eq(2).text();
+        callback("position: " + curpos + " length " + stagelength);
+    });
+
+
+}
+
 module.exports.getStartlist = getStartlist;
 module.exports.getResult = getResult;
+module.exports.getLiveData = getLiveData;

@@ -6,6 +6,7 @@ var rennerSchema = mongoose.Schema({
     team        : String,
     land        : String,
     prijs       : Number,
+    uitgevallen : {type: Boolean, default: false},
     uitslagen   : {
         dag      : { type: Array, default: new Array(21).fill(0) },
         ak       : { type: Array, default: new Array(21).fill(0) },
