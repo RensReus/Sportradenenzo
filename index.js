@@ -292,7 +292,8 @@ app.get('/giro/renner/:rennerID', function(req, res){
 });
 
 app.get('*', function(req, res){
-  res.status(404).send('Hey boi je hebt een 404 error');
+  console.log(req.originalUrl);
+  res.redirect('/profile');
 });
 
 var scrapeResults = schedule.scheduleJob(' 0 */5 * * * *', function(){

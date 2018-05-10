@@ -160,14 +160,6 @@
                         <tr ><th></th><th>Daguitslag</th><th>Tijd</th></tr>    
                     </thead> 
                     <tbody>
-                        <%if(uitslagen.dag.length==0){%>
-                            <%if(user.local.username=="Sam"){%>
-                            <iframe width="80%" height="360px" src="https://www.youtube.com/embed/NlOJ-i5hJdI?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                            <%}%>
-                            <%if(user.local.username=="Rens"){%>
-                                <iframe width="80%" height="360px" src="https://www.youtube.com/embed/yRPjvHlUvWM?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                            <%}%>
-                        <%}%>
                         <%for(var i=0;i<Math.min(20,uitslagen.dag.length);i++){%>
                             <% if(opstellingIDs.includes(uitslagen.dag[i]._id)){%>
                                 <tr><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.dag[i]._id%>"><%=uitslagen.dag[i].naam%></a></td><td><%=uitslagen.dag[i].tijd%></td></tr>
