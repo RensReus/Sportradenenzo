@@ -63,7 +63,7 @@ require('./app/routes.js')(app, passport); // load our routes and pass in our ap
 
 // launch ======================================================================
 app.listen(process.env.PORT || 5000);
-console.log('Die Magie passiert am Tor ' + 5000);
+console.log('Ad portum ' + 5000 + ' magica accidit');
 
 //experiment met het vergaren van userinfo en post info =========== user info lijkt te werken, postinfo niet
 var User = require('./app/models/user');
