@@ -106,16 +106,7 @@ app.get('/testpost', function(req,res){
 })
 
 app.get('/test', function(req, res){
-  // getStartlist();
-  // for(i=1;i<22;i++){
-  //   if(i!=7)
-  //     getResult(i);
-  // }
-  //functies.calculateUserScores(1);
-  getResult(1, function(){
-    
-  });
-  res.status(404).send('Running Test');
+  res.redirect('/login');
 })
 
 var Renner = require('./app/models/renner');
@@ -301,7 +292,6 @@ var scrapeResults = schedule.scheduleJob(' 0 */5 * * * *', function(){
     Etappe.findOne({_id:currentDisplay()},function(err,etappe){
       if(!etappe.uitslagKompleet){
         getResult(currentDisplay(),function(){
-          console.log("got results"+currentDisplay());
         });
       }
     })

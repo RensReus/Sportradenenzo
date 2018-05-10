@@ -19,7 +19,6 @@ module.exports = function(app, passport) {
     // show the login form
     app.get('/login', function(req, res) {
         // render the page and pass in any flash data if it exists
-        console.log("LOGIN GET: " + req.query.redir);
         res.render('login.ejs', { message: req.flash('loginMessage'),url: req.originalUrl }); 
     });
 
@@ -30,8 +29,6 @@ module.exports = function(app, passport) {
     //     failureFlash : true // allow flash messages
     // })); 
     app.post('/login', function(req, res, next) {
-        console.log("LOGIN POST")
-        console.log(decodeURIComponent(req.query.redir));
         var redirectURL = '/giro';
         if(req.query.redir!=undefined) redirectURL = req.query.redir;
         passport.authenticate('local-login', {
@@ -151,10 +148,8 @@ module.exports = function(app, passport) {
     app.get('/manualupdate/giro/etappe/:id', isLoggedIn, function(req,res){
         if(req.user.local.admin){
             getResult(req.params.id,function(){
-                calculateUserScores(req.params.id,function(){
-                });
+                res.status(404).send("Manually updated etappe " + req.params.id);
             });
-            res.status(404).send("You are an admin and are allowed to manually update etappe " + req.params.id + ". Helaas dit deze pagina nu nog geen kut");
         }else{
             res.redirect('/')
         }

@@ -24,14 +24,14 @@ calculateUserScores = function(et,callback){
                     });
                     user.profieldata.poulescore.set(et-1,punten);
                     user.profieldata.totaalscore=user.profieldata.poulescore.reduce((a, b) => a + b);
+                    user.save(function(err,result) {//save score
+                        if (err) throw err;
+                        if(index===users.length-1){// als laaste renner dan calculate user en continue code
+                            callback();
+                        }
+                    });
                 });
             };
-            user.save(function(err,result) {//save score
-                if (err) throw err;
-                if(index===users.length-1){// als laaste renner dan calculate user en continue code
-                    callback();
-                }
-            });
         });  
     });
 }

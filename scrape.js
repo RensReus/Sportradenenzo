@@ -85,21 +85,20 @@ getResult = function(et,callback){
             if (!error && response.statusCode == 200) {
                 var $ = cheerio.load(html);
                 var teamWinners = new Array(5).fill("");
-                var rennerWinners = new Array(5).fill("");
                 var cases = new Array();
                 $(".resTabnav").each(function(index,element){
                     cases.push($(this).attr("class").split(' ')[2]);
                 })
                 $(".basic").each(function(kl, element){//Slaat de teams en renner id van de dagwinnaar/klassementsleiders op
                     var end = $(this).children().eq(1).children().first().children().length;
-                    if(end){
+                    var klas = cases[kl];
+                    if(end && klas!='teams'){
                         var columns = new Array();
                         $(this).children().first().children().first().children().each(function(index,element){
                             columns.push($(this).text())  
                         })
-                        var klas = cases[kl];
                         var teamCol = columns.indexOf("Team");
-                        teamWinners[klas] = $(this).children().eq(1).children().first().children().eq(teamCol).children().eq(1).text();
+                        teamWinners[klas] = $(this).children().eq(1).children().first().children().eq(teamCol).children().eq(0).text();
                     }
                 });
                 var rennersDag = new Array();
@@ -311,6 +310,7 @@ getResult = function(et,callback){
         });
     });
 }
+
 
 
 getPunten = function(kl,pos){
