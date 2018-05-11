@@ -79,7 +79,7 @@
         }
         @keyframes popupanimatie {
             from {width: 0%; right:0%;opacity: 0;} 
-            to {width: 320%; right:112%;opacity: 1;}
+            to {width: 100%; right:30%;opacity: 1;}
         }
         /* Safari 4.0 - 8.0 */
         @-webkit-keyframes popupanimatie {
@@ -299,9 +299,9 @@ var teamscalled=0;
 function checkresultaat(etappe){ //Laat alle behaalde punten in de resultatentabel zien
     $.ajax({
 		type: 'POST',
-        data: JSON.stringify({"etappe":etappe,"toevoegen":"etapperesultaat"}),
+        data: JSON.stringify({"etappe":etappe,"status":"etapperesultaat"}),
 		contentType: 'application/json',
-        url: '/giro/etappe*',
+        url: '/giro/etapperesultaat',
         cache: false,
         dataType:"json",
         success: function (res) { //{renners : array, kopman : string}
@@ -340,9 +340,9 @@ function teamspopup(etappe) {
     if(teamscalled==0){
     $.ajax({
 		type: 'POST',
-        data: JSON.stringify({"etappe":etappe,"toevoegen":"teamspopup"}),
+        data: JSON.stringify({"etappe":etappe,"status":"teamspopup"}),
 		contentType: 'application/json',
-        url: '/giro/etappe*',
+        url: '/giro/etapperesultaat',
         cache: false,
         dataType:"json",
         success: function (users) {

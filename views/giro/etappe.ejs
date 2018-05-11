@@ -155,6 +155,7 @@
 <footer class="container-fluid text-center">
     <p></p>
 </footer>
+
 <script>
 var NUMBER_OF_REQUESTS = 0;
 setInterval(function(){ 
@@ -169,11 +170,10 @@ function kiesrenner(id,etappe){
             return can_send;
         },
 		type: 'POST',
-        data: JSON.stringify({"id":id, "etappe":etappe, "toevoegen": true}),
+        data: JSON.stringify({"id":id, "etappe":etappe, "status": "toevoegen"}),
 		contentType: 'application/json',
-        url: '/giro/etappe*',
+        url: '/giro/etappes',
         cache: false,
-        async:false,
         dataType:"json",
         success: function (opstelling) { //user.opstellingen[req.body.etappe-1].opstelling
             for(i=0;i<opstelling._id.length;i++){ //vul de nieuwe opstelling in
@@ -195,11 +195,10 @@ function verwijderrenner(id,etappe){
             return can_send;
         },
 		type: 'POST',
-        data: JSON.stringify({"id": id, "etappe":etappe, "toevoegen": false}),
+        data: JSON.stringify({"id": id, "etappe":etappe, "status": "verwijderen"}),
 		contentType: 'application/json',
-        url: '/giro/etappe*',
+        url: '/giro/etappes',
         cache: false,
-        async:false,
         dataType:"json",
         success: function (opstellingen) { //{opstelling,idverwijderde,kopman}
             for(var i=0;i<opstellingen.opstelling._id.length;i++){
@@ -229,42 +228,37 @@ function kieskopman(id,etappe){
             return can_send;
         },
 		type: 'POST',
-        data: JSON.stringify({"id": id, "etappe":etappe, "toevoegen": "kopman"}),
+        data: JSON.stringify({"id": id, "etappe":etappe, "status": "kopman"}),
 		contentType: 'application/json',
-        url: '/giro/etappe*',
+        url: '/giro/etappes',
         cache: false,
-        async:false,
         dataType:"json",
         success: function (opstelling) {}					
     });    
 }
 
 function updateuserteam(etappe){
-    $.ajax({
-        beforeSend: function canSendAjaxRequest()
-        {
-            var can_send = NUMBER_OF_REQUESTS < 1;
-            NUMBER_OF_REQUESTS++;
-            return can_send;
-        },       
+    $.ajax({   
 		type: 'POST',
-        data: JSON.stringify({"etappe":etappe, "toevoegen": "laden"}),
+        data: JSON.stringify({"etappe":etappe, "status": "laden"}),
 		contentType: 'application/json',
-        url: '/giro/etappe*',
+        url: '/giro/etappes',
         cache: false,
-        async:false,
         dataType:"json",
-        success: function (opstellingen) { 
-            for(var i=0;i<opstellingen.opstelling._id.length;i++){
-                $("#" + opstellingen.opstelling._id[i]).addClass("rennerselected");
-                $("#etappelijst" + i).html(opstellingen.opstelling.naam[i]); //Vul de etappelijst met de renners
+        success: function (res) { //{'opstellingen' : user.opstellingen[etappe-1],'uitgevallen' : uitgevallen}
+            for(var i=0;i<res.uitgevallen.length;i++){
+                $("#" + res.uitgevallen[i]._id).addClass("uitgevallen");
+            }
+            for(var i=0;i<res.opstellingen.opstelling._id.length;i++){
+                $("#" + res.opstellingen.opstelling._id[i]).addClass("rennerselected");
+                $("#etappelijst" + i).html(res.opstellingen.opstelling.naam[i]); //Vul de etappelijst met de renners
                 $("#kopman"+i).prop('disabled', false); //Zorg dat de kopmanknop voor deze renners werkt
-                if(opstellingen.opstelling._id[i]==opstellingen.kopman){ //Zoek naar de kopman
+                if(res.opstellingen.opstelling._id[i]==res.opstellingen.kopman){ //Zoek naar de kopman
                     $("#kopman"+i).prop('checked', true); //Check als deze is gevonden
                 }else{$("#kopman"+i).prop('checked', false);} //Anders uncheck als het nodig is
             }
-            for(var i=opstellingen.opstelling.length;i<10;i++){
-                $("#" + opstelling._id[i]).removeClass("rennerselected");
+            for(var i=res.opstellingen.opstelling.length;i<10;i++){
+                $("#" + res.opstellingen._id[i]).removeClass("rennerselected");
                 $("#etappelijst" + i).html(""); //Maak alle plekken waar geen renners voor zijn leeg
                 $("#kopman"+i).prop('disabled', true); //Disable de kopmanknop voor deze plekken
                 $("#kopman"+i).prop('checked', false); //Uncheck ook als het nodig is

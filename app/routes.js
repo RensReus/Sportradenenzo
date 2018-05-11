@@ -121,7 +121,6 @@ module.exports = function(app, passport) {
                 User.findOne(req.user._id, function(err, user) { //user zoeken voor edits
                     res.render('./giro/etappe.ejs', {
                         user:req.user,
-                        opstelling:req.user.opstellingen[etappe-1].opstelling.naam,
                         huidig:currentDisplay(),
                         etappe:etappe,
                         deadline:stageStart(etappe)

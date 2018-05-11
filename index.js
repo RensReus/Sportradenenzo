@@ -174,96 +174,152 @@ app.get('/giro', function(req, res) { //algemene giro pagina
   }
 });
 
-app.post('/giro/etappe*', function(req, res){
-//Posts van etappe.ejs heeft hetzelfde adres als etapperesultaat.ejs=======================================================
-  var queryStart = req.originalUrl.indexOf("etappe") + 6;
-  var queryEnd   = req.originalUrl.length + 1; //Query eindigen op einde url
-  var query = req.originalUrl.slice(queryStart, queryEnd - 1); //Het nummer isoleren 
-  var etappe = parseInt(query,10); //String omzetten naar int (decimaal)
-  if(!displayResults(req.body.etappe)){ //Kijken of de deadline nog niet is geweest
-    if(req.body.toevoegen==true){ //kijk of er een renner wordt toegevoegd aan de etappeselectie
-      User.findOne(req.user._id, function(err, user) {
-        //Zorgen dat er een array is om de functies op uit te voeren
-        if(user.opstellingen[req.body.etappe-1].opstelling._id.length<9){ //kijken of er nog plek is
-        var dubbel=false; //Kijken of de renner niet al in het team zit
-        for(i=0;i<user.opstellingen[req.body.etappe-1].opstelling._id.length;i++){
-          if(user.opstellingen[req.body.etappe-1].opstelling._id[i]==user.teamselectie.userrenners[req.body.id]._id){
-            var dubbel=true;
-            break;
-          };
+app.post('/giro/etappes', function(req, res){
+ 
+  // Deadline is voorbij
+	if(displayResults(req.body.etappe)){
+		console.log("deadline voorbij");
+		res.send();
+		return;
+	}
+	
+	// Kijk of er een renner wordt toegevoegd aan de etappeselectie
+  if (req.body.status == "toevoegen") {
+		User.findOne(req.user._id)
+			.exec()
+			.then(user => {
+				// Kijk of er nog plek is
+				if(user.opstellingen[req.body.etappe-1].opstelling._id.length>8){
+					console.log("team vol");
+					return Promise.reject();
+				}
+
+				// Kijk of de renner is uitgevallen
+				return Promise.all([
+					Promise.resolve(user),
+					Renner.count({
+						$and: [
+							{ 'uitgevallen': true },
+							{ '_id': user.teamselectie.userrenners[req.body.id]._id },
+						]
+					}).exec()
+				]);
+			})
+			.then(([user, uitgevallen]) => { 
+				if (uitgevallen > 0) {
+					return Promise.reject();
+				}
+
+				//Kijken of de renner niet al in het team zit
+        if (user.opstellingen[req.body.etappe-1].opstelling._id.indexOf(user.teamselectie.userrenners[req.body.id]._id) !== -1) {
+					return Promise.reject();
         };
-        if(dubbel==false){
-          //Voeg de naam en id van de renner toe
-          user.opstellingen[req.body.etappe-1].opstelling._id.push(user.teamselectie.userrenners[req.body.id]._id);
-          user.opstellingen[req.body.etappe-1].opstelling.naam.push(user.teamselectie.userrenners[req.body.id].naam);
-          user.markModified('opstellingen') 
-          user.save(function(err) {
-            if (err) throw err;
-          });
-        }else{res.send();} //Renner zit al in selectie
-        }else{res.send();} //Team zit vol
-        res.json(user.opstellingen[req.body.etappe-1].opstelling); //Stuur update terug naar de client
-      });
-    }
-    if(req.body.toevoegen==false){ //renner wordt verwijderd uit selectie
-      User.findOne(req.user._id, function(err, user) {
-        if(user.opstellingen[req.body.etappe-1].opstelling._id[req.body.id]!=undefined){ //Kijk of er iets is om te verwijderen
+
+				//Voeg de naam en id van de renner toe
+				user.opstellingen[req.body.etappe-1].opstelling._id.push(user.teamselectie.userrenners[req.body.id]._id);
+				user.opstellingen[req.body.etappe-1].opstelling.naam.push(user.teamselectie.userrenners[req.body.id].naam);
+				user.markModified('opstellingen') 
+				user.save(function(err) {
+					if (err) throw err;
+				});
+				res.json(user.opstellingen[req.body.etappe-1].opstelling); //Stuur update terug naar de client
+			})
+			.catch(err => {
+				res.send();
+			});
+  };
+
+  if(req.body.status=="verwijderen"){ //renner wordt verwijderd uit selectie
+    User.findOne(req.user._id)
+      .exec()
+      .then(user => {
+        if(user.opstellingen[req.body.etappe-1].opstelling._id[req.body.id]==undefined){ //Kijk of er iets is om te verwijderen
+          res.send()
+          return Promise.reject();
+        }
         if(user.opstellingen[req.body.etappe-1].opstelling._id[req.body.id]==user.opstellingen[req.body.etappe-1].kopman){
           user.opstellingen[req.body.etappe-1].kopman="" //Als renner==kopman, verwijder de kopman
         };
         var idverwijderde=user.opstellingen[req.body.etappe-1].opstelling._id[req.body.id] //Nodig om te kijken wie unselected is
-        user.opstellingen[req.body.etappe-1].opstelling._id.splice(req.body.id, 1); //Verwijder de renner
-        user.opstellingen[req.body.etappe-1].opstelling.naam.splice(req.body.id, 1); //Verwijder de renner
+        user.opstellingen[req.body.etappe-1].opstelling._id.splice(req.body.id, 1); //Verwijder de renner (id)
+        user.opstellingen[req.body.etappe-1].opstelling.naam.splice(req.body.id, 1); //Verwijder de renner (naam)
         user.markModified('opstellingen')
         user.save(function(err){
           if(err) throw err;
-          res.json({'opstelling':user.opstellingen[req.body.etappe-1].opstelling,'idverwijderde':idverwijderde,'kopman':user.opstellingen[req.body.etappe-1].kopman}); //Stuur update terug naar user
         });
-      };
+        res.json({'opstelling':user.opstellingen[req.body.etappe-1].opstelling,'idverwijderde':idverwijderde,'kopman':user.opstellingen[req.body.etappe-1].kopman}); //Stuur update terug naar user
       });
-    };
-    if(req.body.toevoegen=="laden"){ //Het laden van de opstelling bij het laden van een etappe pagina
-      User.findOne(req.user._id, function(err, user) {
-        if(err) throw err;
-        res.json(user.opstellingen[req.body.etappe-1]);
-      }); 
-    };
-    if(req.body.toevoegen=="kopman"){ //Het kiezen van een kopman
-      User.findOne(req.user._id, function(err, user) {
+  };
+  
+  if(req.body.status=="laden"){ //Het laden van de opstelling bij het laden van een etappe pagina
+    User.findOne(req.user._id)
+      .exec()
+      .then(user => {
+        return Promise.all([
+          Promise.resolve(user),
+          Renner.find({
+            $and: [
+              {'_id' : {$in:user.teamselectie.userrenners}},
+              {'uitgevallen' : true}
+            ]
+          },'_id').exec() //Kijk of een renner is uitgevallen
+        ]);
+      })
+      .then(([user,uitgevallen]) => {
+        console.log(uitgevallen)
+        for(var i=0;i<uitgevallen.length;i++){
+          user.opstellingen[req.body.etappe-1].opstelling.naam.splice(user.opstellingen[req.body.etappe-1].opstelling._id.indexOf(uitgevallen[i]))
+          user.opstellingen[req.body.etappe-1].opstelling._id.splice(user.opstellingen[req.body.etappe-1].opstelling._id.indexOf(uitgevallen[i]))
+        }
+        user.markModified('opstellingen')
+        user.save(function(err){
+          if(err) throw err;
+        });
+        res.json({'opstellingen' : user.opstellingen[req.body.etappe-1], 'uitgevallen' : uitgevallen});
+      })
+      .catch(err => {
+				console.log(err)
+			});
+  };
+
+  if(req.body.status=="kopman"){ //Het kiezen van een kopman
+    User.findOne(req.user._id)
+      .exec()
+      .then(user => {
         user.opstellingen[req.body.etappe-1].kopman = user.opstellingen[req.body.etappe-1].opstelling._id[req.body.id];
         user.markModified('opstellingen')
         user.save(function(err){
           if(err) throw err;
-          res.send(req.body);
+          res.send();
         });
       }); 
-    }
-//Posts van etapperesultaat.ejs heeft hetzelfde adres als etappe.ejs=======================================================
-  }else{
-    if(req.body.toevoegen=="etapperesultaat"){
-      User.findOne(req.user._id, function(err, user) {
-        Renner.find({'_id' : {"$in" : user.opstellingen[req.body.etappe-1].opstelling._id}},'_id naam punten', function(err,renners){
-          if(err) throw err;
-          res.json({'renners' : renners, 'kopman' : user.opstellingen[req.body.etappe-1].kopman});
-        });
+  };
+});
+
+app.post('/giro/etapperesultaat', function(req, res){
+  if(req.body.status=="etapperesultaat"){ //Laden van de resultatenpagina
+    User.findOne(req.user._id, function(err, user) {
+      Renner.find({'_id' : {"$in" : user.opstellingen[req.body.etappe-1].opstelling._id}},'_id naam punten', function(err,renners){
+        if(err) throw err;
+        res.json({'renners' : renners, 'kopman' : user.opstellingen[req.body.etappe-1].kopman});
       });
+    });
+  }
+  
+  if(req.body.status=="teamspopup"){ //Popup voor de teams
+    if(req.user.groups.budget){ //Kijken of het een budgetaccount is
+      User.find({'$or' :[{'local.username': 'BudgetBierfietsen'},{'local.username':'YannickBudget'},{'local.username':'rensBudget'},{'local.username':'BudgetSam'}]}, 'local.username opstellingen', function(err, users) {
+        if(err) throw err;
+        res.send(users); //Stuur de data om in de popup te zetten
+      });  
     }else{
-    if(req.body.toevoegen=="teamspopup"){
-      if(req.user.local.username=="BudgetBierfietsen" || req.user.local.username=="YannickBudget" || req.user.local.username=="rensBudget" || req.user.local.username=="BudgetSam"){ //Budget usernames toevoegen <+V
-          User.find({'$or' :[{'local.username': 'BudgetBierfietsen'},{'local.username':'YannickBudget'},{'local.username':'rensBudget'},{'local.username':'BudgetSam'}]}, 'local.username opstellingen', function(err, users) {
-          if(err) throw err;
-          res.send(users); //Stuur de data om in de popup te zetten
-        });  
-      }else{
-      //Het lukt niet om find te laten werken voor het eerste element in de etappe opstelling dus maar hardcoded op username
-      //Evt. te weinig ruimte op de pagina voor budgetteams
+    //Het lukt niet om find te laten werken voor het eerste element in de etappe opstelling dus maar hardcoded op username
       User.find({'$or' :[{'local.username': 'Rens'},{'local.username':'Bierfietsen'},{'local.username':'Yannick'},{'local.username':'Sam'}]}, 'local.username opstellingen', function(err, users) {
         if(err) throw err;
         res.send(users); //Stuur de data om in de popup te zetten
       });
-      };
-    }else{console.log('Deadline voorbij!')}} //Deadline is voorbij
-   }
+    };
+  };
 });
 
 app.get('/giro/renner/:rennerID', function(req, res){
@@ -320,9 +376,3 @@ var copyOpstelling = schedule.scheduleJob(rule,function(){
     })
   })
 });
-
-
-
-//app.listen(app.get('port'), function() {
-  //console.log("Node app is running at localhost:" + app.get('port'))
-//})
