@@ -1,5 +1,5 @@
 var scrape = require('./../scrape');
-module.exports = function(app, passport) {
+module.exports = function (app, passport) {
     var User = require('./models/user');
     var girodata = require('./girodata');
     var Renners = require('./models/renner');
@@ -8,8 +8,8 @@ module.exports = function(app, passport) {
     // =====================================
     // HOME PAGE (with login links) ========
     // =====================================
-    app.get('/', function(req, res) {
-    // res.render('index.ejs'); // load the index.ejs file
+    app.get('/', function (req, res) {
+        // res.render('index.ejs'); // load the index.ejs file
         res.redirect('/login'); // scheelt iedere keer weer klikken en de index pagina istoch kaal
     });
 
@@ -17,9 +17,9 @@ module.exports = function(app, passport) {
     // LOGIN ===============================
     // =====================================
     // show the login form
-    app.get('/login', function(req, res) {
+    app.get('/login', function (req, res) {
         // render the page and pass in any flash data if it exists
-        res.render('login.ejs', { message: req.flash('loginMessage'),url: req.originalUrl }); 
+        res.render('login.ejs', { message: req.flash('loginMessage'), url: req.originalUrl });
     });
 
     // process the login form
@@ -28,29 +28,29 @@ module.exports = function(app, passport) {
     //     failureRedirect : '/login', // redirect back to the signup page if there is an error
     //     failureFlash : true // allow flash messages
     // })); 
-    app.post('/login', function(req, res, next) {
+    app.post('/login', function (req, res, next) {
         var redirectURL = '/giro';
-        if(req.query.redir!=undefined) redirectURL = req.query.redir;
+        if (req.query.redir != undefined) redirectURL = req.query.redir;
         passport.authenticate('local-login', {
-            successRedirect : redirectURL, // scheelt ook weer een keer klikken
-            failureRedirect : '/login', // redirect back to the signup page if there is an error
-            failureFlash : true // allow flash messages
+            successRedirect: redirectURL, // scheelt ook weer een keer klikken
+            failureRedirect: '/login', // redirect back to the signup page if there is an error
+            failureFlash: true // allow flash messages
         })(req, res, next);
-      });    
+    });
     // =====================================
     // SIGNUP ==============================
     // =====================================
     // show the signup form
-    app.get('/signup', function(req, res) {
+    app.get('/signup', function (req, res) {
         // render the page and pass in any flash data if it exists
         res.render('signup.ejs', { message: req.flash('signupMessage') });
     });
 
     // process the signup form
     app.post('/signup', passport.authenticate('local-signup', {
-        successRedirect : '/profile', // redirect to the secure profile section
-        failureRedirect : '/signup', // redirect back to the signup page if there is an error
-        failureFlash : true // allow flash messages
+        successRedirect: '/profile', // redirect to the secure profile section
+        failureRedirect: '/signup', // redirect back to the signup page if there is an error
+        failureFlash: true // allow flash messages
     }));
 
     // =====================================
@@ -58,98 +58,98 @@ module.exports = function(app, passport) {
     // =====================================
     // we will want this protected so you have to be logged in to visit
     // we will use route middleware to verify this (the isLoggedIn function)
-    app.get('/profile', isLoggedIn, function(req, res) {
-    User.find({'profieldata.poulescore' : {$exists: true}}, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
-        console.log(users)
-        if (err) throw err;
-        res.render('profile.ejs', {
-            user : req.user, // get the user out of session and pass to template
-            users : users, //[{id,local{username}},...]
-        });
-    });
-    });
-
-    app.get('/giro/teamselectie', isLoggedIn, function(req, res) {
-    if(!currentDisplay()){//returns 0 before start
-        Renners.find({'prijs' : {$exists: true}},'_id naam team prijs', {sort: {'prijs': -1}}, function (err, renners) {
+    app.get('/profile', isLoggedIn, function (req, res) {
+        User.find({ 'profieldata.poulescore': { $exists: true } }, 'local.username profieldata.poulescore profieldata.totaalscore', { sort: { 'profieldata.totaalscore': -1 } }, function (err, users) {
+            console.log(users)
             if (err) throw err;
-            res.render('./giro/teamselectie.ejs', {
-                user : req.user,
-                renners : renners,
-                huidig: currentDisplay(),
-                geld : req.user.teamselectie.geld,
-                userrenners: req.user.teamselectie.userrenners
+            res.render('profile.ejs', {
+                user: req.user, // get the user out of session and pass to template
+                users: users, //[{id,local{username}},...]
             });
         });
-    }else{
-        res.redirect("/");
-    }
+    });
+
+    app.get('/giro/teamselectie', isLoggedIn, function (req, res) {
+        if (!currentDisplay()) {//returns 0 before start
+            Renners.find({ 'prijs': { $exists: true } }, '_id naam team prijs', { sort: { 'prijs': -1 } }, function (err, renners) {
+                if (err) throw err;
+                res.render('./giro/teamselectie.ejs', {
+                    user: req.user,
+                    renners: renners,
+                    huidig: currentDisplay(),
+                    geld: req.user.teamselectie.geld,
+                    userrenners: req.user.teamselectie.userrenners
+                });
+            });
+        } else {
+            res.redirect("/");
+        }
     });
     //Voor de aanvraag van een etappe pagina------------------------------------------
-    app.get('/giro/etappe*', isLoggedIn, function(req, res){
-        User.findOne(req.user._id, function(err, user) {// gaat ooit fout als iemand niet zijn team af heeft voor de start
-            if(user.teamselectie.userrenners.length<20){
+    app.get('/giro/etappe*', isLoggedIn, function (req, res) {
+        User.findOne(req.user._id, function (err, user) {// gaat ooit fout als iemand niet zijn team af heeft voor de start
+            if (user.teamselectie.userrenners.length < 20) {
                 res.redirect("/giro/teamselectie")
             }
         });
         //Request de url en zoek het nummer om te weten welke etappe wordt gevraagd, knippen na etappe
         var etappe = parseInt(req.originalUrl.substring(12)); //String omzetten naar int (decimaal)
-        if (isNaN(etappe)==true || etappe<1 || etappe>21){ //Kijken of het een nummer is en of het geen ongeldig nummer is
+        if (isNaN(etappe) == true || etappe < 1 || etappe > 21) { //Kijken of het een nummer is en of het geen ongeldig nummer is
             res.redirect("/giro")//send to currentDisplay
-        }else{ 
-            if(displayResults(etappe)){ //returns true if etappe finished
-                Etappe.findOne({'_id' : etappe},'uitslagen creationTime', function (err, uitslag) {
+        } else {
+            if (displayResults(etappe)) { //returns true if etappe finished
+                Etappe.findOne({ '_id': etappe }, 'uitslagen creationTime', function (err, uitslag) {
                     if (err) throw err;
-                    User.find({ 'profieldata.poulescore' : {$exists: true} }, 'local.username profieldata.poulescore profieldata.totaalscore',{sort: {'profieldata.totaalscore': -1}}, function (err, users) {
-                        var dagscore = users.map(user => user.profieldata.poulescore[etappe-1]);
-                        var teamrenners = req.user.teamselectie.userrenners.map(renner => renner._id)                            
+                    User.find({ 'profieldata.poulescore': { $exists: true } }, 'local.username profieldata.poulescore profieldata.totaalscore', { sort: { 'profieldata.totaalscore': -1 } }, function (err, users) {
+                        var dagscore = users.map(user => user.profieldata.poulescore[etappe - 1]);
+                        var teamrenners = req.user.teamselectie.userrenners.map(renner => renner._id)
                         if (err) throw err;
                         res.render('./giro/etapperesultaat.ejs', {
-                            opstelling:req.user.opstellingen[etappe-1].opstelling.naam,
-                            opstellingIDs:req.user.opstellingen[etappe-1].opstelling._id,
-                            huidig:currentDisplay(),
+                            opstelling: req.user.opstellingen[etappe - 1].opstelling.naam,
+                            opstellingIDs: req.user.opstellingen[etappe - 1].opstelling._id,
+                            huidig: currentDisplay(),
                             etappe,
-                            uitslagen:uitslag.uitslagen,
-                            user : req.user, // get the user out of session and pass to template
+                            uitslagen: uitslag.uitslagen,
+                            user: req.user, // get the user out of session and pass to template
                             users, //[{id,local{username}},...]
                             dagscore,
                             teamrenners
                         });
                     });
                 });
-            }else{// if false display opstelling selectie
-                User.findOne(req.user._id, function(err, user) { //user zoeken voor edits
+            } else {// if false display opstelling selectie
+                User.findOne(req.user._id, function (err, user) { //user zoeken voor edits
                     res.render('./giro/etappe.ejs', {
-                        user:req.user,
-                        huidig:currentDisplay(),
-                        etappe:etappe,
-                        deadline:stageStart(etappe)
+                        user: req.user,
+                        huidig: currentDisplay(),
+                        etappe: etappe,
+                        deadline: stageStart(etappe)
                     });
                 });
             }
         };
     });
 
-    app.get('/giro/overzicht', function(req,res){
-        Renners.find({'prijs' : {$exists: true}},'naam team prijs punten', {sort: {'prijs': -1}}, function (err, renners) {
-            if(err) throw err;
-            User.find({'_id' : {$exists: true}},'teamselectie.userrenners local.username groups.budget', function(err,users){
-                if(err) throw err;
+    app.get('/giro/overzicht', function (req, res) {
+        Renners.find({ 'prijs': { $exists: true } }, 'naam team prijs punten', { sort: { 'prijs': -1 } }, function (err, renners) {
+            if (err) throw err;
+            User.find({ '_id': { $exists: true } }, 'teamselectie.userrenners local.username groups.budget', function (err, users) {
+                if (err) throw err;
                 res.render('./giro/overzicht.ejs', {
-                    renners : renners,
-                    user:req.user,
-                    users:users
+                    renners: renners,
+                    user: req.user,
+                    users: users
                 });
-            });    
+            });
         });
     });
 
-    app.get('/manualupdate/giro/etappe/:id', isLoggedIn, function(req,res){
-        if(req.user.local.admin){
-            getResult(req.params.id,function(){
+    app.get('/manualupdate/giro/etappe/:id', isLoggedIn, function (req, res) {
+        if (req.user.local.admin) {
+            getResult(req.params.id, function () {
                 res.status(404).send("Manually updated etappe " + req.params.id);
             });
-        }else{
+        } else {
             res.redirect('/')
         }
     })
@@ -157,8 +157,8 @@ module.exports = function(app, passport) {
     // =====================================
     // LOGOUT ==============================
     // =====================================
-    app.get('/logout', function(req, res) {
-        req.logout();   
+    app.get('/logout', function (req, res) {
+        req.logout();
         res.redirect('/');
     });
 };
