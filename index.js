@@ -190,7 +190,6 @@ app.post('/giro/etappes', function(req, res){
 			.then(user => {
 				// Kijk of er nog plek is
 				if(user.opstellingen[req.body.etappe-1].opstelling._id.length>8){
-					console.log("team vol");
 					return Promise.reject();
 				}
 
@@ -210,19 +209,19 @@ app.post('/giro/etappes', function(req, res){
 					return Promise.reject();
 				}
 
-				//Kijken of de renner niet al in het team zit
+        //Kijken of de renner niet al in het team zit
         if (user.opstellingen[req.body.etappe-1].opstelling._id.indexOf(user.teamselectie.userrenners[req.body.id]._id) !== -1) {
 					return Promise.reject();
         };
 
 				//Voeg de naam en id van de renner toe
 				user.opstellingen[req.body.etappe-1].opstelling._id.push(user.teamselectie.userrenners[req.body.id]._id);
-				user.opstellingen[req.body.etappe-1].opstelling.naam.push(user.teamselectie.userrenners[req.body.id].naam);
+        user.opstellingen[req.body.etappe-1].opstelling.naam.push(user.teamselectie.userrenners[req.body.id].naam);
 				user.markModified('opstellingen') 
 				user.save(function(err) {
-					if (err) throw err;
+          if (err) throw err;
+          res.json(user.opstellingen[req.body.etappe-1].opstelling); //Stuur update terug naar de client
 				});
-				res.json(user.opstellingen[req.body.etappe-1].opstelling); //Stuur update terug naar de client
 			})
 			.catch(err => {
 				res.send();
@@ -266,10 +265,11 @@ app.post('/giro/etappes', function(req, res){
         ]);
       })
       .then(([user,uitgevallen]) => {
-        console.log(uitgevallen)
         for(var i=0;i<uitgevallen.length;i++){
-          user.opstellingen[req.body.etappe-1].opstelling.naam.splice(user.opstellingen[req.body.etappe-1].opstelling._id.indexOf(uitgevallen[i]))
-          user.opstellingen[req.body.etappe-1].opstelling._id.splice(user.opstellingen[req.body.etappe-1].opstelling._id.indexOf(uitgevallen[i]))
+          if(user.opstellingen[req.body.etappe-1].opstelling._id.indexOf(uitgevallen[i])!==-1){
+            user.opstellingen[req.body.etappe-1].opstelling._id.splice(user.opstellingen[req.body.etappe-1].opstelling._id.indexOf(uitgevallen[i]))
+            user.opstellingen[req.body.etappe-1].opstelling.naam.splice(user.opstellingen[req.body.etappe-1].opstelling._id.indexOf(uitgevallen[i]))
+          }
         }
         user.markModified('opstellingen')
         user.save(function(err){
