@@ -154,12 +154,17 @@ module.exports = function (app, passport) {
                     var rennersPunten = new Array(20).fill(0);
                     for (i in renners) {
                         for (var j = 0;j<21;j++){
-                            if(user.opstellingen[j].opstelling._id.includes(renners[i]._id))
+                            if(user.opstellingen[j].opstelling._id.includes(renners[i]._id)){
                                 rennersPunten[i]+=renners[i].punten.totaal[j];
+                                if(user.groups.budget)
+                                    rennersPunten[i]-=renners[i].punten.team.totaal[j];
+                            }
                             if(user.opstellingen[j].kopman==renners[i]._id)
                                 rennersPunten[i]+=renners[i].punten.dag[j];
                         }
                         rennersPunten[i]+=renners[i].punten.totaal[21];//eindklassement
+                        if(user.groups.budget)
+                                    rennersPunten[i]-=renners[i].punten.team.totaal[21];
                     };
                     res.render('./giro/overzichtUser.ejs',{
                         renners,
