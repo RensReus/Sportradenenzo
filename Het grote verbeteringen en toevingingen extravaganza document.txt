@@ -1,0 +1,8 @@
+DB aanpassen
+- een niveau verwijderen bij opstellingen
+- hele user herindelen
+- ronde deelnames aan users toevoegen
+
+Poules implementeren
+
+overal ronde en jaar indicators aan toevoegen (bv GIRO 2018)
