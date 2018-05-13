@@ -350,7 +350,7 @@ app.get('*', function (req, res) {
 });
 
 var resultsRule = new schedule.RecurrenceRule()
-resultsRule.hour = new schedule.Range(0, 23, 1);//zodat de scrape niet stilstaat tot de volgende etappe start indien er een restart van de server is
+resultsRule.minute = 53;//zodat de scrape niet stilstaat tot de volgende etappe start indien er een restart van de server is
 var finished = false;
 
 var scrapeResults = schedule.scheduleJob(resultsRule, function () {
@@ -363,12 +363,16 @@ var scrapeResults = schedule.scheduleJob(resultsRule, function () {
         scrapeResults.reschedule(resultsRule);  //update new schedule
       })
     }
+    if(etappe.uitslagKompleet)
+      finished = true;
     if (finished) { // dit wordt iedere minuut na de finish uitgevoerd tot de resultaten compleet zijn
       if (!etappe.uitslagKompleet) {
         getResult(currentDisplay(), function () {
         });
-      } else { // uitslag compleet dus zou pas na een uur moeten gaan
+      } else {
         resultsRule = new schedule.RecurrenceRule(); // geen update meer nadat de uitslag compleet is
+        resultsRule.minute = 40;// minuut attribut overschrijven
+        resultsRule.hour = 15;// gaat nu 1x om 15.40 maar wordt inprincipe door de copyopstelling al eerder herstart
         scrapeResults.reschedule(resultsRule);            
         finished = false;// zorgt ervoor dat de scrape gaat kijken of de etappe gefinisht is ipv uitslag ophalen
       }
