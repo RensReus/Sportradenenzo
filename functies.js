@@ -77,9 +77,10 @@ transferRenners = function () {
 optimaleScoresUser = function (teamselectie, etappes, callback) {
     Renner.find({'_id': { $in: teamselectie }},function(err, renners){
         if (err) throw err;
-        var punten = new Array(etappes).fill(0);
+        var punten = new Array();
         for (var i = 0; i < etappes; i++) {
             // console.log("renners: " + renners.length);
+            punten[i]=0;
             var totaalpunten = renners.map((renner, index) => ({index : index, punten : renner.punten.totaal[i]}));
             // console.log("totaal: " + totaalpunten.length);
             

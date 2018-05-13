@@ -31,6 +31,9 @@
             text-align: left;
         }
         
+        tr.toonmeer{
+            cursor: pointer;
+        }
         /*De tabel van de popup*/
         table#teams td,table#teams th{
             font-size: 9pt;
@@ -45,6 +48,9 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+        }
+        tr.hidden {
+            display:none;
         }
         .teamspopup .teamspopuptext {
             visibility: hidden;
@@ -168,7 +174,17 @@
                             <%}else{%>
                                 <tr><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.dag[i]._id%>"><%=uitslagen.dag[i].naam%></a></td><td><%=uitslagen.dag[i].tijd%></td></tr>
                             <%}%>
-                        <%}%>    
+                        <%}%>
+                        <tr class="toonmeer" style="display:block;" onclick="showVolledig()"><td colspan="3">Klik hier voor volledige stand</td></tr>                            
+                        <%for(var i=20;i<uitslagen.dag.length;i++){%>
+                            <% if(opstellingIDs.includes(uitslagen.dag[i]._id)){%>
+                                <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.dag[i]._id%>"><%=uitslagen.dag[i].naam%></a></td><td><%=uitslagen.dag[i].tijd%></td></tr>
+                            <%}else if(teamrenners.includes(uitslagen.dag[i]._id)){%>
+                                <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.dag[i]._id%>"><%=uitslagen.dag[i].naam%></a></td><td><%=uitslagen.dag[i].tijd%></td></tr>
+                            <%}else{%>
+                                <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.dag[i]._id%>"><%=uitslagen.dag[i].naam%></a></td><td><%=uitslagen.dag[i].tijd%></td></tr>
+                            <%}%>
+                        <%}%>   
                     </tbody>    
                 </table>    
             </span>
@@ -193,6 +209,16 @@
                                     <tr><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
                                 <%}else{%>
                                     <tr><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
+                                <%}%>   
+                            <%}%>
+                            <tr class="toonmeer" style="display:block;" onclick="showVolledig()"><td colspan="3">Klik hier voor volledige stand</td></tr>
+                            <%for(var i=20;i<uitslagen.ak.length;i++){%>
+                                <% if(opstellingIDs.includes(uitslagen.ak[i]._id)){%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
+                                <%}else if(teamrenners.includes(uitslagen.ak[i]._id)){%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
+                                <%}else{%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></td><td>+<%=uitslagen.ak[i].tijd%></td></tr>
                                 <%}%>   
                             <%}%> 
                         </tbody>    
@@ -222,6 +248,16 @@
                                     <tr><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a></td><td><%=uitslagen.sprint[i].score%></td></tr>
                                 <%}%>    
                             <%}%>
+                            <tr class="toonmeer" style="display:block;" onclick="showVolledig()"><td colspan="3">Klik hier voor volledige stand</td></tr>                            
+                            <%for(var i=10;i<uitslagen.sprint.length;i++){%>
+                                <% if(opstellingIDs.includes(uitslagen.sprint[i]._id)){%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a></td><td><%=uitslagen.sprint[i].score%></td></tr>
+                                <%}else if(teamrenners.includes(uitslagen.sprint[i]._id)){%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a></td><td><%=uitslagen.sprint[i].score%></td></tr>
+                                <%}else{%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a></td><td><%=uitslagen.sprint[i].score%></td></tr>
+                                <%}%>    
+                            <%}%>
                         </tbody>    
                     <% } %>
                 </table>
@@ -247,6 +283,16 @@
                                     <tr><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></td><td><%=uitslagen.berg[i].score%></td></tr>
                                 <%}else{%>
                                     <tr><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></td><td><%=uitslagen.berg[i].score%></td></tr>
+                                <%}%>    
+                            <%}%>
+                            <tr class="toonmeer" style="display:block;" onclick="showVolledig()"><td colspan="3">Klik hier voor volledige stand</td></tr>                            
+                            <%for(var i=10;i<uitslagen.berg.length;i++){%>
+                                <% if(opstellingIDs.includes(uitslagen.berg[i]._id)){%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></td><td><%=uitslagen.berg[i].score%></td></tr>
+                                <%}else if(teamrenners.includes(uitslagen.berg[i]._id)){%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></td><td><%=uitslagen.berg[i].score%></td></tr>
+                                <%}else{%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></td><td><%=uitslagen.berg[i].score%></td></tr>
                                 <%}%>    
                             <%}%>
                         </tbody>    
@@ -276,6 +322,16 @@
                                     <tr><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
                                 <%}%>
                             <%}%>
+                            <tr class="toonmeer" style="display:block;" onclick="showVolledig()"><td colspan="3">Klik hier voor volledige stand</td></tr>
+                            <%for(var i=10;i<uitslagen.jong.length;i++){%>
+                                <% if(opstellingIDs.includes(uitslagen.jong[i]._id)){%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td class="opgesteld"><a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
+                                <%}else if(teamrenners.includes(uitslagen.jong[i]._id)){%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
+                                <%}else{%>
+                                    <tr class="restuitslag" style="display:none;"><td><%=i+1%></td><td><a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a></td><td>+<%=uitslagen.jong[i].tijd%></td></tr>
+                                <%}%>
+                            <%}%>
                         </tbody>    
                     <%}%>    
                 </table>
@@ -293,6 +349,17 @@ function showklassement(klass){ //dag:0 AK:1 sprint:2 berg:3 jong:4
     }
     document.getElementById('klassspan' + klass).style.display='block'; //Juiste klassement laten zien
     document.getElementById('klassementknop' + klass).classList.add('selected'); //Knop selecteren
+}
+
+function showVolledig(){
+    var rest = document.getElementsByClassName('restuitslag');
+    var toon = document.getElementsByClassName('toonmeer');
+    for(var i=0;i<rest.length;i++){
+        rest[i].style.display='block';
+    }
+    for(var i=0;i<toon.length;i++){
+        toon[i].style.display='none';
+    }
 }
 
 var teamscalled=0;
