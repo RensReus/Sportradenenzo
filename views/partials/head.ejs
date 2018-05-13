@@ -141,6 +141,55 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
         border-radius: 5px 0px 0px 0px;
     }
 
+    /*Buttons die paginas op de paginas scrollen*/
+    .btn-group .scrollbutton {
+        text-decoration: none;
+        color: #000;
+        background-color: #bbb;
+        border: 1px solid #999;
+        font-size: 11px;
+        float:left;
+        height:40px;
+        width:9.090909%;
+        text-align:center;
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    .btn-group .scrollbutton.selected{
+        text-decoration: none;
+        color: #ddd;
+        background-color: #222;
+        border: 1px solid #222;
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }    
+    .btn-group .scrollbutton.disabled{
+        text-decoration: none;
+        color: #222;
+        background-color: #222;
+        border: 1px solid #222;
+        cursor:default;
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    .btn-group .scrollbutton.disabled:hover{
+        background-color: #222;
+    }
+    .btn-group .scrollbutton:hover {
+        background-color: #fff;
+        color:#222;
+    }
+    .btn-group .scrollbutton.selected:hover {
+        background-color: #222;
+        color:#ddd;
+    }
+
     /*De zoekbalk die voor de teamselectie wordt gebruikt*/
     #zoekbalk{
         background-position: 10px 10px;
