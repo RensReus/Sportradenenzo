@@ -77,7 +77,7 @@ transferRenners = function () {
 optimaleScoresUser = function (teamselectie, etappes, callback) {
     Renner.find({'_id': { $in: teamselectie }},function(err, renners){
         if (err) throw err;
-        var punten = new Array(etappes-1).fill(0);
+        var punten = new Array(etappes).fill(0);
         for (var i = 0; i < etappes; i++) {
             // console.log("renners: " + renners.length);
             var totaalpunten = renners.map((renner, index) => ({index : index, punten : renner.punten.totaal[i]}));
@@ -96,7 +96,6 @@ optimaleScoresUser = function (teamselectie, etappes, callback) {
                     for(var k = 0;k<9;k++){
                         punten[i]+=totaalpunten[k].punten;
                     }
-                    console.log("run normal: score is:" + punten[i]);
                     break;
                 }else if ((totaalpunten[positie].punten+0.5*dagpunten[j].punten)>totaalpunten[8].punten){
                     //neem de top 8 kwa totaal punten en de renner die door kopman bonus hoger komt dan nr 9
