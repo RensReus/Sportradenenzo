@@ -3,10 +3,12 @@ var User = require('./app/models/user');
 const Etappe = require('./app/models/etappe');
 calculateUserScores = function (et, callback) {
     User.find({}, function (err, users) {
+        if (err) throw err;
         users.forEach(function (user, index) {//get all users
             var punten = 0;
             if (user.opstellingen[et - 1].opstelling != undefined) {
                 Renner.find({ '_id': { $in: user.opstellingen[et - 1].opstelling._id } }, function (err, renners) {// get all renners in opstelling
+                    if (err) throw err;
                     renners.forEach(function (renner, index) {
                         if (user.groups.budget) {// aparte budget score berekening
                             if (renner._id === user.opstellingen[et - 1].kopman) {//de niet teampunten gaan x1.5
@@ -72,6 +74,69 @@ transferRenners = function () {
     });
 }
 
+optimaleScoresUser = function (teamselectie, etappes, callback) {
+    Renner.find({'_id': { $in: teamselectie }},function(err, renners){
+        if (err) throw err;
+        var punten = new Array(etappes-1).fill(0);
+        for (var i = 0; i < etappes; i++) {
+            // console.log("renners: " + renners.length);
+            var totaalpunten = renners.map((renner, index) => ({index : index, punten : renner.punten.totaal[i]}));
+            // console.log("totaal: " + totaalpunten.length);
+            
+            var dagpunten = renners.map((renner, index) => ({index : index, punten : renner.punten.dag[i]}));
+            // console.log("dag: " + dagpunten.length);
+            totaalpunten.sort(sortNumber);
+            dagpunten.sort(sortNumber);
+            //als de beste dag resultaten met kopmanpunten niet binnen de 9 beste renners dan
+            for(var j = 0; j<9; j++){
+                var bestedag = dagpunten[j].index;
+                var positie = attrIndex(totaalpunten,'index',bestedag);
+                if(positie < 8 ){// een van de 9 beste dag resultaten zit in de beste 9 totaal punten simpele som
+                    punten[i] += dagpunten[j].punten*0.5;
+                    for(var k = 0;k<9;k++){
+                        punten[i]+=totaalpunten[k].punten;
+                    }
+                    console.log("run normal: score is:" + punten[i]);
+                    break;
+                }else if ((totaalpunten[positie].punten+0.5*dagpunten[j].punten)>totaalpunten[8].punten){
+                    //neem de top 8 kwa totaal punten en de renner die door kopman bonus hoger komt dan nr 9
+                    punten[i] += dagpunten[j].punten*0.5;
+                    for(var k = 0;k<8;k++){
+                        punten[i]+=totaalpunten[k].punten;
+                    }
+                    punten[i] += totaalpunten[positie].punten;
+                    break;                   
+                }
+            }
+            if(isNaN(punten[i]))
+                punten[i]=0;
+            if(punten[i]!=0)
+                continue;
+            // als geen van de 9 beste in de dag uitslag dan gewoon 
+            for(var k = 0;k<9;k++){
+                punten[i]+=totaalpunten[k].punten;
+            }
+            // moet nog 0.5*dagpunten voor de beste in de dag uitslag van deze groep maar deze code wordt wss nooit gerund 
+            //en zelfs dan zal het wss toch 0 zij
+        }
+        callback(punten);
+    })
+}
+
+function sortNumber(a,b) {
+    return b.punten - a.punten;
+}
+
+function attrIndex(array, attr, value) {
+    for(var i = 0; i < array.length; i += 1) {
+        if(array[i][attr] === value) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 module.exports.calculateUserScores = calculateUserScores;
 module.exports.transferUsers = transferUsers;
 module.exports.transferEtappes = transferEtappes;
+module.exports.optimaleScoresUser = optimaleScoresUser;
