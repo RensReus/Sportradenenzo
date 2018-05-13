@@ -11,7 +11,7 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
     =================================*/
     /*De achtergrond, neemt hele pagina in beslag*/
     html {
-        background: url("/images/etappe7.jpg") no-repeat center fixed;
+        background: url("/images/etappe9.jpg") no-repeat center fixed;
         background-size: cover;
     }
     /*De bovenbalk, position fixed zorgt dat deze altijd zichtbaar is*/
@@ -293,18 +293,23 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
         padding:5px;
         height:32px;
     }
+    /*Truitje niet hoger laten zijn dan de rest*/    
+    table#etappetabel tr:nth-child(1) td{
+        padding:0px;
+        height:32px;
+    }
     table#etappetabel{
         padding:10px;
         width:80%;
     }
-    table#etappetabel tr td:nth-child(1){
-        min-width:15%;
+    table#etappetabel tr td:nth-child(1){ /*Positie*/
+        width:15%;
     }
-    table#etappetabel tr td:nth-child(2){
-        min-width:70%;
+    table#etappetabel tr td:nth-child(2){ /*Naam*/
+        width:70%;
     }    
-    table#etappetabel tr td:nth-child(3){
-        min-width:15%;
+    table#etappetabel tr td:nth-child(3){ /*Tijd/Score*/
+        width:15%;
     }
     /*=================================
     =============LIJSTEN===============
