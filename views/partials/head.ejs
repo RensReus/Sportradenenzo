@@ -169,9 +169,7 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
     }    
     .btn-group .scrollbutton.disabled{
         text-decoration: none;
-        color: #222;
-        background-color: #222;
-        border: 1px solid #222;
+        color: #bbb;
         cursor:default;
         -webkit-user-select: none; /* Safari */        
         -moz-user-select: none; /* Firefox */
@@ -179,7 +177,8 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
         user-select: none; /* Standard */
     }
     .btn-group .scrollbutton.disabled:hover{
-        background-color: #222;
+        background-color: #bbb;
+        color: #bbb;
     }
     .btn-group .scrollbutton:hover {
         background-color: #fff;
@@ -188,6 +187,9 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
     .btn-group .scrollbutton.selected:hover {
         background-color: #222;
         color:#ddd;
+    }
+    .btn-group .scrollbutton:not(:last-child) {
+        border-right: none; /*Zorgen dat er geen dubbele border is*/
     }
 
     /*De zoekbalk die voor de teamselectie wordt gebruikt*/
@@ -289,10 +291,20 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
     table#etappetabel tr th,table#etappetabel tr td{
         font-size: 14px;
         padding:5px;
+        height:32px;
     }
     table#etappetabel{
         padding:10px;
         width:80%;
+    }
+    table#etappetabel tr td:nth-child(1){
+        min-width:15%;
+    }
+    table#etappetabel tr td:nth-child(2){
+        min-width:70%;
+    }    
+    table#etappetabel tr td:nth-child(3){
+        min-width:15%;
     }
     /*=================================
     =============LIJSTEN===============

@@ -220,7 +220,7 @@
                                     <%}%> 
                                 <%}%>
                                 <%for(var i=Math.min(20,(uitslagen.ak.length-j*20));i<20;i++){%>
-                                    <tr style="height:30px">><td></td><td></td><td></td></tr>
+                                    <tr style="height:30px"><td></td><td></td><td></td></tr>
                                 <%}%>
                             </tbody>    
                         <%}%>
@@ -380,20 +380,9 @@ function showscroll(data){
         document.getElementById('scrollknop' + i).classList.remove('selected'); //Pagina knop deselecteren
     }
     document.getElementById('scrollknopL').setAttribute("onClick",'showscroll(['+data[0]+','+Math.max(0,data[1]-1)+','+data[2]+'])')
-    document.getElementById('scrollknopR').setAttribute("onClick",'showscroll(['+data[0]+','+Math.min(data[2],data[1]+1)+','+data[2]+'])')
+    document.getElementById('scrollknopR').setAttribute("onClick",'showscroll(['+data[0]+','+Math.min(data[2]-1,data[1]+1)+','+data[2]+'])')
     document.getElementById('klassspan' + data[0] + data[1]).style.display='block'; //Alles verbergen
     document.getElementById('scrollknop' + data[1]).classList.add('selected'); //Pagina knop selecteren
-}
-
-function showVolledig(){
-    var rest = document.getElementsByClassName('restuitslag');
-    var toon = document.getElementsByClassName('toonmeer');
-    for(var i=0;i<rest.length;i++){
-        rest[i].style.display='block';
-    }
-    for(var i=0;i<toon.length;i++){
-        toon[i].style.display='none';
-    }
 }
 
 var teamscalled=0;
