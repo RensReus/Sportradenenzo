@@ -360,7 +360,7 @@ var scrapeResults = schedule.scheduleJob(resultsRule, function () {
       getTimetoFinish(function (timeFinish) {// check hoe lang nog tot the finish
         finished = timeFinish[0]; // returns boolean
         resultsRule = timeFinish[1]; // returns ieder uur als de finish nog verweg is, ieder 5 min indien dichtbij en iedere min na de finish
-        testschedule.reschedule(testrule);  //update new schedule
+        scrapeResults.reschedule(resultsRule);  //update new schedule
       })
     }
     if (finished) { // dit wordt iedere minuut na de finish uitgevoerd tot de resultaten compleet zijn
@@ -369,7 +369,7 @@ var scrapeResults = schedule.scheduleJob(resultsRule, function () {
         });
       } else { // uitslag compleet dus zou pas na een uur moeten gaan
         resultsRule = new schedule.RecurrenceRule(); // geen update meer nadat de uitslag compleet is
-        testschedule.reschedule(testrule);            
+        scrapeResults.reschedule(resultsRule);            
         finished = false;// zorgt ervoor dat de scrape gaat kijken of de etappe gefinisht is ipv uitslag ophalen
       }
     }
@@ -381,7 +381,7 @@ legeOpstellingRule = girodata.etappetijden;
 
 var copyOpstelling = schedule.scheduleJob(legeOpstellingRule, function () {
   resultsRule.hour = new schedule.Range(0, 23, 1); // na de start ieder uur checken tenzij frequentie wordt verhoogd door getTimeofFinish
-  testschedule.reschedule(testrule);    
+  scrapeResults.reschedule(resultsRule);    
   var etappe = currentDisplay();
   User.find({}, function (err, users) {
     users.forEach(function (user) {
