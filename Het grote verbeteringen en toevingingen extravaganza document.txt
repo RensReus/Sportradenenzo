@@ -6,3 +6,15 @@ DB aanpassen
 Poules implementeren
 
 overal ronde en jaar indicators aan toevoegen (bv GIRO 2018)
+
+mappen herindelen duidelijker maken en misschien functies herverdelen over bestanden
+
+Bij de team selectie 
+informatie over renners
+- nationaliteit
+- kwaliteiten
+selecteren op basis van
+- team
+- land 
+- kwaliteiten
+- prijs bereik

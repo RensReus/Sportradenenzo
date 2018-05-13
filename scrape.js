@@ -394,7 +394,6 @@ getPrijs = function (id) {
 }
 
 getTimetoFinish = function (callback) {
-    console.log("gettimecalled");
     request({
         url: 'https://www.procyclingstats.com/',
         headers: { "Connection": "keep-alive" }
@@ -402,24 +401,26 @@ getTimetoFinish = function (callback) {
         var $ = cheerio.load(html);
         var rule = new schedule.RecurrenceRule()
         var finished = false;
-        $(".ind_td").first().children().eq(1).children().each(function(){
-            if($(this).children().eq(2).text().startsWith('Giro d')){ // voor de giro
-                if($(this).children().eq(5).text()!='finished'){
+        $(".ind_td").first().children().eq(1).children().each(function () {
+            if ($(this).children().eq(2).text().startsWith('Giro d')) { // voor de giro
+                if ($(this).children().eq(5).text() != 'finished') {
                     var timeRemaining = $(this).children().eq(0).text();
-                    console.log("timereimaining: " + timeRemaining)
-                    if(timeRemaining[timeRemaining.length-1]=='m' || timeRemaining[0]==1){ // als nog een uur of minder
+                    if (timeRemaining[timeRemaining.length - 1] == 'm' || timeRemaining[0] == 1) { // als nog een uur of minder
                         rule.minute = new schedule.Range(0, 59, 5); // iedere 5 min checken
-                    }else{
+                        callback([finished, rule]);
+                    } else {
                         rule.minute = 7; // ieder uur als finish nog ver weg
+                        callback([finished, rule]);
                     }
-                        
-                }else{//als gefinisht
+
+                } else {//als gefinisht
                     rule.minute = new schedule.Range(0, 59, 1); // iedere minuut checken
                     finished = true;
-                    console.log(" finidhes " + new Date().toTimeString());
+                    callback([finished, rule]);
                 }
             }
         });
+        rule.minute = 7;
         callback([finished, rule]);
     });
 
