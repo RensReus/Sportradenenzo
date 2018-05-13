@@ -350,8 +350,14 @@ app.get('*', function (req, res) {
 });
 
 var resultsRule = new schedule.RecurrenceRule()
-resultsRule.minute = 2;//zodat de scrape niet stilstaat tot de volgende etappe start indien er een restart van de server is
 var finished = false;
+// checkt 1x of de etappe bijna gefinisht is en stelt de benodige frequentie in
+getTimetoFinish(function (timeFinish) {// check hoe lang nog tot the finish
+  finished = timeFinish[0]; // returns boolean
+  resultsRule = timeFinish[1]; // returns ieder uur als de finish nog verweg is, ieder 5 min indien dichtbij en iedere min na de finish
+  scrapeResults.reschedule(resultsRule);  //update new schedule
+})
+
 
 var scrapeResults = schedule.scheduleJob(resultsRule, function () {
   console.log("scrape run at: " + new Date().toTimeString());
