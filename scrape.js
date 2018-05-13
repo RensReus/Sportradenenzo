@@ -4,7 +4,7 @@ const Renner = require('./app/models/renner');
 const Etappe = require('./app/models/etappe');
 const functies = require('./functies');
 const fs = require('fs');
-
+const schedule = require('node-schedule');
 getStartlist = function (callback) {
     var renners;
     fs.readFile('prijzen.txt', function (err, file) {
@@ -392,15 +392,32 @@ getPrijs = function (id) {
     });
 }
 
-getLiveData = function (et, callback) {
+getTimetoFinish = function (callback) {
     request({
-        url: 'https://velon.cc/en/news/2018/05/giro-2018-stage-7-live-data-and-coverage',
+        url: 'https://www.procyclingstats.com/',
         headers: { "Connection": "keep-alive" }
     }, function (error, response, html) {
         var $ = cheerio.load(html);
-        var togo = $(".exchangeWithTime").first().children().first().text();
-        console.log(togo)
-        callback("km to go: " + togo);
+        var rule = new schedule.RecurrenceRule()
+        var finished = false;
+        $(".ind_td").first().children().eq(1).children().each(function(){
+            if($(this).children().eq(2).text().startsWith('Giro d')){ // voor de giro
+                if($(this).children().eq(5).text()!='finished'){
+                    var timeRemaining = $(this).children().eq(0).text();
+                    if(timeRemaining[timeRemaining.length-1]=='m' || timeRemaining[0]==1){ // als nog een uur of minder
+                        rule.minute = new schedule.Range(0, 59, 5); // iedere 5 min checken
+                    }else{
+                        rule.hour = new schedule.Range(0, 23, 1); // ieder uur als finish nog ver weg
+                    }
+                        
+                }else{//als gefinisht
+                    rule.minute = new schedule.Range(0, 59, 1); // iedere minuut checken
+                    finished = true;
+                    console.log(" finidhes " + new Date().toTimeString());
+                }
+            }
+        });
+        callback([finished, rule]);
     });
 
 
@@ -408,4 +425,4 @@ getLiveData = function (et, callback) {
 
 module.exports.getStartlist = getStartlist;
 module.exports.getResult = getResult;
-module.exports.getLiveData = getLiveData;
+module.exports.getTimetoFinish = getTimetoFinish;

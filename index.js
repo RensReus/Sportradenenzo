@@ -339,7 +339,7 @@ app.get('/giro/renner/:rennerID', function (req, res) {
 });
 
 app.get("/onderweg", function (req, res) {
-  getLiveData(currentDisplay(), function (togo) {
+  getTimetoFinish(currentDisplay(), function (togo) {
     res.send(togo);
   })
 })
@@ -349,21 +349,39 @@ app.get('*', function (req, res) {
   res.redirect('/profile');
 });
 
-var scrapeResults = schedule.scheduleJob(' 0 */5 * * * *', function () {
-  if (displayResults(currentDisplay())) {
-    Etappe.findOne({ _id: currentDisplay() }, function (err, etappe) {
+var resultsRule = new schedule.RecurrenceRule()
+resultsRule.hour = new schedule.Range(0, 23, 1);//zodat de scrape niet stilstaat tot de volgende etappe start indien er een restart van de server is
+var finished = false;
+
+var scrapeResults = schedule.scheduleJob(resultsRule, function () {
+  console.log("scrape run at: " + new Date().toTimeString());
+  Etappe.findOne({ _id: currentDisplay() }, function (err, etappe) {
+    if (!finished && !etappe.uitslagKompleet) { // als de etappe niet gefinisht is
+      getTimetoFinish(function (timeFinish) {// check hoe lang nog tot the finish
+        finished = timeFinish[0]; // returns boolean
+        resultsRule = timeFinish[1]; // returns ieder uur als de finish nog verweg is, ieder 5 min indien dichtbij en iedere min na de finish
+        testschedule.reschedule(testrule);  //update new schedule
+      })
+    }
+    if (finished) { // dit wordt iedere minuut na de finish uitgevoerd tot de resultaten compleet zijn
       if (!etappe.uitslagKompleet) {
         getResult(currentDisplay(), function () {
         });
+      } else { // uitslag compleet dus zou pas na een uur moeten gaan
+        resultsRule = new schedule.RecurrenceRule(); // geen update meer nadat de uitslag compleet is
+        testschedule.reschedule(testrule);            
+        finished = false;// zorgt ervoor dat de scrape gaat kijken of de etappe gefinisht is ipv uitslag ophalen
       }
-    })
-  }
+    }
+  })
 });
 
-var rule = new schedule.RecurrenceRule();
-rule = girodata.etappetijden;
+var legeOpstellingRule = new schedule.RecurrenceRule();
+legeOpstellingRule = girodata.etappetijden;
 
-var copyOpstelling = schedule.scheduleJob(rule, function () {
+var copyOpstelling = schedule.scheduleJob(legeOpstellingRule, function () {
+  resultsRule.hour = new schedule.Range(0, 23, 1); // na de start ieder uur checken tenzij frequentie wordt verhoogd door getTimeofFinish
+  testschedule.reschedule(testrule);    
   var etappe = currentDisplay();
   User.find({}, function (err, users) {
     users.forEach(function (user) {
