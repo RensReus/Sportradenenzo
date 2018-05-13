@@ -144,6 +144,32 @@ module.exports = function (app, passport) {
         });
     });
 
+    app.get('/giro/overzicht/:user', function (req, res) {
+        User.findOne({ "local.username": req.params.user }, function (err, user) {
+            if (err) throw err;
+            if (user == null || user == "") {
+                res.redirect('/')
+            } else {
+                Renners.find({ '_id': { $in: user.teamselectie.userrenners } }, function (err, renners) {
+                    var rennersPunten = new Array(20).fill(0);
+                    for (i in renners) {
+                        for (var j = 0;j<21;j++){
+                            if(user.opstellingen[j].opstelling._id.includes(renners[i]._id))
+                                rennersPunten[i]+=renners[i].punten.totaal[j];
+                            if(user.opstellingen[j].kopman==renners[i]._id)
+                                rennersPunten[i]+=renners[i].punten.dag[j];
+                        }
+                        rennersPunten[i]+=renners[i].punten.totaal[21];//eindklassement
+                    };
+                    res.render('./giro/overzichtUser.ejs',{
+                        renners,
+                        rennersPunten
+                    })
+                });
+            }
+        })
+    })
+
     app.get('/manualupdate/giro/etappe/:id', isLoggedIn, function (req, res) {
         if (req.user.local.admin) {
             getResult(req.params.id, function () {
