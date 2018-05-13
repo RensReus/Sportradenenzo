@@ -394,6 +394,7 @@ getPrijs = function (id) {
 }
 
 getTimetoFinish = function (callback) {
+    console.log("gettimecalled");
     request({
         url: 'https://www.procyclingstats.com/',
         headers: { "Connection": "keep-alive" }
@@ -405,10 +406,11 @@ getTimetoFinish = function (callback) {
             if($(this).children().eq(2).text().startsWith('Giro d')){ // voor de giro
                 if($(this).children().eq(5).text()!='finished'){
                     var timeRemaining = $(this).children().eq(0).text();
+                    console.log("timereimaining: " + timeRemaining)
                     if(timeRemaining[timeRemaining.length-1]=='m' || timeRemaining[0]==1){ // als nog een uur of minder
                         rule.minute = new schedule.Range(0, 59, 5); // iedere 5 min checken
                     }else{
-                        rule.hour = new schedule.Range(0, 23, 1); // ieder uur als finish nog ver weg
+                        rule.minute = 7; // ieder uur als finish nog ver weg
                     }
                         
                 }else{//als gefinisht
