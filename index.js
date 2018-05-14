@@ -187,125 +187,101 @@ app.post('/giro/etappes', function (req, res) {
 
   // Kijk of er een renner wordt toegevoegd aan de etappeselectie
   if (req.body.status == "toevoegen") {
-    User.findOne(req.user._id)
-      .exec()
-      .then(user => {
-        // Kijk of er nog plek is
-        if (user.opstellingen[req.body.etappe - 1].opstelling._id.length > 8) {
-          return Promise.reject();
-        }
-
-        // Kijk of de renner is uitgevallen
-        return Promise.all([
-          Promise.resolve(user),
-          Renner.count({
-            $and: [
-              { 'uitgevallen': true },
-              { '_id': user.teamselectie.userrenners[req.body.id]._id },
-            ]
-          }).exec()
-        ]);
-      })
-      .then(([user, uitgevallen]) => {
-        if (uitgevallen > 0) {
-          return Promise.reject();
-        }
-
-        //Kijken of de renner niet al in het team zit
-        if (user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(user.teamselectie.userrenners[req.body.id]._id) !== -1) {
-          return Promise.reject();
-        };
-
+    // Kijk of er nog plek is
+    if (req.user.opstellingen[req.body.etappe - 1].opstelling._id.length > 8) {
+      res.send();
+      return;
+    }
+    //Kijken of de renner niet al in het team zit
+    if(req.user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(req.user.teamselectie.userrenners[req.body.id]._id) !== -1) {
+      res.send();
+      return;
+    };
+    // Kijk of de renner is uitgevallen
+    Renner.count({
+      $and: [
+        { 'uitgevallen': true },
+        { '_id': req.user.teamselectie.userrenners[req.body.id]._id },
+      ]
+      }).exec()
+    .then(uitgevallen => {
+      if (uitgevallen > 0) {
+        return Promise.reject();
+      }else{
         //Voeg de naam en id van de renner toe
-        user.opstellingen[req.body.etappe - 1].opstelling._id.push(user.teamselectie.userrenners[req.body.id]._id);
-        user.opstellingen[req.body.etappe - 1].opstelling.naam.push(user.teamselectie.userrenners[req.body.id].naam);
-        user.markModified('opstellingen')
-        user.save(function (err) {
+        req.user.opstellingen[req.body.etappe - 1].opstelling._id.push(req.user.teamselectie.userrenners[req.body.id]._id);
+        req.user.opstellingen[req.body.etappe - 1].opstelling.naam.push(req.user.teamselectie.userrenners[req.body.id].naam);
+        req.user.markModified('opstellingen')
+        req.user.save(function (err) {
           if (err) throw err;
-          res.json(user.opstellingen[req.body.etappe - 1].opstelling); //Stuur update terug naar de client
         });
-      })
-      .catch(err => {
-        res.send();
-      });
+        res.json(req.user.opstellingen[req.body.etappe - 1].opstelling); //Stuur update terug naar de client
+      }
+    })
+    .catch(err => {
+      res.send();
+    });
   };
 
   if (req.body.status == "verwijderen") { //renner wordt verwijderd uit selectie
-    User.findOne(req.user._id)
-      .exec()
-      .then(user => {
-        if (user.opstellingen[req.body.etappe - 1].opstelling._id[req.body.id] == undefined) { //Kijk of er iets is om te verwijderen
-          res.send()
-          return Promise.reject();
-        }
-        if (user.opstellingen[req.body.etappe - 1].opstelling._id[req.body.id] == user.opstellingen[req.body.etappe - 1].kopman) {
-          user.opstellingen[req.body.etappe - 1].kopman = "" //Als renner==kopman, verwijder de kopman
-        };
-        var idverwijderde = user.opstellingen[req.body.etappe - 1].opstelling._id[req.body.id] //Nodig om te kijken wie unselected is
-        user.opstellingen[req.body.etappe - 1].opstelling._id.splice(req.body.id, 1); //Verwijder de renner (id)
-        user.opstellingen[req.body.etappe - 1].opstelling.naam.splice(req.body.id, 1); //Verwijder de renner (naam)
-        user.markModified('opstellingen')
-        user.save(function (err) {
-          if (err) throw err;
-        });
-        res.json({ 'opstelling': user.opstellingen[req.body.etappe - 1].opstelling, 'idverwijderde': idverwijderde, 'kopman': user.opstellingen[req.body.etappe - 1].kopman }); //Stuur update terug naar user
-      });
+    if (req.user.opstellingen[req.body.etappe - 1].opstelling._id[req.body.id] == undefined) { //Kijk of er iets is om te verwijderen
+      res.send()
+      return;
+    }
+    if (req.user.opstellingen[req.body.etappe - 1].opstelling._id[req.body.id] == req.user.opstellingen[req.body.etappe - 1].kopman) {
+      req.user.opstellingen[req.body.etappe - 1].kopman = "" //Als renner==kopman, verwijder de kopman
+    };
+    var idverwijderde = req.user.opstellingen[req.body.etappe - 1].opstelling._id[req.body.id] //Nodig om te kijken wie unselected is
+    req.user.opstellingen[req.body.etappe - 1].opstelling._id.splice(req.body.id, 1); //Verwijder de renner (id)
+    req.user.opstellingen[req.body.etappe - 1].opstelling.naam.splice(req.body.id, 1); //Verwijder de renner (naam)
+    req.user.markModified('opstellingen')
+    req.user.save(function (err) {
+      if (err) throw err;
+    });
+    res.json({ 'opstelling': req.user.opstellingen[req.body.etappe - 1].opstelling, 'idverwijderde': idverwijderde, 'kopman': req.user.opstellingen[req.body.etappe - 1].kopman }); //Stuur update terug naar user 
   };
 
   if (req.body.status == "laden") { //Het laden van de opstelling bij het laden van een etappe pagina
-    User.findOne(req.user._id)
-      .exec()
-      .then(user => {
-        return Promise.all([
-          Promise.resolve(user),
-          Renner.find({
-            $and: [
-              { '_id': { $in: user.teamselectie.userrenners } },
-              { 'uitgevallen': true }
-            ]
-          }, '_id').exec() //Kijk of een renner is uitgevallen
-        ]);
-      })
-      .then(([user, uitgevallen]) => {
-        for (var i = 0; i < uitgevallen.length; i++) {
-          if (user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(uitgevallen[i]) !== -1) {
-            user.opstellingen[req.body.etappe - 1].opstelling._id.splice(user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(uitgevallen[i]))
-            user.opstellingen[req.body.etappe - 1].opstelling.naam.splice(user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(uitgevallen[i]))
-          }
+    Renner.find({
+      $and: [
+        { '_id': { $in: req.user.teamselectie.userrenners } },
+        { 'uitgevallen': true }
+      ]
+      }, '_id').exec() //Kijk of een renner is uitgevallen
+    .then(uitgevallen => {
+      for(var i = 0; i < uitgevallen.length; i++) {
+        if(req.user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(uitgevallen[i]) !== -1) {
+          req.user.opstellingen[req.body.etappe - 1].opstelling._id.splice(req.user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(uitgevallen[i]))
+          req.user.opstellingen[req.body.etappe - 1].opstelling.naam.splice(req.user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(uitgevallen[i]))
         }
-        user.markModified('opstellingen')
-        user.save(function (err) {
-          if (err) throw err;
-        });
-        res.json({ 'opstellingen': user.opstellingen[req.body.etappe - 1], 'uitgevallen': uitgevallen });
-      })
-      .catch(err => {
-        console.log(err)
+      }
+      req.user.markModified('opstellingen')
+      req.user.save(function (err) {
+        if (err) throw err;
       });
+      res.json({ 'opstellingen': req.user.opstellingen[req.body.etappe - 1], 'uitgevallen': uitgevallen });
+    })
+    .catch(err => {
+      console.log(err)
+    });
   };
 
   if (req.body.status == "kopman") { //Het kiezen van een kopman
-    User.findOne(req.user._id)
-      .exec()
-      .then(user => {
-        user.opstellingen[req.body.etappe - 1].kopman = user.opstellingen[req.body.etappe - 1].opstelling._id[req.body.id];
-        user.markModified('opstellingen')
-        user.save(function (err) {
-          if (err) throw err;
-          res.send();
-        });
+    req.user.opstellingen[req.body.etappe - 1].kopman = req.user.opstellingen[req.body.etappe - 1].opstelling._id[req.body.id];
+    req.user.markModified('opstellingen')
+    req.user.save(function (err) {
+      if (err) throw err;
+        res.send();
       });
   };
 });
 
 app.post('/giro/etapperesultaat', function (req, res) {
   if (req.body.status == "etapperesultaat") { //Laden van de resultatenpagina
-    User.findOne(req.user._id, function (err, user) {
-      Renner.find({ '_id': { "$in": user.opstellingen[req.body.etappe - 1].opstelling._id } }, '_id naam punten', function (err, renners) {
-        if (err) throw err;
-        res.json({ 'renners': renners, 'kopman': user.opstellingen[req.body.etappe - 1].kopman });
+    Renner.find({ '_id': { "$in": req.user.opstellingen[req.body.etappe - 1].opstelling._id } }, '_id naam punten', function (err, renners) {
+      if (err) throw err;
+      res.json({ 'renners': renners, 'kopman': req.user.opstellingen[req.body.etappe - 1].kopman });
       });
-    });
   }
 
   if (req.body.status == "teamspopup") { //Popup voor de teams
