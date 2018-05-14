@@ -18,3 +18,6 @@ selecteren op basis van
 - land 
 - kwaliteiten
 - prijs bereik
+
+Settings pagina
+- Met dark mode
