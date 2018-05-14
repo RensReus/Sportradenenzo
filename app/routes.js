@@ -60,7 +60,6 @@ module.exports = function (app, passport) {
     // we will use route middleware to verify this (the isLoggedIn function)
     app.get('/profile', isLoggedIn, function (req, res) {
         User.find({ 'profieldata.poulescore': { $exists: true } }, 'local.username profieldata.poulescore profieldata.totaalscore', { sort: { 'profieldata.totaalscore': -1 } }, function (err, users) {
-            console.log(users)
             if (err) throw err;
             res.render('profile.ejs', {
                 user: req.user, // get the user out of session and pass to template
@@ -87,11 +86,9 @@ module.exports = function (app, passport) {
     });
     //Voor de aanvraag van een etappe pagina------------------------------------------
     app.get('/giro/etappe*', isLoggedIn, function (req, res) {
-        User.findOne(req.user._id, function (err, user) {// gaat ooit fout als iemand niet zijn team af heeft voor de start
-            if (user.teamselectie.userrenners.length < 20) {
-                res.redirect("/giro/teamselectie")
-            }
-        });
+        if (req.user.teamselectie.userrenners.length < 20) {
+            res.redirect("/giro/teamselectie")
+        }
         //Request de url en zoek het nummer om te weten welke etappe wordt gevraagd, knippen na etappe
         var etappe = parseInt(req.originalUrl.substring(12)); //String omzetten naar int (decimaal)
         if (isNaN(etappe) == true || etappe < 1 || etappe > 21) { //Kijken of het een nummer is en of het geen ongeldig nummer is
@@ -118,15 +115,31 @@ module.exports = function (app, passport) {
                     });
                 });
             } else {// if false display opstelling selectie
-                User.findOne(req.user._id, function (err, user) { //user zoeken voor edits
+                queryak={};querysprint={};queryberg={};queryjong={};
+                queryak['uitslagen.ak.' + (etappe-2)]={$lt:6,$gt:0};
+                querysprint['uitslagen.sprint.' + (etappe-2)]={$lt:6,$gt:0};
+                queryberg['uitslagen.berg.' + (etappe-2)]={$lt:6,$gt:0};
+                queryjong['uitslagen.jong.' + (etappe-2)]={$lt:4,$gt:0};
+                Renners.find({
+                    $and: [
+                        { '_id': { $in: req.user.teamselectie.userrenners } },
+                        { $or: [queryak,querysprint,queryberg,queryjong]}
+                    ]
+                },'_id uitslagen.ak uitslagen.sprint uitslagen.berg uitslagen.jong')
+                .exec() //renners zoeken die truipunten krijgen
+                .then(renners=>{
                     res.render('./giro/etappe.ejs', {
                         user: req.user,
                         huidig: currentDisplay(),
                         etappe: etappe,
-                        deadline: stageStart(etappe)
+                        deadline: stageStart(etappe),
+                        klassrenners:renners
                     });
+                })
+                .catch(err => {
+                    console.log(err)
                 });
-            }
+            };
         };
     });
 
