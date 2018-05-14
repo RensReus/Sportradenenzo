@@ -3,6 +3,9 @@ var mongoose = require('mongoose');
 var rennerSchema = mongoose.Schema({
     _id         : String,
     naam        : String,
+    voornaam    : String,
+    achternaam  : String,
+    voorletters : String,    
     team        : String,
     land        : String,
     prijs       : Number,

@@ -106,7 +106,9 @@ app.get('/testpost', function (req, res) {
 })
 
 app.get('/test', function (req, res) {
-  res.redirect('/login');
+  getStartlist(function(){
+    res.send("test")
+  })
 })
 
 var Renner = require('./app/models/renner');

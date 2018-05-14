@@ -17,6 +17,15 @@ getStartlist = function (callback) {
                     var teamName = $(this).text();
                     $(this).parent().children(".rider").each(function (index, element) { //gaat iedere renner af
                         var name = $(this).text();
+                        // sla achternaam voor naam en voorletters op
+                        var lastname = $(this).children().first().text();
+                        var voornaam = name.substring(lastname.length + 1);
+                        var voornamen = voornaam.split(' ').filter(x => x);
+                        var voorletters = "";
+                        for (var i = 0; i < voornamen.length; i++) {
+                            voorletters += voornamen[i].substring(0, 1) + ".";
+                        }
+
                         var ID = $(this).attr('href').substring(6);
                         if ($(this).siblings().eq(4 * index + 4).attr("class") != null) {
                             var country = $(this).siblings().eq(4 * index + 4).attr("class").split(' ')[1];
@@ -42,7 +51,18 @@ getStartlist = function (callback) {
                                 renner.team = teamName;
                                 renner.land = country;
                                 renner.prijs = prijs;
+                                renner.voornaam = voornaam;
+                                renner.voorletters = voorletters;
+                                renner.achternaam = lastname;
                             }
+                            // renner.update(
+                                
+                            //     { 'voornaam': voornaam, 'voorletters':voorletters,'achternaam':lastname },
+                            //     { multi: true },
+                            //     function (err, numberAffected) {
+                            //         console.log("updated " + renner.naam)
+                            //     }
+                            // );
                             renner.save(function (err) {
                                 if (err) throw err;
                             });
