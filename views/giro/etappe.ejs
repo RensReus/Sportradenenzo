@@ -9,20 +9,19 @@
             overflow:auto;
             padding:10px;
         }
-        th, td {
-            padding-top: 10px;
-            padding-bottom: 10px;
-            padding-left: 5px;
-            padding-right: 5px;
-            text-align: left;
-        }
-        tbody tr td:hover{
-            background:#ddd;
-        }
         #etappekieslijst{
-            width:90%;
+            width:100%;
         }
-        #etappekieslijst tr td{
+        /*Kopmanslectie cel*/
+        #etappekieslijst tr td:nth-child(1){
+            padding-top: 0px;
+            padding-bottom: 0px;
+            padding-left: 20px;
+            padding-right: 5px;
+            text-align: center;
+        }
+        /*Renner cel*/
+        #etappekieslijst tr td:nth-child(2){
             padding-top: 10px;
             padding-bottom: 10px;
             padding-left: 5px;
@@ -30,14 +29,12 @@
             text-align: center;
             height:56px;
         }
-        #etappekieslijst tr td:hover{
-            background:#fff;
+        #etappekieslijst tr td:nth-child(2):hover{
+            background:#ddd;
         }
+
         #etappekieslijst td.etappelijst{
             width:100%;
-        }
-        #etappekieslijst td.etappelijst:hover{
-            background:#ddd;
         }
         #etappekieslijst tr:nth-child(odd) {
             background: #f9f9f9;
@@ -46,29 +43,14 @@
             background: #fdfdfd;
         }
         .etappekiesdoos{
-            padding-left:0;
+            padding:0;
+            border: 2px solid grey;
         }
 
-        .radioknop{
-            padding-top:15px;
-            padding-bottom:7px;
-            text-align:center;
-            width:100%x;
-            margin:0;
-        }
-        .radioknop:nth-child(odd) {
-            background: #f9f9f9;
-        }
-        .radioknop:nth-child(even) {
-            background: #fdfdfd;
-        }
         .radioknoppen input{
             margin:0;padding:0;
             -webkit-appearance:none;
             -moz-appearance:none;
-        }
-        .radioknoppen{
-            padding:0;
         }
         .kopman{background-image:url(/images/rozetrui.png);}
 
@@ -98,6 +80,25 @@
             -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
             filter: brightness(1.2) grayscale(.5) opacity(.9);
         }
+        .klasstoevoeging{
+            background-size:contain;
+            background-repeat:no-repeat;
+            border: 1px solid black
+        }
+        .klasstoevoeging.ak{
+            background-color:pink;
+        }
+        .klasstoevoeging.sprint{
+            background-color:purple;
+            color:white;
+        }
+        .klasstoevoeging.berg{
+            background-color:blue;
+            color:white;
+        }
+        .klasstoevoeging.jong{
+            background-color:white;
+        }
 
     </style>
 </head>
@@ -110,44 +111,76 @@
                 <%}else if(huidig<1){%> <!--stuur door naar teamselectie als dat nog kan-->
                     <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
                 <%}%>
-                <font size="4"> &nbsp; Deadline: <%=deadline%></font>
+                <font size="3"><strong> &nbsp; Deadline: <%=deadline%></strong></font>
                 <%if(etappe<21){%>
                     <a href="/giro/etappe<%=etappe+1%>" style="float:right" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
                 <%}else if(huidig>21){%> <!--stuur door naar resultatenpagina als dat al kan-->
                     <a href="/giro/resultaten" style="float:right" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
                 <%}%>
             </div>
-            <div class="col-sm-7 userteamdoos">
+            <div class="col-sm-8 userteamdoos">
                 <table id="userteamtabel">
-                    <thead>
-                    </thead>
                     <tbody>
                         <% for(var i=1; i<21; i+=2) { %>
                             <tr>
                             <td id="<%=user.teamselectie.userrenners[i-1]._id%>" onclick="kiesrenner(<%=i-1%>,<%=etappe%>)"><%=user.teamselectie.userrenners[i-1].naam%>
+                                <%if(klassrenners.find(a => a._id === user.teamselectie.userrenners[i-1]._id)!=undefined){%>
+                                    <%renner=klassrenners.find(a => a._id === user.teamselectie.userrenners[i-1]._id)%>
+                                    <%if(renner.uitslagen.ak[etappe-2]>0 && renner.uitslagen.ak[etappe-2]<6){%>
+                                            <span class="klasstoevoeging ak"><%=renner.uitslagen.ak[etappe-2]%></span>
+                                    <%}%>
+                                    <%if(renner.uitslagen.sprint[etappe-2]>0 && renner.uitslagen.sprint[etappe-2]<6){%>
+                                            <span class="klasstoevoeging sprint"><%=renner.uitslagen.sprint[etappe-2]%></span>
+                                    <%}%>
+                                    <%if(renner.uitslagen.berg[etappe-2]>0 && renner.uitslagen.berg[etappe-2]<6){%>
+                                            <span class="klasstoevoeging berg"><%=renner.uitslagen.berg[etappe-2]%></span>
+                                    <%}%>
+                                    <%if(renner.uitslagen.jong[etappe-2]>0 && renner.uitslagen.jong[etappe-2]<6){%>
+                                            <span class="klasstoevoeging jong"><%=renner.uitslagen.jong[etappe-2]%></span>
+                                    <%}%>
+                                <%}%>
                             <br/><span class=ploegrenner><%=user.teamselectie.userrenners[i-1].team%></span></td>
                             <td id="<%=user.teamselectie.userrenners[i]._id%>" width="200" onclick="kiesrenner(<%=i%>,<%=etappe%>)"><%=user.teamselectie.userrenners[i].naam%>
+                                <%if(klassrenners.find(a => a._id === user.teamselectie.userrenners[i]._id)!=undefined){%>
+                                    <%renner=klassrenners.find(a => a._id === user.teamselectie.userrenners[i]._id)%>
+                                    <%if(renner.uitslagen.ak[etappe-2]>0 && renner.uitslagen.ak[etappe-2]<6){%>
+                                            <span class="klasstoevoeging ak"><%=renner.uitslagen.ak[etappe-2]%></span>
+                                    <%}%>
+                                    <%if(renner.uitslagen.sprint[etappe-2]>0 && renner.uitslagen.sprint[etappe-2]<6){%>
+                                            <span class="klasstoevoeging sprint"><%=renner.uitslagen.sprint[etappe-2]%></span>
+                                    <%}%>
+                                    <%if(renner.uitslagen.berg[etappe-2]>0 && renner.uitslagen.berg[etappe-2]<6){%>
+                                            <span class="klasstoevoeging berg"><%=renner.uitslagen.berg[etappe-2]%></span>
+                                    <%}%>
+                                    <%if(renner.uitslagen.jong[etappe-2]>0 && renner.uitslagen.jong[etappe-2]<6){%>
+                                            <span class="klasstoevoeging jong"><%=renner.uitslagen.jong[etappe-2]%></span>
+                                    <%}%>
+                                <%}%>
                             <br/><span class=ploegrenner><%=user.teamselectie.userrenners[i].team%></span></td>
                             </tr>
                         <% } %>
                     </tbody>
                 </table>
             </div>
-            <form>
-                <div class="col-sm-1 radioknoppen">
-                    <%for(i=0;i<9;i++){%>
-                    <div class="radioknop">
-                    <input id="kopman<%=i%>" type="radio" name="kopmannen" onchange="kieskopman(<%=i%>,<%=etappe%>)">
-                    <label class="kopmanknoppen kopman" for="kopman<%=i%>"></label>
-                    </div>
-                    <%}%>
-                </div>  
-            </form>  
+
             <div class="col-sm-4 etappekiesdoos">
+ 
             <table id="etappekieslijst">
+                <form>
                     <%for(i=0;i<9;i++){%>
-                    <tr><td onclick="verwijderrenner(<%=i%>,<%=etappe%>)" id='etappelijst<%=i%>' class="etappelijst"></td></tr>
+                    <tr>
+                        <td>
+                            <div class="radioknoppen">
+                                <div class="radioknop">
+                                    <input id="kopman<%=i%>" type="radio" name="kopmannen" onchange="kieskopman(<%=i%>,<%=etappe%>)">
+                                    <label class="kopmanknoppen kopman" for="kopman<%=i%>"></label>
+                                </div>
+                            </div>  
+                        </td>
+                        <td onclick="verwijderrenner(<%=i%>,<%=etappe%>)" id='etappelijst<%=i%>' class="etappelijst"></td>
+                    </tr>
                     <%}%>
+                </form> 
             </table>
             </div>
             <img style="width:60%;margin-left: 20%;margin-top:30px;" src="/images/profiel<%=etappe%>.jpg">

@@ -209,6 +209,24 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
             color:#888;
             font-size: 9.5pt;
     }
+    /*Style van uitgevallen renners in de selectie*/
+    tr td.uitgevallen{
+        color: #bbb;
+        background: #ccc
+    }
+    tr td.uitgevallen:hover{
+        color: #bbb;
+        background: #ccc
+    }
+    /*Style van geselecteerde renners in de selectie*/
+    tr td.rennerselected:hover{
+        color: #333;
+        background: #fdd
+    }
+    tr td.rennerselected{
+        color: #333;
+        background: #fdd
+    }
     
     /*=================================
     =============TABELLEN==============
@@ -263,11 +281,16 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
         background: linear-gradient(to bottom, #7d7e7d 0%,#0e0e0e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
         filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
     }
-
-    table#userteamtabel td,table#userteamtabel tr{
-        border: 2px solid #333;
-        padding-top: 0px;
-        padding-bottom: 0px;
+    table#userteamtabel{
+        border: 2px solid grey;
+    }
+    table#userteamtabel td{
+        width: 200px;
+        height: 50px;
+        text-align:center;
+        background: #ffffff;
+        padding-top: 2px;
+        padding-bottom: 2px;
         padding-left: 0px;
         padding-right: 0px;
         -webkit-user-select: none;
@@ -276,13 +299,38 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
         user-select: none;
     }
     table#userteamtabel td{
-        width: 200px;
-        height: 50px;
-        text-align:center;
-        background: #f9f9f9;
+        border-right: 1px solid grey;
+        border-bottom: 1px solid grey;
+    }
+    table#userteamtabel td:hover{
+        background: #dddddd
     }    
-    table#userteamtabel td.rennerselected{
+    table#userteamtabel tr:nth-child(odd) td{
+        background: #f9f9f9;
+    } 
+    table#userteamtabel tr:nth-child(odd) td:hover{
+        background: #dddddd;
+    } 
+    table#userteamtabel tr td.rennerselected{
         background: #fdd;
+    }
+    /*Style van uitgevallen renners in de selectie*/
+    tr td.uitgevallen{
+        color: #bbb;
+        background: #ccc
+    }
+    table#userteamtabel tr td.uitgevallen:hover{
+        color: #bbb;
+        background: #ccc
+    }
+    /*Style van geselecteerde renners in de selectie*/
+    tr td.rennerselected{
+        color: #333;
+        background: #fdd
+    }
+    table#userteamtabel tr td.rennerselected:hover{
+        color: #333;
+        background: #fdd
     }
 
     /*De tabelstyle voor de etapperesultaten en klassementen*/
@@ -434,26 +482,5 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
         }
     }
 
-    tr td.uitgevallen{
-        color: #bbb;
-        background: #ccc
-    }
-    tr.uitgevallen:hover{
-        color: #bbb;
-        background: #ccc
-    }
-
-    tr.rennerselected{
-        color: #888;
-        background: #fdd
-    }
-    tr td.rennerselected:hover{
-        color: #888;
-        background: #fdd
-    }
-    tr td.rennerselected{
-        color: #888;
-        background: #fdd
-    }
 </style>
 
