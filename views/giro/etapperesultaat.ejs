@@ -97,18 +97,15 @@
 <body onload="checkresultaat(<%=etappe%>)">
     <% include ../partials/navbarlogout %>
     <div class="col-sm-12 text-left" id="contentblok">
-        <div class="bovenrijtje">
-            <div class="col-sm-4 text-left">
-                <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
-                    <a href="/giro/etappe<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
-                <%}else{%>
-                    <%if(huidig<0){%> <!--stuur door naar teamselectie als dat nog kan-->
-                        <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
-                <%}}%>
-            </div>
-            <div class="col-sm-4">
-                <div class="teamspopup" onclick="teamspopup(<%=etappe%>)">Klik hier voor de andere teams
-                    <span class="teamspopuptext" id="idteamspopup">
+        <div class="col-sm-12 bovenrijtje">
+            <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
+                <a href="/giro/etappe<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
+            <%}else{%>
+                <%if(huidig<0){%> <!--stuur door naar teamselectie als dat nog kan-->
+                    <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
+            <%}}%>
+            <div class="teamspopup" onclick="teamspopup(<%=etappe%>)">Klik hier voor de andere teams
+                <span class="teamspopuptext" id="idteamspopup">
                     <table id=teams>
                         <thead>
                             <tr><th id='user0'></th><th id='user1'></th><th id='user2'></th><th id='user3'></th></tr>
@@ -119,19 +116,17 @@
                             <%}%>
                         </tbody>
                     </table>
-                    </span>
-                </div>
+                </span>
             </div>
-            <div class="col-sm-4 text-right">
-                <%if(etappe<21){%>
-                    <a href="/giro/etappe<%=etappe+1%>" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
-                <%}else{%>
-                    <%if(huidig<0){%> <!--stuur door naar resultatenpagina als dat al kan-->
-                        <a href="/giro/resultaten" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
-                <%}}%>
-            </div>
+            <%if(etappe<21){%>
+                <a href="/giro/etappe<%=etappe+1%>" style="float:right" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
+            <%}else{%>
+                <%if(huidig<0){%> <!--stuur door naar resultatenpagina als dat al kan-->
+                    <a href="/giro/resultaten" style="float:right" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
+                <%}%>
+            <%}%>
         </div>
-        <div class="col-sm-7 resultatendoos">
+        <div class="col-sm-8 resultatendoos">
             <table id="resultatentabel">
                 <thead>
                     <tr><th>Renner</th><th>Etappe</th><th>Team</th><th><img src="/images/rozetrui.png"></th><th><img src="/images/blauwetrui.png"></th><th><img src="/images/paarsetrui.png"></th><th><img src="/images/wittetrui.png"></th><th>Totaal</th></tr>
@@ -143,16 +138,8 @@
                     <tr id=resultaatselectietotaal><td>Totaal</td><td id="totaaletappe"></td><td id="totaalteam"></td><td id="totaalak"></td><td id="totaalberg"></td><td id="totaalsprint"></td><td id="totaaljong"></td><td id="totaaltotaal"></td></tr>
                 </tbody>
             </table>
-            <table id="poulestand">
-                <thead>
-                    <tr><th onclick="sortTableInt(0)" class="sortable">Positie</th><th>Naam</th><th onclick="sortTableInt(2)" class="sortable">Totaal</th><th onclick="sortTableInt(3)" class="sortable">Dag</th></tr>
-                </thead>
-                <%for(var i=0; i<users.length; i++){%>
-                    <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=users[i].local.username%></td><td><%=users[i].profieldata.totaalscore%></td><td><%=dagscore[i]%></td></tr>
-                <%}%>
-            </table>
         </div>
-        <div class="col-sm-5 klassementswrapper">
+        <div class="col-sm-4 klassementswrapper">
             <%var dagpaginas=Math.round((uitslagen.dag.length+10)/20);%>
             <%var akpaginas=Math.round((uitslagen.ak.length+10)/20);%>
             <%var sprintpaginas=Math.round((uitslagen.sprint.length+10)/20);%>
@@ -346,10 +333,20 @@
                 <button id="scrollknopR" class="scrollbutton selected" onclick="showscroll([0,1,<%=dagpaginas%>])">►</button>
             </div>      
         </div>
+        <div class="col-sm-8 poulestand">
+            <table id="poulestand">
+                <thead>
+                    <tr><th onclick="sortTableInt(0)" class="sortable">Positie</th><th>Naam</th><th onclick="sortTableInt(2)" class="sortable">Totaal</th><th onclick="sortTableInt(3)" class="sortable">Dag</th></tr>
+                </thead>
+                <%for(var i=0; i<users.length; i++){%>
+                    <tr id="scoretab<%=i%>"><td><%=i+1%></td><td><%=users[i].local.username%></td><td><%=users[i].profieldata.totaalscore%></td><td><%=dagscore[i]%></td></tr>
+                <%}%>
+            </table>
+        </div>
     </div>
-<footer class="container-fluid text-center">
-    <p></p>
-</footer>
+    <footer class="container-fluid text-center">
+        <p></p>
+    </footer>
 <script>
 function showklassement(data){ //[dag:0 AK:1 sprint:2 berg:3 jong:4,dagp,akp,sprintp,bergp,jongp]
     for(var i=0;i<5;i++){

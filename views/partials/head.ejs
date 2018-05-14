@@ -75,6 +75,7 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
     /*De wrapper van de klassementsresultaten op etapperesults*/
     .klassementswrapper{
         padding-left:0;
+        float:right;
     }
     /*=================================
     ==KNOPPEN EN ANDERE KLEINE ITEMS===
@@ -99,7 +100,7 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
 
     /*Buttons die het gewenste klassement op de resultatenpagina naar boven halen*/
     .btn-group{
-        width:80%;
+        width:100%;
     }
     .btn-group .klassementbutton {
         text-decoration: none;
@@ -283,9 +284,6 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
     table#userteamtabel td.rennerselected{
         background: #fdd;
     }
-    table#resultatentabel tr{
-        
-    }
 
     /*De tabelstyle voor de etapperesultaten en klassementen*/
     table#etappetabel tr th,table#etappetabel tr td{
@@ -300,7 +298,7 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
     }
     table#etappetabel{
         padding:10px;
-        width:80%;
+        width:100%;
     }
     table#etappetabel tr td:nth-child(1){ /*Positie*/
         width:15%;
@@ -388,10 +386,14 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
     /*=================================
     =INSTELLINGEN VOOR KLEINE SCHERMEN=
     =================================*/
-    @media screen and (max-width: 600px) {
+    @media screen and (max-width: 576px) {
         html {background: none;} /*Haal de achtergrond weg*/
         div#contentblok {
-            width:100%;/*Laat de wrapper de hele breedte in beslag nemen*/
+            width:100vw;/*Laat de wrapper de hele breedte in beslag nemen*/  
+            /*Maak gebruik van de volledige breedte die beschikbaar is*/
+            margin-left: 0;
+            padding-left: 0;
+            padding-right: 0;
             box-shadow: none;/*Haal het schaduw effect weg*/
         }
         div#contentblokje{
@@ -400,6 +402,36 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
             margin:0;
             box-shadow: none;
         } 
+        /*Het bovenste stukje in de wrapper waar de knoppen naar etappes etc. in staan*/
+        .bovenrijtje {
+            height: 4vh;
+            padding-bottom: 7.5vh;
+            padding-top: 2vh;
+        }
+        .klassementswrapper{
+            margin-top:20px;
+            margin-left:10vw;
+            width:80vw;
+            margin-right:10vw;
+            padding:0;
+            float:left;
+        }
+        .poulestand{
+            margin-top:20px;
+            margin-left:10vw;
+            width:80vw;
+            margin-right:10vw;
+            padding:0;
+        }
+        table#poulestand{
+            width:100%;
+        }
+        /*De stijl van de knoppen voor etappes*/
+        .etappebutton {
+            font-size: 14px;
+            padding: 10px 14px;
+            border-radius: 5px;
+        }
     }
 
     tr td.uitgevallen{
