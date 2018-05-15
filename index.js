@@ -303,6 +303,8 @@ var resultsRule = new schedule.RecurrenceRule()
 var finished = false;
 // checkt 1x of de etappe bijna gefinisht is en stelt de benodige frequentie in
 getTimetoFinish(function (timeFinish) {// check hoe lang nog tot the finish
+  console.log("first run");
+  
   finished = timeFinish[0]; // returns boolean
   resultsRule = timeFinish[1]; // returns ieder uur als de finish nog verweg is, ieder 5 min indien dichtbij en iedere min na de finish
   scrapeResults.reschedule(resultsRule);  //update new schedule
