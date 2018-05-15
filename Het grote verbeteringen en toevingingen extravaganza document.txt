@@ -2,6 +2,7 @@ DB aanpassen
 - een niveau verwijderen bij opstellingen
 - hele user herindelen
 - ronde deelnames aan users toevoegen
+- score/tijd hernoemen tot een naam
 
 Poules implementeren
 
@@ -21,3 +22,5 @@ selecteren op basis van
 
 Settings pagina
 - Met dark mode
+
+Cookies nom nom nom
