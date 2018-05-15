@@ -115,28 +115,31 @@ module.exports = function (app, passport) {
                     });
                 });
             } else {// if false display opstelling selectie
-                queryak={};querysprint={};queryberg={};queryjong={};
-                queryak['uitslagen.ak.' + (etappe-2)]={$lt:6,$gt:0};
-                querysprint['uitslagen.sprint.' + (etappe-2)]={$lt:6,$gt:0};
-                queryberg['uitslagen.berg.' + (etappe-2)]={$lt:6,$gt:0};
-                queryjong['uitslagen.jong.' + (etappe-2)]={$lt:4,$gt:0};
-                Renners.find({
-                    $and: [
-                        { '_id': { $in: req.user.teamselectie.userrenners } },
-                        { $or: [queryak,querysprint,queryberg,queryjong]}
-                    ]
-                },'_id uitslagen.ak uitslagen.sprint uitslagen.berg uitslagen.jong')
-                .exec() //renners zoeken die truipunten krijgen
-                .then(renners=>{
+                Etappe.findOne({ //Zoeken naar uitslag voor de klassementen
+                    '_id' : etappe-1
+                },'uitslagen').exec()
+                .then(uitslag=>{
+                    return Promise.all([
+                        Promise.resolve(uitslag),
+                        Renners.find({ //Ook zoeken naar de uitgevallen renners
+                            $and: [
+                                { '_id': { $in: req.user.teamselectie.userrenners } },
+                                { 'uitgevallen': true}
+                            ]
+                        },'_id').exec()
+                    ])
+                })
+                .then(([uitslag, uitgevallen])=>{ //Beide promises doorsturen naar de pagina
                     res.render('./giro/etappe.ejs', {
                         user: req.user,
                         huidig: currentDisplay(),
                         etappe: etappe,
                         deadline: stageStart(etappe),
-                        klassrenners:renners
+                        uitgevallen:uitgevallen,
+                        uitslagen:uitslag.uitslagen
                     });
                 })
-                .catch(err => {
+                .catch(err=>{
                     console.log(err)
                 });
             };

@@ -4,44 +4,6 @@
 <head>
     <% include ../partials/head %>
     <style>
-        .teamselectiedoos {
-            height:600px;
-            overflow:auto;
-            padding:10px;
-        }
-        #etappekieslijst{
-            width:100%;
-        }
-        /*Kopmanslectie cel*/
-        #etappekieslijst tr td:nth-child(1){
-            padding-top: 0px;
-            padding-bottom: 0px;
-            padding-left: 20px;
-            padding-right: 5px;
-            text-align: center;
-        }
-        /*Renner cel*/
-        #etappekieslijst tr td:nth-child(2){
-            padding-top: 10px;
-            padding-bottom: 10px;
-            padding-left: 5px;
-            padding-right: 5px;
-            text-align: center;
-            height:56px;
-        }
-        #etappekieslijst tr td:nth-child(2):hover{
-            background:#ddd;
-        }
-
-        #etappekieslijst td.etappelijst{
-            width:100%;
-        }
-        #etappekieslijst tr:nth-child(odd) {
-            background: #f9f9f9;
-        }
-        #etappekieslijst tr:nth-child(even) {
-            background: #fdfdfd;
-        }
         .etappekiesdoos{
             padding:0;
             border: 2px solid grey;
@@ -68,6 +30,7 @@
             background-repeat:no-repeat;
             display:inline-block;
             width:30px;height:24px;
+            margin-bottom:0;
             -webkit-transition: all 100ms ease-in;
             -moz-transition: all 100ms ease-in;
             transition: all 100ms ease-in;
@@ -79,25 +42,6 @@
             -webkit-filter: brightness(1.2) grayscale(.5) opacity(.9);
             -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
             filter: brightness(1.2) grayscale(.5) opacity(.9);
-        }
-        .klasstoevoeging{
-            background-size:contain;
-            background-repeat:no-repeat;
-            border: 1px solid black
-        }
-        .klasstoevoeging.ak{
-            background-color:pink;
-        }
-        .klasstoevoeging.sprint{
-            background-color:purple;
-            color:white;
-        }
-        .klasstoevoeging.berg{
-            background-color:blue;
-            color:white;
-        }
-        .klasstoevoeging.jong{
-            background-color:white;
         }
 
     </style>
@@ -118,72 +62,164 @@
                     <a href="/giro/resultaten" style="float:right" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
                 <%}%>
             </div>
-            <div class="col-sm-8 userteamdoos">
+            <div class="col-sm-7 userteamdoos">
                 <table id="userteamtabel">
                     <tbody>
-                        <% for(var i=1; i<21; i+=2) { %>
-                            <tr>
-                            <td id="<%=user.teamselectie.userrenners[i-1]._id%>" onclick="kiesrenner(<%=i-1%>,<%=etappe%>)"><%=user.teamselectie.userrenners[i-1].naam%>
-                                <%if(klassrenners.find(a => a._id === user.teamselectie.userrenners[i-1]._id)!=undefined){%>
-                                    <%renner=klassrenners.find(a => a._id === user.teamselectie.userrenners[i-1]._id)%>
-                                    <%if(renner.uitslagen.ak[etappe-2]>0 && renner.uitslagen.ak[etappe-2]<6){%>
-                                            <span class="klasstoevoeging ak"><%=renner.uitslagen.ak[etappe-2]%></span>
-                                    <%}%>
-                                    <%if(renner.uitslagen.sprint[etappe-2]>0 && renner.uitslagen.sprint[etappe-2]<6){%>
-                                            <span class="klasstoevoeging sprint"><%=renner.uitslagen.sprint[etappe-2]%></span>
-                                    <%}%>
-                                    <%if(renner.uitslagen.berg[etappe-2]>0 && renner.uitslagen.berg[etappe-2]<6){%>
-                                            <span class="klasstoevoeging berg"><%=renner.uitslagen.berg[etappe-2]%></span>
-                                    <%}%>
-                                    <%if(renner.uitslagen.jong[etappe-2]>0 && renner.uitslagen.jong[etappe-2]<6){%>
-                                            <span class="klasstoevoeging jong"><%=renner.uitslagen.jong[etappe-2]%></span>
-                                    <%}%>
-                                <%}%>
-                            <br/><span class=ploegrenner><%=user.teamselectie.userrenners[i-1].team%></span></td>
-                            <td id="<%=user.teamselectie.userrenners[i]._id%>" width="200" onclick="kiesrenner(<%=i%>,<%=etappe%>)"><%=user.teamselectie.userrenners[i].naam%>
-                                <%if(klassrenners.find(a => a._id === user.teamselectie.userrenners[i]._id)!=undefined){%>
-                                    <%renner=klassrenners.find(a => a._id === user.teamselectie.userrenners[i]._id)%>
-                                    <%if(renner.uitslagen.ak[etappe-2]>0 && renner.uitslagen.ak[etappe-2]<6){%>
-                                            <span class="klasstoevoeging ak"><%=renner.uitslagen.ak[etappe-2]%></span>
-                                    <%}%>
-                                    <%if(renner.uitslagen.sprint[etappe-2]>0 && renner.uitslagen.sprint[etappe-2]<6){%>
-                                            <span class="klasstoevoeging sprint"><%=renner.uitslagen.sprint[etappe-2]%></span>
-                                    <%}%>
-                                    <%if(renner.uitslagen.berg[etappe-2]>0 && renner.uitslagen.berg[etappe-2]<6){%>
-                                            <span class="klasstoevoeging berg"><%=renner.uitslagen.berg[etappe-2]%></span>
-                                    <%}%>
-                                    <%if(renner.uitslagen.jong[etappe-2]>0 && renner.uitslagen.jong[etappe-2]<6){%>
-                                            <span class="klasstoevoeging jong"><%=renner.uitslagen.jong[etappe-2]%></span>
-                                    <%}%>
-                                <%}%>
-                            <br/><span class=ploegrenner><%=user.teamselectie.userrenners[i].team%></span></td>
+                        <form>
+                        <% for(var i=0; i<20; i++) { %>
+                            <%if(uitgevallen.find(a => a._id === user.teamselectie.userrenners[i]._id)!=undefined){%>
+                                <tr id="<%=user.teamselectie.userrenners[i]._id%>" class="uitgevallen"> 
+                                    <!--Uitgevallen renner-->
+                                    <td></td>
+                                    <td width="200">
+                                        <%=user.teamselectie.userrenners[i].naam%>
+                                    </td>
+                                    <td>
+                                        <%=user.teamselectie.userrenners[i].team%>
+                                    </td>
+                                    <td>
+                                        <a class="rennerselectiebutton unavailable" id="<%=user.teamselectie.userrenners[i]._id%>button">Uitgevallen</a>
+                                    </td>
+                            <%}else{%>
+                                <tr id="<%=user.teamselectie.userrenners[i]._id%>">
+                                    <td>
+                                        <div class="radioknoppen">
+                                            <div class="radioknop">
+                                                <input id="kopman<%=user.teamselectie.userrenners[i]._id%>" type="radio" name="kopmannen" onchange="kieskopman('<%=user.teamselectie.userrenners[i]._id%>',<%=etappe%>)" disabled=true>
+                                                <label class="kopmanknoppen kopman" for="kopman<%=user.teamselectie.userrenners[i]._id%>"></label>
+                                            </div>
+                                        </div>  
+                                    </td>
+                                <td width="200">
+                                    <%=user.teamselectie.userrenners[i].naam%>
+                                </td>
+                                <td>
+                                    <%=user.teamselectie.userrenners[i].team%>
+                                </td>
+                                <td>
+                                    <a class="rennerselectiebutton" id="<%=user.teamselectie.userrenners[i]._id%>button" onclick="kiesrenner('<%=user.teamselectie.userrenners[i]._id%>','<%=user.teamselectie.userrenners[i].naam%>',<%=etappe%>)">Selecteer</a>
+                                </td>
+                            <%}%>
                             </tr>
-                        <% } %>
+                        <%}%>
+                    </form>
                     </tbody>
                 </table>
             </div>
 
-            <div class="col-sm-4 etappekiesdoos">
- 
-            <table id="etappekieslijst">
-                <form>
-                    <%for(i=0;i<9;i++){%>
-                    <tr>
-                        <td>
-                            <div class="radioknoppen">
-                                <div class="radioknop">
-                                    <input id="kopman<%=i%>" type="radio" name="kopmannen" onchange="kieskopman(<%=i%>,<%=etappe%>)">
-                                    <label class="kopmanknoppen kopman" for="kopman<%=i%>"></label>
-                                </div>
-                            </div>  
-                        </td>
-                        <td onclick="verwijderrenner(<%=i%>,<%=etappe%>)" id='etappelijst<%=i%>' class="etappelijst"></td>
-                    </tr>
-                    <%}%>
-                </form> 
-            </table>
+            <div class="col-sm-5">
+                <div class="etappekiesdoos">
+                    <img style="width:100%;" src="/images/profiel<%=etappe%>.jpg">
+                </div>
+                <div class="col-sm-6" style="padding:0;border:1px solid grey">
+                    <table class="etappetabel mini">
+                        <thead class="topbar">
+                            <tr><th></th><th>Klassement</th><th>Tijd</th></tr>    
+                        </thead>
+                        <tbody>
+                            <%for(var i=0;i<5;i++){%>
+                                <tr>
+                                    <%if(i==0){%>
+                                        <td><img src="/images/rozetrui.png"></td>
+                                    <%}else{%>
+                                        <td><%=i+1%></td>
+                                    <%}%>
+                                    <%if(user.teamselectie.userrenners[i].id==uitslagen.ak[i]._id){%>
+                                        <td id="<%=uitslagen.ak[i]._id%>">
+                                            <strong><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></strong>
+                                        </td>
+                                    <%}else{%>
+                                        <td>
+                                            <a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a>
+                                        </td>
+                                    <%}%>
+                                    <td><%=uitslagen.ak[i].tijd%></td>
+                                </tr>
+                            <%}%> 
+                        </tbody>    
+                    </table>
+                    <table class="etappetabel mini">
+                        <thead class="topbar">
+                            <tr><th></th><th>Puntentrui</th><th>Punten</th></tr>    
+                        </thead>
+                        <tbody>
+                            <%for(var i=0;i<5;i++){%>
+                                <tr>
+                                    <%if(i==0){%>
+                                        <td><img src="/images/paarsetrui.png"></td>
+                                    <%}else{%>
+                                        <td><%=i+1%></td>
+                                    <%}%>
+                                    <%if(user.teamselectie.userrenners[i].id==uitslagen.sprint[i]._id){%>
+                                        <td id="<%=uitslagen.sprint[i]._id%>">
+                                            <strong><a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a></strong>
+                                        </td>
+                                    <%}else{%>
+                                        <td>
+                                            <a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a>
+                                        </td>
+                                    <%}%>
+                                    <td><%=uitslagen.sprint[i].tijd%></td>
+                                </tr>
+                            <%}%> 
+                        </tbody>    
+                    </table>
+                </div>  
+                <div class="col-sm-6" style="padding:0;border:1px solid grey;border-left:0;">
+                    <table class="etappetabel mini">
+                        <thead class="topbar">
+                            <tr><th></th><th>Bergtrui</th><th>Punten</th></tr>    
+                        </thead>
+                        <tbody>
+                            <%for(var i=0;i<5;i++){%>
+                                <tr>
+                                    <%if(i==0){%>
+                                        <td><img src="/images/blauwetrui.png"></td>
+                                    <%}else{%>
+                                        <td><%=i+1%></td>
+                                    <%}%>
+                                    <%if(user.teamselectie.userrenners[i].id==uitslagen.berg[i]._id){%>
+                                        <td id="<%=uitslagen.berg[i]._id%>">
+                                            <strong><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></strong>
+                                        </td>
+                                    <%}else{%>
+                                        <td>
+                                            <a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a>
+                                        </td>
+                                    <%}%>
+                                    <td><%=uitslagen.berg[i].tijd%></td>
+                                </tr>
+                            <%}%> 
+                        </tbody>    
+                    </table>
+                    <table class="etappetabel mini">    
+                        <thead class="topbar">
+                            <tr><th></th><th>Jongeren</th><th>Tijd</th></tr>    
+                        </thead>
+                        <tbody>
+                            <%for(var i=0;i<5;i++){%>
+                                <tr>
+                                    <%if(i==0){%>
+                                        <td><img src="/images/wittetrui.png"></td>
+                                    <%}else{%>
+                                        <td><%=i+1%></td>
+                                    <%}%>
+                                    <%if(user.teamselectie.userrenners[i].id==uitslagen.jong[i]._id){%>
+                                        <td id="<%=uitslagen.jong[i]._id%>">
+                                            <strong><a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a></strong>
+                                        </td>
+                                    <%}else{%>
+                                        <td>
+                                            <a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a>
+                                        </td>
+                                    <%}%>
+                                    <td><%=uitslagen.jong[i].tijd%></td>
+                                </tr>
+                            <%}%> 
+                        </tbody>    
+                    </table>
+                </div>
             </div>
-            <img style="width:60%;margin-left: 20%;margin-top:30px;" src="/images/profiel<%=etappe%>.jpg">
         </div>
 <footer class="container-fluid text-center">
     <p></p>
@@ -193,33 +229,35 @@
 var NUMBER_OF_REQUESTS = 0;
 setInterval(function(){ 
     NUMBER_OF_REQUESTS = 0;
-}, 500);
-function kiesrenner(id,etappe){
+}, 100);
+
+function kiesrenner(id,naam,etappe){
     $.ajax({
         beforeSend: function canSendAjaxRequest()
         {
-            var can_send = NUMBER_OF_REQUESTS < 1;
+            var can_send = NUMBER_OF_REQUESTS < 5;
             NUMBER_OF_REQUESTS++;
             return can_send;
         },
 		type: 'POST',
-        data: JSON.stringify({"id":id, "etappe":etappe, "status": "toevoegen"}),
+        data: JSON.stringify({"id":id, "naam":naam, "etappe":etappe, "status": "toevoegen"}),
 		contentType: 'application/json',
         url: '/giro/etappes',
         cache: false,
         dataType:"json",
-        success: function (opstelling) { //user.opstellingen[req.body.etappe-1].opstelling
-            for(i=0;i<opstelling._id.length;i++){ //vul de nieuwe opstelling in
-                $("#etappelijst" + i).html(opstelling.naam[i]);
-                $("#" + opstelling._id[i]).addClass("rennerselected");
-                $("#kopman"+i).prop('disabled', false);
-            }
-        }			
+        success: function (res) { //{'id' : req.body.id, 'naam' : req.body.naam, 'etappe' : etappe}
+            $("#" + res.id).addClass("rennerselected");
+            $("#" + res.id +"button").addClass("selected");
+            $("#" + res.id +"button").html("Deselecteer");
+            $("#" + res.id +"button").attr("onclick", "verwijderrenner('" + res.id + "','" + res.naam + "'," + res.etappe + ")");
+            $("#kopman" + res.id).prop('disabled', false);
+            sorteerselectie() 
+        }
     });
     
 }
 
-function verwijderrenner(id,etappe){
+function verwijderrenner(id,naam,etappe){
     $.ajax({
         beforeSend: function canSendAjaxRequest()
         {
@@ -228,26 +266,21 @@ function verwijderrenner(id,etappe){
             return can_send;
         },
 		type: 'POST',
-        data: JSON.stringify({"id": id, "etappe":etappe, "status": "verwijderen"}),
+        data: JSON.stringify({"id": id, "naam": naam, "etappe":etappe, "status": "verwijderen"}),
 		contentType: 'application/json',
         url: '/giro/etappes',
         cache: false,
         dataType:"json",
-        success: function (opstellingen) { //{opstelling,idverwijderde,kopman}
-            for(var i=0;i<opstellingen.opstelling._id.length;i++){
-                $("#" + opstellingen.opstelling._id[i]).addClass("rennerselected");
-                $("#etappelijst" + i).html(opstellingen.opstelling.naam[i]); //Vul de etappelijst met de renners
-                $("#kopman"+i).prop('disabled', false); //Zorg dat de kopmanknop voor deze renners werkt
-                if(opstellingen.opstelling._id[i]==opstellingen.kopman){ //Zoek naar de kopman
-                    $("#kopman"+i).prop('checked', true); //Check als deze is gevonden
-                }else{$("#kopman"+i).prop('checked', false);} //Anders uncheck als het nodig is
-            }
-            for(var i=opstellingen.opstelling._id.length;i<10;i++){
-                $("#etappelijst" + i).html(""); //Maak alle plekken waar geen renners voor zijn leeg
-                $("#kopman"+i).prop('disabled', true); //Disable de kopmanknop voor deze plekken
-                $("#kopman"+i).prop('checked', false); //Uncheck ook als het nodig is
-            }
-            $("#" + opstellingen.idverwijderde).removeClass("rennerselected"); //Unselect de verwijderde renner
+        success: function (res) { //{'id':req.body.id,'naam':req.body.naam,'kopman':kopman,'etappe':req.body.etappe}
+            $("#" + res.id).removeClass("rennerselected"); //Unselect de verwijderde renner
+            $("#kopman" + res.id).prop('checked', false); //Deselecteer kopmanknop
+            $("#kopman" + res.id).prop('disabled', true); //Disable kopmanknop
+            //Pas de knop aan
+            $("#" + res.id +"button").removeClass("selected");
+            $("#" + res.id +"button").html("Selecteer");
+            $("#" + res.id +"button").attr("onclick", "kiesrenner('" + res.id + "','" + res.naam + "'," + res.etappe + ")");
+            //Sorteer de selectie opnieuw
+            sorteerselectie();
         }					
     });
 }
@@ -278,26 +311,73 @@ function updateuserteam(etappe){
         url: '/giro/etappes',
         cache: false,
         dataType:"json",
-        success: function (res) { //{'opstellingen' : user.opstellingen[etappe-1],'uitgevallen' : uitgevallen}
-            for(var i=0;i<res.uitgevallen.length;i++){
-                $("#" + res.uitgevallen[i]._id).addClass("uitgevallen");
-            }
+        success: function (res) { //{'opstellingen' : user.opstellingen[etappe-1], 'team' : req.user.teamselectie.userrenners, 'etappe' : etappe}
             for(var i=0;i<res.opstellingen.opstelling._id.length;i++){
                 $("#" + res.opstellingen.opstelling._id[i]).addClass("rennerselected");
-                $("#etappelijst" + i).html(res.opstellingen.opstelling.naam[i]); //Vul de etappelijst met de renners
-                $("#kopman"+i).prop('disabled', false); //Zorg dat de kopmanknop voor deze renners werkt
-                if(res.opstellingen.opstelling._id[i]==res.opstellingen.kopman){ //Zoek naar de kopman
-                    $("#kopman"+i).prop('checked', true); //Check als deze is gevonden
-                }else{$("#kopman"+i).prop('checked', false);} //Anders uncheck als het nodig is
+                $("#" + res.opstellingen.opstelling._id[i] +"button").addClass("selected");
+                $("#" + res.opstellingen.opstelling._id[i] +"button").html("Deselecteer");
+                $("#" + res.opstellingen.opstelling._id[i] +"button").attr("onclick", "verwijderrenner('" + res.opstellingen.opstelling._id[i] + "','" + res.opstellingen.opstelling.naam[i] + "'," + res.etappe + ")");
+                $("#kopman" + res.opstellingen.opstelling._id[i]).prop('disabled', false); //Zorg dat de kopmanknop voor deze renners werkt
             }
-            for(var i=res.opstellingen.opstelling.length;i<10;i++){
-                $("#" + res.opstellingen._id[i]).removeClass("rennerselected");
-                $("#etappelijst" + i).html(""); //Maak alle plekken waar geen renners voor zijn leeg
-                $("#kopman"+i).prop('disabled', true); //Disable de kopmanknop voor deze plekken
-                $("#kopman"+i).prop('checked', false); //Uncheck ook als het nodig is
-            }
+            $("#kopman" + res.opstellingen.kopman).prop('checked', true); //Check de juiste kopmanknop
+            sorteerselectie();
         }			
     });
+}
+function sorteerselectie() {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("userteamtabel");
+  switching = true;
+  // Set the sorting direction to descending:
+  dir = "asc"; 
+  /* Make a loop that will continue until
+  no switching has been done: */
+  while (switching) {
+    // Start by saying: no switching is done:
+    switching = false;
+    rows = table.getElementsByTagName("TR");
+    /* Loop through all table rows (except the
+    first, which contains table headers): */
+    for (i = 0; i < (rows.length - 1); i++) {
+      // Start by saying there should be no switching:
+      shouldSwitch = false;
+      /* Get the two elements you want to compare,
+      one from current row and one from the next: */
+      x = rows[i].getElementsByTagName("a")[0];
+      y = rows[i + 1].getElementsByTagName("a")[0];
+      /* Check if the two rows should switch place,
+      based on the direction, asc or desc: */
+      if (dir == "asc") {
+        if (x.innerHTML > y.innerHTML) {
+          // If so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML < y.innerHTML) {
+          // If so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+        
+      /* If a switch has been marked, make the switch
+      and mark that a switch has been done: */
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      // Each time a switch is done, increase this count by 1:
+      switchcount ++; 
+    } else {
+      /* If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again. */
+      if (switchcount == 0 && dir == "desc") {
+        dir = "asc";
+        switching = true;
+      }
+    }
+  }
 }
 </script>
 </body>

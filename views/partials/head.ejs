@@ -193,6 +193,37 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
         border-right: none; /*Zorgen dat er geen dubbele border is*/
     }
 
+    /*De stijl van de knoppen voor renner selectie*/
+    .rennerselectiebutton {
+        text-decoration: none;
+        color: #fff;
+        background-color: #006CCB;
+        width:100%;
+        min-height:100%;
+        margin: 0;
+        font-size: 100%;
+        padding-top: 15%;
+        padding-bottom: 15%;
+        padding-left: 10px;
+        padding-right: 10px;
+        text-align: center;
+        display: inline-block;
+    }
+    .rennerselectiebutton:hover {
+        text-decoration: none;
+        color: #fff;
+        background-color: #229CDD;          
+    }
+    .rennerselectiebutton.selected {
+        background-color: rgba(200, 0, 0, 0.8);
+    }
+    .rennerselectiebutton.selected:hover {
+        background-color: rgb(200, 0, 0);
+    }
+    .rennerselectiebutton.unavailable {
+        background-color: rgb(200, 200, 200);
+    }
+
     /*De zoekbalk die voor de teamselectie wordt gebruikt*/
     #zoekbalk{
         background-position: 10px 10px;
@@ -217,15 +248,6 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
     tr td.uitgevallen:hover{
         color: #bbb;
         background: #ccc
-    }
-    /*Style van geselecteerde renners in de selectie*/
-    tr td.rennerselected:hover{
-        color: #333;
-        background: #fdd
-    }
-    tr td.rennerselected{
-        color: #333;
-        background: #fdd
     }
     
     /*=================================
@@ -282,35 +304,34 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
         filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
     }
     table#userteamtabel{
-        border: 2px solid grey;
     }
     table#userteamtabel td{
-        width: 200px;
-        height: 50px;
+        height: 30px;
+        font-size: 10px;
         text-align:center;
         background: #ffffff;
         padding-top: 2px;
         padding-bottom: 2px;
-        padding-left: 0px;
-        padding-right: 0px;
+        padding-left: 5px;
+        padding-right: 5px;
+        border-bottom: 1px solid #fcfcfc;
         -webkit-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
     }
-    table#userteamtabel td{
-        border-right: 1px solid grey;
-        border-bottom: 1px solid grey;
+    table#userteamtabel tr td:last-child{
+        padding:0;
     }
-    table#userteamtabel td:hover{
+    table#userteamtabel tr:hover td{
         background: #dddddd
-    }    
+    }
     table#userteamtabel tr:nth-child(odd) td{
         background: #f9f9f9;
-    } 
-    table#userteamtabel tr:nth-child(odd) td:hover{
+    }
+    table#userteamtabel tr:nth-child(odd):hover td{
         background: #dddddd;
-    } 
+    }
     table#userteamtabel tr td.rennerselected{
         background: #fdd;
     }
@@ -324,38 +345,55 @@ Sportradenenzo huisstijl voor gebruik op elke pagina-->
         background: #ccc
     }
     /*Style van geselecteerde renners in de selectie*/
-    tr td.rennerselected{
+    table#userteamtabel tr.rennerselected td{
         color: #333;
         background: #fdd
     }
-    table#userteamtabel tr td.rennerselected:hover{
+    table#userteamtabel tr.rennerselected:hover td{
         color: #333;
         background: #fdd
     }
 
     /*De tabelstyle voor de etapperesultaten en klassementen*/
-    table#etappetabel tr th,table#etappetabel tr td{
+    table.etappetabel th,table#etappetabel td{
         font-size: 14px;
         padding:5px;
         height:32px;
+        text-align: center;
+        font-size: 14px;
+    }
+    table.etappetabel a {
+        color: inherit;
+        text-decoration: none; /* no underline */
     }
     /*Truitje niet hoger laten zijn dan de rest*/    
-    table#etappetabel tr:nth-child(1) td{
+    table.etappetabel tr:nth-child(1) td{
         padding:0px;
         height:32px;
     }
-    table#etappetabel{
+    table.etappetabel{
         padding:10px;
         width:100%;
     }
-    table#etappetabel tr td:nth-child(1){ /*Positie*/
+    table.etappetabel tr td:nth-child(1){ /*Positie*/
         width:15%;
     }
-    table#etappetabel tr td:nth-child(2){ /*Naam*/
+    table.etappetabel tr td:nth-child(2){ /*Naam*/
         width:70%;
     }    
-    table#etappetabel tr td:nth-child(3){ /*Tijd/Score*/
+    table.etappetabel tr td:nth-child(3){ /*Tijd/Score*/
         width:15%;
+    }
+    table.etappetabel tr:nth-child(odd) {
+        background: #f9f9f9;
+    }
+    table.etappetabel tr:nth-child(even) {
+        background: #fff;
+    }
+    table.etappetabel.mini tr td{
+        text-align:center;
+        font-size:12px;
+        height:32px;        
     }
     /*=================================
     =============LIJSTEN===============
