@@ -11,6 +11,7 @@
     "body-parser": "~1.15.2",
     "cheerio": "^1.0.0-rc.2",
     "connect-flash": "~0.1.1",
+    "connect-mongo": "^2.0.1",
     "cookie-parser": "~1.4.3",
     "ejs": "~2.5.2",
     "ejs-lint": "^0.3.0",

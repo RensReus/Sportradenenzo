@@ -15,6 +15,7 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 var json = require('json-stringify-safe');
 if (fs.existsSync('./config/database.js')) { //Kijken of er een config is
   var configDB = require('./config/database');
@@ -48,7 +49,8 @@ var girodata = require('./app/girodata'); //haal huidige etappe op
 app.use(session({
   secret: 'speciaalbierishetlekkerstesoortbier',
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
+  store: new MongoStore({ mongooseConnection: mongoose.connection })
 })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
