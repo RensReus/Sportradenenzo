@@ -130,14 +130,37 @@ module.exports = function (app, passport) {
                     ])
                 })
                 .then(([uitslag, uitgevallen])=>{ //Beide promises doorsturen naar de pagina
-                    res.render('./giro/etappe.ejs', {
-                        user: req.user,
-                        huidig: currentDisplay(),
-                        etappe: etappe,
-                        deadline: stageStart(etappe),
-                        uitgevallen:uitgevallen,
-                        uitslagen:uitslag.uitslagen
-                    });
+                    if(!uitslag.uitslagen.dag.length){
+                        Etappe.find({ 'uitslagen.dag': { $exists: true, $not: {$size: 0} } } // als de uitslag bestaat (lengte meer dan 0)
+                        ,function(err, recentsteUitslagen){
+                            var recentsteUitslag;
+                            var etappeNR = 0;
+                            recentsteUitslagen.forEach(function(recUit){
+                                if(parseInt(recUit._id)>etappeNR){ //pakt de meest recente etappe die een dag uitslag heeft kan kort na de etappe finish wel leiden to
+                                    etappeNR = parseInt(recUit._id);
+                                    recentsteUitslag = recUit;
+                                }
+                            })
+                            console.log(etappeNR)
+                            res.render('./giro/etappe.ejs', {
+                                user: req.user,
+                                huidig: currentDisplay(),
+                                etappe: etappe,
+                                deadline: stageStart(etappe),
+                                uitgevallen:uitgevallen,
+                                uitslagen:recentsteUitslag.uitslagen
+                            });    
+                        })
+                    }else{
+                        res.render('./giro/etappe.ejs', {
+                            user: req.user,
+                            huidig: currentDisplay(),
+                            etappe: etappe,
+                            deadline: stageStart(etappe),
+                            uitgevallen:uitgevallen,
+                            uitslagen:uitslag.uitslagen
+                        });
+                    }
                 })
                 .catch(err=>{
                     console.log(err)

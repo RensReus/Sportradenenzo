@@ -129,7 +129,7 @@
                             <tr><th></th><th>Klassement</th><th>Tijd</th></tr>    
                         </thead>
                         <tbody>
-                            <%for(var i=0;i<5;i++){%>
+                            <%for(var i=0;i<min(5,uitslagen.ak[i].length);i++){%>
                                 <tr>
                                     <%if(i==0){%>
                                         <td><img src="/images/rozetrui.png"></td>
@@ -155,7 +155,7 @@
                             <tr><th></th><th>Puntentrui</th><th>Punten</th></tr>    
                         </thead>
                         <tbody>
-                            <%for(var i=0;i<5;i++){%>
+                            <%for(var i=0;i<min(5,uitslagen.sprint[i].length);i++){%>
                                 <tr>
                                     <%if(i==0){%>
                                         <td><img src="/images/paarsetrui.png"></td>
@@ -183,7 +183,7 @@
                             <tr><th></th><th>Bergtrui</th><th>Punten</th></tr>    
                         </thead>
                         <tbody>
-                            <%for(var i=0;i<5;i++){%>
+                            <%for(var i=0;i<min(5,uitslagen.berg[i].length);i++){%>
                                 <tr>
                                     <%if(i==0){%>
                                         <td><img src="/images/blauwetrui.png"></td>
@@ -209,7 +209,7 @@
                             <tr><th></th><th>Jongeren</th><th>Tijd</th></tr>    
                         </thead>
                         <tbody>
-                            <%for(var i=0;i<5;i++){%>
+                            <%for(var i=0;i<min(5,uitslagen.jong[i].length);i++){%>
                                 <tr>
                                     <%if(i==0){%>
                                         <td><img src="/images/wittetrui.png"></td>
