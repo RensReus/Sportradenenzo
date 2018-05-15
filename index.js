@@ -210,7 +210,7 @@ app.post('/giro/etappes', function (req, res) {
     req.user.opstellingen[req.body.etappe - 1].opstelling.naam.push(req.body.naam);
     req.user.markModified('opstellingen')
     req.user.save(function (err) {
-      if (err) throw err;
+      if (err) console.log("User.save error: " + err);
     });
     res.json({'id' : req.body.id, 'naam' : req.body.naam, 'etappe' : req.body.etappe}); //Stuur update terug naar de client
   };
@@ -227,7 +227,7 @@ app.post('/giro/etappes', function (req, res) {
     req.user.opstellingen[req.body.etappe - 1].opstelling._id.splice(req.user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(req.body.id), 1); //Verwijder de renner (id)
     req.user.markModified('opstellingen')
     req.user.save(function (err) {
-      if (err) throw err;
+      if (err) console.log("User.save error: " + err);
     });
     res.json({'id': req.body.id, 'naam':req.body.naam, 'kopman': req.user.opstellingen[req.body.etappe - 1].kopman, 'etappe' : req.body.etappe }); //Stuur update terug naar user 
   };
@@ -241,7 +241,7 @@ app.post('/giro/etappes', function (req, res) {
       req.user.opstellingen[req.body.etappe - 1].kopman = req.body.id; //Voeg toe
       req.user.markModified('opstellingen')
       req.user.save(function (err) {
-        if (err) throw err;
+        if (err) console.log("User.save error: " + err);
       });
     };
     res.send(); //Hoeft geen data terug

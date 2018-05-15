@@ -43,6 +43,15 @@
             -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
             filter: brightness(1.2) grayscale(.5) opacity(.9);
         }
+        span.deadline{
+            font-size: 3;
+            font-weight: bold;
+        }
+        @media screen and (max-width: 576px) {
+            span.deadline{
+                font-size: 12px;
+            }
+        }
 
     </style>
 </head>
@@ -55,7 +64,7 @@
                 <%}else if(huidig<1){%> <!--stuur door naar teamselectie als dat nog kan-->
                     <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
                 <%}%>
-                <font size="3"><strong> &nbsp; Deadline: <%=deadline%></strong></font>
+                <span class="deadline"> &nbsp; &nbsp; Deadline: <%=deadline%></span>
                 <%if(etappe<21){%>
                     <a href="/giro/etappe<%=etappe+1%>" style="float:right" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
                 <%}else if(huidig>21){%> <!--stuur door naar resultatenpagina als dat al kan-->
