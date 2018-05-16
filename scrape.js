@@ -148,8 +148,15 @@ getResult = function (et, callback) {
                         $(this).children().eq(1).children().each(function (index, element) {//voor iedere renner in de uitslag
                             var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
                             var name = $(this).children().eq(renCol).children().eq(1).text();
-                            if (!name.indexOf(" "))//als er een spatie is op plek 0 nu verwijder spatie
-                                name = name.substring(1);
+                            var lastname = $(this).children().eq(renCol).children().eq(1).children().first().text();
+                            var voornaam = name.substring(lastname.length + 1);
+                            var voornamen = voornaam.split(' ').filter(x => x);
+                            var voorletters = "";
+                            for (var i = 0; i < voornamen.length; i++) {
+                                voorletters += voornamen[i].substring(0, 1) + ".";
+                            }          
+                            name = lastname + " " + voorletters;
+                            console.log(name);
                             var teamName = $(this).children().eq(teamCol).children().eq(0).text();
                             var timeCol = columns.indexOf('Time');
                             var pntCol = columns.indexOf('Pnt');
@@ -424,7 +431,6 @@ getTimetoFinish = function (callback) {
         var girobeschikbaar = false;
         
         $(".ind_td").first().children().eq(1).children().each(function () {
-            console.log("current races : " + $(this).children().eq(2).text());
             if ($(this).children().eq(2).text().startsWith('Giro d')) { // voor de giro
                 girobeschikbaar = true;
                 if ($(this).children().eq(5).text() != 'finished') {
