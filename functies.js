@@ -1,6 +1,7 @@
 const Renner = require('./app/models/renner');
 var User = require('./app/models/user');
 const Etappe = require('./app/models/etappe');
+const girodata = require('./app/girodata');
 calculateUserScores = function (et, callback) {
     User.find({}, function (err, users) {
         if (err) throw err;
@@ -39,13 +40,18 @@ calculateUserScores = function (et, callback) {
 }
 
 transferUsers = function () {
-    User.find({}, function (err, users) {
+    User.find({"groups.budget":true}, function (err, users) {
         users.forEach(function (user) {
-            user.update(
-                { 'local.admin': false },
-                { multi: true },
-                function (err, numberAffected) {
-                });
+            user.groups.poules.push("RensRBudget");
+            user.save(function (err, result) {//save score
+                if (err) throw err;
+                
+            });
+            // user.update(
+            //     { 'local.admin': false },
+            //     { multi: true },
+            //     function (err, numberAffected) {
+            //     });
         });
     });
 }
@@ -123,6 +129,45 @@ optimaleScoresUser = function (teamselectie, etappes, callback) {
     })
 }
 
+returnEtappeWinnaars = function(poule,callback){
+    User.find({'groups.poules':poule},function(err,users){
+        var usernames = new Array();
+        var scores = new Array();
+        var rankings = new Array();
+        if (err) throw err;
+        if(users!=null){
+            users.forEach(function(user){
+                usernames.push(user.local.username);
+                scores.push(user.profieldata.poulescore);
+            })
+        }
+        for(var i = 0; i<currentDisplay();i++){
+            var stagescores = scores.map(score => score[i]);
+            var zipped = []
+            for (var j=0; j<stagescores.length; j++){
+                zipped.push({naam: usernames[j], punten: stagescores[j]});
+            }
+            zipped.sort(sortNumber);
+            var ranking = new Array();
+            for (j=0; j<zipped.length; j++){
+                ranking.push(zipped[j].naam);
+            }
+            rankings.push(ranking);
+        }
+        var rankingsUsers = new Array();
+        for (i in usernames){ //telt hoe vaak een user op iedere plek geeindigt is
+            var rankingsUser = new Array(usernames.length+1).fill(0);
+            rankingsUser[0] = usernames[i];
+            for(var j = 0; j<currentDisplay();j++){
+                rankingsUser[rankings[j].indexOf(usernames[i])+1]++;
+            }
+            rankingsUsers.push(rankingsUser);
+        }
+
+        callback(rankings,rankingsUsers);
+    })
+}
+
 function sortNumber(a,b) {
     return b.punten - a.punten;
 }
@@ -140,3 +185,4 @@ module.exports.calculateUserScores = calculateUserScores;
 module.exports.transferUsers = transferUsers;
 module.exports.transferEtappes = transferEtappes;
 module.exports.optimaleScoresUser = optimaleScoresUser;
+module.exports.returnEtappeWinnaars = returnEtappeWinnaars;

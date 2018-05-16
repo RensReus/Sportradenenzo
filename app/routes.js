@@ -84,6 +84,17 @@ module.exports = function (app, passport) {
             res.redirect("/");
         }
     });
+
+    app.get('/giro/etappewinsten',isLoggedIn,function(req,res){
+        returnEtappeWinnaars(req.user.groups.poules[0],function(rankings,rankingsUsers){
+            res.render('./giro/etappeoverwinningen.ejs',{
+                rankings,
+                rankingsUsers
+            });
+        });
+        
+    })
+
     //Voor de aanvraag van een etappe pagina------------------------------------------
     app.get('/giro/etappe*', isLoggedIn, function (req, res) {
         if (req.user.teamselectie.userrenners.length < 20) {
