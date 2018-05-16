@@ -115,10 +115,12 @@ module.exports = function (app, passport) {
                     });
                 });
             } else {// if false display opstelling selectie
-                Etappe.findOne({ //Zoeken naar uitslag voor de klassementen
-                    '_id' : etappe-1
-                },'uitslagen').exec()
+                Etappe.find({ //Zoeken naar uitslag voor de klassementen
+                    'uitslagen.dag' :  { $exists: true, $not: {$size: 0} }       
+                },'_id uitslagen')
+                .exec()
                 .then(uitslag=>{
+                    uitslag.sort(function(a,b) {return (parseInt(a._id) > parseInt(b._id)) ? -1 : ((parseInt(b._id) > parseInt(a._id)) ? 1 : 0);} );
                     return Promise.all([
                         Promise.resolve(uitslag),
                         Renners.find({ //Ook zoeken naar de uitgevallen renners
@@ -130,37 +132,14 @@ module.exports = function (app, passport) {
                     ])
                 })
                 .then(([uitslag, uitgevallen])=>{ //Beide promises doorsturen naar de pagina
-                    if(!uitslag.uitslagen.dag.length){
-                        Etappe.find({ 'uitslagen.dag': { $exists: true, $not: {$size: 0} } } // als de uitslag bestaat (lengte meer dan 0)
-                        ,function(err, recentsteUitslagen){
-                            var recentsteUitslag;
-                            var etappeNR = 0;
-                            recentsteUitslagen.forEach(function(recUit){
-                                if(parseInt(recUit._id)>etappeNR){ //pakt de meest recente etappe die een dag uitslag heeft kan kort na de etappe finish wel leiden to
-                                    etappeNR = parseInt(recUit._id);
-                                    recentsteUitslag = recUit;
-                                }
-                            })
-                            console.log(etappeNR)
-                            res.render('./giro/etappe.ejs', {
-                                user: req.user,
-                                huidig: currentDisplay(),
-                                etappe: etappe,
-                                deadline: stageStart(etappe),
-                                uitgevallen:uitgevallen,
-                                uitslagen:recentsteUitslag.uitslagen
-                            });    
-                        })
-                    }else{
-                        res.render('./giro/etappe.ejs', {
-                            user: req.user,
-                            huidig: currentDisplay(),
-                            etappe: etappe,
-                            deadline: stageStart(etappe),
-                            uitgevallen:uitgevallen,
-                            uitslagen:uitslag.uitslagen
-                        });
-                    }
+                    res.render('./giro/etappe.ejs', {
+                        user: req.user,
+                        huidig: currentDisplay(),
+                        etappe: etappe,
+                        deadline: stageStart(etappe),
+                        uitgevallen:uitgevallen,
+                        uitslagen:uitslag[0].uitslagen
+                    });
                 })
                 .catch(err=>{
                     console.log(err)

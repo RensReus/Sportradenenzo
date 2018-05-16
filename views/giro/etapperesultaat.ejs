@@ -227,7 +227,7 @@
                                         <%}else{%>
                                             <td><a href="/giro/renner/<%=uitslagen.sprint[20*j+i]._id%>"><%=uitslagen.sprint[20*j+i].naam%></a></td>
                                         <%}%>
-                                        <td>+<%=uitslagen.sprint[20*j+i].tijd%></td>
+                                        <td><%=uitslagen.sprint[20*j+i].score%></td>
                                     </tr>
                                 <%}%>
                                 <%for(var i=Math.min(20,(uitslagen.sprint.length-j*20));i<20;i++){%>
@@ -260,7 +260,7 @@
                                         <%}else{%>
                                             <td><a href="/giro/renner/<%=uitslagen.berg[20*j+i]._id%>"><%=uitslagen.berg[20*j+i].naam%></a></td>
                                         <%}%>
-                                        <td>+<%=uitslagen.berg[20*j+i].tijd%></td>
+                                        <td><%=uitslagen.berg[20*j+i].score%></td>
                                     </tr>
                                 <%}%>
                                 <%for(var i=Math.min(20,(uitslagen.berg.length-j*20));i<20;i++){%>
