@@ -43,6 +43,13 @@
             -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
             filter: brightness(1.2) grayscale(.5) opacity(.9);
         }
+        table.etappetabel a.opgesteld{
+            font-weight: bold;
+        }
+        table.etappetabel a.nietopgesteld{
+            font-weight: bold;
+            color: grey;
+        }
         span.deadline{
             font-size: 3;
             font-weight: bold;
@@ -139,15 +146,9 @@
                                     <%}else{%>
                                         <td><%=i+1%></td>
                                     <%}%>
-                                    <%if(user.teamselectie.userrenners[i].id==uitslagen.ak[i]._id){%>
                                         <td id="<%=uitslagen.ak[i]._id%>">
-                                            <strong><a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a></strong>
-                                        </td>
-                                    <%}else{%>
-                                        <td>
                                             <a href="/giro/renner/<%=uitslagen.ak[i]._id%>"><%=uitslagen.ak[i].naam%></a>
                                         </td>
-                                    <%}%>
                                     <td><%=uitslagen.ak[i].tijd%></td>
                                 </tr>
                             <%}%> 
@@ -165,15 +166,9 @@
                                     <%}else{%>
                                         <td><%=i+1%></td>
                                     <%}%>
-                                    <%if(user.teamselectie.userrenners[i].id==uitslagen.sprint[i]._id){%>
-                                        <td id="<%=uitslagen.sprint[i]._id%>">
-                                            <strong><a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a></strong>
-                                        </td>
-                                    <%}else{%>
                                         <td>
                                             <a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a>
                                         </td>
-                                    <%}%>
                                     <td><%=uitslagen.sprint[i].score%></td>
                                 </tr>
                             <%}%> 
@@ -193,15 +188,9 @@
                                     <%}else{%>
                                         <td><%=i+1%></td>
                                     <%}%>
-                                    <%if(user.teamselectie.userrenners[i].id==uitslagen.berg[i]._id){%>
-                                        <td id="<%=uitslagen.berg[i]._id%>">
-                                            <strong><a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a></strong>
-                                        </td>
-                                    <%}else{%>
                                         <td>
                                             <a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a>
                                         </td>
-                                    <%}%>
                                     <td><%=uitslagen.berg[i].score%></td>
                                 </tr>
                             <%}%> 
@@ -219,15 +208,9 @@
                                     <%}else{%>
                                         <td><%=i+1%></td>
                                     <%}%>
-                                    <%if(user.teamselectie.userrenners[i].id==uitslagen.jong[i]._id){%>
-                                        <td id="<%=uitslagen.jong[i]._id%>">
-                                            <strong><a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a></strong>
-                                        </td>
-                                    <%}else{%>
                                         <td>
                                             <a href="/giro/renner/<%=uitslagen.jong[i]._id%>"><%=uitslagen.jong[i].naam%></a>
                                         </td>
-                                    <%}%>
                                     <td><%=uitslagen.jong[i].tijd%></td>
                                 </tr>
                             <%}%> 
@@ -266,6 +249,9 @@ function kiesrenner(id,naam,etappe){
             $("#" + res.id +"button").html("Deselecteer");
             $("#" + res.id +"button").attr("onclick", "verwijderrenner('" + res.id + "','" + res.naam + "'," + res.etappe + ")");
             $("#kopman" + res.id).prop('disabled', false);
+            // maak renner opgesteld in klassementen
+            $("[href$='" + res.id + "']").removeClass("nietopgesteld");
+            $("[href$='" + res.id + "']").addClass("opgesteld");
             sorteerselectie();
             if($(".selected").length==9){
                 $(".rennerselectiebutton:not(.selected, .unavailable)").each(function(){
@@ -299,6 +285,9 @@ function verwijderrenner(id,naam,etappe){
             $("#" + res.id +"button").removeClass("selected");
             $("#" + res.id +"button").html("Selecteer");
             $("#" + res.id +"button").attr("onclick", "kiesrenner('" + res.id + "','" + res.naam + "'," + res.etappe + ")");
+            // maak renner niet meer opgesteld in klassementen
+            $("[href$='" + res.id + "']").removeClass("opgesteld");
+            $("[href$='" + res.id + "']").addClass("nietopgesteld");
             //Sorteer de selectie opnieuw
             sorteerselectie();
             if($(".selected").length<9){
@@ -338,19 +327,26 @@ function updateuserteam(etappe){
         dataType:"json",
         success: function (res) { //{'opstellingen' : user.opstellingen[etappe-1], 'team' : req.user.teamselectie.userrenners, 'etappe' : etappe}
             for(var i=0;i<res.opstellingen.opstelling._id.length;i++){
-                $("#" + res.opstellingen.opstelling._id[i]).addClass("rennerselected");
-                $("#" + res.opstellingen.opstelling._id[i] +"button").addClass("selected");
-                $("#" + res.opstellingen.opstelling._id[i] +"button").html("Deselecteer");
-                $("#" + res.opstellingen.opstelling._id[i] +"button").attr("onclick", "verwijderrenner('" + res.opstellingen.opstelling._id[i] + "','" + res.opstellingen.opstelling.naam[i] + "'," + res.etappe + ")");
-                $("#kopman" + res.opstellingen.opstelling._id[i]).prop('disabled', false); //Zorg dat de kopmanknop voor deze renners werkt
+                var id = res.opstellingen.opstelling._id[i];
+                $("#" + id).addClass("rennerselected");
+                $("#" + id +"button").addClass("selected");
+                $("#" + id +"button").html("Deselecteer");
+                $("#" + id +"button").attr("onclick", "verwijderrenner('" + id + "','" + res.opstellingen.opstelling.naam[i] + "'," + res.etappe + ")");
+                $("#kopman" + id).prop('disabled', false); //Zorg dat de kopmanknop voor deze renners werkt
+                $("[href$='" + id + "']").addClass("opgesteld"); // maak renner opgesteld in klassementen
             }
             $("#kopman" + res.opstellingen.kopman).prop('checked', true); //Check de juiste kopmanknop
-            sorteerselectie();
+            
             if($(".selected").length==9){
                 $(".rennerselectiebutton:not(.selected, .unavailable)").each(function(){
                     $(this).html("Team Vol");
                 });
-            };
+            }
+            sorteerselectie();
+            // for(var i=0;i<teamrenners.length;i++){//niet opgestelde users in selectie
+            //     if(!res.opstellingen.opstelling._id.includes(teamrenners._id[i]))
+            //         $("[href$='" + teamrenners._id[i] + "']").addClass("nietopgesteld");
+            // }
         }			
     });
 }

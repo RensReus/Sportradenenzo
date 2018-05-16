@@ -24,3 +24,5 @@ Settings pagina
 - Met dark mode
 
 Cookies nom nom nom
+
+Verander de opgesteld/nietopgesteld klasses in iets wat togglebaar is
