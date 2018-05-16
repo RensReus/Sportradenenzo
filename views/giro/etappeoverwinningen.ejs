@@ -44,11 +44,11 @@
             <table  class="scrolltabel">
                 <thead>
                 <tr>
-                    <th style="width:30%">Etappe</th>
-                    <th style="width:20%">1e</th>
-                    <th style="width:10%">2e</th>
+                    <th style="width:20%">Etappe</th>
+                    <th style="width:15%">1e</th>
+                    <th style="width:15%">2e</th>
                     <th style="width:15%">3e</th>
-                    <th style="width:10%">4e</th>
+                    <th style="width:15%">4e</th>
                 </tr>
                 </thead>
             </table>
@@ -58,11 +58,11 @@
 
                 <%for(var i=0;i<rankings.length;i++){%>
                     <tr>
-                    <td style="width:30%"><%="Etappe " + (i + 1)%></td>
-                    <td style="width:20%"><%=rankings[i][0]%></td>
-                    <td style="width:10%"><%=rankings[i][1]%></td>
+                    <td style="width:20%"><%="Etappe " + (i + 1)%></td>
+                    <td style="width:15%"><%=rankings[i][0]%></td>
+                    <td style="width:15%"><%=rankings[i][1]%></td>
                     <td style="width:15%"><%=rankings[i][2]%></td>
-                    <td style="width:10%"><%=rankings[i][3]%></td>
+                    <td style="width:15%"><%=rankings[i][3]%></td>
                     </tr>
                 <%}%>
                 </tbody>
@@ -71,21 +71,21 @@
                 <table id="overzichttabel">
                     <thead>
                         <tr>
-                            <th style="width:30%">User</th>
-                            <th style="width:20%">1e</th>
-                            <th style="width:10%">2e</th>
+                            <th style="width:20%">User</th>
+                            <th style="width:15%">1e</th>
+                            <th style="width:15%">2e</th>
                             <th style="width:15%">3e</th>
-                            <th style="width:10%">4e</th>
+                            <th style="width:15%">4e</th>
                         </tr>
                     </thead>
                     <tbody>
                     <%for(var i=0;i<rankingsUsers.length;i++){%>
                         <tr>
-                        <td style="width:30%"><%=rankingsUsers[i][0]%></td>
-                        <td style="width:20%"><%=rankingsUsers[i][1]%></td>
-                        <td style="width:10%"><%=rankingsUsers[i][2]%></td>
+                        <td style="width:20%"><%=rankingsUsers[i][0]%></td>
+                        <td style="width:15%"><%=rankingsUsers[i][1]%></td>
+                        <td style="width:15%"><%=rankingsUsers[i][2]%></td>
                         <td style="width:15%"><%=rankingsUsers[i][3]%></td>
-                        <td style="width:10%"><%=rankingsUsers[i][4]%></td>
+                        <td style="width:15%"><%=rankingsUsers[i][4]%></td>
                         </tr>
                     <%}%>
                     </tbody>
