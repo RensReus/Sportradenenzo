@@ -115,12 +115,12 @@ module.exports = function (app, passport) {
                     });
                 });
             } else {// if false display opstelling selectie
-                Etappe.findOne({ //Zoeken naar uitslag voor de klassementen
+                Etappe.find({ //Zoeken naar uitslag voor de klassementen
                     'uitslagen.dag' :  { $exists: true, $not: {$size: 0} }       
                 },'_id uitslagen')
-                .sort('-_id') //Meest recente klassement returnen
                 .exec()
                 .then(uitslag=>{
+                    uitslag.sort(function(a,b) {return (parseInt(a._id) > parseInt(b._id)) ? -1 : ((parseInt(b._id) > parseInt(a._id)) ? 1 : 0);} );
                     return Promise.all([
                         Promise.resolve(uitslag),
                         Renners.find({ //Ook zoeken naar de uitgevallen renners
@@ -138,7 +138,7 @@ module.exports = function (app, passport) {
                         etappe: etappe,
                         deadline: stageStart(etappe),
                         uitgevallen:uitgevallen,
-                        uitslagen:uitslag.uitslagen
+                        uitslagen:uitslag[0].uitslagen
                     });
                 })
                 .catch(err=>{
