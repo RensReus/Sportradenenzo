@@ -55,6 +55,9 @@
                 font-size: 12px;
             }
         }
+        table#userteamtabel tr:nth-child(10) td{
+            border-bottom: 5px solid black;  
+        }
 
     </style>
 </head>
@@ -263,7 +266,12 @@ function kiesrenner(id,naam,etappe){
             $("#" + res.id +"button").html("Deselecteer");
             $("#" + res.id +"button").attr("onclick", "verwijderrenner('" + res.id + "','" + res.naam + "'," + res.etappe + ")");
             $("#kopman" + res.id).prop('disabled', false);
-            sorteerselectie() 
+            sorteerselectie();
+            if($(".selected").length==9){
+                $(".rennerselectiebutton:not(.selected, .unavailable)").each(function(){
+                    $(this).html("Team Vol");
+                });
+            };
         }
     });
     
@@ -293,6 +301,11 @@ function verwijderrenner(id,naam,etappe){
             $("#" + res.id +"button").attr("onclick", "kiesrenner('" + res.id + "','" + res.naam + "'," + res.etappe + ")");
             //Sorteer de selectie opnieuw
             sorteerselectie();
+            if($(".selected").length<9){
+                $(".rennerselectiebutton:not(.selected, .unavailable)").each(function(){
+                    $(this).html("Selecteer");
+                });
+            };
         }					
     });
 }
@@ -333,6 +346,11 @@ function updateuserteam(etappe){
             }
             $("#kopman" + res.opstellingen.kopman).prop('checked', true); //Check de juiste kopmanknop
             sorteerselectie();
+            if($(".selected").length==9){
+                $(".rennerselectiebutton:not(.selected, .unavailable)").each(function(){
+                    $(this).html("Team Vol");
+                });
+            };
         }			
     });
 }
