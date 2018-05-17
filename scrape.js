@@ -111,6 +111,9 @@ getResult = function (et, callback) {
                 $(".resTabnav").each(function (index, element) {
                     cases.push($(this).attr("class").split(' ')[2]);
                 })
+                if(!cases.length){
+                    cases.push('stage');
+                }
                 $(".basic").each(function (kl, element) {//Slaat de teams en renner id van de dagwinnaar/klassementsleiders op
                     var end = $(this).children().eq(1).children().first().children().length;
                     var klas = cases[kl];
@@ -124,16 +127,16 @@ getResult = function (et, callback) {
                     }
                 });
                 var rennersDag = new Array();
-                var etappeDag = new Array();
                 var rennersDNF = new Array();
-                var etappeDNF = new Array();
                 var rennersAk = new Array();
-                var etappeAk = new Array();
                 var rennersSprint = new Array();
-                var etappeSprint = new Array();
                 var rennersJong = new Array();
-                var etappeJong = new Array();
                 var rennersBerg = new Array();
+                var etappeDag = new Array();
+                var etappeDNF = new Array();
+                var etappeAk = new Array();
+                var etappeSprint = new Array();
+                var etappeJong = new Array();
                 var etappeBerg = new Array();
                 $(".basic").each(function (kl, element) {//gaat alle klassementen af (dag,ak,sprint,jongeren,berg,team) en slaat op in arrays
                     var end = $(this).children().eq(1).children().first().children().length;
