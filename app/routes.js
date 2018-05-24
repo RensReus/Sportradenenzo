@@ -214,24 +214,25 @@ module.exports = function (app, passport) {
         }
     })
 
-    app.get('/wiljenietweten',isLoggedIn,function(req,res){
-        User.findOne(req.user._id, function (err, user) { 
-            optimaleScoresUser(user.teamselectie.userrenners,currentDisplay(),function(bestPossible){
-                var actualPoints = user.profieldata.poulescore.slice(0, currentDisplay());
-                var missedPoints = new Array();
-                for(i in bestPossible){
-                    missedPoints[i] = bestPossible[i]-actualPoints[i];
-                }
-                for(i in missedPoints){
-                    console.log("%s - %s = %s",bestPossible[i],actualPoints[i],missedPoints[i]);
-                }
-                res.render('./giro/gemistePunten.ejs', {
-                    missedPoints,
-                    actualPoints,
-                    bestPossible
+    app.get('/giro/gemistepunten/:user',isLoggedIn,function(req,res){
+        if (user == null || user == "") {
+            res.redirect('/')
+        }else{
+            User.findOne({ "local.username": req.params.user }, function (err, user) { 
+                optimaleScoresUser(user.teamselectie.userrenners,currentDisplay(),function(bestPossible){
+                    var actualPoints = user.profieldata.poulescore.slice(0, currentDisplay());
+                    var missedPoints = new Array();
+                    for(i in bestPossible){
+                        missedPoints[i] = bestPossible[i]-actualPoints[i];
+                    }
+                    res.render('./giro/gemistePunten.ejs', {
+                        missedPoints,
+                        actualPoints,
+                        bestPossible
+                    });
                 });
             });
-        });
+        }
     })
 
     // =====================================

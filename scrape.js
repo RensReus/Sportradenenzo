@@ -144,7 +144,7 @@ getResult = function (et, callback) {
                         var klas = cases[kl];
                         var columns = new Array();
                         $(this).children().first().children().first().children().each(function (index, element) {
-                            columns.push($(this).text())
+                            columns.push($(this).text());
                         })
                         var renCol = columns.indexOf("Rider");
                         var teamCol = columns.indexOf("Team");
