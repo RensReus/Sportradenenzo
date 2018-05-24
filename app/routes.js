@@ -215,10 +215,11 @@ module.exports = function (app, passport) {
     })
 
     app.get('/giro/gemistepunten/:user',isLoggedIn,function(req,res){
-        if (user == null || user == "") {
-            res.redirect('/')
-        }else{
-            User.findOne({ "local.username": req.params.user }, function (err, user) { 
+        User.findOne({ "local.username": req.params.user }, function (err, user) { 
+            if (user == null || user == "") {
+                res.redirect('/')
+            }
+            else{
                 optimaleScoresUser(user.teamselectie.userrenners,currentDisplay(),function(bestPossible){
                     var actualPoints = user.profieldata.poulescore.slice(0, currentDisplay());
                     var missedPoints = new Array();
@@ -231,8 +232,9 @@ module.exports = function (app, passport) {
                         bestPossible
                     });
                 });
-            });
-        }
+            }
+        });
+
     })
 
     // =====================================
