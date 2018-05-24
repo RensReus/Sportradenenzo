@@ -69,6 +69,13 @@ console.log('Ad portum ' + 5000 + ' magica accidit');
 
 //experiment met het vergaren van userinfo en post info =========== user info lijkt te werken, postinfo niet
 var User = require('./app/models/user');
+User.findOne({'local.username' : 'Bierfietsen'}, function(err,user){
+  user.opstellingen[16].kopman='elia-viviani'
+  user.markModified('opstellingen')
+  user.save(function (err) {
+    if (err) throw err;
+  });   
+});
 app.post('/profile', bodyParser.urlencoded({ extended: true }), function (req, res) {
   console.log(req.body._favwielerField);
   var fanwiel = req.body._favwielerField;
