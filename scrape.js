@@ -239,7 +239,6 @@ getResult = function (et, callback) {
                 var GTfinished = false;
                 if (et == 21) GTfinished = true; // laatste etappe 
                 console.log("rennersdag length: " + rennersDag.length);
-
                 Renner.find({ '_id': { $in: rennersDag } }, function (err, renners) {
                     renners.forEach(function (renner, index) { //voeg uitslag toe aan renner element en de verzamelde punten
                         if (err) throw err;
@@ -319,7 +318,7 @@ getResult = function (et, callback) {
                             renner.punten.totaal.set(et - 1, dagpunten + akpunten + sprintpunten + jongpunten + bergpunten + renner.punten.team.totaal[et - 1]);
                             if (GTfinished) { // alleen relevant voor de laatste etappe
                                 renner.punten.team.totaal.set(et, renner.punten.team.ak[et] + renner.punten.team.sprint[et] + renner.punten.team.jong[et] + renner.punten.team.berg[et]);
-                                renner.punten.totaal.set(et, akeindpunten + sprinteindpunten + jongeindpunten + bergeindpunten + renner.punten.team.totaal[et]);
+                                renner.punten.totaal.set(et, renner.punten.ak[et] + renner.punten.sprint[et] + renner.punten.jong[et] + renner.punten.berg[et] + renner.punten.team.totaal[et]);
                             }
                             renner.save(function (err, result) {
                                 if (err) throw err;
