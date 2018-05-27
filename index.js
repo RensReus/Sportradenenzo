@@ -109,7 +109,7 @@ app.get('/testpost', function (req, res) {
 })
 
 app.get('/test', function (req, res) {
-  getStartlist(function(){
+  getStartlist(function () {
     res.send("test")
   })
 })
@@ -190,21 +190,21 @@ app.post('/giro/etappes', function (req, res) {
 
   // Kijk of er een renner wordt toegevoegd aan de etappeselectie
   if (req.body.status == "toevoegen") {
-    if (req.user.opstellingen[req.body.etappe-1].opstelling._id.length > 8) { //Kijk of er nog plek is
+    if (req.user.opstellingen[req.body.etappe - 1].opstelling._id.length > 8) { //Kijk of er nog plek is
       res.send();
       return;
     };
-    if (req.user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(req.body.id) !== -1){ //Kijk of de renner niet al in het team zit
+    if (req.user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(req.body.id) !== -1) { //Kijk of de renner niet al in het team zit
       res.send()
       return;
     }
-    for(var i=0;i<req.user.teamselectie.userrenners.length;i++){ //Kijk of de renner in de teamselectie zit
-      if(req.user.teamselectie.userrenners[i]._id===req.body.id){
-        found=true;
+    for (var i = 0; i < req.user.teamselectie.userrenners.length; i++) { //Kijk of de renner in de teamselectie zit
+      if (req.user.teamselectie.userrenners[i]._id === req.body.id) {
+        found = true;
         break;
       }
     }
-    if(!found){
+    if (!found) {
       res.send()
       return;
     }
@@ -215,11 +215,11 @@ app.post('/giro/etappes', function (req, res) {
     req.user.save(function (err) {
       if (err) console.log("User.save error: " + err);
     });
-    res.json({'id' : req.body.id, 'naam' : req.body.naam, 'etappe' : req.body.etappe}); //Stuur update terug naar de client
+    res.json({ 'id': req.body.id, 'naam': req.body.naam, 'etappe': req.body.etappe }); //Stuur update terug naar de client
   };
 
   if (req.body.status == "verwijderen") { //renner wordt verwijderd uit selectie
-    if (req.user.opstellingen[req.body.etappe-1].opstelling._id.indexOf(req.body.id) === -1) { //Kijk of er iets is om te verwijderen
+    if (req.user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(req.body.id) === -1) { //Kijk of er iets is om te verwijderen
       res.send()
       return;
     }
@@ -232,15 +232,15 @@ app.post('/giro/etappes', function (req, res) {
     req.user.save(function (err) {
       if (err) console.log("User.save error: " + err);
     });
-    res.json({'id': req.body.id, 'naam':req.body.naam, 'kopman': req.user.opstellingen[req.body.etappe - 1].kopman, 'etappe' : req.body.etappe }); //Stuur update terug naar user 
+    res.json({ 'id': req.body.id, 'naam': req.body.naam, 'kopman': req.user.opstellingen[req.body.etappe - 1].kopman, 'etappe': req.body.etappe }); //Stuur update terug naar user 
   };
 
   if (req.body.status == "laden") { //Het laden van de opstelling bij het laden van een etappe pagina
-      res.json({ 'opstellingen': req.user.opstellingen[req.body.etappe - 1], 'team' : req.user.teamselectie.userrenners, 'etappe':req.body.etappe }); //Stuur opstelling en etappenummer door
+    res.json({ 'opstellingen': req.user.opstellingen[req.body.etappe - 1], 'team': req.user.teamselectie.userrenners, 'etappe': req.body.etappe }); //Stuur opstelling en etappenummer door
   };
 
   if (req.body.status == "kopman") { //Het kiezen van een kopman
-    if(req.user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(req.body.id)!==-1){ //Kijk of de kopman in de opstelling zit
+    if (req.user.opstellingen[req.body.etappe - 1].opstelling._id.indexOf(req.body.id) !== -1) { //Kijk of de kopman in de opstelling zit
       req.user.opstellingen[req.body.etappe - 1].kopman = req.body.id; //Voeg toe
       req.user.markModified('opstellingen')
       req.user.save(function (err) {
@@ -252,11 +252,17 @@ app.post('/giro/etappes', function (req, res) {
 });
 
 app.post('/giro/etapperesultaat', function (req, res) {
+  if (req.body.status == "eindresultaat") { //Laden van de resultatenpagina
+    Renner.find({ '_id': { "$in": req.user.teamselectie.userrenners.map(renner => renner._id) } }, '_id naam punten', function (err, renners) {
+      if (err) throw err;
+      res.json({ 'renners': renners});
+    });
+  }
   if (req.body.status == "etapperesultaat") { //Laden van de resultatenpagina
     Renner.find({ '_id': { "$in": req.user.opstellingen[req.body.etappe - 1].opstelling._id } }, '_id naam punten', function (err, renners) {
       if (err) throw err;
       res.json({ 'renners': renners, 'kopman': req.user.opstellingen[req.body.etappe - 1].kopman });
-      });
+    });
   }
 
   if (req.body.status == "teamspopup") { //Popup voor de teams
@@ -297,6 +303,27 @@ app.get("/onderweg", function (req, res) {
   })
 })
 
+app.get("/giro/charts/", function (req, res) {
+  User.find({}, function (err, users) {
+    if (err) throw err;
+    if (users == null || users == "") {
+      res.redirect('/')
+    } else {
+      users=users.slice(0,8);
+      var usernames = users.map(user => user.local.username);
+      var scores = [];
+      users.forEach(function (user, index) {
+        scores.push(user.profieldata.poulescore);
+      })
+      console.log(scores.length)
+      res.render('./giro/charts.ejs', {
+        scores : scores,
+        usernames
+      });;
+    }
+  })
+})
+
 app.get('*', function (req, res) {
   console.log(req.originalUrl);
   res.redirect('/profile');
@@ -307,7 +334,6 @@ var finished = false;
 // checkt 1x of de etappe bijna gefinisht is en stelt de benodige frequentie in
 getTimetoFinish(function (timeFinish) {// check hoe lang nog tot the finish
   console.log("first run");
-  
   finished = timeFinish[0]; // returns boolean
   resultsRule = timeFinish[1]; // returns ieder uur als de finish nog verweg is, ieder 5 min indien dichtbij en iedere min na de finish
   scrapeResults.reschedule(resultsRule);  //update new schedule
@@ -332,7 +358,7 @@ var scrapeResults = schedule.scheduleJob(resultsRule, function () {
         resultsRule = new schedule.RecurrenceRule(); // geen update meer nadat de uitslag compleet is
         resultsRule.minute = 40;// minuut attribut overschrijven
         resultsRule.hour = 15;// gaat nu 1x om 15.40 maar wordt inprincipe door de copyopstelling al eerder herstart
-        scrapeResults.reschedule(resultsRule);            
+        scrapeResults.reschedule(resultsRule);
         finished = false;// zorgt ervoor dat de scrape gaat kijken of de etappe gefinisht is ipv uitslag ophalen
       }
     }
@@ -344,7 +370,7 @@ legeOpstellingRule = girodata.etappetijden;
 
 var copyOpstelling = schedule.scheduleJob(legeOpstellingRule, function () {
   resultsRule.hour = new schedule.Range(0, 23, 1); // na de start ieder uur checken tenzij frequentie wordt verhoogd door getTimeofFinish
-  scrapeResults.reschedule(resultsRule);    
+  scrapeResults.reschedule(resultsRule);
   var etappe = currentDisplay();
   User.find({}, function (err, users) {
     users.forEach(function (user) {
