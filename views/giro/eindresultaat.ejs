@@ -93,27 +93,6 @@
                 <%if(huidig<0){%> <!--stuur door naar teamselectie als dat nog kan-->
                     <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
             <%}}%>
-            <div class="teamspopup" onclick="teamspopup(<%=etappe%>)">Klik hier voor de andere teams
-                <span class="teamspopuptext" id="idteamspopup">
-                    <table id=teams>
-                        <thead>
-                            <tr><th id='user0'></th><th id='user1'></th><th id='user2'></th><th id='user3'></th></tr>
-                        </thead>
-                        <tbody>
-                            <%for(var i=0;i<10;i++){%>
-                                <tr><td id='renner<%=i%>u0'></td><td id='renner<%=i%>u1'></td><td id='renner<%=i%>u2'></td><td id='renner<%=i%>u3'></td></tr>
-                            <%}%>
-                        </tbody>
-                    </table>
-                </span>
-            </div>
-            <%if(etappe<21){%>
-                <a href="/giro/etappe<%=etappe+1%>" style="float:right" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
-            <%}else{%>
-                <%if(etappe==21){%> <!--stuur door naar resultatenpagina als dat al kan-->
-                    <a href="/giro/eindresultaat" style="float:right" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
-                <%}%>
-            <%}%>
         </div>
         <div class="col-sm-8 resultatendoos">
             <table id="resultatentabel">
@@ -121,8 +100,8 @@
                     <tr><th>Renner</th><th>Etappe</th><th>Team</th><th><img src="/images/rozetrui.png"></th><th><img src="/images/blauwetrui.png"></th><th><img src="/images/paarsetrui.png"></th><th><img src="/images/wittetrui.png"></th><th>Totaal</th></tr>
                 </thead>
                 <tbody>
-                    <% for(var i=0; i<9; i++) { %>
-                        <tr id=resultaatselectie<%=i%>><td id="naamrenner<%=i%>" class="links"><%=opstelling[i]%></td><td id="etapperenner<%=i%>"></td><td id="teamrenner<%=i%>"></td><td id="akrenner<%=i%>"></td><td id="bergrenner<%=i%>"></td><td id="sprintrenner<%=i%>"></td><td id="jongrenner<%=i%>"></td><td id="totaalrenner<%=i%>"></td></tr>
+                    <% for(var i=0; i<20; i++) { %>
+                        <tr id=resultaatselectie<%=i%>><td id="naamrenner<%=i%>" class="links"><%=teamnamen[i]%></td><td id="etapperenner<%=i%>"></td><td id="teamrenner<%=i%>"></td><td id="akrenner<%=i%>"></td><td id="bergrenner<%=i%>"></td><td id="sprintrenner<%=i%>"></td><td id="jongrenner<%=i%>"></td><td id="totaalrenner<%=i%>"></td></tr>
                     <% } %>
                     <tr id=resultaatselectietotaal><td>Totaal</td><td id="totaaletappe"></td><td id="totaalteam"></td><td id="totaalak"></td><td id="totaalberg"></td><td id="totaalsprint"></td><td id="totaaljong"></td><td id="totaaltotaal"></td></tr>
                 </tbody>
@@ -155,7 +134,7 @@
                             <%for(var i=0;i<Math.min(20,(uitslagen.dag.length-j*20));i++){%>
                                 <tr>
                                     <td><%=20*j+i+1%></td>
-                                    <%if(opstellingIDs.includes(uitslagen.dag[20*j+i]._id)){%>
+                                    <%if(teamrenners.includes(uitslagen.dag[20*j+i]._id)){%>
                                         <td class="opgesteld"><a href="/giro/renner/<%=uitslagen.dag[20*j+i]._id%>"><%=uitslagen.dag[20*j+i].naam%></a></td>
                                     <%}else if(teamrenners.includes(uitslagen.dag[20*j+i]._id)){%>
                                         <td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.dag[20*j+i]._id%>"><%=uitslagen.dag[20*j+i].naam%></a></td>
@@ -187,7 +166,7 @@
                                         <%}else{%>
                                             <td><%=20*j+i+1%></td>
                                         <%}%>
-                                        <%if(opstellingIDs.includes(uitslagen.ak[20*j+i]._id)){%>
+                                        <%if(teamrenners.includes(uitslagen.ak[20*j+i]._id)){%>
                                             <td class="opgesteld"><a href="/giro/renner/<%=uitslagen.ak[20*j+i]._id%>"><%=uitslagen.ak[20*j+i].naam%></a></td>
                                         <%}else if(teamrenners.includes(uitslagen.ak[20*j+i]._id)){%>
                                             <td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.ak[20*j+i]._id%>"><%=uitslagen.ak[20*j+i].naam%></a></td>
@@ -220,7 +199,7 @@
                                         <%}else{%>
                                             <td><%=20*j+i+1%></td>
                                         <%}%>
-                                        <%if(opstellingIDs.includes(uitslagen.sprint[20*j+i]._id)){%>
+                                        <%if(teamrenners.includes(uitslagen.sprint[20*j+i]._id)){%>
                                             <td class="opgesteld"><a href="/giro/renner/<%=uitslagen.sprint[20*j+i]._id%>"><%=uitslagen.sprint[20*j+i].naam%></a></td>
                                         <%}else if(teamrenners.includes(uitslagen.sprint[20*j+i]._id)){%>
                                             <td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.sprint[20*j+i]._id%>"><%=uitslagen.sprint[20*j+i].naam%></a></td>
@@ -253,7 +232,7 @@
                                         <%}else{%>
                                             <td><%=20*j+i+1%></td>
                                         <%}%>
-                                        <%if(opstellingIDs.includes(uitslagen.berg[20*j+i]._id)){%>
+                                        <%if(teamrenners.includes(uitslagen.berg[20*j+i]._id)){%>
                                             <td class="opgesteld"><a href="/giro/renner/<%=uitslagen.berg[20*j+i]._id%>"><%=uitslagen.berg[20*j+i].naam%></a></td>
                                         <%}else if(teamrenners.includes(uitslagen.berg[20*j+i]._id)){%>
                                             <td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.berg[20*j+i]._id%>"><%=uitslagen.berg[20*j+i].naam%></a></td>
@@ -286,7 +265,7 @@
                                         <%}else{%>
                                             <td><%=20*j+i+1%></td>
                                         <%}%>
-                                        <%if(opstellingIDs.includes(uitslagen.jong[20*j+i]._id)){%>
+                                        <%if(teamrenners.includes(uitslagen.jong[20*j+i]._id)){%>
                                             <td class="opgesteld"><a href="/giro/renner/<%=uitslagen.jong[20*j+i]._id%>"><%=uitslagen.jong[20*j+i].naam%></a></td>
                                         <%}else if(teamrenners.includes(uitslagen.jong[20*j+i]._id)){%>
                                             <td class="nietopgesteld"><a href="/giro/renner/<%=uitslagen.jong[20*j+i]._id%>"><%=uitslagen.jong[20*j+i].naam%></a></td>
@@ -371,7 +350,7 @@ var teamscalled=0;
 function checkresultaat(etappe){ //Laat alle behaalde punten in de resultatentabel zien
     $.ajax({
 		type: 'POST',
-        data: JSON.stringify({"etappe":etappe,"status":"etapperesultaat"}),
+        data: JSON.stringify({"etappe":etappe,"status":"eindresultaat"}),
 		contentType: 'application/json',
         url: '/giro/etapperesultaat',
         cache: false,
@@ -406,33 +385,6 @@ function checkresultaat(etappe){ //Laat alle behaalde punten in de resultatentab
     });
 }
 
-function teamspopup(etappe) {
-    var teamspopup = document.getElementById("idteamspopup");
-    teamspopup.classList.toggle("show");
-    if(teamscalled==0){
-    $.ajax({
-		type: 'POST',
-        data: JSON.stringify({"etappe":etappe,"status":"teamspopup"}),
-		contentType: 'application/json',
-        url: '/giro/etapperesultaat',
-        cache: false,
-        dataType:"json",
-        success: function (users) {
-            for(var i=0;i<users.length;i++){
-                $("#user" + i).html(users[i].local.username);
-                for(var j=0;j<10;j++){
-                    if(users[i].opstellingen[etappe-1].opstelling._id[j]==users[i].opstellingen[etappe-1].kopman){ //Kijken of de renner kopman is
-                        $("#renner" + j + "u" + i).html("<strong>" + users[i].opstellingen[etappe-1].opstelling.naam[j] + "</strong>");
-                    }else{
-                        $("#renner" + j + "u" + i).html(users[i].opstellingen[etappe-1].opstelling.naam[j]);
-                    }
-                }
-            }
-            teamscalled=1;
-        }			
-    });
-    }    
-}
 function sortTableInt(n) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
   table = document.getElementById("poulestand");

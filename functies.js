@@ -7,22 +7,44 @@ calculateUserScores = function (et, callback) {
         if (err) throw err;
         users.forEach(function (user, index) {//get all users
             var punten = 0;
-            if (user.opstellingen[et - 1].opstelling != undefined) {
-                Renner.find({ '_id': { $in: user.opstellingen[et - 1].opstelling._id } }, function (err, renners) {// get all renners in opstelling
+            if (et != 22) {
+                if(user.opstellingen[et - 1].opstelling != undefined){
+                    Renner.find({ '_id': { $in: user.opstellingen[et - 1].opstelling._id } }, function (err, renners) {// get all renners in opstelling
+                        if (err) throw err;
+                        renners.forEach(function (renner, index) {
+                            if (user.groups.budget) {// aparte budget score berekening
+                                if (renner._id === user.opstellingen[et - 1].kopman) {//de niet teampunten gaan x1.5
+                                    punten += renner.punten.dag[et - 1] * 0.5 + renner.punten.totaal[et - 1] - renner.punten.team.totaal[et - 1];
+                                } else {//voor niet kopman
+                                    punten += renner.punten.totaal[et - 1] - renner.punten.team.totaal[et - 1];
+                                };
+                            } else {//gewone score
+                                if (renner._id === user.opstellingen[et - 1].kopman) {//de niet teampunten gaan x1.5
+                                    punten += renner.punten.dag[et - 1] * 0.5 + renner.punten.totaal[et - 1];
+                                } else {//voor niet kopman
+                                    punten += renner.punten.totaal[et - 1];
+                                };
+                            }
+                        });
+                        user.profieldata.poulescore.set(et - 1, punten);
+                        user.profieldata.totaalscore = user.profieldata.poulescore.reduce((a, b) => a + b);
+                        user.save(function (err, result) {//save score
+                            if (err) throw err;
+                            if (index === users.length - 1) {// als laaste renner dan calculate user en continue code
+                                callback();
+                            }
+                        });
+                    });
+                }
+            }
+            if(et == 22){
+                Renner.find({ '_id': { $in: user.teamselectie.userrenners.map(renner => renner._id) } }, function (err, renners) {// get all renners in opstelling
                     if (err) throw err;
                     renners.forEach(function (renner, index) {
                         if (user.groups.budget) {// aparte budget score berekening
-                            if (renner._id === user.opstellingen[et - 1].kopman) {//de niet teampunten gaan x1.5
-                                punten += renner.punten.dag[et - 1] * 0.5 + renner.punten.totaal[et - 1] - renner.punten.team.totaal[et - 1];
-                            } else {//voor niet kopman
-                                punten += renner.punten.totaal[et - 1] - renner.punten.team.totaal[et - 1];
-                            };
+                            punten += renner.punten.totaal[et - 1] - renner.punten.team.totaal[et - 1];
                         } else {//gewone score
-                            if (renner._id === user.opstellingen[et - 1].kopman) {//de niet teampunten gaan x1.5
-                                punten += renner.punten.dag[et - 1] * 0.5 + renner.punten.totaal[et - 1];
-                            } else {//voor niet kopman
-                                punten += renner.punten.totaal[et - 1];
-                            };
+                            punten += renner.punten.totaal[et - 1];
                         }
                     });
                     user.profieldata.poulescore.set(et - 1, punten);
@@ -34,7 +56,7 @@ calculateUserScores = function (et, callback) {
                         }
                     });
                 });
-            };
+            }
         });
     });
 }

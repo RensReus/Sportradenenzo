@@ -159,7 +159,6 @@ getResult = function (et, callback) {
                                 voorletters += voornamen[i].substring(0, 1) + ".";
                             }          
                             name = lastname + " " + voorletters;
-                            console.log(name);
                             var teamName = $(this).children().eq(teamCol).children().eq(0).text();
                             var timeCol = columns.indexOf('Time');
                             var pntCol = columns.indexOf('Pnt');
@@ -325,7 +324,13 @@ getResult = function (et, callback) {
                                 if (index === rennersDag.length - 1) {// als laaste renner dan calculate user en continue code
                                     console.log("renners et: %s done", et);
                                     calculateUserScores(et, function () {
-                                        callback();
+                                        if(GTfinished){
+                                            calculateUserScores(22, function () {
+                                                callback();
+                                            });
+                                        }else{
+                                            callback();
+                                        }
                                     });
                                 }
                             });
