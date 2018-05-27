@@ -102,7 +102,7 @@ module.exports = function (app, passport) {
         }
         //Request de url en zoek het nummer om te weten welke etappe wordt gevraagd, knippen na etappe
         var etappe = parseInt(req.originalUrl.substring(12)); //String omzetten naar int (decimaal)
-        if (isNaN(etappe) == true || etappe < 1 || etappe > 21) { //Kijken of het een nummer is en of het geen ongeldig nummer is
+        if (isNaN(etappe)|| etappe < 1 || etappe > 21) { //Kijken of het een nummer is en of het geen ongeldig nummer is
             res.redirect("/giro")//send to currentDisplay
         } else {
             if (displayResults(etappe)) { //returns true if etappe finished
@@ -157,6 +157,28 @@ module.exports = function (app, passport) {
                 });
             };
         };
+    });
+
+    app.get('/giro/eindresultaat', isLoggedIn, function (req, res) {
+        var etappe = 21;
+        Etappe.findOne({ '_id': etappe }, 'uitslagen creationTime', function (err, uitslag) {
+            if (err) throw err;
+            User.find({ 'profieldata.poulescore': { $exists: true } }, 'local.username profieldata.poulescore profieldata.totaalscore', { sort: { 'profieldata.totaalscore': -1 } }, function (err, users) {
+                var dagscore = users.map(user => user.profieldata.poulescore[etappe]);
+                var teamrenners = req.user.teamselectie.userrenners.map(renner => renner._id)
+                var teamnamen = req.user.teamselectie.userrenners.map(renner => renner.naam)
+                if (err) throw err;
+                res.render('./giro/eindresultaat.ejs', {
+                    etappe: 22,
+                    teamnamen,
+                    uitslagen: uitslag.uitslagen,
+                    user: req.user, // get the user out of session and pass to template
+                    users, //[{id,local{username}},...]
+                    dagscore,
+                    teamrenners
+                });
+            });
+        });
     });
 
     app.get('/giro/overzicht', function (req, res) {
