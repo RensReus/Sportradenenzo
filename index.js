@@ -304,7 +304,7 @@ app.get("/onderweg", function (req, res) {
 })
 
 app.get("/giro/charts/", function (req, res) {
-  User.find({}, function (err, users) {
+  User.find({},'profieldata.poulescore local.username groups', function (err, users) {
     if (err) throw err;
     if (users == null || users == "") {
       res.redirect('/')
@@ -317,12 +317,17 @@ app.get("/giro/charts/", function (req, res) {
       })
       console.log(scores.length)
       res.render('./giro/charts.ejs', {
-        scores : scores,
+        scores,
         usernames
       });;
     }
   })
 })
+
+app.get('/trivia', function (req, res) {
+  console.log("trivia");
+  res.render('./trivia');
+});
 
 app.get('*', function (req, res) {
   console.log(req.originalUrl);
@@ -372,14 +377,19 @@ var copyOpstelling = schedule.scheduleJob(legeOpstellingRule, function () {
   resultsRule.hour = new schedule.Range(0, 23, 1); // na de start ieder uur checken tenzij frequentie wordt verhoogd door getTimeofFinish
   scrapeResults.reschedule(resultsRule);
   var etappe = currentDisplay();
+  if(etappe<22 && etappe>0){
   User.find({}, function (err, users) {
-    users.forEach(function (user) {
-      if (!user.opstellingen[etappe - 1].opstelling.naam.length) {
-        user.opstellingen.set(etappe - 1, user.opstellingen[etappe - 2]);
-        user.save(function (err) {
-          if (err) throw err;
-        })
-      }
-    })
+    if (err) throw err;
+    if(users.length){
+      users.forEach(function (user) {
+        if (!user.opstellingen[etappe - 1].opstelling.naam.length) {
+          user.opstellingen.set(etappe - 1, user.opstellingen[etappe - 2]);
+          user.save(function (err) {
+            if (err) throw err;
+          })
+        }
+      })
+    }
   })
+}
 });
