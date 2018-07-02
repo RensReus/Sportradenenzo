@@ -108,10 +108,11 @@ app.get('/testpost', function (req, res) {
   })
 })
 
-app.get('/test', function (req, res) {
-  getStartlist(function () {
+app.get('/getstartlist/:race', function (req, res) {
+  getStartlist(req.params.race,function () {
     res.send("test")
   })
+  console.log("getstartlist")
 })
 
 var Renner = require('./app/models/renner');

@@ -5,12 +5,26 @@ const Etappe = require('./app/models/etappe');
 const functies = require('./functies');
 const fs = require('fs');
 const schedule = require('node-schedule');
-getStartlist = function (callback) {
+getStartlist = function (raceName,callback) {
     var renners;
+    var raceString = "";
+    switch(raceName){
+        case "giro":
+            raceString = "giro-d-italia" ;
+            break;
+            case "tour":
+            raceString = "tour-de-france";
+            break;
+            case "vuelta":
+            raceString = "vuelta-a-espana" ;
+            break;
+    }
     fs.readFile('prijzen.txt', function (err, file) {
         var data = file.toString();
         var renners = data.split("\n");
-        request('https://www.procyclingstats.com/race/giro-d-italia/2018/startlist', function (error, response, html) {
+        console.log(raceString)
+        console.log("https://www.procyclingstats.com/race/ ${raceString} /2018/startlist")
+        request('https://www.procyclingstats.com/race/tour-de-france/2018/startlist', function (error, response, html) {
             if (!error && response.statusCode == 200) {
                 var $ = cheerio.load(html);
                 $(".black").each(function (index, element) { //gaat ieder team af
@@ -39,7 +53,7 @@ getStartlist = function (callback) {
                             }
                         }
                         if (prijs === 66666666)
-                            console.log("% staat niet in Prijslijst", ID);
+                            console.log(ID);
                         var rider = { _id: ID, naam: name, team: teamName, land: country, prijs: prijs };
                         Renner.findOne({ '_id': ID }, function (err, renner) {
                             if (err) throw err;
@@ -77,7 +91,16 @@ getStartlist = function (callback) {
 
 }
 
-getResult = function (et, callback) {
+getResult = function (race,et, callback) {
+    var raceString = "";
+    switch(raceName){
+        case "giro":
+            raceString = "giro-d-italia" ;
+            case "tour":
+            raceString = "tour-de-france";
+            case "vuelta":
+            raceString = "vuelta-a-espana" ;
+    }
     request({
         url: 'https://www.procyclingstats.com/race/giro-d-italia/2018/stage-' + et,
         headers: { "Connection": "keep-alive" }
