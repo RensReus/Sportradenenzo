@@ -1,5 +1,5 @@
 const Renner = require('./app/models/renner');
-var User = require('./app/models/user');
+const User = require('./app/models/user');
 const Etappe = require('./app/models/etappe');
 const girodata = require('./app/girodata');
 calculateUserScores = function (et, callback) {
@@ -203,6 +203,27 @@ function attrIndex(array, attr, value) {
     return -1;
 }
 
+function writeGirodata(){
+    User.find({}, function (err, users) {
+        if (err) throw err;
+        users.forEach(function (user, index) {//get all users
+            console.log("$user " + user.username);
+            user.teamselectie.forEach(function(rider){
+                console.log('$rider ' + rider._id);
+            })
+            console.log('$opstellingen')
+            user.opstellingen.forEach(function(Opstelling){
+                console.log("$opstelling")
+                console.log("$kopman" + Opstelling.kopman);
+                Opstelling.opstelling.forEach(function(rider){
+                    console.log("$rider " + rider._id);
+                })
+            })
+        })
+    })
+}
+
+module.exports.writeGirodata = writeGirodata;
 module.exports.calculateUserScores = calculateUserScores;
 module.exports.transferUsers = transferUsers;
 module.exports.transferEtappes = transferEtappes;

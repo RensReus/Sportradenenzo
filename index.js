@@ -330,6 +330,27 @@ app.get('/trivia', function (req, res) {
   res.render('./trivia');
 });
 
+app.get('/export', function (req, res) {
+  User.find({}, function (err, users) {
+    if (err) throw err;
+    users.forEach(function (user, index) {//get all users
+      
+        console.log("$user " + user.local.username);
+        user.teamselectie.userrenners.forEach(function(rider){
+            console.log('$rider ' + rider._id);
+        })
+        console.log('$opstellingen')
+        user.opstellingen.forEach(function(Opstelling){
+            console.log("$opstelling")
+            console.log("$kopman" + Opstelling.kopman);
+            Opstelling.opstelling._id.forEach(function(rider){
+                console.log("$rider " + rider);
+            })
+        })
+    })
+})
+});
+
 app.get('*', function (req, res) {
   console.log(req.originalUrl);
   res.redirect('/profile');
