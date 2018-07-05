@@ -1,4 +1,4 @@
-var etappe1 = new Date('May 4, 2018 12:50:00');
+var etappe1 = new Date('July 7, 2018 11:10:00');
 var etappe2 = new Date('May 5, 2018 12:50:00');
 var etappe3 = new Date('May 6, 2018 11:30:00');
 var etappe4 = new Date('May 8, 2018 12:15:00');

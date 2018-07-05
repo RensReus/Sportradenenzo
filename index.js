@@ -43,7 +43,7 @@ app.use(bodyParser.urlencoded({
 }));// get information from html forms
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 
-var girodata = require('./app/girodata'); //haal huidige etappe op
+var starttijden = require('./app/starttijden'); //haal huidige etappe op
 
 // required for passport
 app.use(session({
@@ -334,7 +334,7 @@ app.get('/export', function (req, res) {
   User.find({}, function (err, users) {
     if (err) throw err;
     users.forEach(function (user, index) {//get all users
-      
+
         console.log("$user " + user.local.username);
         user.teamselectie.userrenners.forEach(function(rider){
             console.log('$rider ' + rider._id);
@@ -347,6 +347,12 @@ app.get('/export', function (req, res) {
                 console.log("$rider " + rider);
             })
         })
+        user.teamselectie.userrenners = new Array(0).fill({'_id':String,'naam':String,'team':String,'prijs':Number}); //haal de renner weg
+        user.teamselectie.geld = 56000000;
+        user.markModified('userrenners, geld')
+        user.save(function (err) {
+          if (err) throw err;
+        });
     })
 })
 });
@@ -393,7 +399,7 @@ var scrapeResults = schedule.scheduleJob(resultsRule, function () {
 });
 
 var legeOpstellingRule = new schedule.RecurrenceRule();
-legeOpstellingRule = girodata.etappetijden;
+legeOpstellingRule = starttijden.etappetijden;
 
 var copyOpstelling = schedule.scheduleJob(legeOpstellingRule, function () {
   resultsRule.hour = new schedule.Range(0, 23, 1); // na de start ieder uur checken tenzij frequentie wordt verhoogd door getTimeofFinish

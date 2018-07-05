@@ -1,7 +1,7 @@
 var scrape = require('./../scrape');
 module.exports = function (app, passport) {
     var User = require('./models/user');
-    var girodata = require('./girodata');
+    var starttijden = require('./starttijden');
     var Renners = require('./models/renner');
     var Etappe = require('./models/etappe');
 

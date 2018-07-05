@@ -22,7 +22,6 @@ getStartlist = function (raceName,callback) {
     fs.readFile('prijzen.txt', function (err, file) {
         var data = file.toString();
         var renners = data.split("\n");
-        console.log(raceString)
         console.log("https://www.procyclingstats.com/race/ ${raceString} /2018/startlist")
         request('https://www.procyclingstats.com/race/tour-de-france/2018/startlist', function (error, response, html) {
             if (!error && response.statusCode == 200) {
@@ -46,7 +45,7 @@ getStartlist = function (raceName,callback) {
                         }
                         var prijs = 66666666;
                         for (i in renners) {
-                            var renprijs = renners[i].split(" :");
+                            var renprijs = renners[i].split(" ");
                             if (ID === renprijs[0]) {
                                 prijs = parseFloat(renprijs[1]) * 1e6;
                             } else {
