@@ -90,7 +90,7 @@ getStartlist = function (raceName,callback) {
 
 }
 
-getResult = function (race,et, callback) {
+getResult = function (raceName,et, callback) {
     var raceString = "";
     switch(raceName){
         case "giro":
@@ -101,7 +101,7 @@ getResult = function (race,et, callback) {
             raceString = "vuelta-a-espana" ;
     }
     request({
-        url: 'https://www.procyclingstats.com/race/giro-d-italia/2018/stage-' + et,
+        url: 'https://www.procyclingstats.com/race/tour-de-france/2018/stage-' + et,
         headers: { "Connection": "keep-alive" }
     }, function (error, response, html) {
         var jongprev = new Array();
