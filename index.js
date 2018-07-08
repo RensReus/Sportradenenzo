@@ -385,7 +385,7 @@ var scrapeResults = schedule.scheduleJob(resultsRule, function () {
     }
     if (finished) { // dit wordt iedere minuut na de finish uitgevoerd tot de resultaten compleet zijn
       if (!etappe.uitslagKompleet) {
-        getResult(currentDisplay(), function () {
+        getResult('tour', currentDisplay(), function () {
         });
       } else {
         resultsRule = new schedule.RecurrenceRule(); // geen update meer nadat de uitslag compleet is

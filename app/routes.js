@@ -226,9 +226,9 @@ module.exports = function (app, passport) {
         })
     })
 
-    app.get('/manualupdate/giro/etappe/:id', isLoggedIn, function (req, res) {
+    app.get('/manualupdate/:race/etappe/:id', isLoggedIn, function (req, res) {
         if (req.user.local.admin) {
-            getResult(req.params.id, function () {
+            getResult(req.params.race,req.params.id, function () {
                 res.status(404).send("Manually updated etappe " + req.params.id);
             });
         } else {
