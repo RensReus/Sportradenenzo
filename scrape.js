@@ -139,6 +139,8 @@ getResult = function (raceName,et, callback) {
                 $(".basic").each(function (kl, element) {//Slaat de teams en renner id van de dagwinnaar/klassementsleiders op
                     var end = $(this).children().eq(1).children().first().children().length;
                     var klas = cases[kl];
+                    if(et == 3) var klas = cases[kl+1];;
+                    
                     if (end && klas != 'teams') {
                         var columns = new Array();
                         $(this).children().first().children().first().children().each(function (index, element) {
@@ -160,6 +162,7 @@ getResult = function (raceName,et, callback) {
                 var etappeSprint = new Array();
                 var etappeJong = new Array();
                 var etappeBerg = new Array();
+                if(et !=3){
                 $(".basic").each(function (kl, element) {//gaat alle klassementen af (dag,ak,sprint,jongeren,berg,team) en slaat op in arrays
                     var end = $(this).children().eq(1).children().first().children().length;
                     if (end && cases[kl] != 'teams') {
@@ -231,6 +234,73 @@ getResult = function (raceName,et, callback) {
                         })
                     }
                 });
+                }
+                //TTT scrape
+                var TTTuitslag = new Array();
+                if(et === 3){
+                $(".resTTTh").first().parent(function(){
+                    $(this).children('.tttRidersCont').each(function(){
+                        TTTuitslag.push($(this).children().eq(0).children().eq(1).children().eq(1).text());
+                    })
+                })
+                $(".basic").each(function (kl, element) {//gaat alle klassementen af (dag,ak,sprint,jongeren,berg,team) en slaat op in arrays
+                    var end = $(this).children().eq(1).children().first().children().length;
+                    if (end && cases[kl+1] != 'teams') {
+                        var klas = cases[kl+1];
+                        var columns = new Array();
+                        $(this).children().first().children().first().children().each(function (index, element) {
+                            columns.push($(this).text());
+                        })
+                        var renCol = columns.indexOf("Rider");
+                        var teamCol = columns.indexOf("Team");
+                        $(this).children().eq(1).children().each(function (index, element) {//voor iedere renner in de uitslag
+                            var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
+                            var name = $(this).children().eq(renCol).children().eq(1).text();
+                            var lastname = $(this).children().eq(renCol).children().eq(1).children().first().text();
+                            var voornaam = name.substring(lastname.length + 1);
+                            var voornamen = voornaam.split(' ').filter(x => x);
+                            var voorletters = "";
+                            for (var i = 0; i < voornamen.length; i++) {
+                                voorletters += voornamen[i].substring(0, 1) + ".";
+                            }          
+                            name = lastname + " " + voorletters;
+                            var teamName = $(this).children().eq(teamCol).children().eq(0).text();
+                            var timeCol = columns.indexOf('Time');
+                            var pntCol = columns.indexOf('Pnt');
+                            switch (klas) {
+                                case 'gc'://Algemeen Klassement
+                                    var time = $(this).children().eq(timeCol).children().eq(0).text();
+                                    var etappeRenner = { _id: id, naam: name, team: teamName, tijd: time }
+                                    rennersAk.push(id);
+                                    etappeAk.push(etappeRenner);
+                                    break;
+
+                                case 'points'://Sprinter Klassement
+                                    var score = $(this).children().eq(pntCol).text();
+                                    var etappeRenner = { _id: id, naam: name, team: teamName, score: score }
+                                    rennersSprint.push(id);
+                                    etappeSprint.push(etappeRenner);
+                                    break;
+
+                                case 'youth'://Jongeren Klassement
+                                    var time = $(this).children().eq(timeCol).children().eq(0).text();
+                                    var etappeRenner = { _id: id, naam: name, team: teamName, tijd: time }
+                                    rennersJong.push(id);
+                                    etappeJong.push(etappeRenner);
+                                    break;
+
+                                case 'kom'://Berg Klassement
+                                    var score = $(this).children().eq(pntCol).text();
+                                    var etappeRenner = { _id: id, naam: name, team: teamName, score: score }
+                                    rennersBerg.push(id);
+                                    etappeBerg.push(etappeRenner);
+                                    break;
+                            }
+                        })
+                    }
+                });
+                }
+
                 //set renners als uitgevallen
                 Renner.find({ '_id': { $in: rennersDNF } }, function (err, renners) {// set uitgevallen to true 
                     renners.forEach(function (renner, index) {
@@ -260,7 +330,7 @@ getResult = function (raceName,et, callback) {
                 var GTfinished = false;
                 if (et == 21) GTfinished = true; // laatste etappe 
                 console.log("rennersdag length: " + rennersDag.length);
-                Renner.find({ '_id': { $in: rennersDag } }, function (err, renners) {
+                Renner.find({ '_id': { $in: rennersAk } }, function (err, renners) {
                     renners.forEach(function (renner, index) { //voeg uitslag toe aan renner element en de verzamelde punten
                         if (err) throw err;
                         var id = renner._id;
@@ -268,11 +338,16 @@ getResult = function (raceName,et, callback) {
                             console.log('onbekende renner' + id);
                         } else {
                             //dag uitslag
-                            var dagpos = rennersDag.indexOf(id) + 1; // positie in de uitslag
-                            var dagpunten = getPunten('stage', dagpos); // dagpunten worden berekend
+                            if(et !=3){
+                                var dagpos = rennersDag.indexOf(id) + 1; // positie in de uitslag
+                                var dagpunten = getPunten('stage', dagpos); // dagpunten worden berekend
+                            }else{//TTT punten
+                                var dagpos = TTTuitslag.indexOf(renner.team); // positie in de uitslag
+                                var dagpunten = getTTTPunten(dagpos); // dagpunten worden berekend
+                            }
                             renner.uitslagen.dag.set(et - 1, dagpos); // positie wordt in de renner
                             renner.punten.dag.set(et - 1, dagpunten); // punten in de renner opgeslagen
-                            if (renner.team === teamWinners['stage'] && dagpos != 1 && et != 1 && et != 16) {// teampunten
+                            if (renner.team === teamWinners['stage'] && dagpos != 1 && et != 3 && et != 20) {// teampunten
                                 renner.punten.team.dag.set(et - 1, 10);
                             } else {//geen teampunten, op 0 gezet indien het een keer fout gegaan is
                                 renner.punten.team.dag.set(et - 1, 0);
@@ -430,6 +505,13 @@ getEindPunten = function (kl, pos) {
             if (pos < berg.length) return berg[pos];
             return 0;
     }
+}
+
+getTTTPunten = function(pos){
+    if(pos<0) return 0;
+    var punten = [40, 32, 28, 24, 20, 16, 12, 8];
+    if (pos < punten.length) return punten[pos];
+    return 0;
 }
 
 getPrijs = function (id) {
