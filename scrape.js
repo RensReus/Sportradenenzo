@@ -330,7 +330,7 @@ getResult = function (raceName,et, callback) {
                 var GTfinished = false;
                 if (et == 21) GTfinished = true; // laatste etappe 
                 console.log("rennersdag length: " + rennersDag.length);
-                Renner.find({ '_id': { $in: rennersAk } }, function (err, renners) {
+                Renner.find({ '_id': { $in: rennersDag } }, function (err, renners) {
                     renners.forEach(function (renner, index) { //voeg uitslag toe aan renner element en de verzamelde punten
                         if (err) throw err;
                         var id = renner._id;
