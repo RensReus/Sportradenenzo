@@ -64,7 +64,7 @@
                     <%var budgetnamen="";%>
                     <%for(var j=0;j<users.length;j++){%>
                         <%for(var k=0;k<users[j].teamselectie.userrenners.length;k++){%>
-                            <%if(users[j].teamselectie.userrenners[k].naam==renners[i].naam){%>
+                            <%if(users[j].teamselectie.userrenners[k]._id==renners[i]._id){%>
                                 <%if(users[j].groups.budget){%>
                                     <%selecties++%>
                                     <%budgetnamen=budgetnamen + " " + users[j].local.username.replace("Budget","")%>
