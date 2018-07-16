@@ -418,7 +418,7 @@ getResult = function (raceName,et, callback) {
                             }
                             renner.save(function (err, result) {
                                 if (err) throw err;
-                                if (index === rennersAk.length - 1) {// als laaste renner dan calculate user en continue code
+                                if (index === rennersDag.length - 1) {// als laaste renner dan calculate user en continue code
                                     console.log("renners et: %s done", et);
                                     calculateUserScores(et, function () {
                                         if(GTfinished){
