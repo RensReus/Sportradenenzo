@@ -282,6 +282,11 @@ app.post('/giro/etapperesultaat', function (req, res) {
   };
 });
 
+app.post('/admin', function (req, res) {
+  console.log(req.body.data);
+  res.json({ 'data': req.body.data});
+});
+
 app.get('/giro/renner/:rennerID', function (req, res) {
   console.log("renner exists: " + fs.existsSync('./views/giro/renner.ejs'));
   Renner.findOne({ _id: req.params.rennerID }, function (err, renner) {

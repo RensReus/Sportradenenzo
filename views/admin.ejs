@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <% include ./partials/head %>
+    </head>
+<body>
+    Input:<br>
+    <form>
+    <textarea id="DBQueryText" rows="10" cols="200"></textarea><br>
+    <button type="button" onclick="DBQuery()">Verzend DB Query</button><br>
+    </form>
+    Output:<br>
+    <textarea id="DBQueryOutput" rows="20" cols="100"></textarea>
+<script>
+function DBQuery(){
+    $.ajax({
+		type: 'POST',
+        data: JSON.stringify({"data":  $('#DBQueryText').val()}),
+		contentType: 'application/json',
+        url: '/admin',
+        cache: false,
+        dataType:"json",
+        success: function (res) {
+            $("#DBQueryOutput").html('');
+            $("#DBQueryOutput").html(res.data);
+        }					
+    });
+}
+</script>
+</body>
+</html>
