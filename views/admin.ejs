@@ -6,10 +6,10 @@
     Input:<br>
     <form>
     <textarea id="DBQueryText" rows="10" cols="200"></textarea><br>
-    <button type="button" onclick="DBQuery()">Verzend DB Query</button><br>
+    <button type="button" id="submitbutton" onclick="DBQuery()">Verzend DB Query</button><br>
     </form>
     Output:<br>
-    <textarea id="DBQueryOutput" rows="20" cols="100"></textarea>
+    <textarea readonly id="DBQueryOutput" rows="20" cols="100"></textarea>
 <script>
 function DBQuery(){
     $.ajax({
@@ -25,6 +25,11 @@ function DBQuery(){
         }					
     });
 }
+$('#DBQueryText').keydown(function(event) {
+  if (event.ctrlKey && event.keyCode === 13) {
+    $("#submitbutton").click();
+  }
+})
 </script>
 </body>
 </html>

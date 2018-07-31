@@ -23,6 +23,21 @@ if (fs.existsSync('./config/database.js')) { //Kijken of er een config is
   var configDB = { 'url': process.env.DATABASE_LINK }; //Zo niet gebruik heroku ding
 };
 
+if(fs.existsSync('./config/sqlDB.js')){
+  var sqlDBstring = require('./config/sqlDB.js');
+}else{
+  var sqlDBstring = process.env.DATABASE_URL;
+}
+
+const { Client } = require('pg');
+
+const sqlDB = new Client({
+  connectionString: sqlDBstring,
+  ssl: true,
+});
+
+sqlDB.connect();
+
 var schedule = require('node-schedule');
 
 var functies = require('./functies');
@@ -282,9 +297,39 @@ app.post('/giro/etapperesultaat', function (req, res) {
   };
 });
 
-app.post('/admin', function (req, res) {
+app.post('/admin', function (req, jsres) {
   console.log(req.body.data);
-  res.json({ 'data': req.body.data});
+  var sqlQuery = req.body.data;
+  if (req.user.local.admin) {
+    sqlDB.query(sqlQuery,
+      (err,sqlres)=>{
+        if (err){
+          throw err;
+        }
+        console.log(sqlres);
+        
+        switch(sqlres.command){
+          case 'SELECT':
+          var output = "";
+          var cols = new Array();
+          for (var i in sqlres.fields){
+            output += sqlres.fields[i].name + "\t";
+            cols[i] = sqlres.fields[i].name;
+          }
+          output += "\n";
+          for(var i in sqlres.rows){
+            var row = sqlres.rows[i];
+            for(var j in cols)
+            output += row[cols[j]] + "\t";
+            output += "\n";
+          }
+          jsres.json({'data': output});
+          break;
+          default:
+          jsres.json({ 'data': JSON.stringify(sqlres.command) + " return not yet implemented\n" + JSON.stringify(sqlres)})
+        }
+      })
+  }
 });
 
 app.get('/giro/renner/:rennerID', function (req, res) {
@@ -380,8 +425,12 @@ getTimetoFinish(function (timeFinish) {// check hoe lang nog tot the finish
 
 var scrapeResults = schedule.scheduleJob(resultsRule, function () {
   console.log("scrape run at: " + new Date().toTimeString());
-  Etappe.findOne({ _id: currentDisplay() }, function (err, etappe) {
-    if (!finished && !etappe.uitslagKompleet && displayResults(currentDisplay())) { // als de etappe niet gefinisht is
+  var etNR = currentDisplay();
+  if(currentDisplay() === 22){
+    etNR = 21;
+  }
+  Etappe.findOne({ _id: etNR }, function (err, etappe) {
+    if (!finished && !etappe.uitslagKompleet && displayResults(etNR)) { // als de etappe niet gefinisht is
       getTimetoFinish(function (timeFinish) {// check hoe lang nog tot the finish
         finished = timeFinish[0]; // returns boolean
         resultsRule = timeFinish[1]; // returns ieder uur als de finish nog verweg is, ieder 5 min indien dichtbij en iedere min na de finish
@@ -390,7 +439,7 @@ var scrapeResults = schedule.scheduleJob(resultsRule, function () {
     }
     if (finished) { // dit wordt iedere minuut na de finish uitgevoerd tot de resultaten compleet zijn
       if (!etappe.uitslagKompleet) {
-        getResult('tour', currentDisplay(), function () {
+        getResult('tour', etNR, function () {
         });
       } else {
         resultsRule = new schedule.RecurrenceRule(); // geen update meer nadat de uitslag compleet is
