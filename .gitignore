@@ -1,3 +1,4 @@
 node_modules
 config/database.js
 config/sqlDB.js
+SQL tables

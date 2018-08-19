@@ -107,6 +107,79 @@ app.post('/profile', bodyParser.urlencoded({ extended: true }), function (req, r
 });
 //==================================================================================================================
 
+// app.get('/usertosql',function(req,res){
+//     User.find({}, function(err, users){
+//       users.forEach(function(user){
+//         var username = user.local.username;
+//         var password = user.local.password;
+//         var admin = "FALSE";
+//         if (user.local.admin)
+//         admin = "TRUE";
+//         var email = user.local.email;
+//         var sqlQuery = `INSERT INTO account(username,password,admin,email) VALUES('${username}', '${password}', ${admin}, '${email}')`;
+//         sqlDB.query(sqlQuery,(err,sqlres)=>{
+//           if (err){
+//             throw err;
+//           }
+//           console.log(sqlres);  
+//         })
+          
+//       });
+//   })
+//   res.status(404).send("Transferred users");
+// })
+
+// app.get('/selectietosql',function(req,res){
+//   User.find({}, function(err, users){
+//     users.forEach(function(user){
+//       if(user.teamselectie.userrenners.length== 20){
+//         console.log(user.local.email)
+//         console.log(user.teamselectie.userrenners.length)
+//       var budget = "FALSE";
+//       if (user.groups.budget)
+//         budget = "TRUE";
+//       var sqlQuery = `INSERT INTO account_participation VALUES((select account from account where email='${user.local.email}'), 2, ${budget}`;
+//       for(var i = 0; i<user.teamselectie.userrenners.length;i++){
+//         sqlQuery += `, (select rider from rider where pcsid= '${user.teamselectie.userrenners[i]._id}')`;
+//         console.log("user: " + user.local.username + " i: " + i);
+//       }
+//       sqlQuery += ");"
+//       //console.log(sqlQuery);
+      
+//       sqlDB.query(sqlQuery,(err,sqlres)=>{
+//         if (err){
+//           throw err;
+//         }
+//         console.log(sqlres);  
+//       })
+//     }
+//     });
+// })
+// res.status(404).send("Transferred teamselecties");
+// })
+
+var Renner = require('./app/models/renner');
+
+// app.get('/riderstosql',function(req,res){
+//   Renner.find({}, function(err, renners){
+//     var sqlQuery = `INSERT INTO rider(pcsid, country, firstname, lastname, initials) VALUES`;
+//     var temp;
+//     renners.forEach(function(renner){
+//       sqlQuery += `('${renner._id}', '${renner.land}', '${renner.voornaam}', '${renner.achternaam}', '${renner.voorletters}'),`
+//     });
+//     sqlQuery = sqlQuery.slice(0, -1) + ";";
+//     console.log(sqlQuery);
+//     sqlDB.query(sqlQuery,(err,sqlres)=>{
+//       if (err){
+//         console.log(err);
+//       }
+//       console.log(sqlres);  
+//     })
+// })
+// res.status(404).send("Transferred riders");
+// })
+
+
 app.get('/giro2018', function (req, res) {
   fs.readFile('giro.html', function (err, data) {
     res.writeHead(200, { 'Content-Type': 'text/html' })
@@ -130,7 +203,7 @@ app.get('/getstartlist/:race', function (req, res) {
   console.log("getstartlist")
 })
 
-var Renner = require('./app/models/renner');
+
 
 //Teamselectie ontvangen==================================================================================
 app.post('/giro/teamselectie', function (req, res) {
@@ -304,29 +377,32 @@ app.post('/admin', function (req, jsres) {
     sqlDB.query(sqlQuery,
       (err,sqlres)=>{
         if (err){
-          throw err;
+          console.log(err);
+          jsres.json({'data': err});
         }
-        console.log(sqlres);
-        
-        switch(sqlres.command){
-          case 'SELECT':
-          var output = "";
-          var cols = new Array();
-          for (var i in sqlres.fields){
-            output += sqlres.fields[i].name + "\t";
-            cols[i] = sqlres.fields[i].name;
-          }
-          output += "\n";
-          for(var i in sqlres.rows){
-            var row = sqlres.rows[i];
-            for(var j in cols)
-            output += row[cols[j]] + "\t";
+        else{
+          console.log(sqlres);
+          
+          switch(sqlres.command){
+            case 'SELECT':
+            var output = "";
+            var cols = new Array();
+            for (var i in sqlres.fields){
+              output += sqlres.fields[i].name + "\t";
+              cols[i] = sqlres.fields[i].name;
+            }
             output += "\n";
+            for(var i in sqlres.rows){
+              var row = sqlres.rows[i];
+              for(var j in cols)
+              output += row[cols[j]] + "\t";
+              output += "\n";
+            }
+            jsres.json({'data': output});
+            break;
+            default:
+            jsres.json({ 'data': JSON.stringify(sqlres.command) + " return not yet implemented\n" + JSON.stringify(sqlres)})
           }
-          jsres.json({'data': output});
-          break;
-          default:
-          jsres.json({ 'data': JSON.stringify(sqlres.command) + " return not yet implemented\n" + JSON.stringify(sqlres)})
         }
       })
   }
