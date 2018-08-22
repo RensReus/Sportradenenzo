@@ -238,7 +238,8 @@ module.exports = function (app, passport) {
     app.get('/admin', isLoggedIn, function (req, res) {
         if (req.user.local.admin) {
             res.render('./admin.ejs')
-        }
+        }else{
+            res.redirect('/')}
     })
 
     app.get('/giro/gemistepunten/:user',isLoggedIn,function(req,res){

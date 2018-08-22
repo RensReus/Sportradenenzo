@@ -1,0 +1,82 @@
+// to show all tables
+SELECT tablename FROM pg_catalog.pg_tables
+where schemaname = 'public'
+
+
+CREATE TABLE race (
+  race SERIAL primary key,
+  name TEXT NOT NULL,
+  year INT NOT NULL,
+  budget INT DEFAULT 0,
+  finished boolean DEFAULT FALSE,
+  UNIQUE (name, year)
+);
+
+CREATE TABLE account (
+  account SERIAL PRIMARY KEY,
+  username TEXT DEFAULT NULL,
+  password TEXT NOT NULL,
+  email TEXT NOT NULL,  
+  admin bool DEFAULT FALSE,
+  UNIQUE (email)
+);
+
+CREATE TABLE rider (
+  rider SERIAL PRIMARY KEY,
+  PCSid TEXT NOT NULL,
+  country TEXT DEFAULT NULL,
+  firstName TEXT NOT NULL,
+  lastName TEXT NOT NULL,
+  initials TEXT NOT NULL,
+  fullname TEXT NOT NULL,
+  UNIQUE (PCSid)
+);
+
+CREATE TABLE account_participation (
+  account_participation SERIAL PRIMARY KEY,
+  account INT NOT NULL REFERENCES account (account),
+  race INT NOT NULL REFERENCES race (race),
+  budgetParticipation bool DEFAULT FALSE,
+  UNIQUE(account,race)
+);
+
+CREATE TABLE etappe (
+  etappe SERIAL PRIMARY KEY,
+  race INT NOT NULL REFERENCES race (race),
+  etappenr INT NOT NULL,
+  starttijd timestamp DEFAULT NULL,
+  finished bool DEFAULT NULL,
+  complete bool DEFAULT NULL,
+  UNIQUE (race, etappenr)
+);
+
+CREATE TABLE opstelling (
+  opstelling SERIAL PRIMARY KEY,
+  account_participation INT NOT NULL REFERENCES account_participation (account_participation),
+  etappe INT NOT NULL REFERENCES etappe (etappe),
+  dagScore INT DEFAULT 0,
+  totaalScore INT DEFAULT 0,
+  kopman INT DEFAULT NULL REFERENCES rider (rider),
+  UNIQUE(account_participation,etappe)
+);
+
+CREATE TABLE rider_participation (
+  race INT NOT NULL REFERENCES race (race),
+  rider INT NOT NULL REFERENCES rider (rider),
+  price INT DEFAULT 6666666,
+  dnf bool DEFAULT FALSE,
+  team TEXT DEFAULT NULL,
+  PRIMARY KEY (race, rider)
+);
+
+CREATE TABLE opgestelde_rider (
+  opstelling INT NOT NULL REFERENCES opstelling (opstelling),
+  rider INT NOT NULL REFERENCES rider (rider),
+  PRIMARY KEY (rider, opstelling)
+);
+
+CREATE TABLE selected_rider (
+  rider INT NOT NULL REFERENCES rider (rider),
+  account_participation INT NOT NULL REFERENCES account_participation (account_participation),
+  PRIMARY KEY (rider, account_participation)
+);

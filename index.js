@@ -23,9 +23,9 @@ if (fs.existsSync('./config/database.js')) { //Kijken of er een config is
   var configDB = { 'url': process.env.DATABASE_LINK }; //Zo niet gebruik heroku ding
 };
 
-if(fs.existsSync('./config/sqlDB.js')){
+if (fs.existsSync('./config/sqlDB.js')) {
   var sqlDBstring = require('./config/sqlDB.js');
-}else{
+} else {
   var sqlDBstring = process.env.DATABASE_URL;
 }
 
@@ -123,39 +123,77 @@ app.post('/profile', bodyParser.urlencoded({ extended: true }), function (req, r
 //           }
 //           console.log(sqlres);  
 //         })
-          
+
 //       });
 //   })
 //   res.status(404).send("Transferred users");
 // })
 
-// app.get('/selectietosql',function(req,res){
-//   User.find({}, function(err, users){
-//     users.forEach(function(user){
-//       if(user.teamselectie.userrenners.length== 20){
-//         console.log(user.local.email)
-//         console.log(user.teamselectie.userrenners.length)
-//       var budget = "FALSE";
-//       if (user.groups.budget)
-//         budget = "TRUE";
-//       var sqlQuery = `INSERT INTO account_participation VALUES((select account from account where email='${user.local.email}'), 2, ${budget}`;
-//       for(var i = 0; i<user.teamselectie.userrenners.length;i++){
-//         sqlQuery += `, (select rider from rider where pcsid= '${user.teamselectie.userrenners[i]._id}')`;
-//         console.log("user: " + user.local.username + " i: " + i);
+app.get('/selectietosql',function(req,res){
+  User.find({}, function(err, users){
+    users.forEach(function(user){
+      if(user.teamselectie.userrenners.length== 20){
+        console.log(user.local.email)
+        console.log(user.teamselectie.userrenners.length)
+      var budget = "FALSE";
+      if (user.groups.budget)
+        budget = "TRUE";
+      var sqlQuery = `INSERT INTO account_participation(account,race,budgetParticipation) VALUES((select account from account where email='${user.local.email}'), 2, ${budget});`;
+      sqlDB.query(sqlQuery,(err,sqlres)=>{
+        if (err){
+          throw err;
+        }
+        console.log(sqlres);  
+      })
+    }
+    });
+})
+res.status(404).send("Transferred teamselecties");
+})
+
+// app.get('/etappetosql',function(req,res){
+//   for(var i = 1; i<22;i++){
+//     var sqlQuery = `INSERT INTO etappe(etappe,race,finished, complete) VALUES(${i},2,TRUE, TRUE)`;
+//     sqlDB.query(sqlQuery,(err,sqlres)=>{
+//       if (err){
+//         throw err;
 //       }
-//       sqlQuery += ");"
-//       //console.log(sqlQuery);
-      
-//       sqlDB.query(sqlQuery,(err,sqlres)=>{
-//         if (err){
-//           throw err;
-//         }
-//         console.log(sqlres);  
-//       })
-//     }
-//     });
+//       console.log(sqlres);  
+//     })
+//   }
+//   res.status(404).send("Transferred opstellingen");
 // })
-// res.status(404).send("Transferred teamselecties");
+
+// app.get('/opstellingtosql', function (req, res) {
+//   User.find({}, function (err, users) {
+//     users.forEach(function (user) {
+//       if (user.teamselectie.userrenners.length == 20) {
+//         var totaalscore = 0;
+//         for (var etappe = 1; etappe < 23; etappe++) {
+//           console.log("user: %s, etappe: %i",user.local.email,etappe);
+//           totaalscore += user.profieldata.poulescore[etappe - 1];
+//           var sqlQuery = `INSERT INTO opstelling VALUES((select account from account where email='${user.local.email}'),2,${etappe},${user.profieldata.poulescore[etappe - 1]},${totaalscore}`;
+//           if (etappe != 22) {
+//             sqlQuery += `, (select rider from rider where pcsid= '${user.opstellingen[etappe-1].kopman}')`;
+//             for (var i = 0; i < user.opstellingen[etappe-1].opstelling._id.length; i++) {
+//               sqlQuery += `, (select rider from rider where pcsid= '${user.opstellingen[etappe-1].opstelling._id[i]}')`;
+//             }
+//           }
+//           sqlQuery += ");"
+//           //console.log(sqlQuery);
+
+//           sqlDB.query(sqlQuery, (err, sqlres) => {
+//             if (err) {
+//               console.log(err);
+//               throw err;
+//             }
+//             console.log(sqlres);
+//           })
+//         }
+//       }
+//     });
+//   })
+//   res.status(404).send("Transferred opstellingen");
 // })
 
 var Renner = require('./app/models/renner');
@@ -197,7 +235,7 @@ app.get('/testpost', function (req, res) {
 })
 
 app.get('/getstartlist/:race', function (req, res) {
-  getStartlist(req.params.race,function () {
+  getStartlist(req.params.race, function () {
     res.send("test")
   })
   console.log("getstartlist")
@@ -344,7 +382,7 @@ app.post('/giro/etapperesultaat', function (req, res) {
   if (req.body.status == "eindresultaat") { //Laden van de resultatenpagina
     Renner.find({ '_id': { "$in": req.user.teamselectie.userrenners.map(renner => renner._id) } }, '_id naam punten', function (err, renners) {
       if (err) throw err;
-      res.json({ 'renners': renners});
+      res.json({ 'renners': renners });
     });
   }
   if (req.body.status == "etapperesultaat") { //Laden van de resultatenpagina
@@ -375,33 +413,33 @@ app.post('/admin', function (req, jsres) {
   var sqlQuery = req.body.data;
   if (req.user.local.admin) {
     sqlDB.query(sqlQuery,
-      (err,sqlres)=>{
-        if (err){
+      (err, sqlres) => {
+        if (err) {
           console.log(err);
-          jsres.json({'data': err});
+          jsres.json({ 'data': err });
         }
-        else{
+        else {
           console.log(sqlres);
-          
-          switch(sqlres.command){
+
+          switch (sqlres.command) {
             case 'SELECT':
-            var output = "";
-            var cols = new Array();
-            for (var i in sqlres.fields){
-              output += sqlres.fields[i].name + "\t";
-              cols[i] = sqlres.fields[i].name;
-            }
-            output += "\n";
-            for(var i in sqlres.rows){
-              var row = sqlres.rows[i];
-              for(var j in cols)
-              output += row[cols[j]] + "\t";
+              var output = "";
+              var cols = new Array();
+              for (var i in sqlres.fields) {
+                output += sqlres.fields[i].name + "\t";
+                cols[i] = sqlres.fields[i].name;
+              }
               output += "\n";
-            }
-            jsres.json({'data': output});
-            break;
+              for (var i in sqlres.rows) {
+                var row = sqlres.rows[i];
+                for (var j in cols)
+                  output += row[cols[j]] + "\t";
+                output += "\n";
+              }
+              jsres.json({ 'data': output });
+              break;
             default:
-            jsres.json({ 'data': JSON.stringify(sqlres.command) + " return not yet implemented\n" + JSON.stringify(sqlres)})
+              jsres.json({ 'data': JSON.stringify(sqlres.command) + " return not yet implemented\n" + JSON.stringify(sqlres) })
           }
         }
       })
@@ -431,12 +469,12 @@ app.get("/onderweg", function (req, res) {
 })
 
 app.get("/giro/charts/", function (req, res) {
-  User.find({},'profieldata.poulescore local.username groups', function (err, users) {
+  User.find({}, 'profieldata.poulescore local.username groups', function (err, users) {
     if (err) throw err;
     if (users == null || users == "") {
       res.redirect('/')
     } else {
-      users=users.slice(0,8);
+      users = users.slice(0, 8);
       var usernames = users.map(user => user.local.username);
       var scores = [];
       users.forEach(function (user, index) {
@@ -461,26 +499,26 @@ app.get('/export', function (req, res) {
     if (err) throw err;
     users.forEach(function (user, index) {//get all users
 
-        console.log("$user " + user.local.username);
-        user.teamselectie.userrenners.forEach(function(rider){
-            console.log('$rider ' + rider._id);
+      console.log("$user " + user.local.username);
+      user.teamselectie.userrenners.forEach(function (rider) {
+        console.log('$rider ' + rider._id);
+      })
+      console.log('$opstellingen')
+      user.opstellingen.forEach(function (Opstelling) {
+        console.log("$opstelling")
+        console.log("$kopman" + Opstelling.kopman);
+        Opstelling.opstelling._id.forEach(function (rider) {
+          console.log("$rider " + rider);
         })
-        console.log('$opstellingen')
-        user.opstellingen.forEach(function(Opstelling){
-            console.log("$opstelling")
-            console.log("$kopman" + Opstelling.kopman);
-            Opstelling.opstelling._id.forEach(function(rider){
-                console.log("$rider " + rider);
-            })
-        })
-        user.teamselectie.userrenners = new Array(0).fill({'_id':String,'naam':String,'team':String,'prijs':Number}); //haal de renner weg
-        user.teamselectie.geld = 56000000;
-        user.markModified('userrenners, geld')
-        user.save(function (err) {
-          if (err) throw err;
-        });
+      })
+      user.teamselectie.userrenners = new Array(0).fill({ '_id': String, 'naam': String, 'team': String, 'prijs': Number }); //haal de renner weg
+      user.teamselectie.geld = 56000000;
+      user.markModified('userrenners, geld')
+      user.save(function (err) {
+        if (err) throw err;
+      });
     })
-})
+  })
 });
 
 app.get('*', function (req, res) {
@@ -502,7 +540,7 @@ getTimetoFinish(function (timeFinish) {// check hoe lang nog tot the finish
 var scrapeResults = schedule.scheduleJob(resultsRule, function () {
   console.log("scrape run at: " + new Date().toTimeString());
   var etNR = currentDisplay();
-  if(currentDisplay() === 22){
+  if (currentDisplay() === 22) {
     etNR = 21;
   }
   Etappe.findOne({ _id: etNR }, function (err, etappe) {
@@ -535,19 +573,19 @@ var copyOpstelling = schedule.scheduleJob(legeOpstellingRule, function () {
   resultsRule.hour = new schedule.Range(0, 23, 1); // na de start ieder uur checken tenzij frequentie wordt verhoogd door getTimeofFinish
   scrapeResults.reschedule(resultsRule);
   var etappe = currentDisplay();
-  if(etappe<22 && etappe>0){
-  User.find({}, function (err, users) {
-    if (err) throw err;
-    if(users.length){
-      users.forEach(function (user) {
-        if (!user.opstellingen[etappe - 1].opstelling.naam.length) {
-          user.opstellingen.set(etappe - 1, user.opstellingen[etappe - 2]);
-          user.save(function (err) {
-            if (err) throw err;
-          })
-        }
-      })
-    }
-  })
-}
+  if (etappe < 22 && etappe > 0) {
+    User.find({}, function (err, users) {
+      if (err) throw err;
+      if (users.length) {
+        users.forEach(function (user) {
+          if (!user.opstellingen[etappe - 1].opstelling.naam.length) {
+            user.opstellingen.set(etappe - 1, user.opstellingen[etappe - 2]);
+            user.save(function (err) {
+              if (err) throw err;
+            })
+          }
+        })
+      }
+    })
+  }
 });
