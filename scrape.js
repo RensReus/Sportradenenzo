@@ -10,20 +10,20 @@ getStartlist = function (raceName,callback) {
     var raceString = "";
     switch(raceName){
         case "giro":
-            raceString = "giro-d-italia" ;
-            break;
-            case "tour":
-            raceString = "tour-de-france";
-            break;
-            case "vuelta":
-            raceString = "vuelta-a-espana" ;
-            break;
+        raceString = "giro-d-italia" ;
+        break;
+        case "tour":
+        raceString = "tour-de-france";
+        break;
+        case "vuelta":
+        raceString = "vuelta-a-espana" ;
+        break;
     }
     fs.readFile('prijzen.txt', function (err, file) {
         var data = file.toString();
         var renners = data.split("\n");
-        console.log("https://www.procyclingstats.com/race/ ${raceString} /2018/startlist")
-        request('https://www.procyclingstats.com/race/tour-de-france/2018/startlist', function (error, response, html) {
+        console.log(`https://www.procyclingstats.com/race/ ${raceString} /2018/startlist`)
+        request('https://www.procyclingstats.com/race/vuelta-a-espana/2018/startlist', function (error, response, html) {
             if (!error && response.statusCode == 200) {
                 var $ = cheerio.load(html);
                 $(".black").each(function (index, element) { //gaat ieder team af
