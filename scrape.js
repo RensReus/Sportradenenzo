@@ -47,9 +47,12 @@ getStartlist = function (raceName,callback) {
                         for (i in renners) {
                             var renprijs = renners[i].split(" ");
                             if (ID === renprijs[0]) {
-                                prijs = parseFloat(renprijs[1]) * 1e6;
+                                prijs = parseFloat(renprijs[1]);
                             } else {
                             }
+                        }
+                        if (prijs > 5000000){
+                            prijs = prijs / 1000000;
                         }
                         if (prijs === 66666666)
                             console.log(ID);
