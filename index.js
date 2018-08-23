@@ -285,7 +285,7 @@ app.post('/giro/teamselectie', function (req, res) {
         user.save(function (err) {
           if (err) throw err;
         });
-        res.json(user.teamselectie.userrenners, idverwijderde);
+        res.json({'userrenners' : user.teamselectie.userrenners, 'idverwijderde' : idverwijderde});
       };
     });
   };
@@ -512,7 +512,7 @@ app.get('/export', function (req, res) {
         })
       })
       user.teamselectie.userrenners = new Array(0).fill({ '_id': String, 'naam': String, 'team': String, 'prijs': Number }); //haal de renner weg
-      user.teamselectie.geld = 56000000;
+      user.teamselectie.geld = 47000000;
       user.markModified('userrenners, geld')
       user.save(function (err) {
         if (err) throw err;
