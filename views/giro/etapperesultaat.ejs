@@ -139,7 +139,7 @@
                 <button id="klassementknop1" class="klassementbutton" onclick="showklassement([1,<%=dagpaginas%>,<%=akpaginas%>,<%=sprintpaginas%>,<%=bergpaginas%>,<%=jongpaginas%>])">AK</button>
                 <button id="klassementknop2" class="klassementbutton" onclick="showklassement([2,<%=dagpaginas%>,<%=akpaginas%>,<%=sprintpaginas%>,<%=bergpaginas%>,<%=jongpaginas%>])">Sprint</button>
                 <button id="klassementknop3" class="klassementbutton" onclick="showklassement([3,<%=dagpaginas%>,<%=akpaginas%>,<%=sprintpaginas%>,<%=bergpaginas%>,<%=jongpaginas%>])">Berg</button>
-                <button id="klassementknop4" class="klassementbutton" onclick="showklassement([4,<%=dagpaginas%>,<%=akpaginas%>,<%=sprintpaginas%>,<%=bergpaginas%>,<%=jongpaginas%>])">Jong</button>
+                <button id="klassementknop4" class="klassementbutton" onclick="showklassement([4,<%=dagpaginas%>,<%=akpaginas%>,<%=sprintpaginas%>,<%=bergpaginas%>,<%=jongpaginas%>])">Combi</button>
             </div>
             <%for(var j=0;j<dagpaginas;j++){%>
                 <%if(j==0){%>
@@ -276,7 +276,7 @@
                     <table class="etappetabel">
                         <%if(uitslagen.jong.length){%>
                             <thead class="topbar">
-                                <tr><th></th><th>Jongerentrui</th><th>Tijd</th></tr>    
+                                <tr><th></th><th>Combitrui</th><th>Punten</th></tr>    
                             </thead>
                             <tbody>
                                 <%for(var i=0;i<Math.min(20,(uitslagen.jong.length-j*20));i++){%>

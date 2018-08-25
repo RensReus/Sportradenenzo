@@ -495,10 +495,11 @@ app.get('/trivia', function (req, res) {
 });
 /*
 app.get('/export', function (req, res) {
-  User.find({}, function (err, users) {
+  User.find({'teamselectie.userrenners': {$size: 20}}, function (err, users) {
     if (err) throw err;
     users.forEach(function (user, index) {//get all users
-
+      // user.profieldata.totaalscore = 0;
+      // user.profieldata.poulescore = new Array(22).fill(0);
       console.log("$user " + user.local.username);
       user.teamselectie.userrenners.forEach(function (rider) {
         console.log('$rider ' + rider._id);
@@ -575,7 +576,7 @@ var copyOpstelling = schedule.scheduleJob(legeOpstellingRule, function () {
   scrapeResults.reschedule(resultsRule);
   var etappe = currentDisplay();
   if (etappe < 22 && etappe > 0) {
-    User.find({}, function (err, users) {
+    User.find({'teamselectie.userrenners': {$size: 20}}, function (err, users) {
       if (err) throw err;
       if (users.length) {
         users.forEach(function (user) {
