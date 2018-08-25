@@ -493,7 +493,7 @@ app.get('/trivia', function (req, res) {
   console.log("trivia");
   res.render('./trivia');
 });
-
+/*
 app.get('/export', function (req, res) {
   User.find({}, function (err, users) {
     if (err) throw err;
@@ -512,15 +512,16 @@ app.get('/export', function (req, res) {
         })
       })
       user.teamselectie.userrenners = new Array(0).fill({ '_id': String, 'naam': String, 'team': String, 'prijs': Number }); //haal de renner weg
+      user.opstellingen =  new Array(21).fill({'kopman':String,'opstelling':{'_id':new Array(0),'naam':new Array(0)}}); //Opstellingen resetten
       user.teamselectie.geld = 47000000;
-      user.markModified('userrenners, geld')
+      user.markModified('userrenners, opstellingen, geld')
       user.save(function (err) {
         if (err) throw err;
       });
     })
   })
 });
-
+*/
 app.get('*', function (req, res) {
   console.log(req.originalUrl);
   res.redirect('/profile');
