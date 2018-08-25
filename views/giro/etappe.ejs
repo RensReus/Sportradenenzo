@@ -159,19 +159,19 @@
                             <tr><th></th><th>Puntentrui</th><th>Punten</th></tr>    
                         </thead>
                         <tbody>
-                            <%for(var i=0;i<Math.min(5,uitslagen.sprint.length);i++){%>
-                                <tr>
-                                    <%if(i==0){%>
-                                        <td><img src="/images/paarsetrui.png"></td>
-                                    <%}else{%>
-                                        <td><%=i+1%></td>
-                                    <%}%>
-                                        <td>
-                                            <a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a>
-                                        </td>
-                                    <td><%=uitslagen.sprint[i].score%></td>
-                                </tr>
-                            <%}%> 
+                                <%for(var i=0;i<Math.min(5,uitslagen.berg.length);i++){%>
+                                    <tr>
+                                        <%if(i==0){%>
+                                            <td><img src="/images/blauwetrui.png"></td>
+                                        <%}else{%>
+                                            <td><%=i+1%></td>
+                                        <%}%>
+                                            <td>
+                                                <a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a>
+                                            </td>
+                                        <td><%=uitslagen.berg[i].score%></td>
+                                    </tr>
+                                <%}%> 
                         </tbody>    
                     </table>
                 </div>  
@@ -181,19 +181,19 @@
                             <tr><th></th><th>Bergtrui</th><th>Punten</th></tr>    
                         </thead>
                         <tbody>
-                            <%for(var i=0;i<Math.min(5,uitslagen.berg.length);i++){%>
-                                <tr>
-                                    <%if(i==0){%>
-                                        <td><img src="/images/blauwetrui.png"></td>
-                                    <%}else{%>
-                                        <td><%=i+1%></td>
-                                    <%}%>
-                                        <td>
-                                            <a href="/giro/renner/<%=uitslagen.berg[i]._id%>"><%=uitslagen.berg[i].naam%></a>
-                                        </td>
-                                    <td><%=uitslagen.berg[i].score%></td>
-                                </tr>
-                            <%}%> 
+                                <%for(var i=0;i<Math.min(5,uitslagen.sprint.length);i++){%>
+                                        <tr>
+                                            <%if(i==0){%>
+                                                <td><img src="/images/paarsetrui.png"></td>
+                                            <%}else{%>
+                                                <td><%=i+1%></td>
+                                            <%}%>
+                                                <td>
+                                                    <a href="/giro/renner/<%=uitslagen.sprint[i]._id%>"><%=uitslagen.sprint[i].naam%></a>
+                                                </td>
+                                            <td><%=uitslagen.sprint[i].score%></td>
+                                        </tr>
+                                    <%}%> 
                         </tbody>    
                     </table>
                     <table class="etappetabel mini">    
