@@ -2,6 +2,7 @@
 <!doctype html>
 <html>
 <head>
+    <title>Gemiste Punten <%=username%></title>
     <% include ../partials/head %>
     <style>
     table {
@@ -78,6 +79,9 @@
     <p></p>
 </footer>
 <script>
+function updateTitle(username){
+    document.title = `Gemiste Punten ${username}`;
+}
 
 function sortTableInt(n) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;

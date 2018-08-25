@@ -2,6 +2,7 @@
 <!doctype html>
 <html>
 <head>
+    <title>Eindresultaat</title>
     <% include ../partials/head %>
     <style>
         tr:nth-child(odd) {
@@ -348,8 +349,6 @@ function showscroll(data){
 
 var teamscalled=0;
 function checkresultaat(etappe){ //Laat alle behaalde punten in de resultatentabel zien
-    var ronde = Vuelta;
-    document.title = `Eind uitslag ${ronde}`;
     $.ajax({
 		type: 'POST',
         data: JSON.stringify({"etappe":etappe,"status":"eindresultaat"}),

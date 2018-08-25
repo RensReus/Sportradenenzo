@@ -476,14 +476,15 @@ app.get("/giro/charts/", function (req, res) {
     } else {
       users = users.slice(0, 8);
       var usernames = users.map(user => user.local.username);
+      var userbudget = users.map(user => user.groups.budget);
       var scores = [];
       users.forEach(function (user, index) {
         scores.push(user.profieldata.poulescore);
       })
-      console.log(scores.length)
       res.render('./giro/charts.ejs', {
         scores,
-        usernames
+        usernames,
+        userbudget
       });;
     }
   })

@@ -2,6 +2,7 @@
 <!doctype html>
 <html>
 <head>
+    <title>Opstelling etappe <%=etappe%></title>
     <% include ../partials/head %>
     <style>
         .etappekiesdoos{
@@ -318,7 +319,7 @@ function kieskopman(id,etappe){
 }
 
 function updateuserteam(etappe){
-    document.title = `Opstelling etappe ${etappe}`;
+
     $.ajax({   
 		type: 'POST',
         data: JSON.stringify({"etappe":etappe, "status": "laden"}),

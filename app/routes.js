@@ -211,7 +211,7 @@ module.exports = function (app, passport) {
                                     rennersPunten[i]-=renners[i].punten.team.totaal[j];
                             }
                             if(user.opstellingen[j].kopman==renners[i]._id)
-                                rennersPunten[i]+=renners[i].punten.dag[j];
+                                rennersPunten[i]+=renners[i].punten.dag[j]*.5;
                         }
                         rennersPunten[i]+=renners[i].punten.totaal[21];//eindklassement
                         if(user.groups.budget)
@@ -219,7 +219,8 @@ module.exports = function (app, passport) {
                     };
                     res.render('./giro/overzichtUser.ejs',{
                         renners,
-                        rennersPunten
+                        rennersPunten,
+                        username: req.params.user
                     })
                 });
             }
@@ -257,7 +258,8 @@ module.exports = function (app, passport) {
                     res.render('./giro/gemistePunten.ejs', {
                         missedPoints,
                         actualPoints,
-                        bestPossible
+                        bestPossible,
+                        username: req.params.user
                     });
                 });
             }

@@ -2,6 +2,7 @@
 <!doctype html>
 <html>
 <head>
+    <title>Teamselectie</title>
     <% include ../partials/head %>
     <style>
         .teamselectiedoos {
@@ -136,7 +137,6 @@ function verwijderrenner(id){
     //}
 }
 function updateuserteam(teamselectie){
-    document.title = `Teamselectie`;
     for(id=0;id<teamselectie.userrenners.length;id++){
         $("#" + teamselectie.userrenners[id]._id).addClass("rennerselected");
         $("#userselectie" + id).html(teamselectie.userrenners[id].naam + "<br/><span class=ploegrenner>" + teamselectie.userrenners[id].team + "</span><br/>" + teamselectie.userrenners[id].prijs);
