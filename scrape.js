@@ -354,6 +354,7 @@ getResult = function (raceName,et, callback) {
                 console.log("rennersdag length: " + rennersDag.length);
                 Renner.find({ '_id': { $in: rennersDag } }, function (err, renners) {
                     renners.forEach(function (renner, index) { //voeg uitslag toe aan renner element en de verzamelde punten
+
                         if (err) throw err;
                         var id = renner._id;
                         if (renner == "" || renner == null) {
@@ -440,7 +441,7 @@ getResult = function (raceName,et, callback) {
                             }
                             renner.save(function (err, result) {
                                 if (err) throw err;
-                                if (index === rennersDag.length - 1) {// als laaste renner dan calculate user en continue code
+                                if (index === renners.length - 1) {// als laaste renner dan calculate user en continue code
                                     console.log("renners et: %s done", et);
                                     calculateUserScores(et, function () {
                                         if(GTfinished){
