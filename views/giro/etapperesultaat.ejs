@@ -118,13 +118,13 @@
         <div class="col-sm-8 resultatendoos">
             <table id="resultatentabel">
                 <thead>
-                    <tr><th>Renner</th><th>Etappe</th><th>Team</th><th><img src="/images/rozetrui.png"></th><th><img src="/images/blauwetrui.png"></th><th><img src="/images/paarsetrui.png"></th><th><img src="/images/wittetrui.png"></th><th>Totaal</th></tr>
+                    <tr><th>Renner</th><th>Etappe</th><th>Team</th><th><img src="/images/rozetrui.png"></th><th><img src="/images/paarsetrui.png"></th><th><img src="/images/blauwetrui.png"></th><th><img src="/images/wittetrui.png"></th><th>Totaal</th></tr>
                 </thead>
                 <tbody>
                     <% for(var i=0; i<9; i++) { %>
-                        <tr id=resultaatselectie<%=i%>><td id="naamrenner<%=i%>" class="links"><%=opstelling[i]%></td><td id="etapperenner<%=i%>"></td><td id="teamrenner<%=i%>"></td><td id="akrenner<%=i%>"></td><td id="bergrenner<%=i%>"></td><td id="sprintrenner<%=i%>"></td><td id="jongrenner<%=i%>"></td><td id="totaalrenner<%=i%>"></td></tr>
+                        <tr id=resultaatselectie<%=i%>><td id="naamrenner<%=i%>" class="links"><%=opstelling[i]%></td><td id="etapperenner<%=i%>"></td><td id="teamrenner<%=i%>"></td><td id="akrenner<%=i%>"></td><td id="sprintrenner<%=i%>"></td><td id="bergrenner<%=i%>"></td><td id="jongrenner<%=i%>"></td><td id="totaalrenner<%=i%>"></td></tr>
                     <% } %>
-                    <tr id=resultaatselectietotaal><td>Totaal</td><td id="totaaletappe"></td><td id="totaalteam"></td><td id="totaalak"></td><td id="totaalberg"></td><td id="totaalsprint"></td><td id="totaaljong"></td><td id="totaaltotaal"></td></tr>
+                    <tr id=resultaatselectietotaal><td>Totaal</td><td id="totaaletappe"></td><td id="totaalteam"></td><td id="totaalak"></td><td id="totaalsprint"></td><td id="totaalberg"></td><td id="totaaljong"></td><td id="totaaltotaal"></td></tr>
                 </tbody>
             </table>
         </div>
