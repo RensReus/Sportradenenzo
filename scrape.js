@@ -104,7 +104,7 @@ getResult = function (raceName,et, callback) {
             raceString = "vuelta-a-espana" ;
     }
     request({
-        url: 'https://www.procyclingstats.com/race/tour-de-france/2018/stage-' + et,
+        url: 'https://www.procyclingstats.com/race/vuelta-a-espana/2018/stage-' + et,
         headers: { "Connection": "keep-alive" }
     }, function (error, response, html) {
         var jongprev = new Array();
@@ -165,7 +165,7 @@ getResult = function (raceName,et, callback) {
                 var etappeSprint = new Array();
                 var etappeJong = new Array();
                 var etappeBerg = new Array();
-                if(et !=3){
+                if(true){
                 $(".basic").each(function (kl, element) {//gaat alle klassementen af (dag,ak,sprint,jongeren,berg,team) en slaat op in arrays
                     var end = $(this).children().eq(1).children().first().children().length;
                     if (end && cases[kl] != 'teams') {
@@ -240,7 +240,7 @@ getResult = function (raceName,et, callback) {
                 }
                 //TTT scrape
                 var TTTuitslag = new Array();
-                if(et === 3){
+                if(false){
                 $(".resTTTh").first().parent(function(){
                     $(this).children('.tttRidersCont').each(function(){
                         TTTuitslag.push($(this).children().eq(0).children().eq(1).children().eq(1).text());
@@ -304,6 +304,25 @@ getResult = function (raceName,et, callback) {
                 });
                 }
 
+                //make combi klassement
+                for (var i in rennersBerg){
+                    var id = rennersBerg[i];
+                    var akpos = rennersAk.indexOf(id) + 1; 
+                    var sprintpos = rennersSprint.indexOf(id) + 1;
+                    var bergpos = i + 1;
+                    if(akpos > 0 && sprintpos > 0 && bergpos>0){
+                        var name = etappeBerg[i].naam;
+                        var time = akpos + sprintpos + bergpos;
+                        var etappeRenner = { _id: id, naam: name, team: teamName, tijd: time }
+
+                        etappeJong.push(etappeRenner);
+                    }
+                }
+                etappeJong.sort(function(a, b){return a.time - b.time});
+
+                for(var i in etappeJong){
+                    rennersJong.push(etappeJong[i]._id);
+                }
                 //set renners als uitgevallen
                 Renner.find({ '_id': { $in: rennersDNF } }, function (err, renners) {// set uitgevallen to true 
                     renners.forEach(function (renner, index) {
@@ -317,7 +336,7 @@ getResult = function (raceName,et, callback) {
                 ////////// check of resultaten compleet zijn
                 var jongDNF = 0;
                 for (i in rennersDNF) {
-                    if (jongprev.map(jongren => jongren._id).includes(rennersDNF[i]))
+                    if (jongprev.map(jongeren => jongeren._id).includes(rennersDNF[i]))
                         jongDNF++;
                 }
                 var uitslagKompleet = false;
@@ -341,7 +360,7 @@ getResult = function (raceName,et, callback) {
                             console.log('onbekende renner' + id);
                         } else {
                             //dag uitslag
-                            if(et !=3){
+                            if(true){
                                 var dagpos = rennersDag.indexOf(id) + 1; // positie in de uitslag
                                 var dagpunten = getPunten('stage', dagpos); // dagpunten worden berekend
                             }else{//TTT punten
@@ -350,7 +369,7 @@ getResult = function (raceName,et, callback) {
                             }
                             renner.uitslagen.dag.set(et - 1, dagpos); // positie wordt in de renner
                             renner.punten.dag.set(et - 1, dagpunten); // punten in de renner opgeslagen
-                            if (renner.team === teamWinners['stage'] && dagpos != 1 && et != 3 && et != 20) {// teampunten
+                            if (renner.team === teamWinners['stage'] && dagpos != 1 && et != 1 && et != 16) {// teampunten
                                 renner.punten.team.dag.set(et - 1, 10);
                             } else {//geen teampunten, op 0 gezet indien het een keer fout gegaan is
                                 renner.punten.team.dag.set(et - 1, 0);

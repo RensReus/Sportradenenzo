@@ -3,7 +3,7 @@ const User = require('./app/models/user');
 const Etappe = require('./app/models/etappe');
 const starttijden = require('./app/starttijden');
 calculateUserScores = function (et, callback) {
-    User.find({}, function (err, users) {
+    User.find({'teamselectie.userrenners': {$size: 20}}, function (err, users) {
         if (err) throw err;
         users.forEach(function (user, index) {//get all users
             var punten = 0;
