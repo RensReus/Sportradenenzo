@@ -369,6 +369,7 @@ function showscroll(data){
 
 var teamscalled=0;
 function checkresultaat(etappe){ //Laat alle behaalde punten in de resultatentabel zien
+    document.title = `Uitslag etappe ${etappe}`;
     $.ajax({
 		type: 'POST',
         data: JSON.stringify({"etappe":etappe,"status":"etapperesultaat"}),

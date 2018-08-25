@@ -318,6 +318,7 @@ function kieskopman(id,etappe){
 }
 
 function updateuserteam(etappe){
+    document.title = `Opstelling etappe ${etappe}`;
     $.ajax({   
 		type: 'POST',
         data: JSON.stringify({"etappe":etappe, "status": "laden"}),
