@@ -10,7 +10,7 @@ module.exports = function (app, passport) {
     // =====================================
     app.get('/', function (req, res) {
         // res.render('index.ejs'); // load the index.ejs file
-        res.redirect('/login'); // scheelt iedere keer weer klikken en de index pagina istoch kaal
+        res.redirect('/giro'); // scheelt iedere keer weer klikken en de index pagina istoch kaal
     });
 
     // =====================================
