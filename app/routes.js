@@ -101,7 +101,7 @@ module.exports = function (app, passport) {
             res.redirect("/giro/teamselectie")
         }
         //Request de url en zoek het nummer om te weten welke etappe wordt gevraagd, knippen na etappe
-        var etappe = req.params.etappe; //String omzetten naar int (decimaal)
+        var etappe = parseInt(req.params.etappe); //String omzetten naar int (decimaal)
         if (isNaN(etappe)|| etappe < 1 || etappe > 21) { //Kijken of het een nummer is en of het geen ongeldig nummer is
             res.redirect("/giro")//send to currentDisplay
         } else {
@@ -161,7 +161,7 @@ module.exports = function (app, passport) {
 
     app.get('/giro/etappe/:etappe/:user', isLoggedIn, function (req, res) {
         //Request de url en zoek het nummer om te weten welke etappe wordt gevraagd, knippen na etappe
-        var etappe = req.params.etappe; //String omzetten naar int (decimaal)
+        var etappe = parseInt(req.params.etappe); //String omzetten naar int (decimaal)
         User.findOne({ "local.username": req.params.user }, function (err, user) {
             if (err) throw err;
             if (user == null || user == "") {
