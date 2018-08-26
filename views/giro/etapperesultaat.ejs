@@ -89,7 +89,7 @@
     <div class="col-sm-12 text-left" id="contentblok">
         <div class="col-sm-12 bovenrijtje">
             <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
-                <a href="/giro/etappe<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
+                <a href="/giro/etappe/<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
             <%}else{%>
                 <%if(huidig<0){%> <!--stuur door naar teamselectie als dat nog kan-->
                     <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
@@ -109,7 +109,7 @@
                 </span>
             </div>
             <%if(etappe<21){%>
-                <a href="/giro/etappe<%=etappe+1%>" style="float:right" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
+                <a href="/giro/etappe/<%=etappe+1%>" style="float:right" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
             <%}else{%>
                 <%if(etappe==21){%> <!--stuur door naar resultatenpagina als dat al kan-->
                     <a href="/giro/eindresultaat" style="float:right" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
@@ -294,7 +294,7 @@
                                         <%}else{%>
                                             <td><a href="/giro/renner/<%=uitslagen.jong[20*j+i]._id%>"><%=uitslagen.jong[20*j+i].naam%></a></td>
                                         <%}%>
-                                        <td>+<%=uitslagen.jong[20*j+i].tijd%></td>
+                                        <td><%=uitslagen.jong[20*j+i].tijd%></td>
                                     </tr>
                                 <%}%>
                                 <%for(var i=Math.min(20,(uitslagen.jong.length-j*20));i<20;i++){%>

@@ -305,20 +305,20 @@ getResult = function (raceName,et, callback) {
                 }
 
                 //make combi klassement
-                for (var i in rennersBerg){
+                for (var i = 0; i< rennersBerg.length;i++){
                     var id = rennersBerg[i];
                     var akpos = rennersAk.indexOf(id) + 1; 
                     var sprintpos = rennersSprint.indexOf(id) + 1;
                     var bergpos = i + 1;
                     if(akpos > 0 && sprintpos > 0 && bergpos>0){
                         var name = etappeBerg[i].naam;
+                        var teamName = etappeBerg[i].team;
                         var time = akpos + sprintpos + bergpos;
                         var etappeRenner = { _id: id, naam: name, team: teamName, tijd: time }
-
                         etappeJong.push(etappeRenner);
                     }
                 }
-                etappeJong.sort(function(a, b){return a.time - b.time});
+                etappeJong.sort(function(a, b){return a.tijd - b.tijd});
 
                 for(var i in etappeJong){
                     rennersJong.push(etappeJong[i]._id);

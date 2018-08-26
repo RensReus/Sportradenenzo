@@ -74,13 +74,13 @@
         <div class="col-sm-12 text-left" id="contentblok">
             <div class="bovenrijtje">
                 <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
-                    <a href="/giro/etappe<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
+                    <a href="/giro/etappe/<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
                 <%}else if(huidig<1){%> <!--stuur door naar teamselectie als dat nog kan-->
                     <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>
                 <%}%>
                 <span class="deadline"> &nbsp; &nbsp; Deadline: <%=deadline%></span>
                 <%if(etappe<21){%>
-                    <a href="/giro/etappe<%=etappe+1%>" style="float:right" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
+                    <a href="/giro/etappe/<%=etappe+1%>" style="float:right" class="etappebutton">Etappe <%=etappe+1%> &nbsp; &nbsp; ►</a>
                 <%}else if(huidig>21){%> <!--stuur door naar resultatenpagina als dat al kan-->
                     <a href="/giro/resultaten" style="float:right" class="etappebutton">Resultaten &nbsp; &nbsp; ►</a>
                 <%}%>

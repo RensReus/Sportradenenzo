@@ -291,9 +291,6 @@ app.post('/giro/teamselectie', function (req, res) {
   };
 });
 
-//Niet nodig?
-app.post('/giro/etappe', function (req, res) {
-});
 
 //Goed doorverwijzen van /giro gebaseerd op welke etappe bezig is=========================================================
 app.get('/giro', function (req, res) { //algemene giro pagina
@@ -302,7 +299,7 @@ app.get('/giro', function (req, res) { //algemene giro pagina
   } else if (currentDisplay() === 22) {
     res.redirect('/giro/eindresultaat');
   } else {
-    res.redirect('/giro/etappe' + currentDisplay());//go to currentDisplay etappe (opstelling of resultaten)
+    res.redirect('/giro/etappe/' + currentDisplay());//go to currentDisplay etappe (opstelling of resultaten)
   }
 });
 
