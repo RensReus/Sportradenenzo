@@ -1,54 +1,33 @@
 {
-  "name": "sportradenenzo",
-  "version": "0.1.0",
-  "description": "Poulewebsite voor de beste poulegroep",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
+  "name": "lookup-server",
+  "version": "0.0.1",
+  "private": true,
   "dependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-react-app": "^3.1.2",
-    "bcrypt-nodejs": "0.0.3",
-    "body-parser": "~1.15.2",
-    "chart.js": "^2.7.2",
-    "cheerio": "^1.0.0-rc.2",
-    "connect-flash": "~0.1.1",
-    "connect-mongo": "^2.0.1",
-    "cookie-parser": "~1.4.3",
-    "ejs": "~2.5.2",
-    "ejs-lint": "^0.3.0",
-    "express": "^4.14.1",
-    "express-session": "~1.14.1",
-    "html": "^1.0.0",
-    "json": "^9.0.6",
-    "method-override": "~2.3.6",
-    "mongoose": "~4.13.1",
-    "morgan": "~1.7.0",
-    "node-schedule": "^1.3.0",
+    "babel-core": "^6.26.3",
+    "bcrypt": "^3.0.0",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "morgan": "^1.9.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pg": "^7.4.3",
-    "request": "^2.85.0",
-    "serve-static": "^1.13.2",
-    "sql-template-strings": "^2.2.2"
+    "sql.js": "0.3.2"
   },
-  "engines": {
-    "node": "8.11.1"
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node server.js",
+    "client": "node start-client.js",
+    "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
+    "lint": "eslint ."
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/heroku/node-js-sample.git"
-  },
-  "keywords": [],
-  "author": "Arrie Rens",
-  "contributors": [
-    "Arrie Rens"
-  ],
-  "license": "No",
-  "bugs": {
-    "url": "https://github.com/heroku/node-js-sample/issues"
-  },
-  "homepage": "https://github.com/heroku/node-js-sample#readme",
-  "devDependencies": {}
+  "devDependencies": {
+    "concurrently": "3.1.0",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "14.1.0",
+    "eslint-plugin-import": "2.2.0",
+    "eslint-plugin-jsx-a11y": "4.0.0",
+    "eslint-plugin-react": "6.9.0"
+  }
 }
