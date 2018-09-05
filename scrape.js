@@ -566,7 +566,7 @@ getTimetoFinish = function (callback) {
         var girobeschikbaar = false;
         
         $(".ind_td").first().children().eq(1).children().each(function () {
-            if ($(this).children().eq(2).text().startsWith('Giro d')) { // voor de giro
+            if ($(this).children().eq(2).text().startsWith('La Vuelta ciclista a España')) { // voor de giro
                 girobeschikbaar = true;
                 if ($(this).children().eq(5).text() != 'finished') {
                     var timeRemaining = $(this).children().eq(0).text();
