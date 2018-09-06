@@ -8,9 +8,19 @@ CREATE TABLE race (
   name TEXT NOT NULL,
   year INT NOT NULL,
   budget INT DEFAULT 0,
-  finished boolean DEFAULT FALSE,
+  finished BOOLEAN DEFAULT FALSE,
   UNIQUE (name, year)
 );
+
+CREATE TABLE stage (
+  stage SERIAL PRIMARY KEY,
+  race INT NOT NULL REFERENCES race (race),
+  stagenr INT NOT NULL,
+  starttime timestamp DEFAULT NULL,
+  finished bool DEFAULT FALSE,
+  complete bool DEFAULT FALSE,
+  UNIQUE (race, stagenr)
+);  
 
 CREATE TABLE account (
   account SERIAL PRIMARY KEY,
@@ -21,17 +31,6 @@ CREATE TABLE account (
   UNIQUE (email)
 );
 
-CREATE TABLE rider (
-  rider SERIAL PRIMARY KEY,
-  PCSid TEXT NOT NULL,
-  country TEXT DEFAULT NULL,
-  firstName TEXT NOT NULL,
-  lastName TEXT NOT NULL,
-  initials TEXT NOT NULL,
-  fullname TEXT NOT NULL,
-  UNIQUE (PCSid)
-);
-
 CREATE TABLE account_participation (
   account_participation SERIAL PRIMARY KEY,
   account INT NOT NULL REFERENCES account (account),
@@ -40,43 +39,83 @@ CREATE TABLE account_participation (
   UNIQUE(account,race)
 );
 
-CREATE TABLE etappe (
-  etappe SERIAL PRIMARY KEY,
-  race INT NOT NULL REFERENCES race (race),
-  etappenr INT NOT NULL,
-  starttijd timestamp DEFAULT NULL,
-  finished bool DEFAULT NULL,
-  complete bool DEFAULT NULL,
-  UNIQUE (race, etappenr)
-);
-
-CREATE TABLE opstelling (
-  opstelling SERIAL PRIMARY KEY,
-  account_participation INT NOT NULL REFERENCES account_participation (account_participation),
-  etappe INT NOT NULL REFERENCES etappe (etappe),
-  dagScore INT DEFAULT 0,
-  totaalScore INT DEFAULT 0,
-  kopman INT DEFAULT NULL REFERENCES rider (rider),
-  UNIQUE(account_participation,etappe)
+CREATE TABLE rider (
+  rider SERIAL PRIMARY KEY,
+  PCSid TEXT NOT NULL,
+  country TEXT DEFAULT NULL,
+  firstName TEXT NOT NULL,
+  lastName TEXT NOT NULL,
+  initials TEXT NOT NULL,
+  UNIQUE (PCSid)
 );
 
 CREATE TABLE rider_participation (
+  rider_participation SERIAL PRIMARY KEY,
   race INT NOT NULL REFERENCES race (race),
   rider INT NOT NULL REFERENCES rider (rider),
   price INT DEFAULT 6666666,
   dnf bool DEFAULT FALSE,
-  team TEXT DEFAULT NULL,
-  PRIMARY KEY (race, rider)
+  team TEXT NOT NULL,
+  UNIQUE (race, rider)
 );
 
-CREATE TABLE opgestelde_rider (
-  opstelling INT NOT NULL REFERENCES opstelling (opstelling),
-  rider INT NOT NULL REFERENCES rider (rider),
-  PRIMARY KEY (rider, opstelling)
+
+
+
+//to be updated
+CREATE TABLE stage_selection (
+  stage_selection SERIAL PRIMARY KEY,
+  account_participation INT NOT NULL REFERENCES account_participation (account_participation),
+  stage INT NOT NULL REFERENCES stage (stage),
+  stagescore INT DEFAULT 0,
+  totalscore INT DEFAULT 0,
+  kopman INT DEFAULT NULL REFERENCES rider_participation (rider_participation),
+  UNIQUE(account_participation,stage)
 );
 
-CREATE TABLE selected_rider (
-  rider INT NOT NULL REFERENCES rider (rider),
+CREATE TABLE stage_selection_rider (
+  stage_selection INT NOT NULL REFERENCES stage_selection (stage_selection),
+  rider INT NOT NULL REFERENCES rider_participation (rider_participation),
+  PRIMARY KEY (rider, stage_selection)
+);
+
+CREATE TABLE team_selection_rider (
+  rider INT NOT NULL REFERENCES rider_participation (rider_participation),
   account_participation INT NOT NULL REFERENCES account_participation (account_participation),
   PRIMARY KEY (rider, account_participation)
 );
+
+// completely new
+CREATE TABLE results_points(
+  stage INT NOT NULL REFERENCES stage (stage),
+  rider INT NOT NULL REFERENCES rider_participation (rider_participation),
+  stagepos INT DEFAULT 0,
+  gcpos INT DEFAULT 0,
+  pointspos INT DEFAULT 0,
+  kompos INT DEFAULT 0,
+  youthpos INT DEFAULT 0,
+  stagescore INT DEFAULT 0,
+  gcscore INT DEFAULT 0,
+  pointsscore INT DEFAULT 0,
+  youthscore INT DEFAULT 0,
+  teamscore INT DEFAULT 0,
+  totalscore INT DEFAULT 0,
+  tijden en punten van klassementen !!!!!!!!!!!!!!!
+  PRIMARY KEY (stage,rider)
+)
+
+//poules moet nog meer voor worden geimplementeerd voordat het echt gebruikt kan worden
+//maar de opzet staat er alvast
+
+CREATE TABLE poule (
+  poule SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  budgetonly BOOLEAN DEFAULT FALSE,
+  race INT NOT NULL REFERENCES race (race)
+)
+
+CREATE TABLE poule_account (
+  poule INT REFERENCES poule (poule),
+  account_participation INT REFERENCES account_participation (account_participation),
+  PRIMARY KEY(poule,account_participation) 
+)

@@ -107,7 +107,7 @@ app.post('/profile', bodyParser.urlencoded({ extended: true }), function (req, r
 });
 //==================================================================================================================
 
-// app.get('/usertosql',function(req,res){
+// app.get('/vulaccount',function(req,res){
 //     User.find({}, function(err, users){
 //       users.forEach(function(user){
 //         var username = user.local.username;
@@ -119,7 +119,7 @@ app.post('/profile', bodyParser.urlencoded({ extended: true }), function (req, r
 //         var sqlQuery = `INSERT INTO account(username,password,admin,email) VALUES('${username}', '${password}', ${admin}, '${email}')`;
 //         sqlDB.query(sqlQuery,(err,sqlres)=>{
 //           if (err){
-//             throw err;
+//             console.log(err);
 //           }
 //           console.log(sqlres);  
 //         })
@@ -129,40 +129,113 @@ app.post('/profile', bodyParser.urlencoded({ extended: true }), function (req, r
 //   res.status(404).send("Transferred users");
 // })
 
-app.get('/selectietosql',function(req,res){
+app.get('/vulaccountparticipation',function(req,res){
   User.find({}, function(err, users){
     users.forEach(function(user){
+      for(var i = 1; i<4;i++){
       if(user.teamselectie.userrenners.length== 20){
         console.log(user.local.email)
         console.log(user.teamselectie.userrenners.length)
       var budget = "FALSE";
       if (user.groups.budget)
         budget = "TRUE";
-      var sqlQuery = `INSERT INTO account_participation(account,race,budgetParticipation) VALUES((select account from account where email='${user.local.email}'), 2, ${budget});`;
+      var sqlQuery = `INSERT INTO account_participation(account,race,budgetParticipation) VALUES((select account from account where email='${user.local.email}'), ${i}, ${budget});`;
+      if(user.teamselectie.userrenners.length == 20){
       sqlDB.query(sqlQuery,(err,sqlres)=>{
         if (err){
-          throw err;
+          console.log(err);
         }
         console.log(sqlres);  
       })
     }
+    }
+  }
+    });
+})
+res.status(404).send("Transferred account participation");
+})
+
+app.get('/vulstage',function(req,res){
+  for(var i = 1; i<22;i++){
+    var sqlQuery = `INSERT INTO stage(stagenr, race,finished, complete) VALUES(${i},2,TRUE, TRUE)`;
+    sqlDB.query(sqlQuery,(err,sqlres)=>{
+      if (err){
+        console.log(err);
+      }
+      console.log(sqlres);  
+    })
+  }
+  res.status(404).send("Transferred etappes");
+})
+var Renner = require('./app/models/renner');
+
+app.get('/vulrider',function(req,res){
+  Renner.find({}, function(err, renners){
+      renners.forEach(function(renner){
+      var sqlQuery = `INSERT INTO rider(pcsid, country, firstname, lastname, initials) VALUES`;
+      sqlQuery += `('${renner._id}', '${renner.land}', '${renner.voornaam}', '${renner.achternaam}', '${renner.voorletters}')`;
+      sqlQuery += 'On conflict (pcsid) do nothing';
+      console.log(sqlQuery);
+      sqlDB.query(sqlQuery,(err,sqlres)=>{
+        if (err){
+          console.log(err);
+        }
+        console.log(sqlres);  
+      })
+    });
+})
+res.status(404).send("Transferred riders");
+})
+
+app.get('/vulriderparticipation',function(req,res){//alleen vuelta = 3
+  Renner.find({}, function(err, renners){
+    var sqlQuery = `INSERT INTO rider_participation(race, rider, price, dnf, team) VALUES`;
+    var temp;
+    renners.forEach(function(renner){
+      var uitgevallen = "FALSE";
+      var prijs = renner.prijs;
+      if(prijs < 500)
+      prijs = 500000;
+      if (renner.uitgevallen)
+      uitgevallen = "TRUE";
+      sqlQuery += `(3,(select rider from rider where pcsid='${renner._id}'), '${prijs}', '${uitgevallen}', '${renner.team}'),`
+    });
+    sqlQuery = sqlQuery.slice(0, -1) + ";";
+    console.log(sqlQuery);
+    sqlDB.query(sqlQuery,(err,sqlres)=>{
+      if (err){
+        console.log(err);
+      }
+      console.log(sqlres);  
+    })
+})
+res.status(404).send("Transferred rider deelnames");
+})
+
+app.get('/vulteamselectionrider',function(req,res){
+  User.find({}, function(err, users){
+    users.forEach(function(user){
+      for(var i = 1; i<4;i++){
+      if(user.teamselectie.userrenners.length== 20){
+        console.log(user.local.email)
+        console.log(user.teamselectie.userrenners.length)
+      var sqlQuery = `INSERT INTO team_selection_rider(account_participation,rider_participation) VALUES`;
+      for(var i in user.teamselectie.userrenners){
+        var id = user.teamselectie.userrenners[i]._id;
+        sqlQuery += `(select account_participation from account_participation where account= (select account from account where email='${user.local.email}'),select rider_participation from rider_participarion where rider = (select rider from rider where pcsid = '${id}'))`
+      }
+      sqlDB.query(sqlQuery,(err,sqlres)=>{
+        if (err){
+          console.log(err);
+        }
+        console.log(sqlres);  
+      })
+    }
+  }
     });
 })
 res.status(404).send("Transferred teamselecties");
 })
-
-// app.get('/etappetosql',function(req,res){
-//   for(var i = 1; i<22;i++){
-//     var sqlQuery = `INSERT INTO etappe(etappe,race,finished, complete) VALUES(${i},2,TRUE, TRUE)`;
-//     sqlDB.query(sqlQuery,(err,sqlres)=>{
-//       if (err){
-//         throw err;
-//       }
-//       console.log(sqlres);  
-//     })
-//   }
-//   res.status(404).send("Transferred opstellingen");
-// })
 
 // app.get('/opstellingtosql', function (req, res) {
 //   User.find({}, function (err, users) {
@@ -196,26 +269,6 @@ res.status(404).send("Transferred teamselecties");
 //   res.status(404).send("Transferred opstellingen");
 // })
 
-var Renner = require('./app/models/renner');
-
-// app.get('/riderstosql',function(req,res){
-//   Renner.find({}, function(err, renners){
-//     var sqlQuery = `INSERT INTO rider(pcsid, country, firstname, lastname, initials) VALUES`;
-//     var temp;
-//     renners.forEach(function(renner){
-//       sqlQuery += `('${renner._id}', '${renner.land}', '${renner.voornaam}', '${renner.achternaam}', '${renner.voorletters}'),`
-//     });
-//     sqlQuery = sqlQuery.slice(0, -1) + ";";
-//     console.log(sqlQuery);
-//     sqlDB.query(sqlQuery,(err,sqlres)=>{
-//       if (err){
-//         console.log(err);
-//       }
-//       console.log(sqlres);  
-//     })
-// })
-// res.status(404).send("Transferred riders");
-// })
 
 
 app.get('/giro2018', function (req, res) {
