@@ -310,7 +310,6 @@ getResult = function (raceName,et, callback) {
                     var akpos = i + 1; 
                     var sprintpos = rennersSprint.indexOf(id) + 1;
                     var bergpos = rennersBerg.indexOf(id) + 1; 
-                    console.log("%s %i %i %i", id,akpos,sprintpos,bergpos);
                     if(akpos > 0 && sprintpos > 0 && bergpos>0){
                         var name = etappeAk[i].naam;
                         var teamName = etappeAk[i].team;
@@ -322,6 +321,9 @@ getResult = function (raceName,et, callback) {
                 etappeJong.sort(function(a, b){return a.tijd - b.tijd});// etappe
 
                 for(var i in etappeJong){
+                    if(i==0){
+                        teamWinners['youth'] = etappeJong[0].team;//set team van combi leider
+                    }
                     rennersJong.push(etappeJong[i]._id);
                 }
                 //set renners als uitgevallen

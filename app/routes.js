@@ -277,6 +277,21 @@ module.exports = function (app, passport) {
             res.redirect('/')
         }
     })
+
+    app.get('/manualupdate/:race/alle', isLoggedIn, function (req, res) {
+        if (req.user.local.admin) {
+            for(var i = 1; i<22;i++){
+                getResult(req.params.race,i, function () {
+                    
+                    console.log("Manually updated etappe " + i);
+                });
+            }
+        res.status(404).send("Manually updated alle etappes");
+        } else {
+            res.redirect('/')
+        }
+    })
+
     app.get('/admin', isLoggedIn, function (req, res) {
         if (req.user.local.admin) {
             res.render('./admin.ejs')
