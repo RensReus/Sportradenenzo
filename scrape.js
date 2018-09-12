@@ -346,7 +346,7 @@ getResult = function (raceName,et, callback) {
                 var akKomp = rennersAk.length + rennersDNF.length == akprevlength;
                 var sprintKomp = rennersSprint.length;
                 var bergKomp = rennersBerg.length;
-                var jongKomp = rennersJong.length + jongDNF == jongprev.length;
+                var jongKomp = rennersJong.length;
                 if (et == 1) { jongKomp = true; bergKomp = true; }
                 if (akKomp && sprintKomp && bergKomp && jongKomp) {
                     uitslagKompleet = true;
