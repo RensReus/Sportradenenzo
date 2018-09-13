@@ -529,8 +529,58 @@ app.get("/giro/charts/", function (req, res) {
       var userbudget = users.map(user => user.groups.budget);
       var scores = [];
       users.forEach(function (user, index) {
-        scores.push(user.profieldata.poulescore);
+        var tempscores = user.profieldata.poulescore;
+        var totaalscore = new Array(tempscores.length);
+        totaalscore[0]=0;
+        for (var i = 0; i < tempscores.length+1; i++) {
+          totaalscore[i] = tempscores.slice(0, i).reduce((a, b) => a + b, 0);
+        }
+        scores.push(totaalscore);
       })
+      res.render('./giro/charts.ejs', {
+        scores,
+        usernames,
+        userbudget
+      });;
+    }
+  })
+})
+
+app.get("/giro/chartsrel/", function (req, res) {
+  User.find({}, 'profieldata.poulescore local.username groups', function (err, users) {
+    if (err) throw err;
+    if (users == null || users == "") {
+      res.redirect('/')
+    } else {
+      users = users.slice(0, 8);
+      var usernames = users.map(user => user.local.username);
+      var userbudget = users.map(user => user.groups.budget);
+      var scores = [];
+      users.forEach(function (user, index) {
+        var tempscores = user.profieldata.poulescore;
+        var totaalscore = new Array(tempscores.length);
+        totaalscore[0]=0;
+        for (var i = 0; i < tempscores.length+1; i++) {
+          totaalscore[i] = tempscores.slice(0, i).reduce((a, b) => a + b, 0);
+        }
+        scores.push(totaalscore);
+      })
+      for(var user = 0; user < 8;user++){
+        console.log(usernames[user]);
+        console.log(scores[user].length);
+      }
+      for(var et = 0; et<23; et++){
+        var stagescores = [];
+        for(var user = 0; user < 8;user++){
+          stagescores.push(scores[user][et]);
+        }
+        var highest = Math.max(...stagescores);
+        console.log(highest);
+        for(var user = 0; user < 8;user++){
+          scores[user][et]-=highest;
+        }
+      }
+
       res.render('./giro/charts.ejs', {
         scores,
         usernames,

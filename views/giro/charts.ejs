@@ -82,12 +82,7 @@
                 for (user in usernames) {
                     if(userbudget[user] == poule){
                         
-                        var tempscores = scores.slice(0 + user * 22, 22 + user * 22)
-                        var totaalscore = new Array(tempscores.length);
-                        totaalscore[0]=0;
-                        for (var i = 0; i < tempscores.length+1; i++) {
-                            totaalscore[i] = tempscores.slice(0, i).reduce((a, b) => a + b, 0);
-                        }
+                        var totaalscore = scores.slice(0 + user * 23, 23 + user * 23)
                         datasets.push({
                             label: usernames[user],
                             data: totaalscore,
