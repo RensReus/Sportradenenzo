@@ -23,8 +23,8 @@ if (fs.existsSync('./config/database.js')) { //Kijken of er een config is
   var configDB = { 'url': process.env.DATABASE_LINK }; //Zo niet gebruik heroku ding
 };
 
-if (fs.existsSync('./config/sqlDB.js')) {
-  var sqlDBstring = require('./config/sqlDB.js');
+if (fs.existsSync('./config/sqlDBlink.js')) {
+  var sqlDBstring = require('./config/sqlDBlink.js');
 } else {
   var sqlDBstring = process.env.DATABASE_URL;
 }
@@ -220,10 +220,12 @@ app.get('/vulteamselectionrider',function(req,res){
         console.log(user.local.email)
         console.log(user.teamselectie.userrenners.length)
       var sqlQuery = `INSERT INTO team_selection_rider(account_participation,rider_participation) VALUES`;
-      for(var i in user.teamselectie.userrenners){
+      for(var i = 0; i <20;i++){
         var id = user.teamselectie.userrenners[i]._id;
-        sqlQuery += `(select account_participation from account_participation where account= (select account from account where email='${user.local.email}'),select rider_participation from rider_participarion where rider = (select rider from rider where pcsid = '${id}'))`
+        console.log(id);
+        sqlQuery += `((select account_participation from account_participation where account= (select account from account where email='${user.local.email}') AND race = 3),(select rider_participation from rider_participation where rider = (select rider from rider where pcsid = '${id}') AND race = 3)),`
       }
+      sqlQuery = sqlQuery.slice(0, -1) + ";";
       sqlDB.query(sqlQuery,(err,sqlres)=>{
         if (err){
           console.log(err);
@@ -547,12 +549,12 @@ app.get("/giro/charts/", function (req, res) {
 })
 
 app.get("/giro/chartsrel/", function (req, res) {
-  User.find({}, 'profieldata.poulescore local.username groups', function (err, users) {
+  User.find({"groups.budget":false}, 'profieldata.poulescore local.username groups', function (err, users) {
     if (err) throw err;
     if (users == null || users == "") {
       res.redirect('/')
     } else {
-      users = users.slice(0, 8);
+      users = users.slice(0, 4);
       var usernames = users.map(user => user.local.username);
       var userbudget = users.map(user => user.groups.budget);
       var scores = [];
@@ -565,21 +567,59 @@ app.get("/giro/chartsrel/", function (req, res) {
         }
         scores.push(totaalscore);
       })
-      for(var user = 0; user < 8;user++){
-        console.log(usernames[user]);
-        console.log(scores[user].length);
-      }
+
       for(var et = 0; et<23; et++){
         var stagescores = [];
-        for(var user = 0; user < 8;user++){
+        for(var user = 0; user < 4;user++){
           stagescores.push(scores[user][et]);
         }
-        var highest = Math.max(...stagescores);
-        console.log(highest);
-        for(var user = 0; user < 8;user++){
-          scores[user][et]-=highest;
+        var average = stagescores.reduce((a, b) => a + b, 0)/4;
+        for(var user = 0; user < 4;user++){
+          scores[user][et]-=average;
         }
       }
+
+
+      res.render('./giro/charts.ejs', {
+        scores,
+        usernames,
+        userbudget
+      });;
+    }
+  })
+})
+
+app.get("/giro/chartsrelbudget/", function (req, res) {
+  User.find({"groups.budget":true}, 'profieldata.poulescore local.username groups', function (err, users) {
+    if (err) throw err;
+    if (users == null || users == "") {
+      res.redirect('/')
+    } else {
+      users = users.slice(0, 4);
+      var usernames = users.map(user => user.local.username);
+      var userbudget = users.map(user => user.groups.budget);
+      var scores = [];
+      users.forEach(function (user, index) {
+        var tempscores = user.profieldata.poulescore;
+        var totaalscore = new Array(tempscores.length);
+        totaalscore[0]=0;
+        for (var i = 0; i < tempscores.length+1; i++) {
+          totaalscore[i] = tempscores.slice(0, i).reduce((a, b) => a + b, 0);
+        }
+        scores.push(totaalscore);
+      })
+
+      for(var et = 0; et<23; et++){
+        var stagescores = [];
+        for(var user = 0; user < 4;user++){
+          stagescores.push(scores[user][et]);
+        }
+        var average = stagescores.reduce((a, b) => a + b, 0)/4;
+        for(var user = 0; user < 4;user++){
+          scores[user][et]-=average;
+        }
+      }
+
 
       res.render('./giro/charts.ejs', {
         scores,
