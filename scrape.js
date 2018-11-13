@@ -6,7 +6,6 @@ const functies = require('./functies');
 const fs = require('fs');
 const schedule = require('node-schedule');
 getStartlist = function (raceName,callback) {
-    var renners;
     var raceString = "";
     switch(raceName){
         case "giro":

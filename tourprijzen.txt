@@ -164,7 +164,7 @@ damien-howson 0.5
 daryl-impey 0.75
 mikel-nieve 0.75
 adam-yates 3.5
-john-darwin-atapuma 0.75
+darwin-atapuma 0.75
 kristijan-durasek 0.5
 roberto-ferrari 0.5
 alexander-kristoff 2.5
@@ -172,3 +172,6 @@ marco-marcato 0.5
 daniel-martin1 3
 rory-sutherland 0.5
 oliviero-troia 0.5
+kevin-ledanois 0.5
+laurent-pichon 0.5
+florian-vachon 0.5
