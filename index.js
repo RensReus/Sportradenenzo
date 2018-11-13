@@ -42,6 +42,7 @@ var schedule = require('node-schedule');
 
 var functies = require('./functies');
 var scrape = require('./scrape');
+var SQLscrape = require('./SQLscrape');
 
 //Configuratie=======================================================
 mongoose.connect(configDB.url, { useMongoClient: true, ssl: true }); // verbinden met sportradenenzo mongodb
@@ -157,7 +158,7 @@ res.status(404).send("Transferred account participation");
 
 app.get('/vulstage',function(req,res){
   for(var i = 1; i<22;i++){
-    var sqlQuery = `INSERT INTO stage(stagenr, race,finished, complete) VALUES(${i},2,TRUE, TRUE)`;
+    var sqlQuery = `INSERT INTO stage(stagenr, race,finished, complete) VALUES(${i},3,TRUE, TRUE)`;
     sqlDB.query(sqlQuery,(err,sqlres)=>{
       if (err){
         console.log(err);
@@ -289,11 +290,10 @@ app.get('/testpost', function (req, res) {
   })
 })
 
-app.get('/getstartlist/:race', function (req, res) {
-  getStartlist(req.params.race, function () {
-    res.send("test")
+app.get('/getstartlist/:race/:year', function (req, res) {
+  SQLscrape.getStartlist(req.params.race,req.params.year, function () {
+    res.send("Loaded startlist %s %s",req.params.race,req.params.year);
   })
-  console.log("getstartlist")
 })
 
 
@@ -467,10 +467,12 @@ app.post('/admin', function (req, jsres) {
     sqlDB.query(sqlQuery,
       (err, sqlres) => {
         if (err) {
+          console.log("ERROR")
           console.log(err);
           jsres.json({ 'data': err });
         }
         else {
+          console.log("RESPONSE")
           console.log(sqlres);
 
           switch (sqlres.command) {
@@ -696,7 +698,7 @@ var scrapeResults = schedule.scheduleJob(resultsRule, function () {
     }
     if (finished) { // dit wordt iedere minuut na de finish uitgevoerd tot de resultaten compleet zijn
       if (!etappe.uitslagKompleet) {
-        getResult('tour', etNR, function () {
+        getResult('vuelta', 2018, etNR, function () {
         });
       } else {
         resultsRule = new schedule.RecurrenceRule(); // geen update meer nadat de uitslag compleet is

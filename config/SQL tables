@@ -59,10 +59,13 @@ CREATE TABLE rider_participation (
   UNIQUE (race, rider)
 );
 
+CREATE TABLE team_selection_rider (
+  rider_participation INT NOT NULL REFERENCES rider_participation (rider_participation),
+  account_participation INT NOT NULL REFERENCES account_participation (account_participation),
+  PRIMARY KEY (rider_participation , account_participation)
+); check duplicate/ check budget/ check nr of riders/ check max 4 per team
+on delete rider remove all stage_selections 
 
-
-
-//to be updated
 CREATE TABLE stage_selection (
   stage_selection SERIAL PRIMARY KEY,
   account_participation INT NOT NULL REFERENCES account_participation (account_participation),
@@ -71,39 +74,39 @@ CREATE TABLE stage_selection (
   totalscore INT DEFAULT 0,
   kopman INT DEFAULT NULL REFERENCES rider_participation (rider_participation),
   UNIQUE(account_participation,stage)
-);
+);// kopman check if selected
 
 CREATE TABLE stage_selection_rider (
   stage_selection INT NOT NULL REFERENCES stage_selection (stage_selection),
   rider INT NOT NULL REFERENCES rider_participation (rider_participation),
   PRIMARY KEY (rider, stage_selection)
-);
+); check if stage_selection exists else create/ check if rider already selected/ check if rider in team selection
 
-CREATE TABLE team_selection_rider (
-  rider INT NOT NULL REFERENCES rider_participation (rider_participation),
-  account_participation INT NOT NULL REFERENCES account_participation (account_participation),
-  PRIMARY KEY (rider, account_participation)
-);
 
-// completely new
 CREATE TABLE results_points(
   stage INT NOT NULL REFERENCES stage (stage),
-  rider INT NOT NULL REFERENCES rider_participation (rider_participation),
+  rider_participation INT NOT NULL REFERENCES rider_participation (rider_participation),
   stagepos INT DEFAULT 0,
   gcpos INT DEFAULT 0,
   pointspos INT DEFAULT 0,
   kompos INT DEFAULT 0,
-  youthpos INT DEFAULT 0,
+  yocpos INT DEFAULT 0,
   stagescore INT DEFAULT 0,
   gcscore INT DEFAULT 0,
   pointsscore INT DEFAULT 0,
-  youthscore INT DEFAULT 0,
+  komscore INT DEFAULT 0,
+  yocscore INT DEFAULT 0,
   teamscore INT DEFAULT 0,
   totalscore INT DEFAULT 0,
-  tijden en punten van klassementen !!!!!!!!!!!!!!!
-  PRIMARY KEY (stage,rider)
+  stageresult TEXT DEFAULT NULL,
+  gcresult TEXT DEFAULT NULL,
+  pointsresult TEXT DEFAULT NULL,
+  komresult TEXT DEFAULT NULL,
+  yocresult TEXT DEFAULT NULL,
+  PRIMARY KEY (stage,rider_participation )
 )
 
+// completely new
 //poules moet nog meer voor worden geimplementeerd voordat het echt gebruikt kan worden
 //maar de opzet staat er alvast
 

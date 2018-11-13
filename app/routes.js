@@ -268,9 +268,9 @@ module.exports = function (app, passport) {
         })
     })
 
-    app.get('/manualupdate/:race/etappe/:id', isLoggedIn, function (req, res) {
+    app.get('/manualupdate/:race/:year/etappe/:id', isLoggedIn, function (req, res) {
         if (req.user.local.admin) {
-            getResult(req.params.race,req.params.id, function () {
+            getResult(req.params.race, req.params.year, req.params.id, function () {
                 res.status(404).send("Manually updated etappe " + req.params.id);
             });
         } else {
@@ -278,10 +278,10 @@ module.exports = function (app, passport) {
         }
     })
 
-    app.get('/manualupdate/:race/alle', isLoggedIn, function (req, res) {
+    app.get('/manualupdate/:race/:year/alle', isLoggedIn, function (req, res) {
         if (req.user.local.admin) {
             for(var i = 1; i<22;i++){
-                getResult(req.params.race,i, function () {
+                getResult(req.params.race, req.params.year, i, function () {
                     
                     console.log("Manually updated etappe " + i);
                 });

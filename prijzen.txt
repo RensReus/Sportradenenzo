@@ -135,7 +135,7 @@ markel-irizar 500000
 giacomo-nizzolo 2500000
 kiel-reijnen 500000
 fabio-aru 4000000
-sven-erik-bystrm 500000
+sven-erik-bystrom 500000
 simone-consonni 1500000
 valerio-conti 500000
 vegard-stake-laengen 750000
