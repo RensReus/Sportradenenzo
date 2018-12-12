@@ -42,7 +42,7 @@ function removeRiderFromSelection (account, rider_participation, raceName, year,
   })
 }
 
-/**add a new account to the database
+/**add a new account to the database and returns it
  * @param {String} email
  * @param {String} password
  * @param {function} callback

@@ -94,7 +94,6 @@ function functionName(parameters, callback){
 
 //Exports
 module.exports.getAccount = getAccount;
-module.exports.getAccounts = getAccounts;
 module.exports.getRider = getRider;
 module.exports.getTeamSelection = getTeamSelection;
 module.exports.getAllRiders = getAllRiders;

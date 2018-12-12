@@ -715,8 +715,8 @@ var scrapeResults = schedule.scheduleJob(resultsRule, function () {
     }
     if (finished) { // dit wordt iedere minuut na de finish uitgevoerd tot de resultaten compleet zijn
       if (!etappe.uitslagKompleet) {
-        getResult('vuelta', 2018, etNR, function () {
-        });
+        // getResult('vuelta', 2018, etNR, function () {
+        // });
       } else {
         resultsRule = new schedule.RecurrenceRule(); // geen update meer nadat de uitslag compleet is
         resultsRule.minute = 40;// minuut attribut overschrijven
