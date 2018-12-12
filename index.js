@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 //var port     = process.env.PORT || 8080;
 var fs = require('fs');
-
+var SQLwrite = require('./SQLwrite')
 //Mongoose voor DB, rest voor authentication dingen
 var mongoose = require('mongoose');
 var passport = require('passport');
@@ -66,9 +66,11 @@ app.use(session({
   secret: 'speciaalbierishetlekkerstesoortbier',
   resave: true,
   saveUninitialized: true,
-  store: new MongoStore({ mongooseConnection: mongoose.connection })
+  cookie:{maxAge: 30*24*3600*1000}//dagen*uren*seconden*ms
 })); // session secret
-app.use(passport.initialize());
+app.use(passport.initialize({
+  userProperty: 'account'
+}));
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
@@ -108,6 +110,8 @@ app.post('/profile', bodyParser.urlencoded({ extended: true }), function (req, r
 });
 //==================================================================================================================
 
+{//Mongo sql transfer
+  
 // app.get('/vulaccount',function(req,res){
 //     User.find({}, function(err, users){
 //       users.forEach(function(user){
@@ -271,7 +275,7 @@ res.status(404).send("Transferred teamselecties");
 //   })
 //   res.status(404).send("Transferred opstellingen");
 // })
-
+}
 
 
 app.get('/giro2018', function (req, res) {
@@ -299,6 +303,18 @@ app.get('/getstartlist/:race/:year', function (req, res) {
 
 
 //Teamselectie ontvangen==================================================================================
+app.post('/:race/:year/teamselectie', function (req, res) {
+  if (req.body.toevoegen == true) { //kijk of er een renner wordt toegevoegd aan de selectie
+    
+  }
+  if (req.body.toevoegen == false) { //renner wordt verwijderd uit selectie
+    SQLwrite.removeRiderFromSelection(req.user, req.body.id, req.params.race, req.params.year,function (err,res) {
+      if (err) throw err;
+      console.log(res);
+    })
+  };
+});
+
 app.post('/giro/teamselectie', function (req, res) {
   if (req.body.toevoegen == true) { //kijk of er een renner wordt toegevoegd aan de selectie
     User.findOne(req.user._id, function (err, user) {
@@ -500,8 +516,9 @@ app.post('/admin', function (req, jsres) {
   }
 });
 
-app.get('/giro/renner/:rennerID', function (req, res) {
-  console.log("renner exists: " + fs.existsSync('./views/giro/renner.ejs'));
+app.get('/:race/renner/:rennerID', function (req, res) {
+  SQLread.getRider(req.params.rennerID,req.params.race);
+  
   Renner.findOne({ _id: req.params.rennerID }, function (err, renner) {
     if (renner != undefined) {
       res.render('./giro/renner.ejs', {

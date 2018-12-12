@@ -1,4 +1,8 @@
 var scrape = require('./../scrape');
+var async = require('async');
+var SQLread = require('./../SQLread')
+
+
 module.exports = function (app, passport) {
     var User = require('./models/user');
     var starttijden = require('./starttijden');
@@ -10,7 +14,7 @@ module.exports = function (app, passport) {
     // =====================================
     app.get('/', function (req, res) {
         // res.render('index.ejs'); // load the index.ejs file
-        res.redirect('/giro'); // scheelt iedere keer weer klikken en de index pagina istoch kaal
+        res.redirect('/temp'); // scheelt iedere keer weer klikken en de index pagina istoch kaal
     });
 
     // =====================================
@@ -29,7 +33,7 @@ module.exports = function (app, passport) {
     //     failureFlash : true // allow flash messages
     // })); 
     app.post('/login', function (req, res, next) {
-        var redirectURL = '/giro';
+        var redirectURL = '/temp';
         if (req.query.redir != undefined) redirectURL = req.query.redir;
         passport.authenticate('local-login', {
             successRedirect: redirectURL, // scheelt ook weer een keer klikken
@@ -63,21 +67,31 @@ module.exports = function (app, passport) {
             if (err) throw err;
             res.render('profile.ejs', {
                 user: req.user, // get the user out of session and pass to template
-                users: users, //[{id,local{username}},...]
+                users: users //[{id,local{username}},...]
             });
         });
     });
 
-    app.get('/giro/teamselectie', isLoggedIn, function (req, res) {
+    app.get('/temp', isLoggedIn, function(req,res){
+        res.render('giro.ejs',{
+            account: req.account
+        })
+    })
+
+    app.get('/:race/:year/teamselectie', isLoggedIn, function (req, res) {
         if (!currentDisplay()) {//returns 0 before start
-            Renners.find({ 'prijs': { $exists: true } }, '_id naam team prijs', { sort: { 'prijs': -1 } }, function (err, renners) {
-                if (err) throw err;
+            //user has to be defined or taken from request
+            async.auto({
+                userSelection:  SQLread.getTeamSelection(req.params.race,req.params.year,user,callback),
+                allRiders:      SQLread.getAllRiders(req.params.race,req.params.year,callback)
+            },function(err,results){
+                if(err) throw err;
+                var bugdetRemaining = sum(results.userSelection.rows.map(rider => rider.price)) - budget;//budget to be defined
                 res.render('./giro/teamselectie.ejs', {
-                    user: req.user,
-                    renners: renners,
-                    huidig: currentDisplay(),
-                    geld: req.user.teamselectie.geld,
-                    userrenners: req.user.teamselectie.userrenners
+                    user: req.user,//moet nog gefixt worden afhankelijk van hoe users behandelt worden
+                    renners: results.allRiders.rows,
+                    userrenners: results.userSelection.rows,
+                    bugdetRemaining
                 });
             });
         } else {
@@ -332,9 +346,9 @@ module.exports = function (app, passport) {
     });
 };
 
+
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
-
     // if user is authenticated in the session, carry on 
     if (req.isAuthenticated())
         return next();

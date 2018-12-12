@@ -2,11 +2,15 @@
 
 // load all the things we need
 var LocalStrategy   = require('passport-local').Strategy;
+var bcrypt          = require('bcrypt-nodejs');
+var SQLread         = require('../SQLread')
+var SQLwrite         = require('../SQLwrite')
 
 // load up the user model
 var User            = require('../app/models/user');
-
 // expose this function to our app using module.exports
+
+
 module.exports = function(passport) {
 
     // =========================================================================
@@ -16,15 +20,13 @@ module.exports = function(passport) {
     // passport needs ability to serialize and unserialize users out of session
 
     // used to serialize the user for the session
-    passport.serializeUser(function(user, done) {
-        done(null, user.id);
+    passport.serializeUser(function(account, done) {
+        done(null, account.account);
     });
 
     // used to deserialize the user
-    passport.deserializeUser(function(id, done) {
-        User.findById(id, function(err, user) {
-            done(err, user);
-        });
+    passport.deserializeUser(function(account, done) {
+        SQLread.getAccount(account,done);
     });
 
     // =========================================================================
@@ -47,32 +49,24 @@ module.exports = function(passport) {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
-        User.findOne({ 'local.email' :  email.toLowerCase() }, function(err, user) {
-            // if there are any errors, return the error
+        SQLread.getLogin(email.toLowerCase(),function(err,result){
             if (err)
                 return done(err);
-
-            // check to see if theres already a user with that email
-            if (user) {
+            
+            if(result.rowCount != 0){ //email is already taken
                 return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
-            } else {
-
-                // if there is no user with that email
-                // create the user
-                var newUser            = new User();
-
-                // set the user's local credentials
-                newUser.local.email    = email.toLowerCase();
-                newUser.local.password = newUser.generateHash(password);
-
-                // save the user
-                newUser.save(function(err) {
-                    if (err)
+            }else{
+                //still available make new user
+                var passwordToStore = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+                var emailToStore    = email.toLowerCase();
+                
+                SQLwrite.addAccount(emailToStore,passwordToStore,function(err,account){
+                    if(err)
                         throw err;
-                    return done(null, newUser);
-                });
+                    return done(null, account)
+                })
             }
-        });    
+        })
         });
     }));
 
@@ -89,24 +83,18 @@ module.exports = function(passport) {
         passReqToCallback : true  //allows us to pass back the entire request to the callback
     },
     function(req, email, password, done) { // callback with email and password from our form
-
-        // find a user whose email is the same as the forms email
-        // we are checking to see if the user trying to login already exists
-        User.findOne({ 'local.email' :  email.toLowerCase() }, function(err, user) {
-            // if there are any errors, return the error before anything else
+        SQLread.getLogin(email.toLowerCase(),function(err,account){
             if (err)
                 return done(err);
 
-            // if no user is found, return the message
-            if (!user)
-                return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+            if (account == null) //no account with that email
+                return done(null, false, req.flash('loginMessage', 'Incorrect email/password combination'));
+            
+            if (!bcrypt.compareSync(password, account.password)) //incorrect password
+                return done(null, false, req.flash('loginMessage', 'Incorrect email/password combination'));
+            
+            return done(null,account)
 
-            // if the user is found but the password is wrong
-            if (!user.validPassword(password))
-                return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
-
-            // all is well, return successful user
-            return done(null, user);
-        });
+        })
     }));
 };

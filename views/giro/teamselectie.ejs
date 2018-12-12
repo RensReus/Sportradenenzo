@@ -26,7 +26,7 @@
         }
     </style>
 </head>
-<body onload="updateuserteam(<%=user.teamselectie%>)">
+<body onload="updateuserteam(<%=userrenners%>)">
     <% include ../partials/navbarlogout %>
     <div class="col-sm-12 text-left" id="contentblok">
         <div class="bovenrijtje">
@@ -46,23 +46,23 @@
                 <tbody>
                 <%for(i=1; i<21; i+=2){%>
                     <tr>
-                        <td id="userselectie<%=i-1%>" onclick="verwijderrenner(<%=i-1%>)"></td>
-                        <td id="userselectie<%=i%>" onclick="verwijderrenner(<%=i%>)"></td>
+                        <td id="userselectie<%=i-1%>" onclick="removeRider(<%=i-1%>)"></td>
+                        <td id="userselectie<%=i%>" onclick="removeRider(<%=i%>)"></td>
                     </tr>
                 <%}%>
                 </tbody>
             </table>
-            <h1 id="geld">Budget: €<%=user.teamselectie.geld%></h1>
+            <h1 id="geld">Budget: €<%=bugdetRemaining%></h1>
         </div>
         <div class="col-sm-4 teamselectiedoos">
-            <input type="text" id="zoekbalk" onkeyup="zoekrenner()" placeholder="Zoek een renner, ploeg, of prijs" title="Type in a name">    
-            <table id="teamselectietabel">
+            <input type="text" id="searchBar" onkeyup="findRider()" placeholder="Zoek een renner, ploeg, of prijs" title="Type in a name">    
+            <table id="teamselectionTable">
                 <thead>
                     <tr class=teamtabelhead><td>Renner</td><td>Prijs</td></tr>
                 </thead>    
                 <tbody>
                 <% for(var i=0; i<renners.length; i++) { %>
-                    <tr id="<%=renners[i]._id%>" onclick="klikrenner('<%=renners[i]._id%>')"><td span=2><%=renners[i].naam%><br/><span class=ploegrenner><%=renners[i].team%></span></td><td>€<%=renners[i].prijs%></td></tr>
+                    <tr id="<%=renners[i].rider_participation%>" onclick="addRider('<%=renners[i].rider_participation%>')"><td span=2><%=renners[i].name%><br/><span class=ploegrenner><%=renners[i].team%></span></td><td>€<%=renners[i].price%></td></tr>
                 <% } %>
                 </tbody>
             </table>
@@ -76,7 +76,7 @@ var NUMBER_OF_REQUESTS = 0;
 setInterval(function(){ 
     NUMBER_OF_REQUESTS = 0;
 }, 500);
-function klikrenner(id){
+function addRider(id){
     $.ajax({
         beforeSend: function canSendAjaxRequest()
         {
@@ -93,8 +93,8 @@ function klikrenner(id){
         async:false,
         success: function (userrenners) {
             for(i=0;i<userrenners.length;i++){
-                $("#" + userrenners[i]._id).addClass("rennerselected");
-                $("#userselectie" + i).html(userrenners[i].naam + "<br/><span class=ploegrenner>" + userrenners[i].team + "</span><br/>" + userrenners[i].prijs);
+                $("#" + userrenners[i].rider_participation).addClass("rennerselected");
+                $("#userselectie" + i).html(userrenners[i].name + "<br/><span class=ploegrenner>" + userrenners[i].team + "</span><br/>" + userrenners[i].price);
             }
             if(userrenners.length>19){
                 $("#etappeknopenabler").html('<a href="/giro/etappe1" class="etappebutton">Etappe 1 &nbsp; &nbsp; ►</a>');
@@ -104,7 +104,7 @@ function klikrenner(id){
     });
 }
 
-function verwijderrenner(id){
+function removeRider(id){
    //if(naam!=null){ //eventueel weer toevoegen maar werkt ook zonder
     $.ajax({
         beforeSend: function canSendAjaxRequest()
@@ -123,7 +123,7 @@ function verwijderrenner(id){
         success: function (userrenners,idverwijderde) {
             for(var i=0;i<userrenners.length;i++){
                 $("#" + idverwijderde).removeClass("rennerselected");
-                $("#userselectie" + i).html(userrenners[i].naam + "<br/><span class=ploegrenner>" + userrenners[i].team + "</span><br/>" + userrenners[i].prijs);
+                $("#userselectie" + i).html(userrenners[i].name + "<br/><span class=ploegrenner>" + userrenners[i].team + "</span><br/>" + userrenners[i].price);
             }
             for(var i=userrenners.length;i<20;i++){
                 $("#userselectie" + i).html("");
@@ -136,21 +136,21 @@ function verwijderrenner(id){
     });
     //}
 }
-function updateuserteam(teamselectie){
-    for(id=0;id<teamselectie.userrenners.length;id++){
-        $("#" + teamselectie.userrenners[id]._id).addClass("rennerselected");
-        $("#userselectie" + id).html(teamselectie.userrenners[id].naam + "<br/><span class=ploegrenner>" + teamselectie.userrenners[id].team + "</span><br/>" + teamselectie.userrenners[id].prijs);
+function updateuserteam(userrenners){
+    for(id=0;id<userrenners.length;id++){
+        $("#" + userrenners[id].rider_participation).addClass("rennerselected");
+        $("#userselectie" + id).html(userrenners[id].name + "<br/><span class=ploegrenner>" + userrenners[id].team + "</span><br/>" + userrenners[id].price);
     }
-    if(teamselectie.userrenners.length>19){
+    if(userrenners.length>19){
         $("#etappeknopenabler").html('<a href="/giro/etappe1" class="etappebutton">Etappe 1 &nbsp; &nbsp; ►</a>');
     }
 }
 
-function zoekrenner() {
+function findRider() {
   var input, filter, table, tr, td, i;
-  input = document.getElementById("zoekbalk");
+  input = document.getElementById("searchBar");
   filter = input.value.toUpperCase();
-  table = document.getElementById("teamselectietabel");
+  table = document.getElementById("teamselectionTable");
   tr = table.getElementsByTagName("tr");
   for (i = 0; i < tr.length; i++) {
     td = tr[i].getElementsByTagName("td")[0];
