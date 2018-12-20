@@ -62,7 +62,7 @@
                 </thead>    
                 <tbody>
                 <% for(var i=0; i<renners.length; i++) { %>
-                    <tr id="<%=renners[i].rider_participation%>" onclick="addRider('<%=renners[i].rider_participation%>')"><td span=2><%=renners[i].name%><br/><span class=ploegrenner><%=renners[i].team%></span></td><td>€<%=renners[i].price%></td></tr>
+                    <tr id="<%=renners[i].rider_participation_id%>" onclick="addRider('<%=renners[i].rider_participation_id%>')"><td span=2><%=renners[i].name%><br/><span class=ploegrenner><%=renners[i].team%></span></td><td>€<%=renners[i].price%></td></tr>
                 <% } %>
                 </tbody>
             </table>
@@ -93,7 +93,7 @@ function addRider(id){
         async:false,
         success: function (userrenners) {
             for(i=0;i<userrenners.length;i++){
-                $("#" + userrenners[i].rider_participation).addClass("rennerselected");
+                $("#" + userrenners[i].rider_participation_id).addClass("rennerselected");
                 $("#userselectie" + i).html(userrenners[i].name + "<br/><span class=ploegrenner>" + userrenners[i].team + "</span><br/>" + userrenners[i].price);
             }
             if(userrenners.length>19){
@@ -138,7 +138,7 @@ function removeRider(id){
 }
 function updateuserteam(userrenners){
     for(id=0;id<userrenners.length;id++){
-        $("#" + userrenners[id].rider_participation).addClass("rennerselected");
+        $("#" + userrenners[id].rider_participation_id).addClass("rennerselected");
         $("#userselectie" + id).html(userrenners[id].name + "<br/><span class=ploegrenner>" + userrenners[id].team + "</span><br/>" + userrenners[id].price);
     }
     if(userrenners.length>19){

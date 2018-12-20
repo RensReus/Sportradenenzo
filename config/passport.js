@@ -21,12 +21,12 @@ module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(account, done) {
-        done(null, account.account);
+        done(null, account.account_id);
     });
 
     // used to deserialize the user
-    passport.deserializeUser(function(account, done) {
-        SQLread.getAccount(account,done);
+    passport.deserializeUser(function(account_id, done) {
+        SQLread.getAccount(account_id,done);
     });
 
     // =========================================================================

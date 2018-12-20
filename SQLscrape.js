@@ -35,7 +35,7 @@ getStartlist = function (raceName,year,callback) {
         break;
     }
     var race = 0;
-    sqlDB.query(`SELECT race FROM race WHERE name = '${raceName}' AND year = ${year}`)
+    sqlDB.query(`SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year}`)
     .then(res => {if(res.rowCount>0) race = res.rows[0].race;
     fs.readFile(prijzenfile, function (err, file) {
         var data = file.toString();
@@ -87,16 +87,18 @@ getStartlist = function (raceName,year,callback) {
                         //insert rider or do nothing
                         var riderQuery = `INSERT INTO rider(pcsid, country, firstname, lastname, initials) VALUES
                         ('${pcsid}', '${country}', '${voornaam}', '${lastname}', '${voorletters}')
-                        ON CONFLICT (pcsid) DO UPDATE SET pcsid = EXCLUDED.pcsid, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials
-                        RETURNING rider`;
+                        ON CONFLICT (pcsid) 
+                        DO UPDATE SET pcsid = EXCLUDED.pcsid, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials
+                        RETURNING rider_id`;
                         var rider = 0;
                         sqlDB.query(riderQuery)
                             .then(res => {rider = res.rows[0].rider;
                                 console.log("%s %s INSERTED INTO rider", rider, pcsid)
                                 // insert or update rider_participation
-                                var participationQuery = `INSERT INTO rider_participation (race,rider,price,team) VALUES
+                                var participationQuery = `INSERT INTO rider_participation (race_id,rider_id,price,team) VALUES
                                 (${race},${rider},${prijs},'${teamName}')
-                                ON CONFLICT (race,rider) DO UPDATE SET race = EXCLUDED.race, rider = EXCLUDED.rider, price = EXCLUDED.price, team = EXCLUDED.team`
+                                ON CONFLICT (race_id,rider_id) 
+                                DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, price = EXCLUDED.price, team = EXCLUDED.team`
                                 sqlDB.query(participationQuery)
                                     .then(console.log("INSERTED INTO rider_participation"))
                                     .catch(e => console.error(e.stack));
@@ -226,10 +228,10 @@ getResult = function (raceName, year, et, callback) {
 
             // change DNF to true for ridersDNF
             var dnfquery = `UPDATE rider_participation SET dnf = TRUE 
-            WHERE race = (SELECT race FROM race WHERE name = '${raceName}' AND year = ${year})
+            WHERE race_id = (SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})
             AND rider IN ( `
             for(var rider in ridersDNF){
-                dnfquery += `(SELECT rider FROM rider WHERE pcsid = '${ridersDNF[rider].pcsid}'),`
+                dnfquery += `(SELECT rider_id FROM rider WHERE pcsid = '${ridersDNF[rider].pcsid}'),`
             }
             dnfquery = dnfquery.slice(0, -1) + ")";
             sqlDB.query(dnfquery)
@@ -239,7 +241,11 @@ getResult = function (raceName, year, et, callback) {
             // process scores for each finished rider and send to db
             var GTfinished = false;
             if (et == 21) GTfinished = true; // laatste etappe
-            var resultsquery = `INSERT INTO results_points(stage, rider_participation, stagepos, gcpos, pointspos, kompos, yocpos, stagescore, gcscore, pointsscore, komscore, yocscore, teamscore, totalscore, stageresult, gcresult, pointsresult, komresult, yocresult) VALUES`
+            var resultsquery = `INSERT INTO results_points(stage_id, rider_participation_id, 
+                                stagepos, gcpos, pointspos, kompos, yocpos, 
+                                stagescore, gcscore, pointsscore, komscore, yocscore, teamscore, totalscore, 
+                                stageresult, gcresult, pointsresult, komresult, yocresult) 
+                                VALUES`
             
             for (var i in ridersDay){// for each rider get the variables for the results_points table
                 var pcsid = ridersDay[i].pcsid;
@@ -296,11 +302,14 @@ getResult = function (raceName, year, et, callback) {
                 var totalscore = stagescore + gcscore + pointsscore + komscore + yocscore + teamscore;
 
                 // SQLQUERY addition
-                resultsquery += `((SELECT stage FROM stage WHERE stagenr = ${et} AND race = (SELECT race FROM race WHERE name = '${raceName}' AND year = ${year})),
-                (SELECT rider_participation FROM rider_participation WHERE race = (SELECT race FROM race WHERE name = '${raceName}' AND year = ${year}) AND rider = (SELECT rider FROM rider WHERE pcsid = '${pcsid}')),
-                ${stagepos},${gcpos},${pointspos},${kompos},${yocpos},
-                ${stagescore},${gcscore},${pointsscore},${komscore},${yocscore},${teamscore},${totalscore},
-                '${stageresult}','${gcresult}','${pointsresult}','${komresult}','${yocresult}'),`;
+                var race_id = `(SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})`;
+                var stage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et} AND race_id = ${race_id})`
+                var rider_id = `(SELECT rider_id FROM rider WHERE pcsid = '${pcsid}')`
+                var rider_participation_id = `SELECT rider_participation_id FROM rider_participation WHERE race_id = ${race_id} AND rider_id = ${rider_id}`
+                resultsquery += `(${stage_id},${rider_participation_id},
+                                ${stagepos},    ${gcpos},   ${pointspos},   ${kompos},  ${yocpos}, 
+                                ${stagescore},  ${gcscore}, ${pointsscore}, ${komscore},${yocscore},${teamscore},${totalscore},
+                                '${stageresult}','${gcresult}','${pointsresult}','${komresult}','${yocresult}'),`;
             }
 
             resultsquery = resultsquery.slice(0, -1) + ' ON CONFLICT (stage,rider_participation) DO NOTHING';

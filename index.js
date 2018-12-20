@@ -4,6 +4,7 @@ var express = require('express');
 var app = express();
 //var port     = process.env.PORT || 8080;
 var fs = require('fs');
+var SQLread = require('./SQLread')
 var SQLwrite = require('./SQLwrite')
 //Mongoose voor DB, rest voor authentication dingen
 var mongoose = require('mongoose');
@@ -112,27 +113,27 @@ app.post('/profile', bodyParser.urlencoded({ extended: true }), function (req, r
 
 {//Mongo sql transfer
   
-// app.get('/vulaccount',function(req,res){
-//     User.find({}, function(err, users){
-//       users.forEach(function(user){
-//         var username = user.local.username;
-//         var password = user.local.password;
-//         var admin = "FALSE";
-//         if (user.local.admin)
-//         admin = "TRUE";
-//         var email = user.local.email;
-//         var sqlQuery = `INSERT INTO account(username,password,admin,email) VALUES('${username}', '${password}', ${admin}, '${email}')`;
-//         sqlDB.query(sqlQuery,(err,sqlres)=>{
-//           if (err){
-//             console.log(err);
-//           }
-//           console.log(sqlres);  
-//         })
+app.get('/vulaccount',function(req,res){
+    User.find({}, function(err, users){
+      users.forEach(function(user){
+        var username = user.local.username;
+        var password = user.local.password;
+        var admin = "FALSE";
+        if (user.local.admin)
+          admin = "TRUE";
+        var email = user.local.email;
+        var sqlQuery = `INSERT INTO account(username,password,admin,email) VALUES('${username}', '${password}', ${admin}, '${email}')`;
+        sqlDB.query(sqlQuery,(err,sqlres)=>{
+          if (err){
+            console.log(err);
+          }
+          console.log(sqlres);  
+        })
 
-//       });
-//   })
-//   res.status(404).send("Transferred users");
-// })
+      });
+  })
+  res.status(404).send("Transferred users");
+})
 
 app.get('/vulaccountparticipation',function(req,res){
   User.find({}, function(err, users){
@@ -305,17 +306,43 @@ app.get('/getstartlist/:race/:year', function (req, res) {
 //Teamselectie ontvangen==================================================================================
 app.post('/:race/:year/teamselectie', function (req, res) {
   if (req.body.toevoegen == true) { //kijk of er een renner wordt toegevoegd aan de selectie
-    
+    async.auto({//zorgt dat de volgende fuctie wacht op deze 3
+      teamSelection:  SQLread.getTeamSelection(req.params.race,req.params.year,req.account.account_id,callback),
+      riderToAdd:     SQLread.getRider(req.body.id,callback),
+      race:           SQLread.getRace(req.params.race,req.params.year,callback)
+    },function(err,results){
+      if (err) throw err;
+      var totalBudget   = results.race.budget;
+      var teamSelection = results.teamSelection;
+      var riderToAdd    = results.riderToAdd;
+      //TODO misschien iets toevoegen aan de res.send() als de toevoeging niet succesvol was
+      if (!riderToAdd){res.send(); return} //rider bestaat niet
+      var teamSize = teamSelection.length;
+      if (teamSize >= 20){res.send(); return}// geen plek vrij
+      if (totalBudget -500000*(20-teamSize) - sum(teamSelection.map(rider => rider.price)) - riderToAdd.price < 0) {res.send(); return}; //budget ontoereikend
+      var budgetRemaining = totalBudget - sum(teamSelection.map(rider => rider.price)) - riderToAdd.price;
+      if (teamSelection.filter(rider => rider.team == riderToAdd.team).length >= 4) {res.send(); return} // al 4 renners van hetzelfde team
+      if (teamSelection.map(rider => rider.rider_participation_id).includes(riderToAdd.rider_participation_id)) {res.send(); return} // rider al toegevoegd
+      // aan alle voorwaarden voldaan
+      SQLwrite.addRiderToSelection(riderToAdd.rider_participation_id,req.account.account_id,req.params.race,req.params.year,function(err,res){
+        teamSelection.push(riderToAdd);
+        teamSelection.sort(function (a, b) { return (a.price < b.price) ? 1 : ((b.price < a.price) ? -1 : 0); });
+
+        //TODO stuur de nieuwe teamSelection en budgetRemaining naar de web client
+      })
+    })
   }
   if (req.body.toevoegen == false) { //renner wordt verwijderd uit selectie
-    SQLwrite.removeRiderFromSelection(req.user, req.body.id, req.params.race, req.params.year,function (err,res) {
+    SQLwrite.removeRiderFromSelection(req.account.account_id, req.body.id, req.params.race, req.params.year,function (err,res) {
+      //TODO alle etappe opstellingen van deze user verwijderen of de verwijderde renner uit alle etappe opstellingen halen
       if (err) throw err;
       console.log(res);
+      //TODO stuur instructies naar de client om de verwijderde renner te verwerken
     })
   };
 });
 
-app.post('/giro/teamselectie', function (req, res) {
+app.post('/giro/teamselectie', function (req, res) {//TODO dit verwijderen als het bovenstaande compleet is
   if (req.body.toevoegen == true) { //kijk of er een renner wordt toegevoegd aan de selectie
     User.findOne(req.user._id, function (err, user) {
       if (user.teamselectie.userrenners.length < 20) { //kijken of er nog plek is
@@ -479,7 +506,7 @@ app.post('/giro/etapperesultaat', function (req, res) {
 app.post('/admin', function (req, jsres) {
   console.log(req.body.data);
   var sqlQuery = req.body.data;
-  if (req.user.local.admin) {
+  if (req.account.admin) {
     sqlDB.query(sqlQuery,
       (err, sqlres) => {
         if (err) {

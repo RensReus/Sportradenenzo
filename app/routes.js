@@ -80,22 +80,22 @@ module.exports = function (app, passport) {
 
     app.get('/:race/:year/teamselectie', isLoggedIn, function (req, res) {
         if (!currentDisplay()) {//returns 0 before start
-            //user has to be defined or taken from request
             async.auto({
-                userSelection:  SQLread.getTeamSelection(req.params.race,req.params.year,user,callback),
-                allRiders:      SQLread.getAllRiders(req.params.race,req.params.year,callback)
+                userSelection:  SQLread.getTeamSelection(req.params.race,req.params.year,req.account.account_id,callback),
+                allRiders:      SQLread.getAllRiders(req.params.race,req.params.year,callback),
+                race:           SQLread.getRace(req.params.race,req.params.year,callback)
             },function(err,results){
                 if(err) throw err;
-                var bugdetRemaining = sum(results.userSelection.rows.map(rider => rider.price)) - budget;//budget to be defined
+                var totalBudget = results.race.budget;
+                var bugdetRemaining = totalBudget - sum(results.userSelection.rows.map(rider => rider.price));
                 res.render('./giro/teamselectie.ejs', {
-                    user: req.user,//moet nog gefixt worden afhankelijk van hoe users behandelt worden
                     renners: results.allRiders.rows,
                     userrenners: results.userSelection.rows,
                     bugdetRemaining
                 });
             });
         } else {
-            res.redirect("/");
+            res.redirect(`/${req.params.race}/${req.params.year}`);
         }
     });
 
@@ -106,13 +106,42 @@ module.exports = function (app, passport) {
                 rankingsUsers
             });
         });
-        
     })
 
+
+    
+
+    app.get('/:race/:year/etappe/:stage', isLoggedIn, function(req, res){
+        if (!currentDisplay()) { // geen redirect als de ronde begonnen is
+            SQLread.getTeamSelection(req.params.race,req.params.year,req.account.account_id,function(err,teamSelection){
+                if(teamSelection.length <20) res.redirect("/:race/:year/teamselectie");
+            })
+        }else{
+
+            if (isNaN(stage)|| stage < 1 || stage > 21) { //Kijken of het een nummer is en of het geen ongeldig nummer is
+                res.redirect("/:race/:year")//TODO redirect vergelijkbaar met /giro
+            }
+            if(displayResults(stage)){//display stage results
+                async.auto({
+                    stageSelections:    SQLread.getStageSelections()
+                },function(err,results){
+                    if(err) throw err;
+                    
+                });
+            }else{// display stage selection
+            async.auto({
+                
+            },function(err,results){
+                if(err) throw err;
+                
+            });
+            }
+        }
+    })
     //Voor de aanvraag van een etappe pagina------------------------------------------
     app.get('/giro/etappe/:etappe', isLoggedIn, function (req, res) {
-        if (req.user.teamselectie.userrenners.length < 20) {
-            res.redirect("/giro/teamselectie")
+        if (req.user.teamselectie.userrenners.length < 20 && !currentDisplay()) { // geen redirect als de ronde begonnen is
+            res.redirect("/giro/teamselectie");
         }
         //Request de url en zoek het nummer om te weten welke etappe wordt gevraagd, knippen na etappe
         var etappe = parseInt(req.params.etappe); //String omzetten naar int (decimaal)
@@ -283,7 +312,7 @@ module.exports = function (app, passport) {
     })
 
     app.get('/manualupdate/:race/:year/etappe/:id', isLoggedIn, function (req, res) {
-        if (req.user.local.admin) {
+        if (req.account.admin) {
             getResult(req.params.race, req.params.year, req.params.id, function () {
                 res.status(404).send("Manually updated etappe " + req.params.id);
             });
@@ -293,7 +322,7 @@ module.exports = function (app, passport) {
     })
 
     app.get('/manualupdate/:race/:year/alle', isLoggedIn, function (req, res) {
-        if (req.user.local.admin) {
+        if (req.account.admin) {
             for(var i = 1; i<22;i++){
                 getResult(req.params.race, req.params.year, i, function () {
                     
@@ -307,7 +336,7 @@ module.exports = function (app, passport) {
     })
 
     app.get('/admin', isLoggedIn, function (req, res) {
-        if (req.user.local.admin) {
+        if (req.account.admin) {
             res.render('./admin.ejs')
         }else{
             res.redirect('/')}

@@ -13,17 +13,17 @@ CREATE TABLE race (
 );
 
 CREATE TABLE stage (
-  stage SERIAL PRIMARY KEY,
-  race INT NOT NULL REFERENCES race (race),
+  stage_id SERIAL PRIMARY KEY,
+  race_id INT NOT NULL REFERENCES race (race_id),
   stagenr INT NOT NULL,
   starttime timestamp DEFAULT NULL,
   finished bool DEFAULT FALSE,
   complete bool DEFAULT FALSE,
-  UNIQUE (race, stagenr)
+  UNIQUE (race_id, stagenr)
 );  
 
 CREATE TABLE account (
-  account SERIAL PRIMARY KEY,
+  account_id SERIAL PRIMARY KEY,
   username TEXT DEFAULT NULL,
   password TEXT NOT NULL,
   email TEXT NOT NULL,  
@@ -32,60 +32,60 @@ CREATE TABLE account (
 );
 
 CREATE TABLE account_participation (
-  account_participation SERIAL PRIMARY KEY,
-  account INT NOT NULL REFERENCES account (account),
-  race INT NOT NULL REFERENCES race (race),
+  account_participation_id SERIAL PRIMARY KEY,
+  account_id INT NOT NULL REFERENCES account (account_id),
+  race_id INT NOT NULL REFERENCES race (race_id),
   budgetParticipation bool DEFAULT FALSE,
-  UNIQUE(account,race)
+  UNIQUE(account_id,race_id)
 );
 
 CREATE TABLE rider (
-  rider SERIAL PRIMARY KEY,
-  PCSid TEXT NOT NULL,
+  rider_id SERIAL PRIMARY KEY,
+  PCS_id TEXT NOT NULL,
   country TEXT DEFAULT NULL,
   firstName TEXT NOT NULL,
   lastName TEXT NOT NULL,
   initials TEXT NOT NULL,
-  UNIQUE (PCSid)
+  UNIQUE (PCS_id)
 );
 
 CREATE TABLE rider_participation (
-  rider_participation SERIAL PRIMARY KEY,
-  race INT NOT NULL REFERENCES race (race),
-  rider INT NOT NULL REFERENCES rider (rider),
+  rider_participation_id SERIAL PRIMARY KEY,
+  race_id INT NOT NULL REFERENCES race (race_id),
+  rider_id INT NOT NULL REFERENCES rider (rider_id),
   price INT DEFAULT 6666666,
   dnf bool DEFAULT FALSE,
   team TEXT NOT NULL,
-  UNIQUE (race, rider)
+  UNIQUE (race_id, rider_id)
 );
 
 CREATE TABLE team_selection_rider (
-  rider_participation INT NOT NULL REFERENCES rider_participation (rider_participation),
-  account_participation INT NOT NULL REFERENCES account_participation (account_participation),
-  PRIMARY KEY (rider_participation , account_participation)
+  rider_participation_id INT NOT NULL REFERENCES rider_participation (rider_participation_id),
+  account_participation_id INT NOT NULL REFERENCES account_participation (account_participation_id),
+  PRIMARY KEY (rider_participation_id , account_participation_id)
 ); check duplicate/ check budget/ check nr of riders/ check max 4 per team
 on delete rider remove all stage_selections 
 
 CREATE TABLE stage_selection (
-  stage_selection SERIAL PRIMARY KEY,
-  account_participation INT NOT NULL REFERENCES account_participation (account_participation),
-  stage INT NOT NULL REFERENCES stage (stage),
+  stage_selection_id SERIAL PRIMARY KEY,
+  account_participation_id INT NOT NULL REFERENCES account_participation (account_participation_id),
+  stage_id INT NOT NULL REFERENCES stage (stage_id),
   stagescore INT DEFAULT 0,
   totalscore INT DEFAULT 0,
-  kopman INT DEFAULT NULL REFERENCES rider_participation (rider_participation),
-  UNIQUE(account_participation,stage)
+  kopman_id INT DEFAULT NULL REFERENCES rider_participation (rider_participation_id),
+  UNIQUE(account_participation_id,stage_id)
 );// kopman check if selected
 
 CREATE TABLE stage_selection_rider (
-  stage_selection INT NOT NULL REFERENCES stage_selection (stage_selection),
-  rider INT NOT NULL REFERENCES rider_participation (rider_participation),
-  PRIMARY KEY (rider, stage_selection)
+  stage_selection_id INT NOT NULL REFERENCES stage_selection (stage_selection_id),
+  rider_participation_id INT NOT NULL REFERENCES rider_participation (rider_participation_id),
+  PRIMARY KEY (rider_participation_id, stage_selection_id)
 ); check if stage_selection exists else create/ check if rider already selected/ check if rider in team selection
 
 
 CREATE TABLE results_points(
-  stage INT NOT NULL REFERENCES stage (stage),
-  rider_participation INT NOT NULL REFERENCES rider_participation (rider_participation),
+  stage_id INT NOT NULL REFERENCES stage (stage_id),
+  rider_participation_id INT NOT NULL REFERENCES rider_participation (rider_participation_id),
   stagepos INT DEFAULT 0,
   gcpos INT DEFAULT 0,
   pointspos INT DEFAULT 0,
@@ -103,7 +103,7 @@ CREATE TABLE results_points(
   pointsresult TEXT DEFAULT NULL,
   komresult TEXT DEFAULT NULL,
   yocresult TEXT DEFAULT NULL,
-  PRIMARY KEY (stage,rider_participation )
+  PRIMARY KEY (stage_id,rider_participation_id )
 )
 
 // completely new
@@ -111,14 +111,21 @@ CREATE TABLE results_points(
 //maar de opzet staat er alvast
 
 CREATE TABLE poule (
-  poule SERIAL PRIMARY KEY,
+  poule_id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   budgetonly BOOLEAN DEFAULT FALSE,
-  race INT NOT NULL REFERENCES race (race)
+  race_id INT NOT NULL REFERENCES race (race_id)
 )
 
 CREATE TABLE poule_account (
-  poule INT REFERENCES poule (poule),
-  account_participation INT REFERENCES account_participation (account_participation),
-  PRIMARY KEY(poule,account_participation) 
+  poule_id INT REFERENCES poule (poule_id),
+  account_participation_id INT REFERENCES account_participation (account_participation_id),
+  PRIMARY KEY(poule_id,account_participation_id) 
+)
+
+CREATE TABLE awards (
+  account_id INT REFERENCES account (account_id)
+  race_id INT REFERENCES race (race_id)
+  poule_id INT REFERENCES poule (poule_id), // of er komt een aparte table voor pool awards
+  
 )

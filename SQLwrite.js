@@ -15,26 +15,31 @@ const sqlDB = new Client({
 sqlDB.connect();
 
 
-function addRiderToSelection (user, rider) {
-  // check # of selected riders < 20
-  // check renner nieuw
-  // check geld
-  // check 4 renners per team
+function addRiderToSelection (rider_participation_id, account_id, raceName, year, callback) {
+  var race_id = `(SELECT race_id FROM race WHERE name = '${raceName}' and year = ${year})`
+  var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id})`;
+  var query = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
+              VALUES(${rider_participation_id},${account_participation_id})`;
+  
+  sqlDB.query(query, (err, res) => {
+      if (err) throw err;
+      else callback(err,res.rows)
+  })
 }
 
 
 /** Removes a rider from team selection
- * @param {number} account 
- * @param {number} rider_participation
+ * @param {number} account_id
+ * @param {number} rider_participation_id
  * @param {String} raceName
  * @param {int} year
  */
-function removeRiderFromSelection (account, rider_participation, raceName, year, callback) {
-  var race = `(SELECT race FROM race WHERE name = '${raceName}' and year = ${year})`
-  var account_participation = `(SELECT account_participation FROM account_participation WHERE account = ${user} AND race = ${race})`
+function removeRiderFromSelection (account_id, rider_participation_id, raceName, year, callback) {
+  var race_id = `(SELECT race_id FROM race WHERE name = '${raceName}' and year = ${year})`;
+  var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id})`;
   var query = `DELETE FROM team_selection_rider 
-              WHERE account_participation = ${account_participation}))
-              AND rider_participation = ${rider_participation}`;
+              WHERE account_participation_id = ${account_participation_id}))
+              AND rider_participation_id = ${rider_participation_id}`;
   
   sqlDB.query(query, (err, res) => {
     if (err) throw err;
@@ -72,3 +77,4 @@ function functionName(parameters, callback){
 
 module.exports.removeRiderFromSelection = removeRiderFromSelection
 module.exports.addAccount = addAccount
+module.exports.addRiderToSelection = addRiderToSelection
