@@ -229,7 +229,9 @@ app.get('/vulteamselectionrider',function(req,res){
       for(var i = 0; i <20;i++){
         var id = user.teamselectie.userrenners[i]._id;
         console.log(id);
-        sqlQuery += `((select account_participation from account_participation where account= (select account from account where email='${user.local.email}') AND race = 3),(select rider_participation from rider_participation where rider = (select rider from rider where pcsid = '${id}') AND race = 3)),`
+        var account_participation_id = `(select account_participation from account_participation where account= (select account from account where email='${user.local.email}') AND race = 3)`
+        var rider_participation_id = `(select rider_participation from rider_participation where rider = (select rider from rider where pcsid = '${id}') AND race = 3)`
+        sqlQuery += `(${account_participation_id},${rider_participation_id}),`
       }
       sqlQuery = sqlQuery.slice(0, -1) + ";";
       sqlDB.query(sqlQuery,(err,sqlres)=>{

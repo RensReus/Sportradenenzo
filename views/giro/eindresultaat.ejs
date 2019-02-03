@@ -84,12 +84,12 @@
         }
     </style>
 </head>
-<body onload="checkresultaat(<%=etappe%>)">
+<body onload="checkresultaat(<%=stage%>)">
     <% include ../partials/navbarlogout %>
     <div class="col-sm-12 text-left" id="contentblok">
         <div class="col-sm-12 bovenrijtje">
             <%if(etappe>1){%> <!--zorg dat de knoppen voor de vorige en volgende etappe de juiste zijn-->
-                <a href="/giro/etappe/<%=etappe-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=etappe-1%></a>
+                <a href="/giro/etappe/<%=stage-1%>" class="etappebutton">◄ &nbsp; &nbsp; Etappe <%=stage-1%></a>
             <%}else{%>
                 <%if(huidig<0){%> <!--stuur door naar teamselectie als dat nog kan-->
                     <a href="/giro/teamselectie" class="etappebutton">◄ &nbsp; &nbsp; Teamselectie</a>

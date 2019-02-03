@@ -108,16 +108,14 @@ module.exports = function (app, passport) {
         });
     })
 
-
     
-
     app.get('/:race/:year/etappe/:stage', isLoggedIn, function(req, res){
         if (!currentDisplay()) { // geen redirect als de ronde begonnen is
             SQLread.getTeamSelection(req.params.race,req.params.year,req.account.account_id,function(err,teamSelection){
                 if(teamSelection.length <20) res.redirect("/:race/:year/teamselectie");
             })
         }else{
-
+            
             if (isNaN(stage)|| stage < 1 || stage > 21) { //Kijken of het een nummer is en of het geen ongeldig nummer is
                 res.redirect("/:race/:year")//TODO redirect vergelijkbaar met /giro
             }
@@ -129,15 +127,19 @@ module.exports = function (app, passport) {
                     
                 });
             }else{// display stage selection
-            async.auto({
-                
-            },function(err,results){
-                if(err) throw err;
-                
-            });
+                async.auto({
+                    
+                },function(err,results){
+                    if(err) throw err;
+                    
+                });
             }
         }
     })
+
+    app.get('/:race/:year/etappe/:stage/:user', isLoggedIn, function(req, res){
+    })
+
     //Voor de aanvraag van een etappe pagina------------------------------------------
     app.get('/giro/etappe/:etappe', isLoggedIn, function (req, res) {
         if (req.user.teamselectie.userrenners.length < 20 && !currentDisplay()) { // geen redirect als de ronde begonnen is
@@ -243,6 +245,27 @@ module.exports = function (app, passport) {
     });
 
 
+    app.get('/:race/:year/eindresultaat', isLoggedIn, function (req, res) {
+        async.auto({
+            userSelection:  SQLread.getTeamSelection(req.params.race,req.params.year,req.account.account_id,callback),
+            allRiders:      SQLread.getAllRiders(req.params.race,req.params.year,callback),
+            race:           SQLread.getRace(req.params.race,req.params.year,callback)
+        },function(err,results){
+            if(err) throw err;
+            var totalBudget = results.race.budget;
+            var bugdetRemaining = totalBudget - sum(results.userSelection.rows.map(rider => rider.price));
+            res.render('./giro/eindresultaat.ejs', {
+                stage: 22,
+                teamnamen,
+                uitslagen: uitslag.uitslagen,
+                user: req.user, // get the user out of session and pass to template
+                users, //[{id,local{username}},...]
+                dagscore,
+                teamrenners
+            });
+        });
+    })
+
     app.get('/giro/eindresultaat', isLoggedIn, function (req, res) {
         var etappe = 21;
         Etappe.findOne({ '_id': etappe }, 'uitslagen creationTime', function (err, uitslag) {
@@ -265,7 +288,25 @@ module.exports = function (app, passport) {
         });
     });
 
-    app.get('/giro/overzicht', function (req, res) {
+    app.get(':raceName/:year/overzicht', function(req,res){
+        async.auto({
+            userSelection:  SQLread.getTeamSelection(req.params.race,req.params.year,req.account.account_id,callback),
+            allRiders:      SQLread.getAllRiders(req.params.race,req.params.year,callback),
+        },function(err,results){
+            if(err) throw err;
+            res.render('./giro/eindresultaat.ejs', {
+                stage: 22,
+                teamnamen,
+                uitslagen: uitslag.uitslagen,
+                user: req.user, // get the user out of session and pass to template
+                users, //[{id,local{username}},...]
+                dagscore,
+                teamrenners
+            });
+        });
+    })
+
+    app.get('/giro/overzicht', function (req, res) {//een lijst van alle renners met prijs aantalpunten en hoe vaak gekozen
         Renners.find({ 'prijs': { $exists: true } }, 'naam team prijs punten', { sort: { 'prijs': -1 } }, function (err, renners) {
             if (err) throw err;
             User.find({ '_id': { $exists: true },'teamselectie.userrenners': {$size: 20} }, 'teamselectie.userrenners local.username groups.budget', function (err, users) {
@@ -279,7 +320,7 @@ module.exports = function (app, passport) {
         });
     });
 
-    app.get('/giro/overzicht/:user', function (req, res) {
+    app.get('/giro/overzicht/:user', function (req, res) {//per user alle geselecteerde renners en opgeleverde punten
         User.findOne({ "local.username": req.params.user }, function (err, user) {
             if (err) throw err;
             if (user == null || user == "") {
