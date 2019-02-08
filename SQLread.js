@@ -18,10 +18,11 @@ sqlDB.connect();
  * @param {function} callback 
  */
 function getAccount(account_id,callback){
+    var values = [account_id];
     var query = `SELECT account_id, username, email, admin FROM account
-                WHERE account_id = ${account_id}`;
-
-    sqlDB.query(query, (err, res) => {
+                WHERE account_id = $1`;
+                
+    sqlDB.query(query, values, (err, res) => {
         if (err) throw err;
         else callback(err,res.rows[0])
     })
@@ -36,14 +37,15 @@ function getAccount(account_id,callback){
  * @returns {Array} array of riders [{ name: , price: , team: ,rider_participation: },...]
  */
 function getTeamSelection(account_id,raceName,year,callback){
-    var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id})`;
-    var race_id  = `(SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})`;
-    var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id} AND race_id = ${race_id})`;
+    var values = [account_id, raceName, year];//$1,$2,$3
+    var race_id = `(SELECT race_id FROM race WHERE name = $2 AND year = $3)`;
+    var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id})`;
+    var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
     var query = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id FROM rider_participation
                 INNER JOIN rider using(rider_id)
                 WHERE rider_participation_id IN ${teamselection}`;
 
-    sqlDB.query(query, (err, res) => {
+    sqlDB.query(query, values, (err, res) => {
         if (err) throw err;
         else callback(err,res.rows)
     })
@@ -56,12 +58,13 @@ function getTeamSelection(account_id,raceName,year,callback){
  * @returns {Array} array of riders [{ name: , price: , team: ,rider_participation: },...]
  */
 function getAllRiders(raceName, year, callback){
-    var race = `(SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})`;
+    var values = [raceName, year];
+    var race_id = `(SELECT race_id FROM race WHERE name = $1 AND year = $2)`;
     var query = `SELECT rider.firstname || ' ' || rider.lastname as name, price, team, rider_participation_id FROM rider_participation
                 INNER JOIN rider using(rider_id)
-                WHERE race_id = ${race}`;
+                WHERE race_id = ${race_id}`;
     
-    sqlDB.query(query, (err, res) => {
+    sqlDB.query(query, values, (err, res) => {
         if (err) throw err;
         else callback(err,res.rows)
     })
@@ -72,9 +75,10 @@ function getAllRiders(raceName, year, callback){
  * @param {function} callback 
  */
 function getRider(rider_participation_id, callback){
+    var values = [rider_participation_id];
     var query = `SELECT * FROM rider_participation
                 INNER JOIN rider using(rider_id)
-                WHERE rider_participation_id = ${rider_participation_id}`;
+                WHERE rider_participation_id = $1`;
     
     sqlDB.query(query, (err, res) => {
         if (err) throw err;
@@ -87,12 +91,13 @@ function getRider(rider_participation_id, callback){
  * @param {function} callback
  */
 function getLogin(email, callback){
+    var values = [email];
     var query = `SELECT * FROM account
-                WHERE email = '${email}'`;
-    
-    sqlDB.query(query, (err, res) => {
+                WHERE email = $1`;
+
+    sqlDB.query(query, values, (err, res) => {
         if (err) throw err;
-        else callback(err,res.rows[0])
+        else callback(err,res.rows)
     })
 }
 
@@ -102,9 +107,10 @@ function getLogin(email, callback){
  * @param {function} callback 
  */
 function getRace(raceName, year, callback){
-    var query = `SELECT * FROM race WHERE name = '${raceName}' AND year = ${year}`;
+    var values = [raceName,year]
+    var query = `SELECT * FROM race WHERE name = $1 AND year = $2`;
     
-    sqlDB.query(query, (err, res) => {
+    sqlDB.query(query, values, (err, res) => {
         if (err) throw err;
         else callback(err,res.rows[0])
     })
@@ -112,9 +118,10 @@ function getRace(raceName, year, callback){
 
 //template
 function functionName(parameters, callback){
+    var values = [parameters] // $1, ...
     var query = ``;
     
-    sqlDB.query(query, (err, res) => {
+    sqlDB.query(query, values, (err, res) => {
         if (err) throw err;
         else callback(err,res.rows)
     })

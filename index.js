@@ -2,6 +2,7 @@
 var http = require('http');
 var express = require('express');
 var app = express();
+var async = require('async');
 //var port     = process.env.PORT || 8080;
 var fs = require('fs');
 var SQLread = require('./SQLread')
@@ -678,6 +679,16 @@ app.get("/giro/chartsrelbudget/", function (req, res) {
   })
 })
 
+app.get('/asynctest',function(req,res){
+  async.auto({
+    race: function(callback){ SQLread.getLogin('rensreus@gmail.com',callback)},
+    Bla: function(callback){ SQLread.getTeamSelection('1','vuelta','2018',callback)}
+  },function(err,results){
+      if(err) throw err;
+      res.send(results)
+  });
+});
+
 app.get('/trivia', function (req, res) {
   console.log("trivia");
   res.render('./trivia');
@@ -780,3 +791,5 @@ var copyOpstelling = schedule.scheduleJob(legeOpstellingRule, function () {
     })
   }
 });
+
+

@@ -288,10 +288,16 @@ module.exports = function (app, passport) {
         });
     });
 
-    app.get(':raceName/:year/overzicht', function(req,res){
+    app.get('/:raceName/:year/overzicht/:account', function(req,res){
         async.auto({
-            userSelection:  SQLread.getTeamSelection(req.params.race,req.params.year,req.account.account_id,callback),
-            allRiders:      SQLread.getAllRiders(req.params.race,req.params.year,callback),
+            userSelection:  SQLread.getTeamSelection(req.params.race,req.params.year,req.params.account,function(err,results){
+                console.log("userselection")
+                console.log(results)
+            }),
+            allRiders:      SQLread.getAllRiders(req.params.race,req.params.year,function(err,results){
+                console.log("allRiders")
+                console.log(results)
+            })
         },function(err,results){
             if(err) throw err;
             res.render('./giro/eindresultaat.ejs', {
