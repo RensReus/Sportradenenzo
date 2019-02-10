@@ -24,8 +24,7 @@
     "server": "node server.js",
     "client": "node start-client.js",
     "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
-    "lint": "eslint .",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+    "lint": "eslint ."
   },
   "devDependencies": {
     "concurrently": "3.1.0"
