@@ -44,11 +44,15 @@ sqlDB.connect()
 // Express only serves static assets in production
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
+  app.get('*',(res) => {
+    res.sendFile('./public/index.html', { root : __dirname})
+  })
+}else{
+  app.get('*',(res) => {
+    res.sendFile('./client/public/index.html', { root : __dirname})
+  })
 }
 
-app.get('*',(res) => {
-  res.sendFile('./client/public/index.html', { root : __dirname})
-})
 
 app.set("port", process.env.PORT || 3001);
 
