@@ -60,5 +60,5 @@ require('./server/api/riders')(app)
 require('./server/api/teamselection')(app)
 
 app.get('*',(res) => {
-  res.sendfile('./client/public/index.html')
+  res.sendFile('./client/public/index.html', { root : __dirname})
 })
