@@ -39,7 +39,6 @@ const sqlDB = new Client({
   connectionString: sqlDBstring,
   ssl: true
 });
-//console.log(sqlDB)
 sqlDB.connect()
 
 // Express only serves static assets in production
@@ -54,8 +53,9 @@ app.listen(app.get("port"), () => {
 });
 
 require('./server/passport')(passport);
-require('./server/routes')(app) //Zorgt alleen dat de pagina voor react wordt laten zien
-//Alle API files:
+app.get('*', (res) => {
+  res.sendFile(path.resolve('./client/public/index.html'))
+})
 
 require('./server/api/admin')(app)
 require('./server/api/authentication')(app)
