@@ -45,7 +45,7 @@ sqlDB.connect()
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
   app.get('*',(res) => {
-    res.sendFile('./public/index.html', { root : __dirname})
+    res.sendFile('./index.html', { root : __dirname})
   })
 }else{
   app.get('*',(res) => {
