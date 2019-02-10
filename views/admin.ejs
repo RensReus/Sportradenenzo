@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title>Admin SQL interface</title>
+        <% include ./partials/head %>
+        <style>
+            body {
+                background-color: black;    
+                color: white;
+            }
+            textarea {
+                background-color: black;
+            }
+            button{
+                color: black;
+            }
+        </style>
+    </head>
+<body>
+    Input:<br>
+    <form>
+    <textarea id="DBQueryText" rows="10" cols="200"></textarea><br>
+    <button type="button" id="submitbutton" onclick="DBQuery()">Verzend DB Query</button><br>
+    </form>
+    Output:<br>
+    <textarea readonly id="DBQueryOutput" rows="20" cols="100"></textarea>
+<script>
+function DBQuery(){
+    $.ajax({
+		type: 'POST',
+        data: JSON.stringify({"data":  $('#DBQueryText').val()}),
+		contentType: 'application/json',
+        url: '/admin',
+        cache: false,
+        dataType:"json",
+        success: function (res) {
+            $("#DBQueryOutput").html('');
+            $("#DBQueryOutput").html(res.data);
+        }					
+    });
+}
+$('#DBQueryText').keydown(function(event) {
+  if (event.ctrlKey && event.keyCode === 13) {
+    $("#submitbutton").click();
+  }
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+div.container{
+    display: flex;
+    margin: 0;
+}
+div.ridertablecontainer{
+    width: 50%;
+}
+div.usertablecontainer{
+    width: 50%;
+}

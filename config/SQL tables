@@ -1,0 +1,131 @@
+// to show all tables
+SELECT tablename FROM pg_catalog.pg_tables
+where schemaname = 'public'
+
+
+CREATE TABLE race (
+  race SERIAL primary key,
+  name TEXT NOT NULL,
+  year INT NOT NULL,
+  budget INT DEFAULT 0,
+  finished BOOLEAN DEFAULT FALSE,
+  UNIQUE (name, year)
+);
+
+CREATE TABLE stage (
+  stage_id SERIAL PRIMARY KEY,
+  race_id INT NOT NULL REFERENCES race (race_id),
+  stagenr INT NOT NULL,
+  starttime timestamp DEFAULT NULL,
+  finished bool DEFAULT FALSE,
+  complete bool DEFAULT FALSE,
+  UNIQUE (race_id, stagenr)
+);  
+
+CREATE TABLE account (
+  account_id SERIAL PRIMARY KEY,
+  username TEXT DEFAULT NULL,
+  password TEXT NOT NULL,
+  email TEXT NOT NULL,  
+  admin bool DEFAULT FALSE,
+  UNIQUE (email)
+);
+
+CREATE TABLE account_participation (
+  account_participation_id SERIAL PRIMARY KEY,
+  account_id INT NOT NULL REFERENCES account (account_id),
+  race_id INT NOT NULL REFERENCES race (race_id),
+  budgetParticipation bool DEFAULT FALSE,
+  UNIQUE(account_id,race_id)
+);
+
+CREATE TABLE rider (
+  rider_id SERIAL PRIMARY KEY,
+  PCS_id TEXT NOT NULL,
+  country TEXT DEFAULT NULL,
+  firstName TEXT NOT NULL,
+  lastName TEXT NOT NULL,
+  initials TEXT NOT NULL,
+  UNIQUE (PCS_id)
+);
+
+CREATE TABLE rider_participation (
+  rider_participation_id SERIAL PRIMARY KEY,
+  race_id INT NOT NULL REFERENCES race (race_id),
+  rider_id INT NOT NULL REFERENCES rider (rider_id),
+  price INT DEFAULT 6666666,
+  dnf bool DEFAULT FALSE,
+  team TEXT NOT NULL,
+  UNIQUE (race_id, rider_id)
+);
+
+CREATE TABLE team_selection_rider (
+  rider_participation_id INT NOT NULL REFERENCES rider_participation (rider_participation_id),
+  account_participation_id INT NOT NULL REFERENCES account_participation (account_participation_id),
+  PRIMARY KEY (rider_participation_id , account_participation_id)
+); check duplicate/ check budget/ check nr of riders/ check max 4 per team
+on delete rider remove all stage_selections 
+
+CREATE TABLE stage_selection (
+  stage_selection_id SERIAL PRIMARY KEY,
+  account_participation_id INT NOT NULL REFERENCES account_participation (account_participation_id),
+  stage_id INT NOT NULL REFERENCES stage (stage_id),
+  stagescore INT DEFAULT 0,
+  totalscore INT DEFAULT 0,
+  kopman_id INT DEFAULT NULL REFERENCES rider_participation (rider_participation_id),
+  UNIQUE(account_participation_id,stage_id)
+);// kopman check if selected
+
+CREATE TABLE stage_selection_rider (
+  stage_selection_id INT NOT NULL REFERENCES stage_selection (stage_selection_id),
+  rider_participation_id INT NOT NULL REFERENCES rider_participation (rider_participation_id),
+  PRIMARY KEY (rider_participation_id, stage_selection_id)
+); check if stage_selection exists else create/ check if rider already selected/ check if rider in team selection
+
+
+CREATE TABLE results_points(
+  stage_id INT NOT NULL REFERENCES stage (stage_id),
+  rider_participation_id INT NOT NULL REFERENCES rider_participation (rider_participation_id),
+  stagepos INT DEFAULT 0,
+  gcpos INT DEFAULT 0,
+  pointspos INT DEFAULT 0,
+  kompos INT DEFAULT 0,
+  yocpos INT DEFAULT 0,
+  stagescore INT DEFAULT 0,
+  gcscore INT DEFAULT 0,
+  pointsscore INT DEFAULT 0,
+  komscore INT DEFAULT 0,
+  yocscore INT DEFAULT 0,
+  teamscore INT DEFAULT 0,
+  totalscore INT DEFAULT 0,
+  stageresult TEXT DEFAULT NULL,
+  gcresult TEXT DEFAULT NULL,
+  pointsresult TEXT DEFAULT NULL,
+  komresult TEXT DEFAULT NULL,
+  yocresult TEXT DEFAULT NULL,
+  PRIMARY KEY (stage_id,rider_participation_id )
+)
+
+// completely new
+//poules moet nog meer voor worden geimplementeerd voordat het echt gebruikt kan worden
+//maar de opzet staat er alvast
+
+CREATE TABLE poule (
+  poule_id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  budgetonly BOOLEAN DEFAULT FALSE,
+  race_id INT NOT NULL REFERENCES race (race_id)
+)
+
+CREATE TABLE poule_account (
+  poule_id INT REFERENCES poule (poule_id),
+  account_participation_id INT REFERENCES account_participation (account_participation_id),
+  PRIMARY KEY(poule_id,account_participation_id) 
+)
+
+CREATE TABLE awards (
+  account_id INT REFERENCES account (account_id)
+  race_id INT REFERENCES race (race_id)
+  poule_id INT REFERENCES poule (poule_id), // of er komt een aparte table voor pool awards
+  
+)

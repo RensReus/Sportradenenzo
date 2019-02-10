@@ -4,6 +4,8 @@ const SQLwrite          = require('./db/SQLwrite')
 const bcrypt            = require('bcrypt-nodejs')
 
 // expose this function to our app using module.exports
+
+
 module.exports = function(passport) {
     // =========================================================================
     // passport session setup ==================================================
@@ -59,7 +61,7 @@ module.exports = function(passport) {
                 })
             }
         })
-        }); 
+        });
     }));
 
     // =========================================================================
@@ -80,10 +82,10 @@ module.exports = function(passport) {
                 return done(err);
 
             if (account == null) //no account with that email
-                return done(null, false, console.log('Incorrect email/password combination'));
+                return done(null, false, req.flash('loginMessage', 'Incorrect email/password combination'));
             
             if (!bcrypt.compareSync(password, account.password)) //incorrect password
-                return done(null, false, console.log('Incorrect email/password combination'));
+                return done(null, false, req.flash('loginMessage', 'Incorrect email/password combination'));
             
             return done(null,account)
 

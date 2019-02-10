@@ -1,0 +1,29 @@
+DB aanpassen
+- score/tijd hernoemen tot een naam
+
+Poules implementeren
+
+overal ronde en jaar indicators aan toevoegen (bv GIRO 2018)
+
+mappen herindelen duidelijker maken en misschien functies herverdelen over bestanden
+
+Bij de team selectie 
+informatie over renners
+- nationaliteit
+- kwaliteiten
+selecteren op basis van
+- team
+- land 
+- kwaliteiten
+- prijs bereik
+
+Settings pagina
+- Met dark mode
+
+Cookies nom nom nom
+
+Verander de opgesteld/nietopgesteld klasses in iets wat togglebaar is
+
+Ajax in etapperesultaat kan weg of alles kan via ajax
+
+teamselectie.ejs aanpassen zodat het de rider_participation_id naar de server stuurt voor verwijderen en toevoegen

@@ -1,0 +1,20 @@
+textarea.queryInputBox{
+    font-size: 10px;
+    background: black;
+    color: white;
+}
+
+div.outputTableContainer{
+    height: 60vh;
+    overflow: scroll;
+}
+
+table.outputTable{
+    font-size: 10px;
+    background: black;
+    color: white;
+}
+
+div.container{
+    width: 100%;
+}

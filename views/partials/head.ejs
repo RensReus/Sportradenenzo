@@ -1,0 +1,547 @@
+<!-- views/partials/head.ejs 
+Sportradenenzo huisstijl voor gebruik op elke pagina-->
+<title>Sport raden enzo</title>
+<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<style>
+    /*================================= 
+    ========ALGEME PAGINA OPBOUW=======
+    =================================*/
+    /*De achtergrond, neemt hele pagina in beslag*/
+    html {
+        background: url("/images/etappe17.jpg") no-repeat center fixed;
+        background-size: cover;
+    }
+    /*De bovenbalk, position fixed zorgt dat deze altijd zichtbaar is*/
+    .navbar {
+        position: fixed;
+        top: 0;
+        margin-bottom: 0;
+        border-radius: 0;
+        height: 5vh;
+        width: 100%;
+        z-index: 10;
+    }
+    /*De wrapper waar alle content voor de pagina in komt*/
+    div#contentblok {
+        background-color: rgba(255, 255, 255, 0.9);
+        margin-left: 10%;
+        margin-top: 5vh;
+        padding-bottom: 20px;
+        min-height:95vh;
+        height: 100%;
+        min-width: 500px;
+        width: 80%;
+        box-shadow: 0 6px 20px 8px rgba(0, 0, 0, 0.6);
+    }
+    /*Kleinere versie van de wrapper waar alle content voor de pagina in komt*/
+    div#contentblokje {
+        background-color: rgba(255, 255, 255, 0.9);
+        margin-left: 30%;
+        margin-top: 20vh;
+        padding-bottom: 20px;
+        min-height:400px;
+        height: 100%;
+        min-width: 500px;
+        width: 40%;
+        box-shadow: 0 6px 20px 8px rgba(0, 0, 0, 0.6);
+    }
+    /*Het bovenste stukje in de wrapper waar de knoppen naar etappes etc. in staan*/
+    .bovenrijtje {
+        height: 4vh;
+        padding-bottom: 7.5vh;
+        padding-top: 2vh;
+    }
+    /*Footer, momenteel niet in gebruik*/
+    footer {
+        position: fixed;
+        bottom: 0;
+        background-color: #555;
+        color: white;
+        width: 100%;
+        padding: 0px;
+        height: 0px;
+    }
+    /*Voor als de tekst eens rechts moet staan ipv. links*/
+    .text-right {
+        text-align: right;
+    }
+    /*De wrapper van de resultatentabel op etapperesults*/
+    .resultatendoos{
+        padding-right:0;
+    }
+    /*De wrapper van de klassementsresultaten op etapperesults*/
+    .klassementswrapper{
+        padding-left:0;
+        float:right;
+    }
+    /*=================================
+    ==KNOPPEN EN ANDERE KLEINE ITEMS===
+    =================================*/
+    
+    /*De stijl van de knoppen voor etappes*/
+    .etappebutton {
+        text-decoration: none;
+        color: #fff;
+        background-color: #006CCB;
+        font-size: 18px;
+        padding: 14px 20px;
+        border-radius: 6px;
+        text-align: center;
+        display: inline-block;
+    }
+    .etappebutton:hover {
+        text-decoration: none;
+        color: #fff;
+        background-color: #229CDD;        
+    }
+
+    /*Buttons die het gewenste klassement op de resultatenpagina naar boven halen*/
+    .btn-group{
+        width:100%;
+    }
+    .btn-group .klassementbutton {
+        text-decoration: none;
+        color: #000;
+        background-color: #ddd;
+        border: 1px solid #bbb;
+        font-size: 20px;
+        margin: 0;
+        float:left;
+        width:20%;
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    .btn-group .klassementbutton.selected{ /*Dezelfde style als thead*/
+        text-decoration: none;
+        color: #ddd;
+        background-color: #222;
+        border: 1px solid #222;
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    .btn-group .klassementbutton:hover {
+        background-color: #fff;
+    }
+    .btn-group .klassementbutton.selected:hover {
+        background-color: #222;
+    }
+    .btn-group .klassementbutton:not(:last-child) {
+        border-right: none; /*Zorgen dat er geen dubbele border is*/
+    }
+    .btn-group .klassementbutton:last-child {
+        border-radius: 0px 5px 0px 0px;
+    }
+    .btn-group .klassementbutton:first-child {
+        border-radius: 5px 0px 0px 0px;
+    }
+
+    /*Buttons die paginas op de paginas scrollen*/
+    .btn-group .scrollbutton {
+        text-decoration: none;
+        color: #000;
+        background-color: #bbb;
+        border: 1px solid #999;
+        font-size: 11px;
+        float:left;
+        height:40px;
+        width:9.090909%;
+        text-align:center;
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    .btn-group .scrollbutton.selected{
+        text-decoration: none;
+        color: #ddd;
+        background-color: #222;
+        border: 1px solid #222;
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }    
+    .btn-group .scrollbutton.disabled{
+        text-decoration: none;
+        color: #bbb;
+        cursor:default;
+        -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    .btn-group .scrollbutton.disabled:hover{
+        background-color: #bbb;
+        color: #bbb;
+    }
+    .btn-group .scrollbutton:hover {
+        background-color: #fff;
+        color:#222;
+    }
+    .btn-group .scrollbutton.selected:hover {
+        background-color: #222;
+        color:#ddd;
+    }
+    .btn-group .scrollbutton:not(:last-child) {
+        border-right: none; /*Zorgen dat er geen dubbele border is*/
+    }
+
+    /*De stijl van de knoppen voor renner selectie*/
+    .rennerselectiebutton {
+        text-decoration: none;
+        color: #fff;
+        background-color: #006CCB;
+        width:100%;
+        min-height:100%;
+        margin: 0;
+        font-size: 100%;
+        padding-top: 15%;
+        padding-bottom: 15%;
+        padding-left: 10px;
+        padding-right: 10px;
+        text-align: center;
+        display: inline-block;
+    }
+    .rennerselectiebutton:hover {
+        text-decoration: none;
+        color: #fff;
+        background-color: #229CDD;          
+    }
+    .rennerselectiebutton.selected {
+        background-color: rgba(200, 0, 0, 0.8);
+    }
+    .rennerselectiebutton.selected:hover {
+        background-color: rgb(200, 0, 0);
+    }
+    .rennerselectiebutton.unavailable {
+        background-color: rgb(200, 200, 200);
+    }
+
+    /*De zoekbalk die voor de teamselectie wordt gebruikt*/
+    #zoekbalk{
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+    }
+
+    /*Style van de ploegtekst bij renners*/
+    .ploegrenner{
+            color:#888;
+            font-size: 9.5pt;
+    }
+    /*Style van uitgevallen renners in de selectie*/
+    tr td.uitgevallen{
+        color: #bbb;
+        background: #ccc
+    }
+    tr td.uitgevallen:hover{
+        color: #bbb;
+        background: #ccc
+    }
+    
+    /*=================================
+    =============TABELLEN==============
+    =================================*/
+
+    /*====Algemene tabel styling====*/
+    /*Alle tabel heads donkere achtergrond met lichte tekst geven*/
+    thead th{
+        background: #222;
+        color: #ddd;
+    }
+
+    /*De tabel voor teamselectie in etappes en de selectie van het team voor de ronde*/
+    table#teamselectietabel tr{
+        background-color: #fff;
+        cursor: pointer;
+        border-collapse: collapse;
+        border: 2px solid #666;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    } 
+    table#teamselectietabel tr:hover{
+        background-color: #ddd;
+    }
+    table#scoretabel{
+        border-color:#000;
+        border-style: solid;
+        border-width: 2px;
+    }
+    table#scoretabel tr#scoretab0 td{
+        background-color: #ffc400;
+        min-height: 80px;
+    }
+    table#scoretabel td{
+        min-width: 80px;
+        min-height: 40px;
+        font-size: 18px;
+        padding: 5px;
+        text-align:center;
+    }
+    table#scoretabel th{
+        color: #fff;
+        background-color: #000;
+        font-size: 18px;
+        padding: 5px;
+        text-align:center;
+        background: #7d7e7d; /* Old browsers */
+        background: -moz-linear-gradient(top, #7d7e7d 0%, #0e0e0e 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, #7d7e7d 0%,#0e0e0e 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, #7d7e7d 0%,#0e0e0e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
+    }
+    table#userteamtabel{
+    }
+    table#userteamtabel td{
+        height: 30px;
+        font-size: 10px;
+        text-align:center;
+        background: #ffffff;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-left: 5px;
+        padding-right: 5px;
+        border-bottom: 1px solid #fcfcfc;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    table#userteamtabel tr td:last-child{
+        padding:0;
+    }
+    table#userteamtabel tr:hover td{
+        background: #dddddd
+    }
+    table#userteamtabel tr:nth-child(odd) td{
+        background: #f9f9f9;
+    }
+    table#userteamtabel tr:nth-child(odd):hover td{
+        background: #dddddd;
+    }
+    table#userteamtabel tr td.rennerselected{
+        background: #fdd;
+    }
+    /*Style van uitgevallen renners in de selectie*/
+    tr td.uitgevallen{
+        color: #bbb;
+        background: #ccc
+    }
+    table#userteamtabel tr td.uitgevallen:hover{
+        color: #bbb;
+        background: #ccc
+    }
+    /*Style van geselecteerde renners in de selectie*/
+    table#userteamtabel tr.rennerselected td{
+        color: #333;
+        background: #fdd
+    }
+    table#userteamtabel tr.rennerselected:hover td{
+        color: #333;
+        background: #fdd
+    }
+
+    /*De tabelstyle voor de etapperesultaten en klassementen*/
+    table.etappetabel th,table#etappetabel td{
+        font-size: 14px;
+        padding:5px;
+        height:32px;
+        text-align: center;
+        font-size: 14px;
+    }
+    table.etappetabel a {
+        color: inherit;
+        text-decoration: none; /* no underline */
+    }
+    /*Truitje niet hoger laten zijn dan de rest*/    
+    table.etappetabel tr:nth-child(1) td{
+        padding:0px;
+        height:32px;
+    }
+    table.etappetabel{
+        padding:10px;
+        min-width:100%;
+    }
+    table.etappetabel tr td:nth-child(1){ /*Positie*/
+        width:15%;
+    }
+    table.etappetabel tr td:nth-child(2){ /*Naam*/
+        width:70%;
+    }    
+    table.etappetabel tr td:nth-child(3){ /*Tijd/Score*/
+        width:15%;
+    }
+    table.etappetabel tr:nth-child(odd) {
+        background: #f9f9f9;
+    }
+    table.etappetabel tr:nth-child(even) {
+        background: #fff;
+    }
+    table.etappetabel.mini tr td{
+        text-align:center;
+        font-size:12px;
+        height:32px;        
+    }
+    /*=================================
+    =============LIJSTEN===============
+    =================================*/
+
+    ul#etappekieslijst {
+        margin: 0;
+        padding: 0;
+    }
+
+    ul#etappekieslijst li{
+        position: relative;
+        padding: 12px 8px 12px 40px;
+        list-style-type: none;
+        background: #eee;
+        font-size: 15px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    ul#etappekieslijst li:nth-child(odd) {
+        background: #f9f9f9;
+    }
+    ul#etappekieslijst li:nth-child(even) {
+        background: #ffffff;
+    }
+    /*=================================
+    =============POPUPS================
+    =================================*/
+    .popup {
+        position: absolute;
+        display: inline-block;
+        text-align:left;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .popup .popuptext {
+        visibility: hidden;
+        width: 100%;
+        background-color:#fff;
+        color: #000;
+        text-align: left;
+        border-radius: 0px;
+        padding: 8px 0;
+        position: absolute;
+        z-index: 1;
+        top: -25px;
+        right:25%;
+        -moz-box-shadow:    3px 3px 5px 6px #ccc;
+        -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+        box-shadow:         3px 3px 5px 6px #ccc;
+        }
+    .popup .show{
+        position: relative;
+        visibility: visible;
+        animation-name: popupanimatieverticaal;
+        animation-duration: 0.2s;
+        animation-fill-mode: backwards;
+    }
+    /*=================================
+    ============ANIMATIES==============
+    =================================*/
+    @keyframes popupanimatieverticaal {
+        from {height: 0%; top:0%;opacity: 0;} 
+        to {height: 100%; top:100%;opacity: 1;}
+    }
+    /* Safari 4.0 - 8.0 */
+    @-webkit-keyframes popupanimatieverticaal {
+        from {opacity: 0;} 
+        to {opacity: 1;}
+    }
+    /*=================================
+    =INSTELLINGEN VOOR KLEINE SCHERMEN=
+    =================================*/
+    @media screen and (max-width: 576px) {
+        html {background: none;} /*Haal de achtergrond weg*/
+        div#contentblok {
+            width:100vw;/*Laat de wrapper de hele breedte in beslag nemen*/  
+            /*Maak gebruik van de volledige breedte die beschikbaar is*/
+            margin-left: 0;
+            padding-left: 0;
+            padding-right: 0;
+            box-shadow: none;/*Haal het schaduw effect weg*/
+        }
+        div#contentblokje{
+            height:94vh;
+            width:100%;
+            margin:0;
+            box-shadow: none;
+        } 
+        /*Het bovenste stukje in de wrapper waar de knoppen naar etappes etc. in staan*/
+        .bovenrijtje {
+            height: 4vh;
+            padding-bottom: 7.5vh;
+            padding-top: 2vh;
+        }
+        .klassementswrapper{
+            margin-top:20px;
+            margin-left:10vw;
+            width:80vw;
+            margin-right:10vw;
+            padding:0;
+            float:left;
+        }
+        .poulestand{
+            margin-top:20px;
+            margin-left:10vw;
+            width:80vw;
+            margin-right:10vw;
+            padding:0;
+        }
+        table#poulestand{
+            width:100%;
+        }
+        /*De stijl van de knoppen voor etappes*/
+        .etappebutton {
+            font-size: 14px;
+            padding: 10px 14px;
+            border-radius: 5px;
+        }
+        table#userteamtabel{
+            width:100%
+        }
+    }
+
+</style>
+
