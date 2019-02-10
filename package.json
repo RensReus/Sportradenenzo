@@ -1,18 +1,21 @@
 {
-  "name": "lookup-server",
-  "version": "0.0.1",
-  "private": true,
+  "name": "sportradenenzo-server",
+  "version": "0.2.0",
+  "description": "Poulewebsite voor de beste poulegroep",
   "dependencies": {
+    "async": "^2.6.1",
     "babel-core": "^6.26.3",
-    "bcrypt": "^3.0.0",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
-    "express": "^4.16.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
     "express-session": "^1.15.6",
-    "morgan": "^1.9.0",
+    "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "pg": "^7.4.3",
+    "pg": "^7.8.0",
+    "pg-pool": "^2.0.6",
     "sql.js": "0.3.2"
   },
   "scripts": {
@@ -22,12 +25,10 @@
     "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
     "lint": "eslint ."
   },
+  "engines": {
+    "node": "8.11.1"
+  },
   "devDependencies": {
-    "concurrently": "3.1.0",
-    "eslint": "^3.19.0",
-    "eslint-config-airbnb": "14.1.0",
-    "eslint-plugin-import": "2.2.0",
-    "eslint-plugin-jsx-a11y": "4.0.0",
-    "eslint-plugin-react": "6.9.0"
+    "concurrently": "3.1.0"
   }
 }

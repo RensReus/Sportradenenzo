@@ -2,3 +2,5 @@
 .eslintignore
 .eslintrc.json
 node_modules
+server/db/SQL tables
+server/db/sqlDBlink

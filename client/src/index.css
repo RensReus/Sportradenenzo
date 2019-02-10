@@ -1,13 +1,26 @@
+@media only screen and (min-width: 768px) {
+  html {
+    background: url("/images/BramTankink.jpg") no-repeat center fixed;
+    background-size: cover;
+  }
+}
+
 body {
   margin: 0;
-  padding: 0;
-  font-family: sans-serif;
 }
 
-.App {
-  margin-top: 7em;
+div.pageContainer{
+  margin-left: 0;
+  margin-right: 0;
+  padding-top: 7vh;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: rgba(222, 222, 232, 0.9);
+  height: 93vh;
 }
-
-#food-search {
-  margin-top: 5em;
+@media only screen and (min-width: 768px) {
+  div.pageContainer {
+    margin-left: 10vw;
+    margin-right: 10vw;
+  }
 }
