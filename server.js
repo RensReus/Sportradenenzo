@@ -53,8 +53,9 @@ app.listen(app.get("port"), () => {
 });
 
 require('./server/passport')(passport);
+
 app.get('*', (res) => {
-  res.sendFile(path.resolve('./client/public/index.html'))
+  res.sendFile('./client/public/index.html')
 })
 
 require('./server/api/admin')(app)
