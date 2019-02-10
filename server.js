@@ -46,6 +46,10 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 }
 
+app.get('*',(res) => {
+  res.sendFile('./client/public/index.html', { root : __dirname})
+})
+
 app.set("port", process.env.PORT || 3001);
 
 app.listen(app.get("port"), () => {
@@ -58,7 +62,3 @@ require('./server/api/admin')(app)
 require('./server/api/authentication')(app)
 require('./server/api/riders')(app)
 require('./server/api/teamselection')(app)
-
-app.get('*',(res) => {
-  res.sendFile('./client/public/index.html', { root : __dirname})
-})
