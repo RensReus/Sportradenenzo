@@ -6,7 +6,6 @@
     "async": "^2.6.1",
     "babel-core": "^6.26.3",
     "bcrypt-nodejs": "0.0.3",
-<<<<<<< HEAD
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.5",
@@ -25,30 +24,6 @@
     "client": "node start-client.js",
     "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
     "lint": "eslint ."
-=======
-    "body-parser": "~1.15.2",
-    "chart.js": "^2.7.3",
-    "cheerio": "^1.0.0-rc.2",
-    "connect-flash": "~0.1.1",
-    "connect-mongo": "^2.0.3",
-    "cookie-parser": "~1.4.3",
-    "ejs": "^2.5.9",
-    "ejs-lint": "^0.3.0",
-    "express": "^4.16.4",
-    "express-session": "~1.14.1",
-    "html": "^1.0.0",
-    "json": "^9.0.6",
-    "method-override": "~2.3.6",
-    "mongoose": "^4.13.18",
-    "morgan": "~1.7.0",
-    "node-schedule": "^1.3.1",
-    "passport": "^0.4.0",
-    "passport-local": "^1.0.0",
-    "pg": "^7.8.0",
-    "request": "^2.88.0",
-    "serve-static": "^1.13.2",
-    "sql-template-strings": "^2.2.2"
->>>>>>> cbbd7f716bc1779d359512761bc1d1171b73c934
   },
   "engines": {
     "node": "8.11.1"
