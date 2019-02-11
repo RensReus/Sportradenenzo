@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-//import './index.css';
+import './index.css';
 import axios from 'axios';
 
 import LoginForm from './components/LoginForm/'
@@ -11,6 +11,7 @@ class Home extends Component{
       this.state = ({Signup: false});
       this.loginSubmit = this.loginSubmit.bind(this);
       this.signupSubmit = this.signupSubmit.bind(this);
+      this.formButton = this.formButton.bind(this);
     }
     loginSubmit = (e) => {
         e.preventDefault();
@@ -47,15 +48,28 @@ class Home extends Component{
         }
     }
     render() {
+        var classNameSignup = "formTab"
+        var classNameLogin = "formTab active"
         let form;
         if (this.state.Signup) {
             form = <SignupForm signupSubmit={this.signupSubmit} />
+            classNameSignup = "formTab active"
+            classNameLogin = "formTab"
         }else{
             form = <LoginForm loginSubmit={this.loginSubmit} />
+            classNameSignup = "formTab"
+            classNameLogin = "formTab active"
         }
         return(
-            <div id="homepage">
-                {form}
+            <div className="homepageContainer">
+                <button id="logintabButton" className={classNameLogin} onClick={this.formButton}>Sign in</button>
+                <button id="signuptabButton" className={classNameSignup} onClick={this.formButton}>Sign up</button>
+                <div className="formsAndMore">
+                    {form}
+                </div>
+                <div>
+                    
+                </div>
             </div>
         )
     }

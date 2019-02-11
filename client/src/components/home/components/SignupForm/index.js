@@ -4,19 +4,18 @@ class SignupForm extends Component {
     render() {
         return (
             <form action="" onSubmit={this.props.signupSubmit}>
-                <div>
-                    <label>Username:</label>
-                    <input type="text" name="email" id="email" />
+                <div className="inputContainer">
+                    <input className="form-control" name="email" ref="email" type="email" placeholder="Email Address"/>
                 </div>
-                <div>
-                    <label>Email:</label>
-                    <input type="text" name="email" id="email" />
+                <div className="inputContainer">
+                    <input className="form-control" name="username" ref="username" type="username" placeholder="Username"/>
                 </div>
-                <div>
-                    <label>Password:</label>
-                    <input type="password" name="password" id="password" />
+                <div className="inputContainer">
+                    <input className="form-control" name="password" ref="password" type="password" placeholder="Password"/>
                 </div>
-                <button>Submit</button>
+                <div className="formButtonContainer">
+                    <button className="loginButton">Sign up</button>
+                </div>
             </form>
         );
     }
