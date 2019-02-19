@@ -16,10 +16,10 @@ class Selectionbutton extends Component{
 class Riderrow extends Component{
     render(){
         return(
-            <tr className={this.props.selected}>
-                <td>{this.props.name}</td>
-                <td>{this.props.team}</td>
-                <td>{this.props.price}</td>
+            <tr >
+                <td className={this.props.selected}>{this.props.name}</td>
+                <td className={this.props.selected}>{this.props.team}</td>
+                <td className={this.props.selected}>{this.props.price}</td>
                 <td><Selectionbutton selected={this.props.selected} selectRider={this.props.selectRider} riderID={this.props.riderID}/></td>
             </tr>
         )
@@ -45,7 +45,9 @@ class Riderselectiontable extends Component{
                         <th>Price</th>
                     </tr>
                 </thead>
-            <tbody>{rows}</tbody>
+                <tbody>
+                    {rows}
+                </tbody>
             </table>
         )
     }

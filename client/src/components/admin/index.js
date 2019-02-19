@@ -60,7 +60,7 @@ class Admin extends Component{
     render(){
         
         return(
-            <div className="container">
+            <div className="adminpageContainer">
                 <div>
                     <form action="" onSubmit={this.submitQuery} id="queryform">
                         <textarea className="queryInputBox" rows="12" cols="80" value={this.state.value} onChange={this.handleChange}/>

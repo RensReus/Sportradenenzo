@@ -33,7 +33,8 @@ class App extends Component {
         throw error
     });
     return(
-      <div>
+      <div className="content">
+        <div className="backgroundImage"></div>
         <Navbar isLoggedIn={this.state.isLoggedIn} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (

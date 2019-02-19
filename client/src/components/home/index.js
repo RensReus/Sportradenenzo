@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './index.css';
 import axios from 'axios';
 
-import LoginForm from './components/LoginForm/'
-import SignupForm from './components/SignupForm/'
+import LoginForm from './LoginForm/'
+import SignupForm from './SignupForm/'
 
 class Home extends Component{
     constructor(props){

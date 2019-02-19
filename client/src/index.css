@@ -1,19 +1,42 @@
 @media only screen and (min-width: 768px) {
-  html {
-    background: url("/images/BramTankink.jpg") no-repeat center fixed;
+  .content:before {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    
+    background-image: url("/images/BramTankink.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
     background-size: cover;
+    height: 100vh;
+    
+    -webkit-filter: blur(2px);
+    -moz-filter: blur(2px);
+    -o-filter: blur(2px);
+    -ms-filter: blur(2px);
+    filter: blur(2px);
+  }
+  
+  .content {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 0;
   }
 }
 
 body {
   margin: 0;
 }
-
+  
 div.pageContainer{
   margin-left: 0;
   margin-right: 0;
   padding-top: 5vh;
 }
+
 @media only screen and (min-width: 768px) {
   div.pageContainer {
     margin-left: 10vw;

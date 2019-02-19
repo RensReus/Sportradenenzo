@@ -1,6 +1,8 @@
 div.homepageContainer{
     padding: 0px;
     margin: 10vh;
+    margin-left: 10vw;
+    margin-right: 10vw;
 }
 
 div.formsAndMore{
