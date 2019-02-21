@@ -1,6 +1,7 @@
 .env
 .eslintignore
 .eslintrc.json
+.vscode
 node_modules
 server/db/SQL tables
 server/db/sqlDBlink
