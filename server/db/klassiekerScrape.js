@@ -86,7 +86,9 @@ getStartlist = function (racenr, year, callback) {
                                             var rider_participation_id = res2.rows[0].rider_participation_id;
                                             var resultsValues = [racenr, rider_participation_id];
                                             var results_pointsQuery = `INSERT INTO results_points(stage_id, rider_participation_id)
-                                            VALUES ($1,$2)`;
+                                            VALUES ($1,$2)
+                                            ON CONFLICT (stage_id, rider_participation_id)
+                                            DO NOTHING`;
                                             sqlDB.query(results_pointsQuery, resultsValues, (err, res3) => {
                                                 if (err) throw err;
                                                 console.log("rider added")
@@ -103,6 +105,8 @@ getStartlist = function (racenr, year, callback) {
         })
     }
 
+
+    // ga niet verder dan dit
 getResult = function (raceName, year, et, callback) {
     var TTstages = [1, 9];
     var raceString = "";
