@@ -1,4 +1,4 @@
-module.exports = function (app){
+module.exports = function (app) {
   var passport = require('passport');
 
   //Register a new account
@@ -9,22 +9,21 @@ module.exports = function (app){
 
   //Login into an excisting account
   app.post('/api/login', function (req, res, next) {
-    passport.authenticate('local-login', function(err, user) {
+    passport.authenticate('local-login', function (err, user) {
       if (err) { return next(err); }
       if (!user) { return res.send(false); }
-      req.logIn(user, function(err) {
+      req.logIn(user, function (err) {
         if (err) { return next(err); }
         return res.send(true);
       });
     })(req, res, next);
   });
 
-  app.post('/api/isloggedin', function(req, res){
-    if(!req.user){
+  app.post('/api/isloggedin', function (req, res) {
+    if (!req.user) {
       res.send(false)
-    }else{
+    } else {
       res.send(true)
     }
   });
-
 };

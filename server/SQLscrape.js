@@ -4,7 +4,7 @@ const functies = require('./functies');
 
 const fs = require('fs');
 if (fs.existsSync('./server/db/sqlDBlink.js')) {
-    var sqlDBstring = require('./sqlDBlink.js');
+    var sqlDBstring = require('./db/sqlDBlink');
 } else {
     var sqlDBstring = process.env.DATABASE_URL;
 }
@@ -12,8 +12,8 @@ if (fs.existsSync('./server/db/sqlDBlink.js')) {
 const { Client } = require('pg');
 
 const sqlDB = new Client({
-connectionString: sqlDBstring,
-ssl: true,
+    connectionString: sqlDBstring,
+    ssl: true,
 });
 
 sqlDB.connect();
@@ -395,9 +395,6 @@ getTimetoFinish = function (callback) {
         headers: { "Connection": "keep-alive" }
     }, function (error, response, html) {
         var $ = cheerio.load(html);
-        var rule = new schedule.RecurrenceRule()
-        var finished = false;
-        var girobeschikbaar = false;
         
         $(".ind_td").first().children().eq(1).children().each(function () {
             if ($(this).children().eq(2).text().startsWith('La Vuelta ciclista a España')) { // voor de giro
@@ -429,10 +426,31 @@ getTimetoFinish = function (callback) {
         return;
         }
     });
+}
 
-
+getRider = function(pcsid){
+    request(`https://www.procyclingstats.com/rider/${pcsid}`, function (err, res, html) {
+        if (!err && res.statusCode == 200) {
+            var $ = cheerio.load(html);
+            var nameAndTeam = $('.entry').children('h1').text().split('»') //Zoek naam en team op de pagina
+            var age = $('.rdr-info-cont').text().match(new RegExp(/\(([^)]+)\)/))[1] //Zoek de leeftijd, het getal tussen de haakjes
+            var imageURL = $('.rdr-img-cont').find('img').attr('src') //URL van het plaatje van de renner
+            var name = nameAndTeam[0].trim().split(' ') //Split de naam
+            var rider = {
+                'firstName' : name.pop(), //Laatste entry in de array is de achternaam, haal die eruit om de boornaam te krijgen
+                'lastName' : name.slice(-1)[0], //Isoleer de achternaam
+                'age' : age,
+                'teamName' : nameAndTeam[1], //Naam van het team
+                'imageURL' : imageURL
+            }
+            return rider;
+        }else{
+            return 404;
+        }
+    }); 
 }
 
 module.exports.getStartlist = getStartlist;
 module.exports.getResult = getResult;
 module.exports.getTimetoFinish = getTimetoFinish;
+module.exports.getRider = getRider;

@@ -45,7 +45,6 @@ function getTeamSelection(account_id,raceName,year,callback){
                 WHERE rider_participation_id IN ${teamselection}`;
     
     sqlDB.query(query, values, (err, res) => {
-        console.log("GETTEAMSELECTION" + res.rows)
         if (err) throw err;
         else callback(err,res.rows)
     })
@@ -106,9 +105,53 @@ function getLogin(email, callback){
  * @param {function} callback 
  */
 function getRace(raceName, year, callback){
-    var values = [raceName,year]
-    var query = `SELECT * FROM race WHERE name = $1 AND year = $2`;
+    var values = [raceName,year];
+    var query = `SELECT * FROM race 
+                WHERE name = $1 AND year = $2`;
     
+    sqlDB.query(query, values, (err, res) => {
+        if (err) throw err;
+        else callback(err,res.rows[0])
+    })
+}
+
+/**Returns current race
+ * @param {function} callback 
+ */
+function getCurrentRace(callback){
+    var query = `SELECT * FROM race 
+                WHERE finished='false'`;
+    
+    sqlDB.query(query, values, (err, res) => {
+        if (err) throw err;
+        else callback(err,res.rows[0])
+    })
+}
+
+/**Returns the starttime of a requested stage
+ * @param {String} race_id
+ * @param {String} stagenr
+ * @param {Function} callback 
+ */
+function getStageStarttime(race_id, stagenr, callback){
+    var values = [race_id, stagenr];
+    var query = `SELECT starttime FROM stage 
+                WHERE race_id=$1 AND stagenr=$2`;
+    sqlDB.query(query, values, (err, res) => {
+        if (err) throw err;
+        else callback(err,res.rows[0])
+    })
+}
+
+/**Returns the participation_id if a user is participating in a race
+ * @param {String} account_id
+ * @param {String} race_id
+ * @param {Function} callback 
+ */
+function getUserRaceParticipation(account_id, race_id, callback){
+    var values = [account_id, race_id];
+    var query = `SELECT account_participation_id FROM account_participation 
+                WHERE account_id = $1 AND race_id = $2`;
     sqlDB.query(query, values, (err, res) => {
         if (err) throw err;
         else callback(err,res.rows[0])
@@ -134,3 +177,6 @@ module.exports.getAllRiders = getAllRiders;
 module.exports.getRider = getRider;
 module.exports.getLogin = getLogin;
 module.exports.getRace = getRace;
+module.exports.getCurrentRace = getCurrentRace;
+module.exports.getStageStarttime = getStageStarttime;
+module.exports.getUserRaceParticipation = getUserRaceParticipation;

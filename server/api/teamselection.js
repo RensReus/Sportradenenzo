@@ -92,4 +92,29 @@ module.exports = function (app) {
                 
         }
     });
+    //Voor klassiekerspel:
+    app.post('/api/getuserteam', function (req,res){
+        if(!req.user){
+            res.redirect('/')
+        }else{
+            async.auto({
+                userSelection: function(callback){
+                    SQLread.getTeamSelection(req.user.account_id,req.body.race,req.body.year,callback)
+                },
+                race: function(callback){
+                    SQLread.getRace(req.body.race,req.body.year,callback)
+                }
+            },function(err,results){
+                if(err) throw err;
+                //Bereken het budget
+                var IDs = [];
+                var budget = results.race.budget;       
+                for(var i=0;i<results.userSelection.length;i++){
+                    IDs.push(results.userSelection[i].rider_participation_id)
+                    budget = budget - results.userSelection.price
+                }
+                res.send({userSelection: results.userSelection, budget: budget}) //{allRiders,userSelection}
+            });
+        }
+    });
 }

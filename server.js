@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const sqlDBlink = require('./server/db/sqlDBlink')
 const cors = require('cors') //Zorgt voor authentication tussen proxy en server (snap het niet helemaal maar het werkt)
 const app = express();
+const SQLscrape = require('./server/SQLscrape');
 app.use(cors({
   credentials: true
 }))
@@ -59,6 +60,8 @@ app.set("port", process.env.PORT || 3001);
 app.listen(app.get("port"), () => {
   console.log(`Magicka accidit`);
 });
+
+SQLscrape.getRider('sonny-colbrelli')
 
 require('./server/passport')(passport);
 
