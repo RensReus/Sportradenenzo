@@ -61,11 +61,10 @@ app.listen(app.get("port"), () => {
   console.log(`Magicka accidit`);
 });
 
-SQLscrape.getRider('sonny-colbrelli')
-
 require('./server/passport')(passport);
 
 require('./server/api/admin')(app)
 require('./server/api/authentication')(app)
 require('./server/api/riders')(app)
 require('./server/api/teamselection')(app)
+require('./server/api/userparticipation')(app)

@@ -7,16 +7,17 @@ class Profile extends Component{
         super(props);
     }
     componentDidMount() {
-        axios.post('/api/getparticipationstatus') //to: teamselection.js
+        window.alert('Mounted')
+        axios.post('/api/getracepartcipation') //to: userparticipation.js
         .then((res)=>{
-
+            console.log(res)
         })
     }
     
     render(){
         return(
             <div className="standardContainer">
-
+                PROFIELPAGINA WIP
             </div>
         )
     }

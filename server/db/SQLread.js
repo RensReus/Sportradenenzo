@@ -122,7 +122,7 @@ function getCurrentRace(callback){
     var query = `SELECT * FROM race 
                 WHERE finished='false'`;
     
-    sqlDB.query(query, values, (err, res) => {
+    sqlDB.query(query, (err, res) => {
         if (err) throw err;
         else callback(err,res.rows[0])
     })
