@@ -2,6 +2,14 @@ import React, { Component } from 'react';
 import axios from 'axios';
 //import './index.css';
 
+class ActiveRacesTable extends Component{
+    render(){
+        return(
+            <div>LOL</div>
+        )
+    }
+}
+
 class Profile extends Component{
     constructor(props){
         super(props);
@@ -17,7 +25,9 @@ class Profile extends Component{
     render(){
         return(
             <div className="standardContainer">
-                PROFIELPAGINA WIP
+                <div className="activeRaces">
+                    <ActiveRacesTable/>
+                </div>
             </div>
         )
     }

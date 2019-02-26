@@ -428,7 +428,7 @@ getTimetoFinish = function (callback) {
     });
 }
 
-getRider = function(pcsid){
+getRider = function(pcsid, callback){
     request(`https://www.procyclingstats.com/rider/${pcsid}`, function (err, res, html) {
         if (!err && res.statusCode == 200) {
             var $ = cheerio.load(html);
@@ -437,15 +437,17 @@ getRider = function(pcsid){
             var imageURL = $('.rdr-img-cont').find('img').attr('src') //URL van het plaatje van de renner
             var name = nameAndTeam[0].trim().split(' ') //Split de naam
             var rider = {
-                'firstName' : name.pop(), //Laatste entry in de array is de achternaam, haal die eruit om de boornaam te krijgen
-                'lastName' : name.slice(-1)[0], //Isoleer de achternaam
+                'lastName' : name.pop(), //Laatste entry in de array is de achternaam
+                'firstName' : name, //De rest is voornamen
                 'age' : age,
                 'teamName' : nameAndTeam[1], //Naam van het team
                 'imageURL' : imageURL
             }
-            return rider;
+            callback(rider);
+            return;
         }else{
-            return 404;
+            callback(404)
+            return;
         }
     }); 
 }

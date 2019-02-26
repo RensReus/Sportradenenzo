@@ -30,7 +30,7 @@ class Home extends Component{
         });
     }
     signupSubmit = (e) => {
-        e.prevenDefault();
+        e.preventDefault();
         axios.post('api/signup')
         .then((res) => {
             if(res.data){

@@ -3,7 +3,6 @@ module.exports = function (app) {
     const SQLread = require('../db/SQLread')
 
     app.post('/api/getracepartcipation', function (req, res) {
-        console.log('CALLED')
         SQLread.getCurrentRace(function(err,race){
             console.log(race)
             if(err) throw err

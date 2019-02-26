@@ -2,6 +2,7 @@ module.exports = function (app) {
     const async = require('async')
     const SQLread = require('../db/SQLread')
     const SQLwrite = require('../db/SQLwrite')
+    const SQLscrape = require('../SQLscrape')
 
     app.post('/api/getridersandteam', function (req,res){
         if(!req.user){
@@ -116,5 +117,10 @@ module.exports = function (app) {
                 res.send({userSelection: results.userSelection, budget: budget}) //{allRiders,userSelection}
             });
         }
+    });
+    app.post('/api/getrider', function(req, res){
+        SQLscrape.getRider(req.body.pcsid, function(response){
+            res.send({rider: response})
+        });
     });
 }

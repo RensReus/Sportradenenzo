@@ -5,7 +5,7 @@ class RiderForm extends Component {
         return (
             <form action="" onSubmit={this.props.fetchRider}>
                 <div className="classicsSelectionFormContainer">
-                    <input className="form-control" name="riderFetch" ref="riderFetch" placeholder="Submit the PCS ID of the rider you want to select" />
+                    <input className="form-control" name="pcsid" ref="pcsid" placeholder="Submit the PCS ID of the rider you want to select" />
                 </div>
                 <div className="formButtonContainer">
                     <button className="riderSubmitButton">Submit</button>
