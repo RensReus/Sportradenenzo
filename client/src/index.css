@@ -29,6 +29,9 @@
 
 body {
   margin: 0;
+  font-family: arial;
+  font-size: 14px;
+  text-decoration: none;
 }
   
 div.standardContainer{

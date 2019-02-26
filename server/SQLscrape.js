@@ -434,13 +434,13 @@ getRider = function(pcsid, callback){
             var $ = cheerio.load(html);
             var nameAndTeam = $('.entry').children('h1').text().split('»') //Zoek naam en team op de pagina
             var age = $('.rdr-info-cont').text().match(new RegExp(/\(([^)]+)\)/))[1] //Zoek de leeftijd, het getal tussen de haakjes
-            var imageURL = $('.rdr-img-cont').find('img').attr('src') //URL van het plaatje van de renner
+            var imageURL = 'https://www.procyclingstats.com/' + $('.rdr-img-cont').find('img').attr('src') //URL van het plaatje van de renner
             var name = nameAndTeam[0].trim().split(' ') //Split de naam
             var rider = {
                 'lastName' : name.pop(), //Laatste entry in de array is de achternaam
                 'firstName' : name, //De rest is voornamen
                 'age' : age,
-                'teamName' : nameAndTeam[1], //Naam van het team
+                'team' : nameAndTeam[1], //Naam van het team
                 'imageURL' : imageURL
             }
             callback(rider);

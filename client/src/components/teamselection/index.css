@@ -1,10 +1,126 @@
-div.container{
-    display: flex;
+div.teamselectionContainer{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+
+    margin-left: 10vw;
+    margin-right: 10vw;
+    padding-top: 5vh;
+    background-color: rgba(230,230,240,0.98);
+    min-height: 93vh;
+}
+div.riderformcontainer{
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 1;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 30px;
+
+    padding: 10px;
+}
+/*De PCS ID form*/
+div.classicsSelectionFormContainer{
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+
+    padding: 10px;
+}
+div.pcsForm{
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    grid-template-rows: 1fr;
+}
+input.riderFormTextbox{
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+
+    width: 100%;
+}
+button.riderSubmitButton{
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 1;
+
+    font-size: 10px;
+    width: 100%;
+}
+/*Het kaartje met de rennerinfo*/
+div.ridercard{
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 1;
+
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: 3fr 1fr;
+
+    background-color: rgba(250,250,250);
+    padding: 10px;
+    max-width: 250px;
+    box-shadow: 0px 10px 10px 0px rgba(136,136,136,0.3);
+}
+div.ridercard ul{
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 2;
+
+    list-style-type:none;
     margin: 0;
+    padding: 0;
 }
-div.ridertablecontainer{
-    width: 50%;
+img.riderImage{
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+
+    width: 80px;
+    height: 120px;
 }
+select.riderPrice{
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 1;
+
+    height: 25px;
+    width: 80%;
+    margin-left: 10%;
+}
+/*Budget*/
+span.budget{
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 2;
+
+    font-size: 20px;
+}
+/*De teamselectietabel*/
 div.usertablecontainer{
-    width: 50%;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+table.userTeam{
+    width: 100%;
+}
+table.userTeam thead tr th{
+    width: 25%
+}
+table.userTeam tbody tr{
+    background-color: rgba(250,250,250);
+    box-shadow: 0px 10px 10px 0px rgba(136,136,136,0.3);
+    margin: 5px;
 }

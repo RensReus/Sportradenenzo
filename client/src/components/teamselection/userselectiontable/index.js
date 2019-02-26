@@ -16,8 +16,7 @@ class UserRiderrow extends Component{
         const rider = this.props
         return(
             <tr>
-                <td>{rider.firstname}</td>
-                <td>{rider.lastname}</td>
+                <td>{rider.firstname} {rider.lastname}</td>
                 <td>{rider.team}</td>
                 <td>{rider.price}</td>
                 <td><Deselectionbutton removeRider={this.props.removeRider} riderID={this.props.riderID}/></td>
@@ -34,13 +33,13 @@ class Userselectiontable extends Component{
             )
         });
         return(
-            <table>
+            <table className="userTeam">
                 <thead>
                     <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
+                        <th>Name</th>
                         <th>Team</th>
                         <th>Price</th>
+                        <th></th>
                     </tr>
                 </thead>
             <tbody>{rows}</tbody>

@@ -3,14 +3,16 @@ import React, { Component } from 'react';
 class RiderForm extends Component {
     render() {
         return (
-            <form action="" onSubmit={this.props.fetchRider}>
-                <div className="classicsSelectionFormContainer">
-                    <input className="form-control" name="pcsid" ref="pcsid" placeholder="Submit the PCS ID of the rider you want to select" />
-                </div>
-                <div className="formButtonContainer">
-                    <button className="riderSubmitButton">Submit</button>
-                </div>
-            </form>
+            <div className="classicsSelectionFormContainer">
+                <form action="" onSubmit={this.props.fetchRider}>
+                    <div className="pcsForm">
+                        <input className="riderFormTextbox" name="pcsid" ref="pcsid" placeholder="Enter PCS ID" />
+                        <button className="riderSubmitButton">Find ></button>
+                    </div>
+                </form>
+                <span className="budget">Budget: {this.props.budget}</span>
+                <span className="teamsize">Riders: {this.props.teamsize}/20</span>
+            </div>
         )
     }
 }
