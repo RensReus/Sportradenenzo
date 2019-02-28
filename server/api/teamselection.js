@@ -101,19 +101,20 @@ module.exports = function (app) {
                                 callback
                             )
                         },
-                        race_id: function(callback){
+                        race: function(callback){
                             SQLread.getRace(
                                 req.body.race,
                                 req.body.year,
                                 callback
                             )
                         }
-                    }),function(err,results){
+                    },function(err,results){
+                        console.log("volgende stap");
                         if(err) throw err;
                         console.log('RESULTATEN CALLBACK 1')
                         console.log(results)
                         SQLwrite.addRiderToRace(
-                            results.race_id,
+                            results.race.race_id,
                             results.rider_id,
                             req.body.price,
                             response.team,
@@ -122,7 +123,7 @@ module.exports = function (app) {
                                 SQLwrite.addRiderToSelection(
                                     reaction.rider_participation_id,
                                     req.user.account_id,
-                                    results.race_id,
+                                    results.race.race_id,
                                     function(err,finalResponse){
                                         if(err) throw err;
                                         console.log(finalResponse)
@@ -132,12 +133,13 @@ module.exports = function (app) {
                             }
 
                         )
-                    }
+                    })
                 }
             });
         }       
     });
     app.post('/api/teamselectionremove', function (req, res) {
+        console.log("remove");
         if(!req.user){
             res.send(false)
             res.redirect('/')

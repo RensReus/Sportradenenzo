@@ -108,7 +108,6 @@ function getRace(raceName, year, callback){
     var values = [raceName,year];
     var query = `SELECT * FROM race 
                 WHERE name = $1 AND year = $2`;
-    
     sqlDB.query(query, values, (err, res) => {
         if (err) throw err;
         else callback(err,res.rows[0])

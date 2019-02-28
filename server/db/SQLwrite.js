@@ -22,7 +22,8 @@ sqlDB.connect();
  * @param {function} callback 
  */
 function addRiderToSelection (rider_participation_id, account_id, race_id, callback) {
-  var values = [rider_participation_id, account_id, raceName, race_id];
+  var values = [rider_participation_id, account_id, race_id];
+  console.log(values)
   var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $2 AND race_id = $3)`;
   var query = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
               VALUES($1,${account_participation_id})`;
@@ -71,8 +72,8 @@ function addRiderToDatabase (pcs_id, country, firstname, lastname, initials, cal
   sqlDB.query(query, values, (err, res) => {
     if (err) throw err;
     else{
-      console.log("%s %s INSERTED INTO rider", res.rows.rider, pcs_id)
-      callback(err, res.rows.rider)
+      console.log("%s %s INSERTED INTO rider", res.rows[0].rider_id, pcs_id)
+      callback(err, res.rows[0].rider_id)
     }
   });
 }
@@ -94,8 +95,8 @@ function addRiderToRace (race_id, rider_id, price, team, callback) {
   sqlDB.query(query, values, (err, res) => {
     if (err) throw err;
     else{
-      console.log("%s %s INSERTED INTO rider_participation", rider_participation_id, rider_id)
-      callback(err, res.rows[0].rider_participation)
+      console.log("%s %s INSERTED INTO rider_participation", res.rows[0].rider_participation_id, rider_id)
+      callback(err, res.rows[0])
     }
   });
 }
