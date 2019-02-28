@@ -7,11 +7,10 @@ class RiderForm extends Component {
                 <form action="" onSubmit={this.props.fetchRider}>
                     <div className="pcsForm">
                         <input className="riderFormTextbox" name="pcsid" ref="pcsid" placeholder="Enter PCS ID" />
-                        <button className="riderSubmitButton">Find ></button>
+                        <button className="riderSubmitButton">Find ▶</button>
                     </div>
                 </form>
-                <span className="budget">Budget: {this.props.budget}</span>
-                <span className="teamsize">Riders: {this.props.teamsize}/20</span>
+                <div className={this.props.errorClass}>{this.props.errorText}</div>
             </div>
         )
     }

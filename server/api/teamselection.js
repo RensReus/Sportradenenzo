@@ -40,7 +40,7 @@ module.exports = function (app) {
             });
         }
     });
-    app.post('/api/teamselectionadd', function (req, res, next) {
+    app.post('/api/teamselectionadd', function (req, res) {
         if(!req.user){
             res.redirect('/')
         }else{
@@ -77,6 +77,66 @@ module.exports = function (app) {
         }
 
     });
+    app.post('/api/teamselectionaddclassics', function (req, res) {
+        if(!req.user){
+            res.redirect('/')
+        }else{
+            //Scrape de rider opnieuw om foute data te voorkomen
+            console.log('SCRAPIN')
+            SQLscrape.getRider(req.body.rider.pcsid, function(response){
+                console.log(response)
+                if(response==404){
+                    res.send(false)
+                }else{
+                    console.log('RESPONSE VAN DE SCRAPE')
+                    console.log(response)
+                    async.auto({
+                        rider_id: function(callback){
+                            SQLwrite.addRiderToDatabase(
+                                response.pcsid,
+                                response.country,
+                                response.firstName,
+                                response.lastName,
+                                response.initials,
+                                callback
+                            )
+                        },
+                        race_id: function(callback){
+                            SQLread.getRace(
+                                req.body.race,
+                                req.body.year,
+                                callback
+                            )
+                        }
+                    }),function(err,results){
+                        if(err) throw err;
+                        console.log('RESULTATEN CALLBACK 1')
+                        console.log(results)
+                        SQLwrite.addRiderToRace(
+                            results.race_id,
+                            results.rider_id,
+                            req.body.price,
+                            response.team,
+                            function(err,reaction){
+                                if(err) throw err;
+                                SQLwrite.addRiderToSelection(
+                                    reaction.rider_participation_id,
+                                    req.user.account_id,
+                                    results.race_id,
+                                    function(err,finalResponse){
+                                        if(err) throw err;
+                                        console.log(finalResponse)
+                                        res.send(finalResponse)
+                                    }
+                                )
+                            }
+
+                        )
+                    }
+                }
+            });
+        }       
+    });
     app.post('/api/teamselectionremove', function (req, res) {
         if(!req.user){
             res.send(false)
@@ -86,7 +146,6 @@ module.exports = function (app) {
                 if(err) throw err
                 SQLwrite.removeRiderFromSelection(req.user.account_id, req.body.rider_participation_id, race.race_id,function(err,results){
                     if(err) throw err
-                    console.log(results)
                     res.send(true)
                 })
             })
@@ -118,9 +177,14 @@ module.exports = function (app) {
             });
         }
     });
+    //Haalt de data van een enkele renner van pcs
     app.post('/api/getrider', function(req, res){
         SQLscrape.getRider(req.body.pcsid, function(response){
-            res.send({rider: response})
+            if(response==404){
+                res.send(false)
+            }else{
+                res.send({rider: response})
+            }
         });
     });
 }

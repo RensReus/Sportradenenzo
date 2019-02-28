@@ -13,20 +13,17 @@ div.riderformcontainer{
     grid-column-start: 1;
     grid-column-end: 3;
     grid-row-start: 1;
-    grid-row-end: 1;
 
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 30px;
+    grid-template-rows: 1fr 1fr 40px;
 
     padding: 10px;
 }
 /*De PCS ID form*/
 div.classicsSelectionFormContainer{
     grid-column-start: 1;
-    grid-column-end: 1;
     grid-row-start: 1;
-    grid-row-end: 1;
 
     padding: 10px;
 }
@@ -37,81 +34,112 @@ div.pcsForm{
 }
 input.riderFormTextbox{
     grid-column-start: 1;
-    grid-column-end: 1;
     grid-row-start: 1;
-    grid-row-end: 1;
 
-    width: 100%;
+    background-color: #fff;
+    border-color: #bbaaaa;
+    border-style: solid;
+    border-width: 1px;
+    padding-left: 5px;
+    width: 98%;
+    height: 3vh;
+    font-size: 2vh;
 }
 button.riderSubmitButton{
     grid-column-start: 2;
-    grid-column-end: 2;
     grid-row-start: 1;
-    grid-row-end: 1;
 
+    border: 0;
     font-size: 10px;
     width: 100%;
+    background-color: rgb(70, 130, 190);
 }
+div.errorDiv{
+    grid-column-start: 1;
+    grid-row-start: 1;
+
+    background-color: rgb(220,120,120);
+    border-radius: 6px;
+    margin-top: 10px;
+    padding: 10px;
+}
+table.finances{
+    grid-column-start: 1;
+    grid-row-start: 2;
+
+    padding: 10px;
+}
+
 /*Het kaartje met de rennerinfo*/
 div.ridercard{
     grid-column-start: 2;
-    grid-column-end: 2;
     grid-row-start: 1;
-    grid-row-end: 1;
+    grid-row-end: 3;
 
     display: grid;
-    grid-template-columns: 1fr 3fr;
-    grid-template-rows: 3fr 1fr;
+    grid-template-columns: 2fr 2fr;
+    grid-template-rows: 2fr 100px 40px;
 
     background-color: rgba(250,250,250);
+    font-size: 15px;
+    height: 100%;
+    margin: 10px;
     padding: 10px;
-    max-width: 250px;
+    width: 80%;
     box-shadow: 0px 10px 10px 0px rgba(136,136,136,0.3);
 }
 div.ridercard ul{
     grid-column-start: 1;
-    grid-column-end: 2;
+    grid-column-end: 3;
     grid-row-start: 2;
-    grid-row-end: 2;
 
     list-style-type:none;
-    margin: 0;
+    margin-top: 0;
     padding: 0;
+    padding-top: 5px;
+}
+div.ridercard ul li{
+    padding-bottom: 5px;
 }
 img.riderImage{
     grid-column-start: 1;
-    grid-column-end: 1;
     grid-row-start: 1;
     grid-row-end: 1;
 
-    width: 80px;
-    height: 120px;
+    width: 100%;
 }
 select.riderPrice{
     grid-column-start: 2;
-    grid-column-end: 2;
     grid-row-start: 1;
-    grid-row-end: 1;
 
-    height: 25px;
+    height: 4vh;
     width: 80%;
     margin-left: 10%;
 }
-/*Budget*/
-span.budget{
-    grid-column-start: 1;
-    grid-column-end: 1;
-    grid-row-start: 2;
-    grid-row-end: 2;
 
-    font-size: 20px;
+button.riderSelectButton{
+    grid-row-start: 3;
+    grid-column-start: 1;
+    grid-column-end: 3;
+
+    background-color: rgb(90, 90, 90);
+    border: none;
+    font-size: 14px;
+    height: 90%;
+    margin-bottom: 5%;
 }
+button.riderSelectButton.active{
+    background-color: rgb(70, 130, 190);
+}
+button.riderSelectButton.active:hover{
+    background-color: rgb(90, 150, 210);
+}
+
 /*De teamselectietabel*/
 div.usertablecontainer{
     grid-column-start: 1;
     grid-column-end: 3;
     grid-row-start: 2;
-    grid-row-end: 2;
 }
 table.userTeam{
     width: 100%;

@@ -4,12 +4,28 @@ import Userselectiontable from './userselectiontable'
 import axios from 'axios';
 import './index.css';
 
+class Finances extends Component {
+    render() {
+        return (
+            <table className='finances'>
+                <thead>
+                    <tr><td>Finances</td><td></td></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Budget</td><td>: €{this.props.budget}</td></tr>
+                    <tr><td>Riders to pick</td><td>: {20 - this.props.teamsize}</td></tr>
+                    <tr><td>Average</td><td>: €{this.props.budget / (20 - this.props.teamsize)}</td></tr>
+                </tbody>
+            </table>
+        )
+    }
+}
 class Ridercard extends Component {
     render() {
         return (
             <div className='ridercard'>
-                <img src={this.props.rider.imageURL} className='riderImage'></img>
-                <select className="riderPrice">
+                <img src={this.props.rider.imageURL} className='riderImage' alt='riderimage'></img>
+                <select className="riderPrice" onChange={this.props.changePrice}>
                     <option value="500000">500,000</option>
                     <option value="750000">750,000</option>
                     <option value="1000000">1,000,000</option>
@@ -23,10 +39,12 @@ class Ridercard extends Component {
                     <option value="5000000">5,000,000</option>
                 </select>
                 <ul>
-                    <li>Name: {this.props.rider.firstName[0]} {this.props.rider.lastName}</li>
+                    <li>Name: {this.props.rider.firstName} {this.props.rider.lastName}</li>
                     <li>Age: {this.props.rider.age}</li>
                     <li>Team: {this.props.rider.team}</li>
+                    <li>Country: {this.props.rider.countryFullname}</li>
                 </ul>
+                <button className={this.props.buttonClass} onClick={this.props.selectRider}>{this.props.buttonText}</button>
             </div>
         )
     }
@@ -40,25 +58,66 @@ class Teamselection extends Component {
             year: '2019',
             budget: 0,
             rider: {
-                firstName: [],
+                firstName: '',
                 lastName: '',
                 team: '',
                 age: '',
-                imageURL: '/images/blankProfilePicture.png'
-            }
+                country: '',
+                imageURL: '/images/blankProfilePicture.png',
+                pcsid: '',
+                countryFullname: '',
+            },
+            price: 500000,
+            buttonClass: 'riderSelectButton',
+            buttonText: 'Nothing to add',
+            errorClass: '',
+            errorText: ''
         }
         this.fetchRider = this.fetchRider.bind(this);
         this.selectRider = this.selectRider.bind(this);
         this.removeRider = this.removeRider.bind(this);
+        this.changePrice = this.changePrice.bind(this);
     }
     fetchRider = (e) => {
         e.preventDefault();
-        axios.post('/api/getrider', { pcsid: e.target.pcsid.value })
-            .then((res) => {
-                this.setState({ rider: res.data.rider })
+        const pcsid = e.target.pcsid.value.split('/').pop(); //Interpreteer de aanwezigheid van / als een link en pak het laatste stukje
+        this.setState({ buttonClass: 'riderSelectButton', buttonText: 'Fetching..' })
+        axios.post('/api/getrider', { pcsid: pcsid })
+            .then((res) => { //Returned false als niks gevonden
+                if (res.data === false) {
+                    this.setState({ 
+                        errorClass: 'errorDiv', 
+                        errorText: 'Rider could not be found', 
+                        buttonText: 'Nothing to add'
+                    })
+                } else {
+                    console.log(res.data.rider)
+                    this.setState({ 
+                        rider: res.data.rider, 
+                        buttonClass: 'riderSelectButton active',
+                        buttonText: 'Add rider to team',
+                        errorClass: '', 
+                        errorText: ''
+                    });
+                }
             });
     }
-    selectRider() { }
+    selectRider() {
+        const rider = this.state.rider;
+        const race = this.state.race;
+        const year = this.state.year;
+        const price = this.state.price;
+        const pcsid = this.state.pcsid;
+        axios.post('/api/teamselectionaddclassics', { pcsid: pcsid, race: race, year: year, rider: rider, price: price })
+            .then((res) => {
+                if (res) {
+                    const userSelection = this.state.userSelection.push(res.riderID)
+                    this.setState({
+                        userSelection: userSelection
+                    })
+                }
+            })
+    }
     removeRider() { }
     componentDidMount() {
         const race = this.state.race
@@ -72,16 +131,30 @@ class Teamselection extends Component {
                 })
             })
     }
+    changePrice(e) {
+        this.setState({
+            price : e.target.value
+        })
+    }
 
     render() {
         const selection = this.state.userSelection
         const budget = this.state.budget
         const teamsize = this.state.userSelection.length
+        const buttonClass = this.state.buttonClass
+        const buttonText = this.state.buttonText
         return (
             <div className="teamselectionContainer">
                 <div className="riderformcontainer">
-                    <RiderForm fetchRider={this.fetchRider} budget={budget} teamsize={teamsize}/>
-                    <Ridercard rider={this.state.rider} />
+                    <RiderForm fetchRider={this.fetchRider} errorClass={this.state.errorClass} errorText={this.state.errorText}/>
+                    <Ridercard 
+                        rider={this.state.rider} 
+                        selectRider={this.selectRider} 
+                        buttonClass={buttonClass} 
+                        buttonText={buttonText} 
+                        changePrice={this.changePrice}
+                    />
+                    <Finances teamsize={teamsize} budget={budget} />
                 </div>
                 <div className="usertablecontainer">
                     <Userselectiontable selection={selection} removeRider={this.removeRider} />
