@@ -142,7 +142,8 @@ div.usertablecontainer{
     grid-row-start: 2;
 }
 table.userTeam{
-    width: 100%;
+    width: 90%;
+    margin-left: 5%;
 }
 table.userTeam thead tr th{
     width: 25%

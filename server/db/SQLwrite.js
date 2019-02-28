@@ -45,9 +45,9 @@ function removeRiderFromSelection (account_id, rider_participation_id, race_id, 
   var values = [account_id, rider_participation_id, race_id];
   var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = $3)`;
   var query = `DELETE FROM team_selection_rider 
-              WHERE account_participation_id = ${account_participation_id}))
+              WHERE account_participation_id = ${account_participation_id}
               AND rider_participation_id = $2`;
-  
+
   sqlDB.query(query, values, (err, res) => {
     if (err) throw err;
     else callback(err,res.rows)

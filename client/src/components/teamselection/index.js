@@ -35,8 +35,8 @@ class Ridercard extends Component {
                     <option value="3000000">3,000,000</option>
                     <option value="3500000">3,500,000</option>
                     <option value="4000000">4,000,000</option>
-                    <option value="4500000">4,500,000</option>
                     <option value="5000000">5,000,000</option>
+                    <option value="6000000">6,000,000</option>
                 </select>
                 <ul>
                     <li>Name: {this.props.rider.firstName} {this.props.rider.lastName}</li>
@@ -53,7 +53,13 @@ class Teamselection extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            userSelection: [],
+            userSelection: [{
+                firstname: '',
+                lastname: '',
+                price: 0,
+                team: '',
+                rider_participation_id: ''
+            }],
             race: 'classics',
             year: '2019',
             budget: 0,
@@ -91,7 +97,6 @@ class Teamselection extends Component {
                         buttonText: 'Nothing to add'
                     })
                 } else {
-                    console.log(res.data.rider)
                     this.setState({ 
                         rider: res.data.rider, 
                         buttonClass: 'riderSelectButton active',
@@ -108,17 +113,51 @@ class Teamselection extends Component {
         const year = this.state.year;
         const price = this.state.price;
         const pcsid = this.state.pcsid;
+        this.setState({ buttonClass: 'riderSelectButton', buttonText: 'Adding..' })
         axios.post('/api/teamselectionaddclassics', { pcsid: pcsid, race: race, year: year, rider: rider, price: price })
             .then((res) => {
                 if (res) {
-                    const userSelection = this.state.userSelection.push(res.riderID)
+                    var userSelection = this.state.userSelection
+                    console.log(rider)
+                    userSelection.unshift({
+                        firstname: rider.firstName,
+                        lastname: rider.lastName,
+                        price: price,
+                        team: rider.team,
+                        rider_participation_id: res.riderID
+                    })
+                    console.log(userSelection)
                     this.setState({
-                        userSelection: userSelection
+                        userSelection: userSelection,
+                        budget: (this.state.budget-price), 
+                        buttonClass: 'riderSelectButton active',
+                        buttonText: 'Add rider to team'
                     })
                 }
             })
     }
-    removeRider() { }
+    removeRider(rider_id) {
+        const race = this.state.race;
+        const year = this.state.year;
+        this.setState({ buttonClass: 'riderSelectButton', buttonText: 'Removing..' })
+        axios.post('/api/teamselectionremove', {rider_participation_id: rider_id, race: race, year: year})
+            .then((res) => {
+                if(res){
+                    var userSelection = this.state.userSelection
+                    for(var i=0;i<userSelection.length;i++){
+                        if(userSelection[i].rider_participation_id == rider_id){
+                            userSelection.splice(i);
+                            return;
+                        }
+                    }
+                    this.setState({
+                        userSelection: userSelection,
+                        buttonClass: 'riderSelectButton active',
+                        buttonText: 'Add rider to team'
+                    })
+                }
+            })
+    }
     componentDidMount() {
         const race = this.state.race
         const year = this.state.year
@@ -138,7 +177,6 @@ class Teamselection extends Component {
     }
 
     render() {
-        const selection = this.state.userSelection
         const budget = this.state.budget
         const teamsize = this.state.userSelection.length
         const buttonClass = this.state.buttonClass
@@ -157,7 +195,7 @@ class Teamselection extends Component {
                     <Finances teamsize={teamsize} budget={budget} />
                 </div>
                 <div className="usertablecontainer">
-                    <Userselectiontable selection={selection} removeRider={this.removeRider} />
+                    <Userselectiontable selection={this.state.userSelection} removeRider={this.removeRider} />
                 </div>
             </div>
         )

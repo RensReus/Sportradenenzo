@@ -82,14 +82,10 @@ module.exports = function (app) {
             res.redirect('/')
         }else{
             //Scrape de rider opnieuw om foute data te voorkomen
-            console.log('SCRAPIN')
-            SQLscrape.getRider(req.body.rider.pcsid, function(response){
-                console.log(response)
+            SQLscrape.getRider(req.body.rider.pcsid.toLowerCase(), function(response){
                 if(response==404){
                     res.send(false)
                 }else{
-                    console.log('RESPONSE VAN DE SCRAPE')
-                    console.log(response)
                     async.auto({
                         rider_id: function(callback){
                             SQLwrite.addRiderToDatabase(
@@ -109,10 +105,7 @@ module.exports = function (app) {
                             )
                         }
                     },function(err,results){
-                        console.log("volgende stap");
                         if(err) throw err;
-                        console.log('RESULTATEN CALLBACK 1')
-                        console.log(results)
                         SQLwrite.addRiderToRace(
                             results.race.race_id,
                             results.rider_id,
@@ -126,7 +119,6 @@ module.exports = function (app) {
                                     results.race.race_id,
                                     function(err,finalResponse){
                                         if(err) throw err;
-                                        console.log(finalResponse)
                                         res.send(finalResponse)
                                     }
                                 )
@@ -140,6 +132,7 @@ module.exports = function (app) {
     });
     app.post('/api/teamselectionremove', function (req, res) {
         console.log("remove");
+        console.log(req.body)
         if(!req.user){
             res.send(false)
             res.redirect('/')
@@ -173,8 +166,9 @@ module.exports = function (app) {
                 var budget = results.race.budget;       
                 for(var i=0;i<results.userSelection.length;i++){
                     IDs.push(results.userSelection[i].rider_participation_id)
-                    budget = budget - results.userSelection.price
+                    budget = budget - results.userSelection[i].price
                 }
+                console.log(results)
                 res.send({userSelection: results.userSelection, budget: budget}) //{allRiders,userSelection}
             });
         }
