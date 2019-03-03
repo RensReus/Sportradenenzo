@@ -22,7 +22,93 @@ sqlDB.connect();
 var raceNames = ['omloop-het-nieuwsblad', 'kuurne-brussel-kuurne','strade-bianchi'];
 var raceWeight = [1.25,1,1.25]
 
+
 getStartlist = function (year, racenr, callback) {
+    var race_id = 4;
+    var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} AND stagenr = ${racenr})`;
+    var raceString = raceNames[racenr-1];
+        request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, function (error, response, html) {
+            if (!error && response.statusCode == 200) {
+                var $ = cheerio.load(html);
+                var riderQuery = `INSERT INTO rider(PCS_id, country, firstname, lastname, initials) VALUES`;
+                var participationQuery = `INSERT INTO rider_participation (race_id,rider_id,price,team) VALUES`;
+                var results_pointsQuery = `INSERT INTO results_points(stage_id, rider_participation_id) VALUES`;
+                $(".team").each(function (index, element) { //gaat ieder team af
+                    var teamName = $(this).children().first().children().eq(1).text();
+                    $(this).children().eq(2).children(".rider").each(function (index, element) { //gaat iedere renner af
+                        var name = $(this).children().first().text();
+
+                        // sla achternaam voor naam en voorletters op
+                        var lastname = $(this).children().first().children().first().text();
+                        var voornaam = name.substring(lastname.length + 1);
+                        var voornamen = voornaam.split(' ').filter(x => x);
+                        var voorletters = "";
+                        for (var i = 0; i < voornamen.length; i++) {
+                            voorletters += voornamen[i].substring(0, 1) + ".";
+                        }
+
+                        var pcsid = $(this).attr('href').substring(6);
+                        if ($(this).siblings().eq(4 * index + 1).attr("class") != null) {
+                            var country = $(this).siblings().eq(4 * index + 1).attr("class").split(' ')[1];
+                        }
+                        var prijs = 500000; //default 500k
+
+                        // if name contains '
+                        var apind = voornaam.indexOf("'");
+                        if (apind >= 0) {
+                            voornaam = voornaam.substr(0, apind) + "'" + voornaam.substr(apind, voornaam.length - 1);
+                        }
+                        var apind = lastname.indexOf("'")
+                        if (apind >= 0) {
+                            lastname = lastname.substr(0, apind) + "'" + lastname.substr(apind, lastname.length - 1);
+                        }
+                        //sqlcode
+                        //insert rider or update
+                        riderQuery += `('${pcsid}', '${country}', '${voornaam}', '${lastname}', '${voorletters}'),`;
+                        var rider = `(SELECT rider_id FROM rider WHERE PCS_id = '${pcsid}')`;
+                        participationQuery += `(${race_id},${rider}, ${prijs}, '${teamName}'),`;
+                        var rider_participation = `(SELECT rider_participation_id FROM rider_participation WHERE rider_id = ${rider} AND race_id = ${race_id})`;
+                        results_pointsQuery += `(${stage_id},${rider_participation}),`;
+                        
+                    })
+                });
+                riderQuery = riderQuery.slice(0,-1) +  ` ON CONFLICT (PCS_id) 
+                DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials`;
+                
+                participationQuery = participationQuery.slice(0, -1) + `ON CONFLICT (race_id,rider_id) 
+                DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team`;
+
+                results_pointsQuery = results_pointsQuery.slice(0, -1) + `ON CONFLICT (stage_id, rider_participation_id)
+                DO NOTHING`;
+
+                sqlDB.query(riderQuery, (err, res) => {
+                    if (err) throw err;
+                    else {
+                        console.log(res);
+                        sqlDB.query(participationQuery, (err, res2) => {
+                            if (err) throw err;
+                            else { 
+                                //set an empty score for each rider
+                                console.log("PARTICIPATION ");
+                                console.log(res2);
+                                sqlDB.query(results_pointsQuery, (err, res3) => {
+                                    if (err) throw err;
+                                    console.log('RESULT_POINTS');
+                                    console.log(res3);
+                                })
+                            }
+                        })
+                    }
+                });
+                
+                console.log("just before callback");
+                callback();
+            }
+        })
+    }
+
+
+getStartlist_old = function (year, racenr, callback) {
     var race_id = 4;
     var stage_id = 0;
     var raceString = raceNames[racenr-1];
