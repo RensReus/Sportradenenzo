@@ -3,10 +3,8 @@ const session = require('express-session');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const sqlDBlink = require('./server/db/sqlDBlink')
 const cors = require('cors') //Zorgt voor authentication tussen proxy en server (snap het niet helemaal maar het werkt)
 const app = express();
-const SQLscrape = require('./server/SQLscrape');
 app.use(cors({
   credentials: true
 }))
@@ -23,7 +21,7 @@ app.use(session({
   secret: 'speciaalbierishetlekkerstesoortbier',
   resave: true,
   saveUninitialized: false,
-  cookie: { maxAge: 600000, secure: false }
+  cookie: { secure: false }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -61,10 +59,11 @@ app.listen(app.get("port"), () => {
   console.log(`Magicka accidit`);
 });
 
-require('./server/passport')(passport);
+require('./server/passport')(passport,sqlDB);
 
-require('./server/api/admin')(app)
+require('./server/api/admin')(app,sqlDB)
 require('./server/api/authentication')(app)
-require('./server/api/riders')(app)
-require('./server/api/teamselection')(app)
-require('./server/api/userparticipation')(app)
+require('./server/api/raceprogression')(app,sqlDB)
+require('./server/api/stageresults')(app,sqlDB)
+require('./server/api/teamselection')(app,sqlDB)
+require('./server/api/userparticipation')(app,sqlDB)

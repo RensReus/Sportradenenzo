@@ -1,8 +1,13 @@
-module.exports = function (app) {
+// In dit bestand staan alle calls die te maken hebben met het selecteren van het team voor een race
+
+module.exports = function (app,sqlDB) {
     const async = require('async')
     const SQLread = require('../db/SQLread')
+    SQLread.passConnection(sqlDB)
     const SQLwrite = require('../db/SQLwrite')
+    SQLwrite.passConnection(sqlDB)
     const SQLscrape = require('../SQLscrape')
+    SQLscrape.passConnection(sqlDB)
 
     app.post('/api/getridersandteam', function (req,res){
         if(!req.user){
@@ -36,7 +41,7 @@ module.exports = function (app) {
                     }
                     return allRiders
                 });
-                res.send({allRiders: allRiders,userSelection: results.userSelection, budget: budget}) //{allRiders,userSelection}
+                res.send({allRiders: allRiders,userSelection: results.userSelection, budget: budget})
             });
         }
     });
@@ -148,7 +153,7 @@ module.exports = function (app) {
         }
     });
     //Voor klassiekerspel:
-    app.post('/api/getuserteam', function (req,res){
+    app.post('/api/getuserteamselection', function (req,res){
         if(!req.user){
             res.redirect('/')
         }else{

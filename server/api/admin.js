@@ -1,19 +1,5 @@
-module.exports = function (app) {
+module.exports = function (app,sqlDB) {
     app.post('/api/admin', function (req, res) {
-        // Initialize connection
-        var fs = require('fs');
-        if (fs.existsSync('./server/db/sqlDBlink.js')) {
-            var sqlDBstring = require('../db/sqlDBlink.js');
-        } else {
-            var sqlDBstring = process.env.DATABASE_URL;
-        }
-        const { Client } = require('pg');
-        const sqlDB = new Client({
-            connectionString: sqlDBstring,
-            ssl: true
-        });
-
-        sqlDB.connect();
 
         var sqlQuery = req.body.query;
 

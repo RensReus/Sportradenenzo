@@ -3,10 +3,7 @@ const SQLread           = require('./db/SQLread')
 const SQLwrite          = require('./db/SQLwrite')
 const bcrypt            = require('bcrypt-nodejs')
 
-// expose this function to our app using module.exports
-
-
-module.exports = function(passport) {
+module.exports = function(passport, sqlDB) {
     // =========================================================================
     // passport session setup ==================================================
     // =========================================================================
@@ -20,6 +17,7 @@ module.exports = function(passport) {
 
     // used to deserialize the user
     passport.deserializeUser(function(account_id, done) {
+        SQLread.passConnection(sqlDB)
         SQLread.getAccount(account_id,done);
     });
     
@@ -43,6 +41,7 @@ module.exports = function(passport) {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
+        SQLread.passConnection(sqlDB)
         SQLread.getLogin(email.toLowerCase(),function(err,result){
             if (err)
                 return done(err);
@@ -53,7 +52,7 @@ module.exports = function(passport) {
                 //still available make new user
                 var passwordToStore = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
                 var emailToStore    = email.toLowerCase();
-                
+                SQLwrite.passConnection(sqlDB)
                 SQLwrite.addAccount(emailToStore,passwordToStore,function(err,account){
                     if(err)
                         throw err;
@@ -77,6 +76,7 @@ module.exports = function(passport) {
         passReqToCallback : true  //allows us to pass back the entire request to the callback
     },
     function(req, email, password, done) { // callback with email and password from our form
+        SQLread.passConnection(sqlDB)
         SQLread.getLogin(email.toLowerCase(),function(err,account){
             if (err)
                 return done(err);
