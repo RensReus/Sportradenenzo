@@ -1,4 +1,15 @@
-//const starttijden = require('./app/starttijden');
+var fs = require('fs');
+if (fs.existsSync('./server/db/sqlDBlink.js')) {
+    var sqlDBstring = require('./db/sqlDBlink.js');
+} else {
+    var sqlDBstring = process.env.DATABASE_URL;
+}
+const { Client } = require('pg');
+const sqlDB = new Client({
+  connectionString: sqlDBstring,
+  ssl: true
+});
+sqlDB.connect()
 
 calculateUserScores = function (et, callback) {
     User.find({'teamselectie.userrenners': {$size: 20}}, function (err, users) {
@@ -57,6 +68,46 @@ calculateUserScores = function (et, callback) {
             }
         });
     });
+}
+/**
+* @param {number} year
+* @param {number} stage 
+* @param {function} callback
+* @returns {Array} array of riders [{ name: , price: , team: ,rider_participation: },...]
+ */
+calculateUserScoresKlassieker = function(year,stage,callback){
+    var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = 'classics')`
+    var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
+    sqlDB.query(participantsQuery,function(err,res){
+        if(err) throw err;
+        var stageselectionQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
+        for (i in res.rows){
+            var account_participation_id = res.rows[i].account_participation_id;
+            var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${stage})`;
+            var stagescore = `(SELECT SUM(results_points.totalscore) FROM team_selection_rider 
+                            INNER JOIN rider_participation USING (rider_participation_id)
+                            INNER JOIN results_points USING (rider_participation_id)
+                            WHERE rider_participation.race_id = ${race_id} AND account_participation_id = ${account_participation_id} and stage_id = ${stage_id})`;
+            var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${stage})`
+            var prevstagesScore = 0
+            if(stage != 1){
+                var prevstagesScore = `(SELECT SUM(stagescore) FROM stage_selection
+                WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages})`;
+            }
+            var totalscore = `${prevstagesScore} + ${stagescore}`;
+            stageselectionQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore}),`;
+        }
+        stageselectionQuery = stageselectionQuery.slice(0, -1) + `ON CONFLICT (account_participation_id,stage_id)
+        DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore`
+        sqlDB.query(stageselectionQuery,(err, res) => {
+            if (err) throw err;
+            console.log(stageselectionQuery)
+            console.log("res:",res);
+        })
+    })
+    callback(null, 'Calculated Scores');
+    
+    
 }
 
 transferUsers = function () {
@@ -207,3 +258,4 @@ module.exports.transferUsers = transferUsers;
 module.exports.transferEtappes = transferEtappes;
 module.exports.optimaleScoresUser = optimaleScoresUser;
 module.exports.returnEtappeWinnaars = returnEtappeWinnaars;
+module.exports.calculateUserScoresKlassieker = calculateUserScoresKlassieker;
