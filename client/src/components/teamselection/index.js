@@ -88,7 +88,7 @@ class Teamselection extends Component {
         e.preventDefault();
         const pcsid = e.target.pcsid.value.split('/').pop(); //Interpreteer de aanwezigheid van / als een link en pak het laatste stukje
         this.setState({ buttonClass: 'riderSelectButton', buttonText: 'Fetching..' })
-        axios.post('/api/getrider', { pcsid: pcsid })
+        axios.post('/api/getrider', { pcsid: pcsid }) //to: SQLscrape.js
             .then((res) => { //Returned false als niks gevonden
                 if (res.data === false) {
                     this.setState({ 
@@ -114,7 +114,7 @@ class Teamselection extends Component {
         const price = this.state.price;
         const pcsid = this.state.pcsid;
         this.setState({ buttonClass: 'riderSelectButton', buttonText: 'Adding..' })
-        axios.post('/api/teamselectionaddclassics', { pcsid: pcsid, race: race, year: year, rider: rider, price: price })
+        axios.post('/api/teamselectionaddclassics', { pcsid: pcsid, race: race, year: year, rider: rider, price: price }) //to: teamselection.js
             .then((res) => {
                 if (res) {
                     var userSelection = this.state.userSelection
@@ -140,14 +140,13 @@ class Teamselection extends Component {
         const race = this.state.race;
         const year = this.state.year;
         this.setState({ buttonClass: 'riderSelectButton', buttonText: 'Removing..' })
-        axios.post('/api/teamselectionremove', {rider_participation_id: rider_id, race: race, year: year})
+        axios.post('/api/teamselectionremove', {rider_participation_id: rider_id, race: race, year: year}) //to: teamselection.js
             .then((res) => {
                 if(res){
                     var userSelection = this.state.userSelection
                     for(var i=0;i<userSelection.length;i++){
-                        if(userSelection[i].rider_participation_id == rider_id){
+                        if(userSelection[i].rider_participation_id === rider_id){
                             userSelection.splice(i);
-                            return;
                         }
                     }
                     this.setState({
@@ -161,7 +160,7 @@ class Teamselection extends Component {
     componentDidMount() {
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/getuserteam', { race: race, year: year }) //to: teamselection.js
+        axios.post('/api/getuserteamselection', { race: race, year: year }) //to: teamselection.js
             .then((res) => {
                 this.setState({
                     riders: res.data.allRiders,

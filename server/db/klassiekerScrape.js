@@ -19,19 +19,19 @@ const sqlDB = new Client({
 sqlDB.connect();
 
 
-var raceNames = ['omloop-het-nieuwsblad', 'kuurne-brussel-kuurne','strade-bianchi'];
-var raceWeight = [1.25,1,1.25]
+var raceNames = ['omloop-het-nieuwsblad', 'kuurne-brussel-kuurne', 'strade-bianchi'];
+var raceWeight = [1.25, 1, 1.25]
 
 getStartlist = function (year, racenr, callback) {
     var race_id = 4;
     var stage_id = 0;
-    var raceString = raceNames[racenr-1];
+    var raceString = raceNames[racenr - 1];
     sqlDB.query(`SELECT stage_id FROM stage WHERE race_id = ${race_id} AND stagenr = ${racenr}`)
         .then(res => {
-            if (res.rowCount > 0){
+            if (res.rowCount > 0) {
                 stage_id = res.rows[0].stage_id;
-                
-            } 
+
+            }
             console.log("got stage %s", stage_id);
             request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, function (error, response, html) {
                 if (!error && response.statusCode == 200) {
@@ -39,7 +39,7 @@ getStartlist = function (year, racenr, callback) {
                     console.log(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`)
                     $(".team").each(function (index, element) { //gaat ieder team af
                         var teamName = $(this).children().first().children().eq(1).text();
-                        console.log("teamname %s",teamName);
+                        console.log("teamname %s", teamName);
                         $(this).children().eq(2).children(".rider").each(function (index, element) { //gaat iedere renner af
                             var name = $(this).text();
                             // sla achternaam voor naam en voorletters op
@@ -74,7 +74,7 @@ getStartlist = function (year, racenr, callback) {
                             VALUES ($1, $2, $3, $4, $5)
                             ON CONFLICT (PCS_id) 
                             DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials
-                            RETURNING rider_id`; 
+                            RETURNING rider_id`;
                             sqlDB.query(riderQuery, riderValues, (err, res) => {
                                 if (err) throw err;
                                 else {
@@ -87,9 +87,9 @@ getStartlist = function (year, racenr, callback) {
                                     ON CONFLICT (race_id,rider_id) 
                                     DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team
                                     RETURNING rider_participation_id`;
-                                    sqlDB.query(participationQuery,participationValues, (err, res2) => {
+                                    sqlDB.query(participationQuery, participationValues, (err, res2) => {
                                         if (err) throw err;
-                                        else { 
+                                        else {
                                             //set an empty score for each rider
                                             var rider_participation_id = res2.rows[0].rider_participation_id;
                                             var resultsValues = [stage_id, rider_participation_id];
@@ -112,12 +112,12 @@ getStartlist = function (year, racenr, callback) {
                 }
             });
         })
-    }
+}
 
 
-    // ga niet verder dan dit
+// ga niet verder dan dit
 getResult = function (year, et, callback) {
-    var raceString = raceNames[et-1];
+    var raceString = raceNames[et - 1];
     var race_id = 4;
     request({
         url: `https://www.procyclingstats.com/race/${raceString}/${year}`,
@@ -126,7 +126,7 @@ getResult = function (year, et, callback) {
         if (error) console.log(error);
         if (!error && response.statusCode == 200) {
             var $ = cheerio.load(html);
-            var teamWinners = ["","",""];
+            var teamWinners = ["", "", ""];
             // store the team and id of the leader of each classification and stage winner for teampoints
             // console.log($(".basic").first().children().first().children().children())
             $(".basic").each(function (index, element) {
@@ -176,10 +176,10 @@ getResult = function (year, et, callback) {
 
                 //STAGE
                 var stagepos = parseInt(i) + 1;
-                var stagescore = getPunten(stagepos)*raceWeight[et-1];
+                var stagescore = getPunten(stagepos) * raceWeight[et - 1];
                 var stageresult = ridersDay[i].result;
                 //TEAM
-                var teamscore = getTeamPunten(stagepos,teamRider,teamWinners)*raceWeight[et-1];
+                var teamscore = getTeamPunten(stagepos, teamRider, teamWinners) * raceWeight[et - 1];
                 //TOTAL
                 var totalscore = stagescore + teamscore;
 
@@ -210,10 +210,10 @@ getPunten = function (pos) {
 
 getTeamPunten = function (pos, teamRider, teamWinners) {
     var teamPoints = 0;
-    console.log(pos,teamRider,teamWinners[0])
-    if(pos != 1 && teamRider == teamWinners[0]) teamPoints += 20;
-    if(pos != 2 && teamRider == teamWinners[1]) teamPoints += 12;
-    if(pos != 3 && teamRider == teamWinners[2]) teamPoints += 4;
+    console.log(pos, teamRider, teamWinners[0])
+    if (pos != 1 && teamRider == teamWinners[0]) teamPoints += 20;
+    if (pos != 2 && teamRider == teamWinners[1]) teamPoints += 12;
+    if (pos != 3 && teamRider == teamWinners[2]) teamPoints += 4;
     console.log(teamPoints)
     return teamPoints;
 }
