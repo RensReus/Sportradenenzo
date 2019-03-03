@@ -28,7 +28,7 @@ module.exports = {
                 break;
         }
         var race = 0;
-        sqlDB.query(`SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year}`)
+        this.sqlDB.query(`SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year}`)
             .then(res => {
                 if (res.rowCount > 0) race = res.rows[0].race;
                 fs.readFile(prijzenfile, function (err, file) {
@@ -85,7 +85,7 @@ module.exports = {
                         DO UPDATE SET pcsid = EXCLUDED.pcsid, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials
                         RETURNING rider_id`;
                                     var rider = 0;
-                                    sqlDB.query(riderQuery)
+                                    this.sqlDB.query(riderQuery)
                                         .then(res => {
                                             rider = res.rows[0].rider;
                                             console.log("%s %s INSERTED INTO rider", rider, pcsid)
@@ -94,7 +94,7 @@ module.exports = {
                                 (${race},${rider},${prijs},'${teamName}')
                                 ON CONFLICT (race_id,rider_id) 
                                 DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, price = EXCLUDED.price, team = EXCLUDED.team`
-                                            sqlDB.query(participationQuery)
+                                    this.sqlDB.query(participationQuery)
                                                 .then(console.log("INSERTED INTO rider_participation"))
                                                 .catch(e => console.error(e.stack));
                                         })
@@ -229,7 +229,7 @@ module.exports = {
                     dnfquery += `(SELECT rider_id FROM rider WHERE pcsid = '${ridersDNF[rider].pcsid}'),`
                 }
                 dnfquery = dnfquery.slice(0, -1) + ")";
-                sqlDB.query(dnfquery)
+                this.sqlDB.query(dnfquery)
                     .then(console.log("%i riders updated to DNF", ridersDNF.length))
                     .catch(e => console.error(e.stack));
 
@@ -308,7 +308,7 @@ module.exports = {
                 }
 
                 resultsquery = resultsquery.slice(0, -1) + ' ON CONFLICT (stage,rider_participation) DO NOTHING';
-                sqlDB.query(resultsquery)
+                this.sqlDB.query(resultsquery)
                     .then(res => { callback() })
                     .catch(e => console.error(e.stack));
             }
