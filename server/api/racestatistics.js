@@ -107,6 +107,69 @@ module.exports = function (app) {
 
         }
     })
+    //CHARTS misschien nieuwe file
+    app.post('/api/chartuserstagescores',function(req,res){
+        if(!req.user){
+            res.redirect('/')
+        }else{
+            var query = `SELECT username, stagenr, totalscore FROM stage_selection
+            INNER JOIN account_participation USING (account_participation_id)
+            INNER JOIN account USING (account_id)
+            INNER JOIN stage USING (stage_id)
+            WHERE stage.race_id = 4
+            ORDER BY username, stagenr`
+            sqlDB.query(query, (err,results)=>{
+                if(err) throw err;
+                var username = results.rows[0].username;
+                var userObj = {
+                    type: "line", 
+                    name: username,
+                    showInLegend: true,
+                    dataPoints:[] 
+                }
+                var data = [];
+                userObj.dataPoints.push({x:0,y:0})
 
+                for(var i in results.rows){
+                    if(userObj.name == results.rows[i].username){
+                        userObj.dataPoints.push({x: results.rows[i].stagenr, y:results.rows[i].totalscore})
+                    }else{
+                        data.push(userObj);
+                        username = results.rows[i].username;
+                        userObj = {
+                            type: "line", 
+                            name: username,
+                            showInLegend: true,
+                            dataPoints:[] 
+                        }
+                        userObj.dataPoints.push({x:0,y:0})
+                        userObj.dataPoints.push({x:results.rows[i].stagenr, y:results.rows[i].totalscore})
+                    }
+                    
+                }
+                data.push(userObj)
+                data.sort(function(a,b){return b.dataPoints[b.dataPoints.length - 1].y - a.dataPoints[a.dataPoints.length - 1].y})
+                var max = userObj.dataPoints.length-1;
+                var options = {
+                    theme: "light2",
+                    title: {
+                        text: "Scores"
+                    },
+                    subtitles: [{
+                        text: "Totaal score na iedere etappe"
+                    }], 
+                    axisX:{
+                        minimum: -0.01*max,
+                        maximum: max*1.01
+                    },
+                    toolTip:{
+                        shared: true,
+                    },
+                    data: data
+                }
+                res.send(options);
+            })
+        }
+    })
 
 }
