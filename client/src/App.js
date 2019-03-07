@@ -11,6 +11,7 @@ import Stage from './components/stage'
 import Teamselection from './components/teamselection';
 import Admin from './components/admin'
 import Etappewinsten from './components/etappewinsten'
+import Overzicht from './components/overzicht'
 
 class App extends Component {
   constructor(props) {
@@ -58,6 +59,7 @@ class App extends Component {
           <Route path="/teamselection" component={Teamselection} history={this.props.history} />
           <Route path="/admin" component={Admin} history={this.props.history} />
           <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
+          <Route path="/overzicht" component={Overzicht} history={this.props.history} />
         </div>
       </div>
     );

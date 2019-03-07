@@ -45,11 +45,31 @@ app.listen(app.get("port"), () => {
   console.log(`Magicka accidit`);
 });
 
+
+//////TEMP TEMP////////////
+const kScrape = require('./server/db/klassiekerScrape');
+const functies = require('./server/functies');
+// kScrape.getStartlist(2019,2,function(){
+//   console.log("got startlist (from server.js)")
+// })
+
+// kScrape.getResult(2019,2,function(){
+//   console.log("got results klassieker")
+// })
+
+// functies.calculateUserScoresKlassieker(2019,1,function(err,arg){
+//   console.log(arg);
+// })
+//////////END TEMP//////////
+
+
+
 require('./server/passport')(passport);
 
 require('./server/api/admin')(app)
 require('./server/api/authentication')(app)
 require('./server/api/raceprogression')(app)
+require('./server/api/racestatistics')(app)
 require('./server/api/stageresults')(app)
 require('./server/api/teamselection')(app)
 require('./server/api/userparticipation')(app)

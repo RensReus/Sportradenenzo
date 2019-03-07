@@ -78,18 +78,6 @@ class etappewinsten extends Component {
     this.state = ({stagerankings: [],rankingscount: []});
   }
 
-  getStageResults() {
-    axios.post('/api/getstagevictories', { race_id: 4, poule_id: 0 })
-      .then((res) => {
-        if (res) {
-          this.state.rankings = [];
-          for (var i in res) {
-            this.state.rankings.push(res[i]);
-          }
-        }
-      })
-  }
-
   componentWillMount() {
     axios.post('/api/getstagevictories', { race_id: 4, poule_id: 0 })
       .then((res) => {
@@ -101,9 +89,7 @@ class etappewinsten extends Component {
           })
           console.log("STATE:",this.state)
         }
-        
       })
-
   }
 
   render() {
