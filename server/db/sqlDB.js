@@ -7,9 +7,6 @@ if (fs.existsSync('./server/db/sqlDBlink.js')) {
 
 const { Pool } = require('pg')
 
-console.log('DB STRING')
-console.log(sqlDBstring)
-
 const pool = new Pool({
     connectionString: sqlDBstring,  
     ssl: true
