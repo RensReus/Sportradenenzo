@@ -160,7 +160,11 @@ module.exports = function (app) {
                     }], 
                     axisX:{
                         minimum: -0.01*max,
-                        maximum: max*1.01
+                        maximum: max*1.01,
+                        title: "Stage"
+                    },
+                    axisY:{
+                        title: "Points"
                     },
                     toolTip:{
                         shared: true,

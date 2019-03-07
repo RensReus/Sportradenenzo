@@ -3,19 +3,20 @@ const async = require('async')
 const sqlDB = require('../db/sqlDB')
 
 module.exports = function (app) {
-    //const SQLread = require('../db/SQLread')
-    //const SQLwrite = require('../db/SQLwrite')
-    //const SQLscrape = require('../SQLscrape')
     app.post('/api/getstageresultsclassics', function (req, res) {
         if (!req.user) {
-
+            res.send({ 'mode': '404' });
+            return;
         } else {
             var values = [req.body.race, req.body.year, req.body.stageNumber]
             var race_id = `(SELECT race_id FROM race WHERE name = $1 AND year = $2)`
             var query = `SELECT * FROM stage WHERE race_id=${race_id} AND stagenr=$3`
             sqlDB.query(query, values, (err, response) => {
                 if (err) throw err;
-                if (response.rows[0].finished) {
+                if (!response.rows[0]) {
+                    res.send({'mode': '404'});
+                    return;
+                } else {
                     async.auto({
                         teamresult: function (callback) {
                             values = [req.body.race, req.body.year]
@@ -31,46 +32,40 @@ module.exports = function (app) {
                                 ON (rider.rider_id=rider_participation.rider_id)
                                 WHERE account_participation_id=${account_participation_id} AND stage_id=${response.rows[0].stage_id}
                                 ORDER BY totalscore desc`
-                            sqlDB.query(query, values, (err, sqlres) => {
-                                if (err) throw err;
-                                console.log('TR')
-                                callback(sqlres.rows)
-                            });
+                            sqlDB.query(query, values, callback)
                         },
                         userscores: function (callback) {
-                            query = `SELECT * FROM stage_selection
+                            query = `SELECT username, stagescore, totalscore FROM stage_selection
+                                INNER JOIN account_participation
+                                ON (account_participation.account_participation_id=stage_selection.account_participation_id)
+                                INNER JOIN account
+                                ON (account.account_id=account_participation.account_id)
                                 WHERE stage_id=${response.rows[0].stage_id}`
-                            sqlDB.query(query, (err, sqlres) => {
-                                if (err) throw err;
-                                console.log('US')
-                                callback(sqlres.rows)
-                            });
+                            sqlDB.query(query, callback)
                         },
                         stageresults: function (callback) {
-                            query = `SELECT stagepos 
-                            FROM results_points
-                            INNER JOIN rider_participation
-                            ON results_points.rider_participation_id=rider_participation.rider_participation_id
-                            INNER JOIN rider
-                            ON rider.rider_id=rider_participation.rider_id
-                            WHERE stage_id=${response.rows[0].stage_id}
-                            ORDER BY stagepos asc`
-                            sqlDB.query(query, (err, sqlres) => {
-                                if (err) throw err;
-                                console.log('SR')
-                                callback(sqlres.rows)
-                            });
+                            query = `SELECT stagepos, firstname, lastname, team, stageresult
+                                FROM results_points
+                                INNER JOIN rider_participation
+                                ON (results_points.rider_participation_id=rider_participation.rider_participation_id)
+                                INNER JOIN rider
+                                ON (rider.rider_id=rider_participation.rider_id)
+                                WHERE stage_id=${response.rows[0].stage_id}
+                                ORDER BY stagepos asc`
+                            sqlDB.query(query, callback)
                         }
                     }, function (err, results) {
-                        if(err) throw err
-                        res.send(results)
+                        if (err) throw err;
+                        res.send({
+                            'mode': '',
+                            'teamresult': results.teamresult.rows,
+                            'userscores': results.userscores.rows,
+                            'stageresults': results.stageresults.rows
+                        });
+                        return;
                     });
-                } else {
-                    res.send()
                 }
-            }
-            )
-
+            })
         }
     });
 }

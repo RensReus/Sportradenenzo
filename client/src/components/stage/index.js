@@ -16,6 +16,18 @@ class ResultsTableRow extends Component{
     }
 }
 
+class PouleTableRow extends Component{
+    render(){
+        return(
+            <tr>
+                <td>{this.props.username}</td>
+                <td>{this.props.stagescore}</td>
+                <td>{this.props.totalscore}</td>
+            </tr>
+        )
+    }
+}
+
 class ResultsTable extends Component{
     render(){
         const rows = [];
@@ -52,6 +64,37 @@ class ResultsTable extends Component{
     }
 }
 
+class PouleTable extends Component{
+    render(){
+        const rows = [];
+        const userScores = this.props.userScores
+        userScores.forEach(user => {
+            rows.push(
+                <PouleTableRow
+                    username={user.username}
+                    stagescore={user.stagescore}
+                    totalscore={user.totalscore}
+                />
+            )
+        });
+        
+        return(
+            <table className="pouleTable">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Stagescore</th>
+                        <th>Totalscore</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+            </table>
+        )
+    }
+}    
+
 class Stage extends Component {
     constructor(props) {
         super(props);
@@ -60,27 +103,72 @@ class Stage extends Component {
             race: 'classics',
             year: '2019',
             stage: this.props.match.params.stagenumber, //Haal het nummer uit de link
-            userTeamResult: []
+            userTeamResult: [],
+            userScores: []
         }
+        this.previousStage = this.previousStage.bind(this);
+        this.nextStage = this.nextStage.bind(this);
     }
-   
-    componentWillMount() {
-        const stage = this.state.stage
+    updateData(stage){
         const race = this.state.race
         const year = this.state.year
+        console.log(stage)
         axios.post('/api/getstageresultsclassics', { race: race, year: year, stageNumber: stage }) //to: stageresults.js
             .then((res) => {
-                console.log(res.data)
-                this.setState({
-                    userTeamResult: res.data.teamresults
-                })
+                if(res.data.mode==='404'){
+                    this.setState({
+                        mode: '404'
+                    })
+                }else{
+                    this.setState({
+                        mode:'',
+                        userTeamResult: res.data.teamresult,
+                        userScores: res.data.userscores
+                    })
+                }
             })
+    }
+    previousStage(){
+        const currentstage = this.state.stage
+        this.props.history.push('/stage/'+(parseInt(currentstage)-1).toString())
+        this.setState({
+            stage:(parseInt(currentstage)-1).toString()
+        })
+        this.updateData((parseInt(currentstage)-1).toString())
+    }
+    nextStage(){
+        const currentstage = this.state.stage
+        this.props.history.push('/stage/'+(parseInt(currentstage)+1).toString())
+        this.setState({
+            stage:(parseInt(currentstage)+1).toString()
+        })
+        this.updateData((parseInt(currentstage)+1).toString())
+    }
+    componentDidMount() {
+        this.updateData(this.state.stage)
     }
 
     render() {
+        const mode = this.state.mode
+        let message
+        let resTable
+        let pTable
+        if(mode === '404'){
+            message=<h3>404: Data not found</h3>
+            resTable=''
+            pTable=''
+        }else{
+            message=<h3></h3>
+            resTable=<ResultsTable userTeamResult={this.state.userTeamResult}/>
+            pTable=<PouleTable userScores={this.state.userScores}/>
+        }
         return (
             <div className="standardContainer">
-                <ResultsTable userTeamResult={this.state.userTeamResult}/>
+                <button id="previousStageButton" onClick={this.previousStage}>Previous Stage</button>
+                <button id="nextStageButton" onClick={this.nextStage}>Next Stage</button>
+                {message}
+                {resTable}
+                {pTable}
             </div>
         )
     }

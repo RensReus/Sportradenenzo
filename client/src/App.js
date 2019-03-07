@@ -9,10 +9,10 @@ import Home from './components/home';
 import Profile from './components/profile';
 import Stage from './components/stage'
 import Teamselection from './components/teamselection';
-import Admin from './components/admin'
-import Etappewinsten from './components/etappewinsten'
-import Overzicht from './components/overzicht'
-import Charts from './components/charts'
+import Admin from './components/admin';
+import Etappewinsten from './components/etappewinsten';
+import Overzicht from './components/overzicht';
+import Charts from './components/charts';
 
 class App extends Component {
   constructor(props) {
@@ -53,7 +53,7 @@ class App extends Component {
         <Navbar isLoggedIn={this.state.isLoggedIn} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (
-            this.state.isLoggedIn ? (<Redirect to="/teamselection" />) : (<Home history={this.props.history} />)
+            this.state.isLoggedIn ? (<Redirect to="/stage/1" />) : (<Home history={this.props.history} />)
           )} />
           <Route path="/profile" component={Profile} history={this.props.history} />
           <Route path="/stage/:stagenumber" component={Stage} history={this.props.history} />
