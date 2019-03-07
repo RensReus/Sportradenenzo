@@ -26,20 +26,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-//==SQL DB==
-var fs = require('fs');
-if (fs.existsSync('./server/db/sqlDBlink.js')) {
-    var sqlDBstring = require('./server/db/sqlDBlink.js');
-} else {
-    var sqlDBstring = process.env.DATABASE_URL;
-}
-const { Client } = require('pg');
-const sqlDB = new Client({
-  connectionString: sqlDBstring,
-  ssl: true
-});
-sqlDB.connect()
-
 // Express only serves static assets in production
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
@@ -59,11 +45,11 @@ app.listen(app.get("port"), () => {
   console.log(`Magicka accidit`);
 });
 
-require('./server/passport')(passport,sqlDB);
+require('./server/passport')(passport);
 
-require('./server/api/admin')(app,sqlDB)
+require('./server/api/admin')(app)
 require('./server/api/authentication')(app)
-require('./server/api/raceprogression')(app,sqlDB)
-require('./server/api/stageresults')(app,sqlDB)
-require('./server/api/teamselection')(app,sqlDB)
-require('./server/api/userparticipation')(app,sqlDB)
+require('./server/api/raceprogression')(app)
+require('./server/api/stageresults')(app)
+require('./server/api/teamselection')(app)
+require('./server/api/userparticipation')(app)

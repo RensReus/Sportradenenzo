@@ -1,4 +1,5 @@
-module.exports = function (app,sqlDB) {
+module.exports = function (app) {
+    const sqlDB = require('../db/sqlDB')
     app.post('/api/admin', function (req, res) {
 
         var sqlQuery = req.body.query;

@@ -1,11 +1,6 @@
-module.exports = {
-    //Defineer de connectie
-    sqlDB: null,
-    //Ontvang de connectie
-    passConnection: function(sqlDB) {
-      this.sqlDB = sqlDB;
-    },
+const sqlDB = require('./sqlDB')
 
+module.exports = {
     /** Returns the account object from db
      * @param {int} account_id account id
      * @param {function} callback 
@@ -14,7 +9,7 @@ module.exports = {
         var query = `SELECT account_id, username, email, admin FROM account
                 WHERE account_id = ${account_id}`;
 
-        this.sqlDB.query(query, (err, res) => {
+        sqlDB.query(query, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows[0])
         })
@@ -36,7 +31,7 @@ module.exports = {
                 INNER JOIN rider using(rider_id)
                 WHERE rider_participation_id IN ${teamselection}`;
 
-        this.sqlDB.query(query, values, (err, res) => {
+        sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows)
         })
@@ -55,7 +50,7 @@ module.exports = {
                 INNER JOIN rider using(rider_id)
                 WHERE race_id = ${race_id}`;
 
-        this.sqlDB.query(query, values, (err, res) => {
+        sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows)
         })
@@ -71,7 +66,7 @@ module.exports = {
                 INNER JOIN rider using(rider_id)
                 WHERE rider_participation_id = $1`;
 
-        this.sqlDB.query(query, values, (err, res) => {
+        sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows[0])
         })
@@ -85,7 +80,7 @@ module.exports = {
         var query = `SELECT * FROM account
                 WHERE email = '${email}'`;
 
-        this.sqlDB.query(query, (err, res) => {
+        sqlDB.query(query, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows[0])
         })
@@ -100,7 +95,7 @@ module.exports = {
         var values = [raceName, year];
         var query = `SELECT * FROM race 
                 WHERE name = $1 AND year = $2`;
-        this.sqlDB.query(query, values, (err, res) => {
+        sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows[0])
         })
@@ -113,7 +108,7 @@ module.exports = {
         var query = `SELECT * FROM race 
                 WHERE finished='false'`;
 
-        this.sqlDB.query(query, (err, res) => {
+        sqlDB.query(query, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows[0])
         })
@@ -128,7 +123,7 @@ module.exports = {
         var values = [race_id, stagenr];
         var query = `SELECT starttime FROM stage 
                 WHERE race_id=$1 AND stagenr=$2`;
-        this.sqlDB.query(query, values, (err, res) => {
+        sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows[0])
         })
@@ -143,7 +138,7 @@ module.exports = {
         var values = [account_id, race_id];
         var query = `SELECT account_participation_id FROM account_participation 
                 WHERE account_id = $1 AND race_id = $2`;
-        this.sqlDB.query(query, values, (err, res) => {
+        sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows[0])
         })
@@ -154,7 +149,7 @@ module.exports = {
         var values = [parameters] // $1, ...
         var query = ``;
 
-        this.sqlDB.query(query, values, (err, res) => {
+        sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows)
         })

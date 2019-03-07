@@ -1,7 +1,7 @@
-module.exports = function (app,sqlDB) {
+module.exports = function (app) {
     const async = require('async')
+    const sqlDB = require('../db/sqlDB')
     const SQLread = require('../db/SQLread')
-    SQLread.passConnection(sqlDB)
 
     app.post('/api/getracepartcipation', function (req, res) {
         SQLread.getCurrentRace(function(err,race){

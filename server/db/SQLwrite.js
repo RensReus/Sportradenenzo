@@ -1,9 +1,6 @@
-module.exports = {
-  sqlDB: null,
+const sqlDB             = require('./sqlDB')
 
-  passConnection: function(sqlDB) {
-    this.sqlDB = sqlDB;
-  },
+module.exports = {
 /**
  * @param {number} rider_participation_id 
  * @param {number} account_id 
@@ -12,12 +9,11 @@ module.exports = {
  */
 addRiderToSelection: function(rider_participation_id, account_id, race_id, callback) {
   var values = [rider_participation_id, account_id, race_id];
-  console.log(values)
   var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $2 AND race_id = $3)`;
   var query = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
               VALUES($1,${account_participation_id})`;
   
-  this.sqlDB.query(query, values, (err, res) => {
+  sqlDB.query(query, values, (err, res) => {
       if (err) throw err;
       else callback(err,res.rows)
   })
@@ -37,7 +33,7 @@ removeRiderFromSelection: function(account_id, rider_participation_id, race_id, 
               WHERE account_participation_id = ${account_participation_id}
               AND rider_participation_id = $2`;
 
-  this.sqlDB.query(query, values, (err, res) => {
+  sqlDB.query(query, values, (err, res) => {
     if (err) throw err;
     else callback(err,res.rows)
   })
@@ -58,7 +54,7 @@ addRiderToDatabase: function(pcs_id, country, firstname, lastname, initials, cal
   ON CONFLICT (pcs_id) 
   DO UPDATE SET pcs_id = EXCLUDED.pcs_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials
   RETURNING rider_id`;
-  this.sqlDB.query(query, values, (err, res) => {
+  sqlDB.query(query, values, (err, res) => {
     if (err) throw err;
     else{
       console.log("%s %s INSERTED INTO rider", res.rows[0].rider_id, pcs_id)
@@ -81,7 +77,7 @@ addRiderToRace: function(race_id, rider_id, price, team, callback) {
   ON CONFLICT (race_id,rider_id) 
   DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, price = EXCLUDED.price, team = EXCLUDED.team
   RETURNING rider_participation_id`;
-  this.sqlDB.query(query, values, (err, res) => {
+  sqlDB.query(query, values, (err, res) => {
     if (err) throw err;
     else{
       console.log("%s %s INSERTED INTO rider_participation", res.rows[0].rider_participation_id, rider_id)
@@ -101,7 +97,7 @@ addAccount: function(email, password, callback){
               VALUES($1, $2)
               RETURNING *`;
               
-  this.sqlDB.query(query, values, (err, res) => {
+  sqlDB.query(query, values, (err, res) => {
     if (err) throw err;
     else callback(err,res.rows[0])
   })
@@ -119,7 +115,7 @@ addAccount_participation: function(account_id, race_id, callback){
               VALUES($1, $2)
               RETURNING *`;
   
-  this.sqlDB.query(query, values, (err, res) => {
+  sqlDB.query(query, values, (err, res) => {
       if (err) throw err;
       else callback(err,res.rows)
   })
@@ -130,7 +126,7 @@ functionName: function(parameters, callback){
   var values = [parameters];
   var query = ``;
   
-  this.sqlDB.query(query, values, (err, res) => {
+  sqlDB.query(query, values, (err, res) => {
       if (err) throw err;
       else callback(err,res.rows)
   })

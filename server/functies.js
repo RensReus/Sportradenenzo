@@ -1,15 +1,4 @@
-var fs = require('fs');
-if (fs.existsSync('./server/db/sqlDBlink.js')) {
-    var sqlDBstring = require('./db/sqlDBlink.js');
-} else {
-    var sqlDBstring = process.env.DATABASE_URL;
-}
-const { Client } = require('pg');
-const sqlDB = new Client({
-  connectionString: sqlDBstring,
-  ssl: true
-});
-sqlDB.connect()
+const sqlDB             = require('./db/sqlDB')
 
 calculateUserScores = function (et, callback) {
     User.find({'teamselectie.userrenners': {$size: 20}}, function (err, users) {

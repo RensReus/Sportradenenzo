@@ -1,23 +1,7 @@
+const sqlDB = require('./sqlDB')
 const cheerio = require('cheerio');
 const request = require('request');
 const schedule = require('node-schedule');
-
-const fs = require('fs');
-if (fs.existsSync('./server/db/sqlDBlink.js')) {
-    var sqlDBstring = require('./sqlDBlink.js');
-} else {
-    var sqlDBstring = process.env.DATABASE_URL;
-}
-
-const { Client } = require('pg');
-
-const sqlDB = new Client({
-    connectionString: sqlDBstring,
-    ssl: true,
-});
-
-sqlDB.connect();
-
 
 var raceNames = ['omloop-het-nieuwsblad', 'kuurne-brussel-kuurne', 'strade-bianchi'];
 var raceWeight = [1.25, 1, 1.25]

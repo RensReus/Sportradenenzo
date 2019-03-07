@@ -1,13 +1,11 @@
 // In dit bestand staan alle calls die te maken hebben met het selecteren van het team voor een race
 
-module.exports = function (app,sqlDB) {
+module.exports = function (app) {
     const async = require('async')
+    const sqlDB = require('../db/sqlDB')
     const SQLread = require('../db/SQLread')
-    SQLread.passConnection(sqlDB)
     const SQLwrite = require('../db/SQLwrite')
-    SQLwrite.passConnection(sqlDB)
     const SQLscrape = require('../SQLscrape')
-    SQLscrape.passConnection(sqlDB)
 
     app.post('/api/getridersandteam', function (req,res){
         if(!req.user){
