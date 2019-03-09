@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import './index.css';
 
-class ResultsTableRow extends Component{
-    render(){
-        return(
+class ResultsTableRow extends Component {
+    render() {
+        return (
             <tr>
                 <td>{this.props.firstname} {this.props.lastname}</td>
                 <td>{this.props.team}</td>
@@ -16,9 +16,9 @@ class ResultsTableRow extends Component{
     }
 }
 
-class PouleTableRow extends Component{
-    render(){
-        return(
+class PouleTableRow extends Component {
+    render() {
+        return (
             <tr>
                 <td>{this.props.username}</td>
                 <td>{this.props.stagescore}</td>
@@ -28,8 +28,21 @@ class PouleTableRow extends Component{
     }
 }
 
-class ResultsTable extends Component{
-    render(){
+class StageResultsTableRow extends Component {
+    render() {
+        return (
+            <tr>
+                <td>{this.props.stagepos}</td>
+                <td>{this.props.firstname} {this.props.lastname}</td>
+                <td>{this.props.team}</td>
+                <td>{this.props.time}</td>
+            </tr>
+        )
+    }
+}
+
+class ResultsTable extends Component {
+    render() {
         const rows = [];
         const userTeam = this.props.userTeamResult
         userTeam.forEach(rider => {
@@ -44,15 +57,15 @@ class ResultsTable extends Component{
                 />
             )
         });
-        
-        return(
+
+        return (
             <table className="scoreTable">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>Team</th>
-                        <th>StageScore</th>
-                        <th>TeamScore</th>
+                        <th>Stage</th>
+                        <th>Team</th>
                         <th>Total</th>
                     </tr>
                 </thead>
@@ -64,8 +77,8 @@ class ResultsTable extends Component{
     }
 }
 
-class PouleTable extends Component{
-    render(){
+class PouleTable extends Component {
+    render() {
         const rows = [];
         const userScores = this.props.userScores
         userScores.forEach(user => {
@@ -77,14 +90,14 @@ class PouleTable extends Component{
                 />
             )
         });
-        
-        return(
+
+        return (
             <table className="pouleTable">
                 <thead>
                     <tr>
                         <th>Username</th>
-                        <th>Stagescore</th>
-                        <th>Totalscore</th>
+                        <th>Stage</th>
+                        <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -93,59 +106,95 @@ class PouleTable extends Component{
             </table>
         )
     }
-}    
+}
+
+class StageResultsTable extends Component {
+    render() {
+        const rows = [];
+        const stageresults = this.props.stageresults
+        stageresults.forEach(rider => {
+            rows.push(
+                <StageResultsTableRow
+                    stagepos={rider.stagepos}
+                    firstname={rider.firstname}
+                    lastname={rider.lastname}
+                    team={rider.team}
+                    time={rider.stageresult}
+                />
+            )
+        });
+
+        return (
+            <table className="scoreTable">
+                <thead>
+                    <tr>
+                        <th>Nr.</th>
+                        <th>Name</th>
+                        <th>Team</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+            </table>
+        )
+    }
+}
 
 class Stage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            mode: '', 
+            mode: '',
             race: 'classics',
             year: '2019',
-            stage: this.props.match.params.stagenumber, //Haal het nummer uit de link
+            stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
             userTeamResult: [],
-            userScores: []
+            userScores: [],
+            stageresults: []
         }
         this.previousStage = this.previousStage.bind(this);
         this.nextStage = this.nextStage.bind(this);
     }
-    updateData(stage){
+    updateData(stage) {
         const race = this.state.race
         const year = this.state.year
         console.log(stage)
         axios.post('/api/getstageresultsclassics', { race: race, year: year, stageNumber: stage }) //to: stageresults.js
             .then((res) => {
-                if(res.data.mode==='404'){
+                if (res.data.mode === '404') {
                     this.setState({
                         mode: '404'
                     })
-                }else{
+                } else {
                     this.setState({
-                        mode:'',
+                        mode: '',
                         userTeamResult: res.data.teamresult,
-                        userScores: res.data.userscores
+                        userScores: res.data.userscores,
+                        stageresults: res.data.stageresults
                     })
                 }
             })
     }
-    previousStage(){
+    previousStage() {
         const currentstage = this.state.stage
-        this.props.history.push('/stage/'+(parseInt(currentstage)-1).toString())
+        this.props.history.push('/stage/' + (parseInt(currentstage) - 1).toString())
         this.setState({
-            stage:(parseInt(currentstage)-1).toString()
+            stage: (parseInt(currentstage) - 1).toString()
         })
-        this.updateData((parseInt(currentstage)-1).toString())
+        this.updateData((parseInt(currentstage) - 1).toString())
     }
-    nextStage(){
+    nextStage() {
         const currentstage = this.state.stage
-        this.props.history.push('/stage/'+(parseInt(currentstage)+1).toString())
+        this.props.history.push('/stage/' + (parseInt(currentstage) + 1).toString())
         this.setState({
-            stage:(parseInt(currentstage)+1).toString()
+            stage: (parseInt(currentstage) + 1).toString()
         })
-        this.updateData((parseInt(currentstage)+1).toString())
+        this.updateData((parseInt(currentstage) + 1).toString())
     }
     componentDidMount() {
-        this.updateData(this.state.stage)
+        this.updateData(parseInt(this.state.stage))
     }
 
     render() {
@@ -153,22 +202,28 @@ class Stage extends Component {
         let message
         let resTable
         let pTable
-        if(mode === '404'){
-            message=<h3>404: Data not found</h3>
-            resTable=''
-            pTable=''
-        }else{
-            message=<h3></h3>
-            resTable=<ResultsTable userTeamResult={this.state.userTeamResult}/>
-            pTable=<PouleTable userScores={this.state.userScores}/>
+        let stResTable
+        if (mode === '404') {
+            message = <h3>404: Data not found</h3>
+            resTable = ''
+            pTable = ''
+            stResTable = ''
+        } else {
+            message = <h3></h3>
+            resTable = <ResultsTable userTeamResult={this.state.userTeamResult} />
+            pTable = <PouleTable userScores={this.state.userScores} />
+            stResTable = <StageResultsTable stageresults={this.state.stageresults} />
         }
+        const stage = parseInt(this.state.stage);
         return (
             <div className="standardContainer">
-                <button id="previousStageButton" onClick={this.previousStage}>Previous Stage</button>
-                <button id="nextStageButton" onClick={this.nextStage}>Next Stage</button>
+                <button id="previousStageButton" onClick={this.previousStage}>Stage {stage - 1}</button>
+                <button id="nextStageButton" onClick={this.nextStage}>Stage {stage + 1}</button>
+                <div id="title">Stage {this.state.stage} </div>
                 {message}
                 {resTable}
                 {pTable}
+                {stResTable}
             </div>
         )
     }

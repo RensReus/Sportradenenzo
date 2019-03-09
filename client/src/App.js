@@ -61,7 +61,7 @@ class App extends Component {
           <Route path="/admin" component={Admin} history={this.props.history} />
           <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
           <Route path="/overzicht" component={Overzicht} history={this.props.history} />
-          <Route path="/charts" component={Charts} history={this.props.history} />
+          <Route path="/charts/:chartname" component={Charts} history={this.props.history} />
         </div>
       </div>
     );

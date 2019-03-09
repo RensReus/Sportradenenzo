@@ -94,7 +94,7 @@ calculateUserScoresKlassieker = function(year,stage,callback){
             console.log("res:",res);
         })
     })
-    callback(null, 'Calculated Scores');
+    callback(null, 'Calculated User Scores');
     
     
 }

@@ -264,9 +264,10 @@ getResult = function (year, et, callback) {
 
             resultsquery = resultsquery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO UPDATE SET stagepos = EXCLUDED.stagepos, stagescore = EXCLUDED.stagescore, stageresult = EXCLUDED.stageresult, teamscore = EXCLUDED.teamscore, totalscore = EXCLUDED.totalscore';
             // console.log(resultsquery)
-            sqlDB.query(resultsquery)
-                .then(res => { callback() })
-                .catch(e => console.error(e.stack));
+            sqlDB.query(resultsquery, (err, res) =>{
+                if(err) throw err;
+                callback()
+            })
         }
     });
 }
@@ -281,11 +282,11 @@ getPunten = function (pos) {
 
 getTeamPunten = function (pos, teamRider, teamWinners) {
     var teamPoints = 0;
-    console.log(pos, teamRider, teamWinners[0])
+    // console.log(pos, teamRider, teamWinners[0])
     if (pos != 1 && teamRider == teamWinners[0]) teamPoints += 20;
     if (pos != 2 && teamRider == teamWinners[1]) teamPoints += 12;
     if (pos != 3 && teamRider == teamWinners[2]) teamPoints += 4;
-    console.log(teamPoints)
+    // console.log(teamPoints)
     return teamPoints;
 }
 

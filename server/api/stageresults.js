@@ -31,7 +31,7 @@ module.exports = function (app) {
                                 INNER JOIN rider
                                 ON (rider.rider_id=rider_participation.rider_id)
                                 WHERE account_participation_id=${account_participation_id} AND stage_id=${response.rows[0].stage_id}
-                                ORDER BY totalscore desc`
+                                ORDER BY totalscore DESC`
                             sqlDB.query(query, values, callback)
                         },
                         userscores: function (callback) {
@@ -40,7 +40,8 @@ module.exports = function (app) {
                                 ON (account_participation.account_participation_id=stage_selection.account_participation_id)
                                 INNER JOIN account
                                 ON (account.account_id=account_participation.account_id)
-                                WHERE stage_id=${response.rows[0].stage_id}`
+                                WHERE stage_id=${response.rows[0].stage_id}
+                                ORDER BY totalscore DESC`
                             sqlDB.query(query, callback)
                         },
                         stageresults: function (callback) {
@@ -50,8 +51,8 @@ module.exports = function (app) {
                                 ON (results_points.rider_participation_id=rider_participation.rider_participation_id)
                                 INNER JOIN rider
                                 ON (rider.rider_id=rider_participation.rider_id)
-                                WHERE stage_id=${response.rows[0].stage_id}
-                                ORDER BY stagepos asc`
+                                WHERE stage_id=${response.rows[0].stage_id} AND stagepos > 0 
+                                ORDER BY stagepos ASC`
                             sqlDB.query(query, callback)
                         }
                     }, function (err, results) {

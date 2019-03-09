@@ -149,7 +149,6 @@ module.exports = function (app) {
                 }
                 data.push(userObj)
                 data.sort(function(a,b){return b.dataPoints[b.dataPoints.length - 1].y - a.dataPoints[a.dataPoints.length - 1].y})
-                var max = userObj.dataPoints.length-1;
                 var options = {
                     theme: "light2",
                     title: {
@@ -159,15 +158,148 @@ module.exports = function (app) {
                         text: "Totaal score na iedere etappe"
                     }], 
                     axisX:{
-                        minimum: -0.01*max,
-                        maximum: max*1.01,
+                        interval: 1,
                         title: "Stage"
                     },
                     axisY:{
                         title: "Points"
                     },
                     toolTip:{
-                        shared: true,
+                        shared: true
+                    },
+                    data: data
+                }
+                res.send(options);
+            })
+        }
+    })
+
+    app.post('/api/chartriderpercentage',function(req,res){
+        if(!req.user){
+            res.redirect('/')
+        }else{
+            var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = 4)`
+            var query = `SELECT totalscore, lastname, stagenr FROM results_points
+            INNER JOIN rider_participation USING (rider_participation_id)
+            INNER JOIN rider USING (rider_id)
+            INNER JOIN stage USING (stage_id)
+            WHERE rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) AND totalscore > 0
+            ORDER by lastname, stagenr`
+            sqlDB.query(query, (err,results)=>{
+                if(err) throw err;
+                var lastname = results.rows[0].lastname;
+                var riderObj = {
+                    type: "stackedColumn", 
+                    name: lastname,
+                    showInLegend: true,
+                    dataPoints:[] 
+                }
+                var data = [];
+
+                for(var i in results.rows){
+                    if(riderObj.name == results.rows[i].lastname){
+                        riderObj.dataPoints.push({x: results.rows[i].stagenr, y:results.rows[i].totalscore})
+                    }else{
+                        data.push(riderObj);
+                        lastname = results.rows[i].lastname;
+                        riderObj = {
+                            type: "stackedColumn", 
+                            name: lastname,
+                            showInLegend: true,
+                            dataPoints:[] 
+                        }
+                        riderObj.dataPoints.push({x: results.rows[i].stagenr, y:results.rows[i].totalscore})
+                    }
+                    
+                }
+                data.push(riderObj)
+                var options = {
+                    theme: "light2",
+                    title: {
+                        text: "Scores per etappe"
+                    },
+                    subtitles: [{
+                        text: "Punten per renner"
+                    }], 
+                    axisX:{
+                        // minimum: -0.01*max,
+                        // maximum: max*1.01,
+                        title: "Stage",
+                        interval: 1
+                    },
+                    axisY:{
+                        title: "Points"
+                    },
+                    toolTip: {
+                        content: "{name}: {y} ",
+                    },
+                    data: data
+                }
+                res.send(options);
+            })
+        }
+    })
+
+    app.post('/api/chartriderpercentagetotal',function(req,res){
+        if(!req.user){
+            res.redirect('/')
+        }else{
+            var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = 4)`
+            var query = `SELECT totalscore, lastname, stagenr FROM results_points
+            INNER JOIN rider_participation USING (rider_participation_id)
+            INNER JOIN rider USING (rider_id)
+            INNER JOIN stage USING (stage_id)
+            WHERE rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})
+            ORDER by lastname, stagenr`
+            sqlDB.query(query, (err,results)=>{
+                if(err) throw err;
+                var lastname = results.rows[0].lastname;
+                var riderObj = {
+                    type: "stackedArea", 
+                    name: lastname,
+                    showInLegend: true,
+                    dataPoints:[] 
+                }
+                var data = [];
+                var totalscore = 0;
+                for(var i in results.rows){
+                    if(riderObj.name == results.rows[i].lastname){
+                        totalscore += results.rows[i].totalscore;
+                        riderObj.dataPoints.push({x: results.rows[i].stagenr, y:totalscore})
+                    }else{
+                        data.push(riderObj);
+                        lastname = results.rows[i].lastname;
+                        riderObj = {
+                            type: "stackedArea", 
+                            name: lastname,
+                            showInLegend: true,
+                            dataPoints:[] 
+                        }
+                        totalscore = 0;
+                        totalscore += results.rows[i].totalscore;
+                        riderObj.dataPoints.push({x: results.rows[i].stagenr, y:totalscore})
+
+                    }
+                    
+                }
+                data.push(riderObj)
+                var options = {
+                    theme: "light2",
+                    title: {
+                        text: "Totaal Scores"
+                    },
+                    subtitles: [{
+                        text: "Punten per renner"
+                    }], 
+                    axisX:{
+                        title: "Stage",
+                        interval: 1
+                    },
+                    axisY:{
+                        title: "Points"
+                    },
+                    toolTip: {
+                        content: "{name}: {y} "
                     },
                     data: data
                 }
