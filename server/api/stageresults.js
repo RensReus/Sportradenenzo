@@ -52,7 +52,8 @@ module.exports = function (app) {
                                 INNER JOIN rider
                                 ON (rider.rider_id=rider_participation.rider_id)
                                 WHERE stage_id=${response.rows[0].stage_id} AND stagepos > 0 
-                                ORDER BY stagepos ASC`
+                                ORDER BY stagepos ASC
+                                LIMIT 20`
                             sqlDB.query(query, callback)
                         }
                     }, function (err, results) {

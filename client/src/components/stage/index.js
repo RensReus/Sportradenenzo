@@ -125,10 +125,10 @@ class StageResultsTable extends Component {
         });
 
         return (
-            <table className="scoreTable">
+            <table className="resultsTable">
                 <thead>
                     <tr>
-                        <th>Nr.</th>
+                        <th></th>
                         <th>Name</th>
                         <th>Team</th>
                         <th>Time</th>
@@ -217,13 +217,15 @@ class Stage extends Component {
         const stage = parseInt(this.state.stage);
         return (
             <div className="standardContainer">
-                <button id="previousStageButton" onClick={this.previousStage}>Stage {stage - 1}</button>
-                <button id="nextStageButton" onClick={this.nextStage}>Stage {stage + 1}</button>
-                <div id="title">Stage {this.state.stage} </div>
+                <div id="titlebuttons">
+                    <button id="previousStageButton" onClick={this.previousStage}>Stage {stage - 1}</button>
+                    <div id="title">Stage {this.state.stage} </div>
+                    <button id="nextStageButton" onClick={this.nextStage}>Stage {stage + 1}</button>
+                </div>
                 {message}
-                {resTable}
-                {pTable}
-                {stResTable}
+                <div className="res">{resTable}</div>
+                <div className="poule">{pTable}</div>
+                <div className="stage">{stResTable}</div>
             </div>
         )
     }
