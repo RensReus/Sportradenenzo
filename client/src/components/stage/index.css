@@ -6,8 +6,38 @@ tr:nth-child(even) {
 }
 
 div.standardContainer{
-    overflow: scroll;
+    height: 100vh;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: 01fr 4fr 4fr;
+    grid-gap: 1em;
+    /* padding: 0 1em;  */
 }
+div.titlebuttons {
+    grid-column: 1;
+    grid-row: 1;    
+}
+
+div.res {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+div.poule {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+div.stage {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+tr.inteam1{
+    color: yellow;
+}
+
 
 th{
     background: rgb(49, 49, 49);

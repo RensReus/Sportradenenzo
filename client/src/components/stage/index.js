@@ -31,7 +31,7 @@ class PouleTableRow extends Component {
 class StageResultsTableRow extends Component {
     render() {
         return (
-            <tr>
+            <tr className= {"inteam" + this.props.inteam}>
                 <td>{this.props.stagepos}</td>
                 <td>{this.props.firstname} {this.props.lastname}</td>
                 <td>{this.props.team}</td>
@@ -120,6 +120,7 @@ class StageResultsTable extends Component {
                     lastname={rider.lastname}
                     team={rider.team}
                     time={rider.stageresult}
+                    inteam={rider.inteam}
                 />
             )
         });

@@ -16,7 +16,7 @@ textarea.queryInputBox{
 
 div.outputTableContainer{
     height: 60vh;
-    overflow: scroll;
+    overflow: auto;
 }
 
 table.outputTable{

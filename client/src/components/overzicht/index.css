@@ -1,16 +1,11 @@
 div.overzichtContainer{
-    display: grid;
-    
-
     margin-left: 10vw;
     margin-right: 10vw;
     padding-top: 5vh;
     background-color: rgba(230,230,240,0.68);
-    
+    overflow: auto;
+    height: 90vh;
 }
-
-
-
 
 table.ScoreTable tr.inteam {
     color: rgb(0, 0, 255);

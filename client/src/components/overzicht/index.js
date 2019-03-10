@@ -39,7 +39,7 @@ class ScoreTable extends Component{
                       {header}
                   </tr>
               </thead>
-              <tbody>
+              <tbody className="ScoreTable">
                   {rows}
               </tbody>
           </table>

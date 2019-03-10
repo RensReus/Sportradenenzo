@@ -148,6 +148,16 @@ module.exports = function (app) {
                     
                 }
                 data.push(userObj)
+                for(i in userObj.dataPoints){
+                    var total = 0;
+                    for(user in data){
+                        total += data[user].dataPoints[i].y;
+                    }
+                    var avg = total/data.length;
+                    for(user in data){
+                        data[user].dataPoints[i].y -= avg;
+                    }
+                }
                 data.sort(function(a,b){return b.dataPoints[b.dataPoints.length - 1].y - a.dataPoints[a.dataPoints.length - 1].y})
                 var options = {
                     theme: "light2",
@@ -308,4 +318,17 @@ module.exports = function (app) {
         }
     })
 
+    app.post('/api/versus',function(req,res){
+        if(!req.user){
+            res.redirect('/')
+        }else{
+            var query = `SELECT lastname, array_agg(username) FROM team_selection_rider
+                        INNER JOIN rider_participation USING(rider_participation_id)
+                        INNER JOIN rider USING (rider_id)
+                        INNER JOIN account_participation USING(account_participation_id)
+                        INNER JOIN account USING (account_id)
+                        WHERE account_id IN (1,2) AND account_participation.race_id = 4
+                        GROUP BY lastname`
+        }
+    })
 }
