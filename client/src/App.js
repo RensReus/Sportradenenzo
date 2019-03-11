@@ -13,6 +13,8 @@ import Admin from './components/admin';
 import Etappewinsten from './components/etappewinsten';
 import Overzicht from './components/overzicht';
 import Charts from './components/charts';
+import Versus from './components/versus';
+import ManualUpdate from './components/manualupdate'
 
 class App extends Component {
   constructor(props) {
@@ -62,6 +64,8 @@ class App extends Component {
           <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
           <Route path="/overzicht" component={Overzicht} history={this.props.history} />
           <Route path="/charts/:chartname" component={Charts} history={this.props.history} />
+          <Route path="/vs/:username" component={Versus} history={this.props.history} />
+          <Route path="/manualupdate" component={ManualUpdate} history={this.props.history} />
         </div>
       </div>
     );

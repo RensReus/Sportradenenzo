@@ -1,0 +1,41 @@
+div.mainContainer {
+    margin-left: 10vw;
+    margin-right: 10vw;
+    padding-top: 5vh;
+    background-color: rgba(230,230,240);
+    overflow: auto;
+    height: 90vh;
+    display:grid;
+    grid-template-rows: repeat(3,1fr)    
+}
+
+div.iets{
+    display:grid;
+    grid-template-rows: repeat(3,40px);
+    grid-template-columns: repeat(5,1fr)
+
+}
+
+div.row {
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    grid-gap: 5px 10px;
+    padding: 1em
+}
+
+div.grMainRow {
+    display: grid;
+    grid-template-columns: 35px 60px 40px 60px;
+    grid-gap: 5px 10px;
+    padding: 1em
+}
+
+div.title {
+    font-size: 40px;
+    grid-column: 1/20
+}
+
+div.discription {
+    grid-column: 1/5;
+    grid-row: auto
+}
