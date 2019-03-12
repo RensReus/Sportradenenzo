@@ -5,7 +5,6 @@ import axios from 'axios';
 class ScoreTable extends Component{
   render(){
       const output = this.props.overzicht
-      const teamselection = this.props.teamselection2.map(rider => rider.rider_participation_id);
       const header = []
       var row = []
       const rows = []
@@ -22,11 +21,7 @@ class ScoreTable extends Component{
                     row.push(<td>{output[i][property]}</td>);
                   }
               }
-              if(teamselection.includes(output[i]["rider_participation_id"])){
-                rows.push(<tr className="inteam">{row}</tr>)
-              }else{
                 rows.push(<tr>{row}</tr>)
-              }
 
 
               row = []
@@ -60,8 +55,7 @@ class overzicht extends Component {
       .then((res) => {
         if (res) {
           this.setState({
-            overzicht:  res.data.overzicht,
-            teamselection: res.data.teamselection
+            overzicht:  res.data.overzicht
           })
         }
       })
@@ -73,8 +67,8 @@ class overzicht extends Component {
   render() {
     return (
       <div className="overzichtContainer">
-        <div>Etappe Uitslagen</div>
-        <ScoreTable overzicht={this.state.overzicht} teamselection2={this.state.teamselection} />
+        <div>Alle Renners</div>
+        <ScoreTable overzicht={this.state.overzicht} />
       </div>
 
     )

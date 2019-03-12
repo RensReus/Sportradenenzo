@@ -75,36 +75,22 @@ module.exports = function (app) {
         if(!req.user){
             res.redirect('/')
         }else{
-            var pointsQuery = `SELECT rider_participation_id, concat(firstname, ' ', lastname) as name, team, SUM(stagescore) as stagescore, SUM(teamscore) as teamscore, SUM(totalscore) as totalscore FROM results_points
+            var query = `SELECT  concat(firstname, ' ', lastname) as name, team, SUM(stagescore)/GREATEST(count(DISTINCT username),1) as stagescore, 
+            SUM(teamscore)/GREATEST(count(DISTINCT username),1) as teamscore, SUM(totalscore)/GREATEST(count(DISTINCT username),1) as totalscore, 
+            count(DISTINCT username) as usercount, string_agg(DISTINCT username, ', ') as users FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
             INNER JOIN rider USING(rider_id)
-            WHERE race_id = $1
-            GROUP BY name, team, rider_participation_id
-            ORDER BY totalscore DESC`;
-            var pointsValues = [req.body.race_id];
-            console.log(req.user)
-            var teamselectionQuery = ``
+            LEFT JOIN team_selection_rider on results_points.rider_participation_id = team_selection_rider.rider_participation_id
+            LEFT JOIN account_participation USING(account_participation_id)
+            LEFT JOIN account USING (account_id)
+            WHERE rider_participation.race_id = 4
+            GROUP BY name, team
+            ORDER BY totalscore DESC`
 
-            var teamselectionValues = [req.user.account_id, 4];//$1,$2,$3
-            var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = $2)`;
-            var teamselectionQuery = `SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}`;
-
-            async.auto({
-                teamselection: function(callback){
-                    sqlDB.query(teamselectionQuery,teamselectionValues,(err,response)=>{
-                        callback(err,response);
-                    })
-                },
-                points: function(callback){
-                    sqlDB.query(pointsQuery,pointsValues,(err,response)=>{
-                        callback(err,response);
-                    })
-                }
-            },function(err,results){
+            sqlDB.query(query,(err,results)=>{
                 if(err) throw err;
-                res.send({overzicht: results.points.rows, teamselection: results.teamselection.rows})
+                res.send({overzicht: results.rows})
             })
-
         }
     })
     //CHARTS misschien nieuwe file

@@ -19,7 +19,7 @@ getStartlist = function (year, racenr, callback) {
                 var participationQuery = `INSERT INTO rider_participation (race_id,rider_id,price,team) VALUES`;
                 var results_pointsQuery = `INSERT INTO results_points(stage_id, rider_participation_id) VALUES`;
                 $(".team").each(function (index, element) { //gaat ieder team af
-                    var teamName = $(this).children().first().children().eq(1).text();
+                    var teamName = $(this).children().first().children().eq(-1).text();
                     $(this).children().eq(2).children(".rider").each(function (index, element) { //gaat iedere renner af
                         var name = $(this).children().first().text();
 
