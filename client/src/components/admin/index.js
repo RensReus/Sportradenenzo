@@ -15,7 +15,7 @@ class Outputtable extends Component{
             })
             for(var i=0;i<output.length;i++){
                 for (var property in output[i]) {
-                    row.push(<td>{output[i][property]}</td>);
+                    row.push(<td>{output[i][property] == null ? "null" : output[i][property].toString()}</td>);
                 }
                 rows.push(<tr>{row}</tr>)
                 row = []
@@ -43,6 +43,7 @@ class Admin extends Component{
         this.submitQuery = this.submitQuery.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.testButton = this.testButton.bind(this);
+        this.keyPress = this.keyPress.bind(this);
     }
     submitQuery = (e) => {
         e.preventDefault();
@@ -57,13 +58,20 @@ class Admin extends Component{
     testButton(e){
         this.setState({value: e.target.value})
     }
+
+    keyPress(e){
+        if ((e.keyCode === 10 || e.keyCode === 13) && e.ctrlKey){
+            this.submitQuery(e);
+        }
+     }
+
     render(){
         
         return(
             <div className="adminpageContainer">
                 <div>
                     <form action="" onSubmit={this.submitQuery} id="queryform">
-                        <textarea className="queryInputBox" rows="20" cols="80" value={this.state.value} onChange={this.handleChange}/>
+                        <textarea className="queryInputBox" rows="20" cols="100" value={this.state.value} onChange={this.handleChange} onKeyDown={this.keyPress}/>
                         <input type="submit" value="submit" />
                     </form>
                     <button onClick={this.testButton} value='SELECT * FROM account' className="queryButton">Get all accounts</button>
