@@ -20,7 +20,7 @@ class Home extends Component{
         axios.post('api/login',{email: email,password: password}) //Stuur de form naar de server
         .then((res) => {
             if(res.data){
-                this.props.history.push('/stage/1');
+                this.props.history.push('/');
             }else{
 
             }
@@ -34,7 +34,7 @@ class Home extends Component{
         axios.post('api/signup')
         .then((res) => {
             if(res.data){
-                this.props.history.push('/stage/1')
+                this.props.history.push('/')
             }else{
 
             }

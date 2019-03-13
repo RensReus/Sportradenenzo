@@ -165,7 +165,6 @@ class Stage extends Component {
     updateData(stage) {
         const race = this.state.race
         const year = this.state.year
-        console.log(stage)
         axios.post('/api/getstageresultsclassics', { race: race, year: year, stageNumber: stage }) //to: stageresults.js
             .then((res) => {
                 if (res.data.mode === '404') {
@@ -173,7 +172,6 @@ class Stage extends Component {
                         mode: '404'
                     })
                 } else {
-                    console.log(res.data)
                     this.setState({
                         mode: '',
                         userTeamResult: res.data.teamresult,

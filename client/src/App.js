@@ -19,13 +19,17 @@ import ManualUpdate from './components/manualupdate'
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = ({ isLoggedIn: false });
+    this.state = ({ isLoggedIn: false,
+                    redirect: '/stage/4' });//de default voor redirect
   }
 
   componentWillMount() {
     //Voordat de pagina wordt geladen kijken of de gebruiker is ingelogd
     axios.post('api/isloggedin', { withCredentials: true }) //to: authentication.js
       .then((res) => {
+        if(this.props.history.location.pathname !== '/'){
+          this.setState({redirect: this.props.history.location.pathname})//om de user door te sturen na de login
+        }
         if (this.state.isLoggedIn !== res.data) { //Als er verandering is moet de state worden aangepast
           this.setState({ isLoggedIn: res.data }); //true of false
         }
@@ -55,7 +59,7 @@ class App extends Component {
         <Navbar isLoggedIn={this.state.isLoggedIn} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (
-            this.state.isLoggedIn ? (<Redirect to="/stage/1" />) : (<Home history={this.props.history} />)
+            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<Home history={this.props.history} />)
           )} />
           <Route path="/profile" component={Profile} history={this.props.history} />
           <Route path="/stage/:stagenumber" component={Stage} history={this.props.history} />
