@@ -63,7 +63,7 @@ class Admin extends Component{
             <div className="adminpageContainer">
                 <div>
                     <form action="" onSubmit={this.submitQuery} id="queryform">
-                        <textarea className="queryInputBox" rows="12" cols="80" value={this.state.value} onChange={this.handleChange}/>
+                        <textarea className="queryInputBox" rows="20" cols="80" value={this.state.value} onChange={this.handleChange}/>
                         <input type="submit" value="submit" />
                     </form>
                     <button onClick={this.testButton} value='SELECT * FROM account' className="queryButton">Get all accounts</button>

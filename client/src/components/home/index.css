@@ -42,7 +42,7 @@ button.formTab.active{
     color: #333;
 }
 
-input.form-control, textarea{
+input.form-control{
     background:none;
     border-color: #bbaaaa;
     border-radius: 3px;

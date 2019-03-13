@@ -11,6 +11,9 @@ div.adminpageContainer{
 textarea.queryInputBox{
     font-size: 10px;
     background: black;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px;
     color: white;
 }
 
