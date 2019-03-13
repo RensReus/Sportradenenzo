@@ -5,17 +5,25 @@ tr:nth-child(even) {
     background: #fff;
 }
 
-div.standardContainer{
+div.stageContainer{  
     height: 100vh;
     overflow: auto;
     display: grid;
     grid-template-columns: auto auto;
-    grid-template-rows: 01fr 4fr 4fr;
+    grid-template-rows: auto auto auto;
     grid-gap: 1em;
-    /* padding: 0 1em;  */
+    background-color: rgba(230,230,240,0.98);
+    margin-left: 10vw;
+    margin-right: 10vw;
+    padding-top: 5vh;
+    justify-items: center;
 }
-div.titlebuttons {
-    grid-column: 1;
+div#titlebuttons {
+    display: grid;
+    grid-template-columns: repeat(3,auto);
+    grid-template-rows: 1fr;
+    grid-gap: 10px;
+    grid-column: 1/3;
     grid-row: 1;    
 }
 
@@ -53,11 +61,6 @@ th, td {
     text-align: center;
     font-size: 17px
 }
-
-button#previousStageButton{
-    float: left;
-}
-
 
 table {
     border: 1px solid black;

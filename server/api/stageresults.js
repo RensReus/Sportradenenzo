@@ -4,11 +4,31 @@ const sqlDB = require('../db/sqlDB')
 
 module.exports = function (app) {
     app.post('/api/getstageresultsclassics', function (req, res) {
+        
         if (!req.user) {
             res.send({ 'mode': '404' });
             return;
         } else {
-            var values = [req.body.race, req.body.year, req.body.stageNumber]
+            var raceNames = ['omloop-het-nieuwsblad', 'kuurne-brussel-kuurne', 'strade-bianchi','milano-sanremo','e3-harelbeke','gent-wevelgem','dwars-door-vlaanderen','ronde-van-vlaanderen','Scheldeprijs','paris-roubaix','amstel-gold-race','la-fleche-wallone','liege-bastogne-liege','Eschborn-Frankfurt'];
+            var prevText = "";
+            var currText = "";
+            var nextText = "";
+            var stagenr = parseInt(req.body.stageNumber);
+
+            if(stagenr > 1 && stagenr < raceNames.length){
+                prevText = "Naar " + (stagenr - 1) + ": " + raceNames[stagenr - 2];
+                currText = stagenr + ": " + raceNames[stagenr - 1];
+                nextText = "Naar " + (stagenr + 1) + ": " + raceNames[stagenr];
+            } else if(stagenr < raceNames.length){
+                currText = stagenr + ": " + raceNames[stagenr - 1];
+                nextText = "Naar " + (stagenr + 1) + ": " + raceNames[stagenr];
+            } else if(stagenr > 1){
+                prevText = "Naar " + (stagenr - 1) + ": " + raceNames[stagenr - 2];
+                currText = stagenr + ": " + raceNames[stagenr - 1];
+                nextText = "Naar Einduitslag";
+            }
+
+            var values = [req.body.race, req.body.year, stagenr]
             var race_id = `(SELECT race_id FROM race WHERE name = $1 AND year = $2)`
             var query = `SELECT * FROM stage WHERE race_id=${race_id} AND stagenr=$3`
             sqlDB.query(query, values, (err, response) => {
@@ -56,10 +76,13 @@ module.exports = function (app) {
                     }, function (err, results) {
                         if (err) throw err;
                         res.send({
-                            'mode': '',
-                            'teamresult': results.teamresult.rows,
-                            'userscores': results.userscores.rows,
-                            'stageresults': results.stageresults.rows
+                            mode: '',
+                            teamresult: results.teamresult.rows,
+                            userscores: results.userscores.rows,
+                            stageresults: results.stageresults.rows,
+                            prevText: prevText,
+                            currText: currText,
+                            nextText: nextText,
                         });
                         return;
                     });

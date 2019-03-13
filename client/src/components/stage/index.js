@@ -144,6 +144,7 @@ class StageResultsTable extends Component {
 }
 
 class Stage extends Component {
+    
     constructor(props) {
         super(props);
         this.state = {
@@ -153,7 +154,10 @@ class Stage extends Component {
             stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
             userTeamResult: [],
             userScores: [],
-            stageresults: []
+            stageresults: [],
+            prevText: "",
+            currText: "",
+            nextText: "",
         }
         this.previousStage = this.previousStage.bind(this);
         this.nextStage = this.nextStage.bind(this);
@@ -169,30 +173,34 @@ class Stage extends Component {
                         mode: '404'
                     })
                 } else {
+                    console.log(res.data)
                     this.setState({
                         mode: '',
                         userTeamResult: res.data.teamresult,
                         userScores: res.data.userscores,
-                        stageresults: res.data.stageresults
+                        stageresults: res.data.stageresults,
+                        prevText: res.data.prevText,
+                        currText: res.data.currText,
+                        nextText: res.data.nextText,
                     })
                 }
             })
     }
     previousStage() {
-        const currentstage = this.state.stage
-        this.props.history.push('/stage/' + (parseInt(currentstage) - 1).toString())
+        const currentstage = parseInt(this.state.stage)
+        this.props.history.push('/stage/' + (currentstage - 1).toString())
         this.setState({
-            stage: (parseInt(currentstage) - 1).toString()
+            stage: (currentstage - 1).toString()
         })
-        this.updateData((parseInt(currentstage) - 1).toString())
+        this.updateData((currentstage - 1).toString())
     }
     nextStage() {
-        const currentstage = this.state.stage
-        this.props.history.push('/stage/' + (parseInt(currentstage) + 1).toString())
+        const currentstage = parseInt(this.state.stage)
+        this.props.history.push('/stage/' + (currentstage + 1).toString())
         this.setState({
-            stage: (parseInt(currentstage) + 1).toString()
+            stage: (currentstage + 1).toString()
         })
-        this.updateData((parseInt(currentstage) + 1).toString())
+        this.updateData((currentstage + 1).toString())
     }
     componentDidMount() {
         this.updateData(parseInt(this.state.stage))
@@ -215,13 +223,16 @@ class Stage extends Component {
             pTable = <PouleTable userScores={this.state.userScores} />
             stResTable = <StageResultsTable stageresults={this.state.stageresults} />
         }
-        const stage = parseInt(this.state.stage);
         return (
-            <div className="standardContainer">
+            <div className="stageContainer">
                 <div id="titlebuttons">
-                    <button id="previousStageButton" onClick={this.previousStage}>Stage {stage - 1}</button>
-                    <div id="title">Stage {this.state.stage} </div>
-                    <button id="nextStageButton" onClick={this.nextStage}>Stage {stage + 1}</button>
+                    <div id="previousStageButton">
+                        <button  onClick={this.previousStage}>{this.state.prevText}</button>
+                    </div>
+                    <div id='title'>{this.state.currText}</div>
+                    <div id="nextStageButton">
+                        <button onClick={this.nextStage}>{this.state.nextText}</button>
+                    </div>
                 </div>
                 {message}
                 <div className="res">{resTable}</div>
