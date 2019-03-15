@@ -18,6 +18,14 @@ class Navbar extends Component {
                 <ul>
                     {buttonSignProfile}
                 </ul>
+                <div className="dropdown">
+                    <button className="dropbtn">Charts</button>
+                    <div className="dropdown-content">
+                        <a href="/charts/userscores">Relatief Scoreverloop</a>
+                        <a href="/charts/riderpercentage">Puntenaandeel Renner per Etappe</a>
+                        <a href="/charts/riderpercentagetotal">Puntenaandeel Renner totaal</a>
+                    </div>
+                    </div> 
             </div>
         )
     }

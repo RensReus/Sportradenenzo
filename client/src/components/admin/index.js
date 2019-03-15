@@ -63,7 +63,11 @@ class Admin extends Component{
         if ((e.keyCode === 10 || e.keyCode === 13) && e.ctrlKey){
             this.submitQuery(e);
         }
-     }
+    }
+
+    componentDidMount() {
+        this.input.focus();
+    }
 
     render(){
         
@@ -71,7 +75,7 @@ class Admin extends Component{
             <div className="adminpageContainer">
                 <div>
                     <form action="" onSubmit={this.submitQuery} id="queryform">
-                        <textarea className="queryInputBox" rows="20" cols="100" value={this.state.value} onChange={this.handleChange} onKeyDown={this.keyPress}/>
+                        <textarea className="queryInputBox" rows="20" cols="100" value={this.state.value} onChange={this.handleChange} onKeyDown={this.keyPress} ref={(input) => { this.input = input; }} />
                         <input type="submit" value="submit" />
                     </form>
                     <button onClick={this.testButton} value='SELECT * FROM account' className="queryButton">Get all accounts</button>

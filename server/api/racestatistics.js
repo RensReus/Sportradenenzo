@@ -145,27 +145,7 @@ module.exports = function (app) {
                     }
                 }
                 data.sort(function(a,b){return b.dataPoints[b.dataPoints.length - 1].y - a.dataPoints[a.dataPoints.length - 1].y})
-                var options = {
-                    theme: "light2",
-                    title: {
-                        text: "Scores"
-                    },
-                    subtitles: [{
-                        text: "Totaal score na iedere etappe"
-                    }], 
-                    axisX:{
-                        interval: 1,
-                        title: "Stage"
-                    },
-                    axisY:{
-                        title: "Points"
-                    },
-                    toolTip:{
-                        shared: true
-                    },
-                    data: data
-                }
-                res.send(options);
+                res.send(data);
             })
         }
     })
@@ -209,29 +189,7 @@ module.exports = function (app) {
                     
                 }
                 data.push(riderObj)
-                var options = {
-                    theme: "light2",
-                    title: {
-                        text: "Scores per etappe"
-                    },
-                    subtitles: [{
-                        text: "Punten per renner"
-                    }], 
-                    axisX:{
-                        // minimum: -0.01*max,
-                        // maximum: max*1.01,
-                        title: "Stage",
-                        interval: 1
-                    },
-                    axisY:{
-                        title: "Points"
-                    },
-                    toolTip: {
-                        content: "{name}: {y} ",
-                    },
-                    data: data
-                }
-                res.send(options);
+                res.send(data);
             })
         }
     })
@@ -247,59 +205,42 @@ module.exports = function (app) {
             INNER JOIN stage USING (stage_id)
             WHERE rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})
             ORDER by lastname, stagenr`
-            sqlDB.query(query, (err,results)=>{
-                if(err) throw err;
-                var lastname = results.rows[0].lastname;
-                var riderObj = {
-                    type: "stackedArea", 
-                    name: lastname,
-                    showInLegend: true,
-                    dataPoints:[] 
-                }
-                var data = [];
-                var totalscore = 0;
-                for(var i in results.rows){
-                    if(riderObj.name == results.rows[i].lastname){
-                        totalscore += results.rows[i].totalscore;
-                        riderObj.dataPoints.push({x: results.rows[i].stagenr, y:totalscore})
-                    }else{
-                        data.push(riderObj);
-                        lastname = results.rows[i].lastname;
-                        riderObj = {
-                            type: "stackedArea", 
-                            name: lastname,
-                            showInLegend: true,
-                            dataPoints:[] 
-                        }
-                        totalscore = 0;
-                        totalscore += results.rows[i].totalscore;
-                        riderObj.dataPoints.push({x: results.rows[i].stagenr, y:totalscore})
+            var query2 = `select array_agg(stagenr) as stages, array_agg(totalscore) as scores, lastname from team_selection_rider
+            left join results_points using(rider_participation_id)
+            left join rider_participation using(rider_participation_id)
+            left join rider using(rider_id)
+            left join stage using(stage_id)
+            where account_participation_id = ${account_participation_id}
+            group by lastname`
 
+            sqlDB.query(query2, (err,results)=>{
+                if(err) throw err;
+                var data = [];
+                
+                for (var i in results.rows){
+                    var lastname = results.rows[i].lastname;
+                    var riderObj = {
+                        type: "line", 
+                        name: lastname,
+                        showInLegend: true,
+                        dataPoints:[] 
                     }
-                    
+                    var rider = results.rows[i]
+                    var total = 0;
+                    for(var j = 0; j < 4; j++){
+                        var index = rider.stages.indexOf(j);
+                        if(index + 1){// index not -1
+                            total += rider.scores[index];
+                        }
+                        riderObj.dataPoints.push({x: j, y:total})
+
+                        
+                    }
+                    data.push(riderObj)
                 }
-                data.push(riderObj)
-                var options = {
-                    theme: "light2",
-                    title: {
-                        text: "Totaal Scores"
-                    },
-                    subtitles: [{
-                        text: "Punten per renner"
-                    }], 
-                    axisX:{
-                        title: "Stage",
-                        interval: 1
-                    },
-                    axisY:{
-                        title: "Points"
-                    },
-                    toolTip: {
-                        content: "{name}: {y} "
-                    },
-                    data: data
-                }
-                res.send(options);
+
+                
+                res.send(data);
             })
         }
     })

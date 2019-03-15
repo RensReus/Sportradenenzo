@@ -33,7 +33,7 @@ class manualupdate extends Component {
         var stage = Number(this.state.gskStage);
         if (Number.isInteger(stage)) {
             stage = parseInt(stage);
-            if (stage > 0 && stage < 17) {
+            if (stage > 0 && stage < 15) {
                 console.log("stage:", stage);
                 axios.post('/api/getstartlistklassiek', { year: 2019, stage: stage })
                     .then((res) => {
@@ -51,7 +51,7 @@ class manualupdate extends Component {
         var stage = Number(this.state.grkStage);
         if (Number.isInteger(stage)) {
             stage = parseInt(stage);
-            if (stage > 0 && stage < 17) {
+            if (stage > 0 && stage < 15) {
                 console.log("stage:", stage);
                 axios.post('/api/getresultsklassiek', { year: 2019, stage: stage })
                     .then((res) => {
