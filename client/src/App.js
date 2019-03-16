@@ -25,7 +25,7 @@ class App extends Component {
 
   componentWillMount() {
     //Voordat de pagina wordt geladen kijken of de gebruiker is ingelogd
-    axios.post('api/isloggedin', { withCredentials: true }) //to: authentication.js
+    axios.post('/api/isloggedin', { withCredentials: true }) //to: authentication.js
       .then((res) => {
         if(this.props.history.location.pathname !== '/'){
           this.setState({redirect: this.props.history.location.pathname})//om de user door te sturen na de login
@@ -41,7 +41,7 @@ class App extends Component {
 
   render() {
     //Kijk of de gebruiker is ingelogd bij elke update van de pagina
-    axios.post('api/isloggedin', { withCredentials: true }) //to: authentication.js
+    axios.post('/api/isloggedin', { withCredentials: true }) //to: authentication.js
       .then((res) => {
         if (this.state.isLoggedIn !== res.data) { //Als er verandering is moet de state worden aangepast
           this.setState({ isLoggedIn: res.data }); //true of false
