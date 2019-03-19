@@ -1,7 +1,6 @@
 //In dit bestand staan alle calls die betrekking hebben tot de resultaten van een stage
 
 module.exports = function (app) {
-    const async = require('async')
     const sqlDB = require('../db/sqlDB')
 
     app.post('/api/getstagevictories', function (req, response) {
@@ -11,61 +10,128 @@ module.exports = function (app) {
             var race_id = req.body.race_id;
             var poule_id = req.body.poule_id;
             
-            var query =`SELECT username, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore desc) FROM stage_selection
+            var queryOud =`SELECT array_agg(username) as user, stagenr, array_agg(stagescore) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
             WHERE stage.race_id = ${race_id}
-            ORDER BY stagenr ASC, rank ASC`;//AND poule_id = ${poule_id}
+            Group by stagenr
+            ORDER BY stagenr ASC`;//AND poule_id = ${poule_id}
+
+            var subquery = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore desc) FROM stage_selection
+            INNER JOIN account_participation USING (account_participation_id)
+            INNER JOIN account USING (account_id)
+            INNER JOIN stage USING (stage_id)
+            WHERE stage.race_id = ${race_id}) AS subquery`
+            var query1 = `SELECT ARRAY_AGG(username ORDER BY stagescore DESC) as usernames, ARRAY_AGG(stagescore ORDER BY stagescore DESC) as scores, stagenr FROM ${subquery}
+            GROUP BY stagenr; `;//ranking per stage
+            var query2 = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
+            (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
+            GROUP BY username`//aantal keer per ranking
+            var query = query1 + query2;
             sqlDB.query(query,(err, res) => {
                 if (err) throw err;
                 else {
-                    var stage = 1;
-                    var stagerankings = [];
-                    var rankingscount = [];
-                    var rankingsObj = {};
-                    for (var i in res.rows){
+                    console.log("res2", res[1])
+
+                    var headersRank=["Stage"];
+                    var headersCount=["User"];
+                    var rowsRank=[];
+                    var rowsCount=[];
+                    
+                    var userCount = res[1].rows.length
+                    for(var i in res[0].rows){//ranking per stage
+                        var row = [parseInt(i)+1];
+                        for(var j in res[0].rows[i].usernames){
+                            row.push(res[0].rows[i].usernames[j] + " (" + res[0].rows[i].scores[j] + ")");
+                        }
+                        rowsRank.push(row);
+                    }
+
+
+                    for(var i in res[1].rows){//aantal keer per ranking
+                        var user = res[1].rows[i];
+                        var row = new Array(userCount+1).fill(0)
+                        row[0] = user.username;
+                        for(var j in user.ranks){
+                            row[user.ranks[j]] = user.rankcounts[j];
+                        }
+                        rowsCount.push(row);
+                    }
+
+                    //make headers
+                    for(var i = 1; i < userCount + 1;i++){
+                        headersRank.push(i+"e");
+                        headersCount.push(i+"e");
+                    }
+
+                    //sort rowsCount
+                    rowsCount.sort(function(a,b){
+                        for(var i = 1; i <userCount+1; i++){
+                            if(a[i]>b[i]) return false;
+                            if(a[i]<b[i]) return true;
+                        }
+                        return false;
+                    })
+
+                    response.send({rankTable:{header: headersRank, rows: rowsRank}, countTable:{header: headersCount, rows: rowsCount}})
+
+                    // response.send({stagerankings: stagerankings, rankingscount:rankingscount});
+                    // var stage = 1;
+                    // var stagerankings = [];
+                    // var stagerankingsForCount = [];
+                    // var rankingscount = [];
+                    // var rankingsObj = {};
+                    // var rankingsObjForCount = {};
+                    // for (var i in res.rows){
                         
-                        rankingsObj["stage"] = stage;
+                    //     rankingsObj["stage"] = stage;
+                    //     rankingsObjForCount["stage"] = stage;
             
-                        var username = res.rows[i].username;
-                        var rank = res.rows[i].rank;
-                        if(res.rows[i].stagenr == stage){
-                            rankingsObj[rank+"e"] = username;
-                        }else{
-                            stagerankings.push(rankingsObj);
-                            stage++;
-                            var rankingsObj = {};
-                            rankingsObj["stage"] = stage;
-                            rankingsObj[rank+"e"] = username;
-                        }
-                        if(i == res.rows.length - 1){
-                          stagerankings.push(rankingsObj);
-                        }
+                    //     var username = res.rows[i].username;
+                    //     var rank = res.rows[i].rank;
+                    //     if(res.rows[i].stagenr == stage){
+                    //         rankingsObj[rank+"e"] = username + " (" + res.rows[i].stagescore + ")";
+                    //         rankingsObjForCount[rank+"e"] = username;
+                    //     }else{
+                    //         stagerankings.push(rankingsObj);
+                    //         stagerankingsForCount.push(rankingsObjForCount);
+                    //         stage++;
+                    //         var rankingsObj = {};
+                    //         var rankingsObjForCount = {};
+                    //         rankingsObj["stage"] = stage;
+                    //         rankingsObjForCount["stage"] = stage;
+                    //         rankingsObj[rank+"e"] = username + " (" + res.rows[i].stagescore + ")";
+                    //         rankingsObjForCount[rank+"e"] = username;
+                    //     }
+                    //     if(i == res.rows.length - 1){
+                    //       stagerankings.push(rankingsObj);
+                    //       stagerankingsForCount.push(rankingsObjForCount);
+                    //     }
             
-                    }
-                    var totalAccounts = res.rows.length/stage;
-                    for(var j = 1; j <totalAccounts+1; j++){
-                        var userObj = {name:stagerankings[0][j+"e"]}
-                        for(var k = 1; k <totalAccounts+1; k++){
-                            userObj[k+"e"] = 0;
-                        }
-                        for(var i in stagerankings){
-                            for(var k = 1; k <totalAccounts+1; k++){
-                                if(stagerankings[i][k+"e"] == userObj.name){
-                                    userObj[k+"e"] += 1;
-                                }
-                            }
-                        }
-                        rankingscount.push(userObj);
-                    }
-                    rankingscount.sort(function(a,b){
-                        for(var i = 1; i <totalAccounts+1; i++){
-                            if(a[i+"e"]>b[i+"e"]) return false;
-                            if(a[i+"e"]<b[i+"e"]) return true;
-                        }
-                        return false})
-                    response.send({stagerankings: stagerankings, rankingscount:rankingscount});
+                    // }
+                    // var totalAccounts = res.rows.length/stage;
+                    // for(var j = 1; j <totalAccounts+1; j++){
+                    //     var userObj = {name:stagerankingsForCount[0][j+"e"]}
+                    //     for(var k = 1; k <totalAccounts+1; k++){
+                    //         userObj[k+"e"] = 0;
+                    //     }
+                    //     for(var i in stagerankingsForCount){
+                    //         for(var k = 1; k <totalAccounts+1; k++){
+                    //             if(stagerankingsForCount[i][k+"e"] == userObj.name){
+                    //                 userObj[k+"e"] += 1;
+                    //             }
+                    //         }
+                    //     }
+                    //     rankingscount.push(userObj);
+                    // }
+                    // rankingscount.sort(function(a,b){
+                    //     for(var i = 1; i <totalAccounts+1; i++){
+                    //         if(a[i+"e"]>b[i+"e"]) return false;
+                    //         if(a[i+"e"]<b[i+"e"]) return true;
+                    //     }
+                    //     return false})
+                    // response.send({stagerankings: stagerankings, rankingscount:rankingscount});
                 }
             })
         }

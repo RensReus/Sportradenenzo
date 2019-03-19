@@ -57,32 +57,24 @@ getStartlist = function (year, racenr, callback) {
                         
                     })
                 });
+
+                var deleteQuery = `DELETE FROM `;
+
+
                 riderQuery = riderQuery.slice(0,-1) +  ` ON CONFLICT (PCS_id) 
-                DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials`;
+                DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials; `;
                 
                 participationQuery = participationQuery.slice(0, -1) + `ON CONFLICT (race_id,rider_id) 
-                DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team`;
+                DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team; `;
 
                 results_pointsQuery = results_pointsQuery.slice(0, -1) + `ON CONFLICT (stage_id, rider_participation_id)
-                DO NOTHING`;
+                DO NOTHING; `;
+                var totalQuery = riderQuery + participationQuery + results_pointsQuery;
 
-                sqlDB.query(riderQuery, (err, res) => {
+                sqlDB.query(totalQuery, (err, res) => {
                     if (err) throw err;
                     else {
                         console.log(res);
-                        sqlDB.query(participationQuery, (err, res2) => {
-                            if (err) throw err;
-                            else { 
-                                //set an empty score for each rider
-                                console.log("PARTICIPATION ");
-                                console.log(res2);
-                                sqlDB.query(results_pointsQuery, (err, res3) => {
-                                    if (err) throw err;
-                                    console.log('RESULT_POINTS');
-                                    console.log(res3);
-                                })
-                            }
-                        })
                     }
                 });
                 
@@ -92,98 +84,6 @@ getStartlist = function (year, racenr, callback) {
         })
     }
 
-
-getStartlist_old = function (year, racenr, callback) {
-    var race_id = 4;
-    var stage_id = 0;
-    var raceString = raceNames[racenr - 1];
-    sqlDB.query(`SELECT stage_id FROM stage WHERE race_id = ${race_id} AND stagenr = ${racenr}`)
-        .then(res => {
-            if (res.rowCount > 0) {
-                stage_id = res.rows[0].stage_id;
-
-            }
-            console.log("got stage %s", stage_id);
-            request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, function (error, response, html) {
-                if (!error && response.statusCode == 200) {
-                    var $ = cheerio.load(html);
-                    console.log(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`)
-                    $(".team").each(function (index, element) { //gaat ieder team af
-                        var teamName = $(this).children().first().children().eq(1).text();
-                        console.log("teamname %s", teamName);
-                        $(this).children().eq(2).children(".rider").each(function (index, element) { //gaat iedere renner af
-                            var name = $(this).text();
-                            // sla achternaam voor naam en voorletters op
-                            var lastname = $(this).children().first().text();
-                            var voornaam = name.substring(lastname.length + 1);
-                            var voornamen = voornaam.split(' ').filter(x => x);
-                            var voorletters = "";
-                            for (var i = 0; i < voornamen.length; i++) {
-                                voorletters += voornamen[i].substring(0, 1) + ".";
-                            }
-
-                            var pcsid = $(this).attr('href').substring(6);
-                            if ($(this).siblings().eq(4 * index).attr("class") != null) {
-                                var country = $(this).siblings().eq(4 * index).attr("class").split(' ')[1];
-                            }
-                            var prijs = 500000; //default 500k
-
-                            // if name contains '
-                            var apind = voornaam.indexOf("'");
-                            if (apind >= 0) {
-                                voornaam = voornaam.substr(0, apind) + "'" + voornaam.substr(apind, voornaam.length - 1);
-                            }
-                            var apind = lastname.indexOf("'")
-                            if (apind >= 0) {
-                                lastname = lastname.substr(0, apind) + "'" + lastname.substr(apind, lastname.length - 1);
-                            }
-                            //sqlcode
-                            //insert rider or update
-                            var riderValues = [pcsid, country, voornaam, lastname, voorletters];
-                            console.log(pcsid, country, voornaam, lastname, voorletters);
-                            var riderQuery = `INSERT INTO rider(PCS_id, country, firstname, lastname, initials) 
-                            VALUES ($1, $2, $3, $4, $5)
-                            ON CONFLICT (PCS_id) 
-                            DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials
-                            RETURNING rider_id`;
-                            sqlDB.query(riderQuery, riderValues, (err, res) => {
-                                if (err) throw err;
-                                else {
-                                    var rider = res.rows[0].rider_id;
-                                    console.log("%s %s INSERTED INTO rider or Updated", rider, pcsid)
-                                    // insert or update rider_participation
-                                    var participationValues = [race_id, rider, prijs, teamName];
-                                    var participationQuery = `INSERT INTO rider_participation (race_id,rider_id,price,team) 
-                                    VALUES ($1,$2,$3,$4)
-                                    ON CONFLICT (race_id,rider_id) 
-                                    DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team
-                                    RETURNING rider_participation_id`;
-                                    sqlDB.query(participationQuery, participationValues, (err, res2) => {
-                                        if (err) throw err;
-                                        else {
-                                            //set an empty score for each rider
-                                            var rider_participation_id = res2.rows[0].rider_participation_id;
-                                            var resultsValues = [stage_id, rider_participation_id];
-                                            var results_pointsQuery = `INSERT INTO results_points(stage_id, rider_participation_id)
-                                            VALUES ($1,$2)
-                                            ON CONFLICT (stage_id, rider_participation_id)
-                                            DO NOTHING`;
-                                            sqlDB.query(results_pointsQuery, resultsValues, (err, res3) => {
-                                                if (err) throw err;
-                                                console.log("rider added")
-                                            })
-                                        }
-                                    })
-                                }
-                            });
-                        })
-                    });
-                    console.log("just before callback");
-                    callback();
-                }
-            });
-        })
-}
 
 
 // ga niet verder dan dit
