@@ -71,20 +71,22 @@ calculateUserScoresKlassieker = function(year,stage,callback){
         if(err) throw err;
         var stageselectionQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
         for (i in res.rows){
-            var account_participation_id = res.rows[i].account_participation_id;
-            var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${stage})`;
-            var stagescore = `(SELECT SUM(results_points.totalscore) FROM team_selection_rider 
-                            INNER JOIN rider_participation USING (rider_participation_id)
-                            INNER JOIN results_points USING (rider_participation_id)
-                            WHERE rider_participation.race_id = ${race_id} AND account_participation_id = ${account_participation_id} and stage_id = ${stage_id})`;
-            var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${stage})`
-            var prevstagesScore = 0
-            if(stage != 1){
-                var prevstagesScore = `(SELECT SUM(stagescore) FROM stage_selection
-                WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages})`;
+            for(var j = stage; j < 15; j++){// to show correct totalscores for later stages
+                var account_participation_id = res.rows[i].account_participation_id;
+                var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
+                var stagescore = `(SELECT SUM(results_points.totalscore) FROM team_selection_rider 
+                                INNER JOIN rider_participation USING (rider_participation_id)
+                                INNER JOIN results_points USING (rider_participation_id)
+                                WHERE rider_participation.race_id = ${race_id} AND account_participation_id = ${account_participation_id} and stage_id = ${stage_id})`;
+                var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
+                var prevstagesScore = 0
+                if(stage != 1){
+                    var prevstagesScore = `(SELECT SUM(stagescore) FROM stage_selection
+                    WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages})`;
+                }
+                var totalscore = `${prevstagesScore} + ${stagescore}`;
+                stageselectionQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore}),`;
             }
-            var totalscore = `${prevstagesScore} + ${stagescore}`;
-            stageselectionQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore}),`;
         }
         stageselectionQuery = stageselectionQuery.slice(0, -1) + `ON CONFLICT (account_participation_id,stage_id)
         DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore`

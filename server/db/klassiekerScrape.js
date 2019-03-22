@@ -18,6 +18,7 @@ getStartlist = function (year, racenr, callback) {
                 var riderQuery = `INSERT INTO rider(PCS_id, country, firstname, lastname, initials) VALUES`;
                 var participationQuery = `INSERT INTO rider_participation (race_id,rider_id,price,team) VALUES`;
                 var results_pointsQuery = `INSERT INTO results_points(stage_id, rider_participation_id) VALUES`;
+                var startlist_IDs = '(';
                 $(".team").each(function (index, element) { //gaat ieder team af
                     var teamName = $(this).children().first().children().eq(-1).text();
                     $(this).children().eq(2).children(".rider").each(function (index, element) { //gaat iedere renner af
@@ -54,11 +55,11 @@ getStartlist = function (year, racenr, callback) {
                         participationQuery += `(${race_id},${rider}, ${prijs}, '${teamName}'),`;
                         var rider_participation = `(SELECT rider_participation_id FROM rider_participation WHERE rider_id = ${rider} AND race_id = ${race_id})`;
                         results_pointsQuery += `(${stage_id},${rider_participation}),`;
-                        
+                        startlist_IDs += `${rider_participation},`
                     })
                 });
-
-                var deleteQuery = `DELETE FROM `;
+                startlist_IDs = startlist_IDs.slice(0,-1) +')'
+                var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id} AND rider_participation_id NOT IN ${startlist_IDs}; `;// to remove riders no longer on startlist
 
 
                 riderQuery = riderQuery.slice(0,-1) +  ` ON CONFLICT (PCS_id) 
@@ -69,7 +70,7 @@ getStartlist = function (year, racenr, callback) {
 
                 results_pointsQuery = results_pointsQuery.slice(0, -1) + `ON CONFLICT (stage_id, rider_participation_id)
                 DO NOTHING; `;
-                var totalQuery = riderQuery + participationQuery + results_pointsQuery;
+                var totalQuery = deleteQuery +  riderQuery + participationQuery + results_pointsQuery;
 
                 sqlDB.query(totalQuery, (err, res) => {
                     if (err) throw err;
@@ -161,13 +162,16 @@ getResult = function (year, et, callback) {
                 resultsquery += `(${stage_id},${rider_participation_id},
                                 ${stagepos}, ${stagescore}, '${stageresult}', ${teamscore}, ${totalscore}),`;
             }
-
-            resultsquery = resultsquery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO UPDATE SET stagepos = EXCLUDED.stagepos, stagescore = EXCLUDED.stagescore, stageresult = EXCLUDED.stageresult, teamscore = EXCLUDED.teamscore, totalscore = EXCLUDED.totalscore';
-            // console.log(resultsquery)
-            sqlDB.query(resultsquery, (err, res) =>{
-                if(err) throw err;
-                callback()
-            })
+            if(ridersDay.length !== 0){
+                resultsquery = resultsquery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO UPDATE SET stagepos = EXCLUDED.stagepos, stagescore = EXCLUDED.stagescore, stageresult = EXCLUDED.stageresult, teamscore = EXCLUDED.teamscore, totalscore = EXCLUDED.totalscore';
+                // console.log(resultsquery)
+                sqlDB.query(resultsquery, (err, res) =>{
+                    if(err) throw err;
+                    callback()
+                })
+            }else{
+                callback();
+            }
         }
     });
 }
