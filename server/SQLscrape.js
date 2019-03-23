@@ -27,87 +27,90 @@ module.exports = {
                 prijzenfile = "prijzen.txt";
                 break;
         }
-        var race = 0;
-        this.sqlDB.query(`SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year}`)
-            .then(res => {
-                if (res.rowCount > 0) race = res.rows[0].race;
-                fs.readFile(prijzenfile, function (err, file) {
-                    var data = file.toString();
-                    var renners = data.split("\n");
-                    request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, function (error, response, html) {
-                        if (!error && response.statusCode == 200) {
-                            var $ = cheerio.load(html);
-                            $(".black").each(function (index, element) { //gaat ieder team af
-                                var teamName = $(this).text();
-                                $(this).parent().children(".rider").each(function (index, element) { //gaat iedere renner af
-                                    var name = $(this).text();
-                                    // sla achternaam voor naam en voorletters op
-                                    var lastname = $(this).children().first().text();
-                                    var voornaam = name.substring(lastname.length + 1);
-                                    var voornamen = voornaam.split(' ').filter(x => x);
-                                    var voorletters = "";
-                                    for (var i = 0; i < voornamen.length; i++) {
-                                        voorletters += voornamen[i].substring(0, 1) + ".";
-                                    }
+        var race_id = `(SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})`;
+        if (res.rowCount > 0) race_id = res.rows[0].race;
+        fs.readFile(prijzenfile, function (err, file) {
+            var data = file.toString();
+            var renners = data.split("\n");
+            request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, function (error, response, html) {
+                if (!error && response.statusCode == 200) {
+                    var $ = cheerio.load(html);
+                    var riderQuery = `INSERT INTO rider(pcsid, country, firstname, lastname, initials) VALUES`;
+                    var participationQuery = `INSERT INTO rider_participation (race_id,rider_id,price,team) VALUES`;
+                    var startlist_IDs = '(';
 
-                                    var pcsid = $(this).attr('href').substring(6);
-                                    if ($(this).siblings().eq(4 * index + 4).attr("class") != null) {
-                                        var country = $(this).siblings().eq(4 * index + 4).attr("class").split(' ')[1];
-                                    }
-                                    var prijs = 66666666;
-                                    for (i in renners) {
-                                        var renprijs = renners[i].split(" ");
-                                        if (pcsid === renprijs[0]) {
-                                            prijs = parseFloat(renprijs[1]);
-                                        } else {
-                                        }
-                                    }
-                                    if (prijs < 6) {
-                                        prijs = prijs * 1000000;
-                                    }
-                                    if (prijs === 66666666)
-                                        console.log(pcsid);
+                    $(".black").each(function (index, element) { //gaat ieder team af
+                        var teamName = $(this).text();
+                        $(this).parent().children(".rider").each(function (index, element) { //gaat iedere renner af
+                            var name = $(this).text();
+                            // sla achternaam voor naam en voorletters op
+                            var lastname = $(this).children().first().text();
+                            var voornaam = name.substring(lastname.length + 1);
+                            var voornamen = voornaam.split(' ').filter(x => x);
+                            var voorletters = "";
+                            for (var i = 0; i < voornamen.length; i++) {
+                                voorletters += voornamen[i].substring(0, 1) + ".";
+                            }
 
-                                    // if name contains '
-                                    var apind = voornaam.indexOf("'");
-                                    if (apind >= 0) {
-                                        voornaam = voornaam.substr(0, apind) + "'" + voornaam.substr(apind, voornaam.length - 1);
-                                    }
-                                    var apind = lastname.indexOf("'")
-                                    if (apind >= 0) {
-                                        lastname = lastname.substr(0, apind) + "'" + lastname.substr(apind, lastname.length - 1);
-                                    }
-                                    //sqlcode
-                                    //insert rider or do nothing
-                                    var riderQuery = `INSERT INTO rider(pcsid, country, firstname, lastname, initials) VALUES
-                        ('${pcsid}', '${country}', '${voornaam}', '${lastname}', '${voorletters}')
-                        ON CONFLICT (pcsid) 
-                        DO UPDATE SET pcsid = EXCLUDED.pcsid, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials
-                        RETURNING rider_id`;
-                                    var rider = 0;
-                                    this.sqlDB.query(riderQuery)
-                                        .then(res => {
-                                            rider = res.rows[0].rider;
-                                            console.log("%s %s INSERTED INTO rider", rider, pcsid)
-                                            // insert or update rider_participation
-                                            var participationQuery = `INSERT INTO rider_participation (race_id,rider_id,price,team) VALUES
-                                (${race},${rider},${prijs},'${teamName}')
-                                ON CONFLICT (race_id,rider_id) 
-                                DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, price = EXCLUDED.price, team = EXCLUDED.team`
-                                    this.sqlDB.query(participationQuery)
-                                                .then(console.log("INSERTED INTO rider_participation"))
-                                                .catch(e => console.error(e.stack));
-                                        })
-                                        .catch(e => console.error(e.stack));
+                            var pcsid = $(this).attr('href').substring(6);
+                            if ($(this).siblings().eq(4 * index + 4).attr("class") != null) {
+                                var country = $(this).siblings().eq(4 * index + 4).attr("class").split(' ')[1];
+                            }
+                            var prijs = 66666666;
+                            for (i in renners) {
+                                var renprijs = renners[i].split(" ");
+                                if (pcsid === renprijs[0]) {
+                                    prijs = parseFloat(renprijs[1]);
+                                } else {
+                                }
+                            }
+                            if (prijs < 6) {
+                                prijs = prijs * 1000000;
+                            }
+                            if (prijs === 66666666)
+                                console.log(pcsid);
 
-                                })
-                            });
+                            // if name contains '
+                            var apind = voornaam.indexOf("'");
+                            if (apind >= 0) {
+                                voornaam = voornaam.substr(0, apind) + "'" + voornaam.substr(apind, voornaam.length - 1);
+                            }
+                            var apind = lastname.indexOf("'")
+                            if (apind >= 0) {
+                                lastname = lastname.substr(0, apind) + "'" + lastname.substr(apind, lastname.length - 1);
+                            }
+                            //sqlcode
+                            //insert rider or do nothing
+                            riderQuery += `('${pcsid}', '${country}', '${voornaam}', '${lastname}', '${voorletters}'),`;
+                            var rider = `(SELECT rider_id FROM rider WHERE PCS_id = '${pcsid}')`;
+                            participationQuery += `(${race_id},${rider}, ${prijs}, '${teamName}'),`;
+                            var rider_participation = `(SELECT rider_participation_id FROM rider_participation WHERE rider_id = ${rider} AND race_id = ${race_id})`;
+                            startlist_IDs += `${rider_participation},`
+                        })
+                    });
+
+                    startlist_IDs = startlist_IDs.slice(0,-1) +')'
+                    var deleteQuery = `DELETE FROM rider_participation WHERE rider_participation_id NOT IN ${startlist_IDs}; `;
+                    
+                    riderQuery = riderQuery.slice(0,-1) +  ` ON CONFLICT (PCS_id) 
+                    DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials; `;
+                
+                    participationQuery = participationQuery.slice(0, -1) + `ON CONFLICT (race_id,rider_id) 
+                    DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team; `;
+
+                    var totalQuery = deleteQuery + riderQuery + participationQuery
+
+                    sqlDB.query(totalQuery, (err, res) => {
+                        if (err) throw err;
+                        else {
+                            console.log(res);
                             callback();
                         }
                     });
-                })
-                    .catch(e => console.error(e.stack));
+
+                }
             });
+        })
 
     },
 
@@ -223,8 +226,8 @@ module.exports = {
 
                 // change DNF to true for ridersDNF
                 var dnfquery = `UPDATE rider_participation SET dnf = TRUE 
-            WHERE race_id = (SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})
-            AND rider IN ( `
+                WHERE race_id = (SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})
+                AND rider IN ( `
                 for (var rider in ridersDNF) {
                     dnfquery += `(SELECT rider_id FROM rider WHERE pcsid = '${ridersDNF[rider].pcsid}'),`
                 }
@@ -236,7 +239,7 @@ module.exports = {
                 // process scores for each finished rider and send to db
                 var GTfinished = false;
                 if (et == 21) GTfinished = true; // laatste etappe
-                var resultsquery = `INSERT INTO results_points(stage_id, rider_participation_id, 
+                var resultsQuery = `INSERT INTO results_points(stage_id, rider_participation_id, 
                                 stagepos, gcpos, pointspos, kompos, yocpos, 
                                 stagescore, gcscore, pointsscore, komscore, yocscore, teamscore, totalscore, 
                                 stageresult, gcresult, pointsresult, komresult, yocresult) 
@@ -301,16 +304,18 @@ module.exports = {
                     var stage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et} AND race_id = ${race_id})`
                     var rider_id = `(SELECT rider_id FROM rider WHERE pcsid = '${pcsid}')`
                     var rider_participation_id = `SELECT rider_participation_id FROM rider_participation WHERE race_id = ${race_id} AND rider_id = ${rider_id}`
-                    resultsquery += `(${stage_id},${rider_participation_id},
+                    resultsQuery += `(${stage_id},${rider_participation_id},
                                 ${stagepos},    ${gcpos},   ${pointspos},   ${kompos},  ${yocpos}, 
                                 ${stagescore},  ${gcscore}, ${pointsscore}, ${komscore},${yocscore},${teamscore},${totalscore},
                                 '${stageresult}','${gcresult}','${pointsresult}','${komresult}','${yocresult}'),`;
                 }
 
-                resultsquery = resultsquery.slice(0, -1) + ' ON CONFLICT (stage,rider_participation) DO NOTHING';
-                this.sqlDB.query(resultsquery)
-                    .then(res => { callback() })
-                    .catch(e => console.error(e.stack));
+                resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage,rider_participation) DO NOTHING';
+                deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
+                totalQuery = deleteQuery + resultsQuery;
+                this.sqlDB.query(resultsQuery,(err,res)=>{
+                    callback()
+                })
             }
         });
     },

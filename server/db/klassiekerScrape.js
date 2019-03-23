@@ -61,7 +61,6 @@ getStartlist = function (year, racenr, callback) {
                 startlist_IDs = startlist_IDs.slice(0,-1) +')'
                 var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id} AND rider_participation_id NOT IN ${startlist_IDs}; `;// to remove riders no longer on startlist
 
-
                 riderQuery = riderQuery.slice(0,-1) +  ` ON CONFLICT (PCS_id) 
                 DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials; `;
                 

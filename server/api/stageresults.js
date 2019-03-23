@@ -38,7 +38,7 @@ module.exports = function (app) {
                                 INNER JOIN results_points USING(rider_participation_id)
                                 INNER JOIN rider USING(rider_id)
                                 WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id}
-                                ORDER BY totalscore DESC; `;
+                                ORDER BY totalscore DESC, team ; `;
             
             userscoresQuery =   `SELECT username, stagescore, totalscore FROM stage_selection
                                 INNER JOIN account_participation USING(account_participation_id)

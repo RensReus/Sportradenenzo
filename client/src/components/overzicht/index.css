@@ -8,7 +8,7 @@ div.overzichtContainer{
 }
 
 table.ScoreTable tr.inteam {
-    color: rgb(0, 0, 255);
+    font-weight: bold;
 }
 
 tr:nth-child(odd) {

@@ -9,31 +9,28 @@ module.exports = function (app) {
         }else{
             var race_id = req.body.race_id;
             var poule_id = req.body.poule_id;
-            
-            var queryOud =`SELECT array_agg(username) as user, stagenr, array_agg(stagescore) FROM stage_selection
-            INNER JOIN account_participation USING (account_participation_id)
-            INNER JOIN account USING (account_id)
-            INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${race_id}
-            Group by stagenr
-            ORDER BY stagenr ASC`;//AND poule_id = ${poule_id}
-
-            var subquery = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore desc) FROM stage_selection
+            var subquery1 = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore desc) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
             WHERE stage.race_id = ${race_id}) AS subquery`
-            var query1 = `SELECT ARRAY_AGG(username ORDER BY stagescore DESC) as usernames, ARRAY_AGG(stagescore ORDER BY stagescore DESC) as scores, stagenr FROM ${subquery}
-            GROUP BY stagenr; `;//ranking per stage
+            var subquery2 = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore desc) FROM stage_selection
+            INNER JOIN account_participation USING (account_participation_id)
+            INNER JOIN account USING (account_id)
+            INNER JOIN stage USING (stage_id)
+            WHERE stage.race_id = ${race_id} 
+            GROUP BY username, stagescore, stagenr
+            HAVING SUM(stagescore) > 0) AS subquery`
+            var query1 = `SELECT ARRAY_AGG(username ORDER BY stagescore DESC) as usernames, ARRAY_AGG(stagescore ORDER BY stagescore DESC) as scores, stagenr FROM ${subquery1}
+            GROUP BY stagenr
+            HAVING SUM(stagescore) > 0; `;//ranking per stage
             var query2 = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
-            (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
+            (SELECT username, rank, COUNT(rank) FROM ${subquery2} GROUP BY username,rank) b
             GROUP BY username`//aantal keer per ranking
             var query = query1 + query2;
             sqlDB.query(query,(err, res) => {
                 if (err) throw err;
                 else {
-                    console.log("res2", res[1])
-
                     var headersRank=["Stage"];
                     var headersCount=["User"];
                     var rowsRank=[];
