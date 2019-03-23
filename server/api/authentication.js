@@ -11,7 +11,7 @@ module.exports = function (app) {
   app.post('/api/login', function (req, res, next) {
     passport.authenticate('local-login', function (err, user) {
       if (err) { return next(err); }
-      if (!user) { return res.send(false); }
+      if (!user) { return res.send({isLoggedIn: false, isAdmin: false}); }
       req.logIn(user, function (err) {
         if (err) { return next(err); }
         return res.send(true);
@@ -20,10 +20,11 @@ module.exports = function (app) {
   });
 
   app.post('/api/isloggedin', function (req, res) {
+    console.log(req.user)
     if (!req.user) {
-      res.send(false)
+      res.send({isLoggedIn: false, isAdmin: false})
     } else {
-      res.send(true)
+      res.send({isLoggedIn: true, isAdmin: req.user.admin})
     }
   });
 };

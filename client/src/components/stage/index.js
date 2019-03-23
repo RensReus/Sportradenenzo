@@ -216,7 +216,6 @@ class Stage extends Component {
             pTable = ''
             stResTable = ''
         } else {
-            message = <h3></h3>
             resTable = <ResultsTable userTeamResult={this.state.userTeamResult} />
             pTable = <PouleTable userScores={this.state.userScores} />
             stResTable = <StageResultsTable stageresults={this.state.stageresults} />

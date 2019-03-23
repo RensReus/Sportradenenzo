@@ -20,7 +20,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = ({ isLoggedIn: false,
-                    redirect: '/stage/4' });//de default voor redirect
+                    redirect: '/stage/4',
+                  isAdmin: false });//de default voor redirect
   }
 
   componentWillMount() {
@@ -31,7 +32,8 @@ class App extends Component {
           this.setState({redirect: this.props.history.location.pathname})//om de user door te sturen na de login
         }
         if (this.state.isLoggedIn !== res.data) { //Als er verandering is moet de state worden aangepast
-          this.setState({ isLoggedIn: res.data }); //true of false
+          this.setState({ isLoggedIn: res.data.isLoggedIn,
+          isAdmin: res.data.isAdmin }); //true of false
         }
         if (!this.state.isLoggedIn && this.props.history.location.pathname !== '/') { //Als er niet is ingelogd en de gebruiker is niet op de loginpagina -> redirect
           this.props.history.replace('/');
@@ -43,8 +45,9 @@ class App extends Component {
     //Kijk of de gebruiker is ingelogd bij elke update van de pagina
     axios.post('/api/isloggedin', { withCredentials: true }) //to: authentication.js
       .then((res) => {
-        if (this.state.isLoggedIn !== res.data) { //Als er verandering is moet de state worden aangepast
-          this.setState({ isLoggedIn: res.data }); //true of false
+        if (this.state.isLoggedIn !== res.data.isLoggedIn) { //Als er verandering is moet de state worden aangepast
+          this.setState({ isLoggedIn: res.data.isLoggedIn,
+            isAdmin: res.data.isAdmin }); //true of false
         }
         if (!this.state.isLoggedIn && this.props.history.location.pathname !== '/') { //Als er niet is ingelogd en de gebruiker is niet op de loginpagina -> redirect
           this.props.history.replace('/');
@@ -56,7 +59,7 @@ class App extends Component {
     return (
       <div className="content">
         <div className="backgroundImage"></div>
-        <Navbar isLoggedIn={this.state.isLoggedIn} />
+        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (
             this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<Home history={this.props.history} />)
@@ -64,7 +67,9 @@ class App extends Component {
           <Route path="/profile" component={Profile} history={this.props.history} />
           <Route path="/stage/:stagenumber" component={Stage} history={this.props.history} />
           <Route path="/teamselection" component={Teamselection} history={this.props.history} />
-          <Route path="/admin" component={Admin} history={this.props.history} />
+          {this.state.isAdmin &&// dit kan wss mooier maar non-admins kunnen nooit op de admin pagina komen
+                <Route path="/admin" component={Admin} history={this.props.history} />}
+          
           <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
           <Route path="/overzicht" component={Overzicht} history={this.props.history} />
           <Route path="/charts/:chartname" component={Charts} history={this.props.history} />

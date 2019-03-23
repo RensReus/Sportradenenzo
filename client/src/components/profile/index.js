@@ -11,9 +11,6 @@ class ActiveRacesTable extends Component{
 }
 
 class Profile extends Component{
-    constructor(props){
-        super(props);
-    }
     componentDidMount() {
         window.alert('Mounted')
         axios.post('/api/getracepartcipation') //to: userparticipation.js

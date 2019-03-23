@@ -3,35 +3,125 @@ import './index.css';
 import axios from 'axios';
 
 class Outputtable extends Component{
-    render(){
-        const output = this.props.output
-        const header = []
-        var row = []
-        const rows = []
-        if(output.length>0){
-            const properties = Object.keys(output[0])
-            properties.forEach(function(property){
-                header.push(<th>{property}</th>)
-            })
-            for(var i=0;i<output.length;i++){
-                for (var property in output[i]) {
-                    row.push(<td>{output[i][property] == null ? "null" : output[i][property].toString()}</td>);
-                }
-                rows.push(<tr>{row}</tr>)
-                row = []
-            }
+    constructor(props){
+        super(props);
+        this.switchTabs = this.switchTabs.bind(this);
+    }
+    switchTabs(tabNR){
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
         }
+        tablinks = document.getElementsByClassName("tablinks");
+
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabNR).style.display = "block";
+        document.getElementById("button"+tabNR).className += " active";
+    }
+
+    render(){
+        const responseTotal = this.props.output;
+        var queryCount = 1;
+        if(Array.isArray(responseTotal)){
+            queryCount = responseTotal.length;
+        }
+        var tabHeaders = [];
+        var tables = [];
+        for(var tabNR = 0; tabNR < queryCount;tabNR++){
+            var response = '';
+            var output = '';
+            var commandType = '';
+            if(queryCount > 1){
+                response = responseTotal[tabNR];
+            }else{
+                response = responseTotal;
+            }
+            commandType = response.command;
+            output = response.rows;
+            const header = []
+            var row = []
+            const rows = []
+            const switchArg = tabNR;
+            var headerClass = "tablinks"
+            var tabStyle = {};
+            if(tabNR===0){
+                headerClass += " active"
+                tabStyle = {display: 'block'}
+            }
+            tabHeaders.push(<button className={headerClass} id={"button"+tabNR} onClick={() => { this.switchTabs(switchArg) }}>{tabNR +": "+ commandType}</button>)
+            var extraHeader = []
+            var extraRow = []
+
+            const properties = Object.keys(response)
+
+            properties.forEach(function(property){
+                extraHeader.push(<th>{property}</th>)
+            })
+            var extraRowEl = [];
+            for (var property in response){
+                var text = String(response[property]).substring(0,20);
+                if(property === 'fields' || property === 'rows'){
+                    text = response[property].length;
+                }
+                extraRowEl.push(<td>{text}</td>);
+            }
+            extraRow.push(<tr>{extraRowEl}</tr>);
+            
+            if(output.length>0){
+                const properties = Object.keys(output[0])
+                properties.forEach(function(property){
+                    header.push(<th>{property}</th>)
+                })
+                for(var i=0;i<output.length;i++){
+                    for (var property in output[i]) {
+                        row.push(<td>{output[i][property] == null ? "null" : output[i][property].toString()}</td>);
+                    }
+                    rows.push(<tr>{row}</tr>)
+                    row = []
+                }
+            }
+
+            tables.push(
+            <div id={tabNR} className="tabcontent" style={tabStyle}>
+                <table>
+                    <thead>
+                        <tr>
+                            {extraHeader}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {extraRow}
+                    </tbody>
+                </table>
+                <table className="outputTable">
+                    <thead>
+                        <tr>
+                            {header}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows}
+                    </tbody>
+                </table>
+            </div>
+            )
+            
+        }
+
+        
+
         return(
-            <table className="outputTable">
-                <thead>
-                    <tr>
-                        {header}
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
+            <div className="outputTableContainer">
+                <div className="tab">
+                    {tabHeaders}
+                </div>
+                {tables}
+            </div>
+
+            
         )
     }
 }
@@ -39,7 +129,7 @@ class Outputtable extends Component{
 class Admin extends Component{
     constructor(props){
         super(props);
-        this.state = ({output: [],value: ''});
+        this.state = ({output: [],value: '',submitted:false});
         this.submitQuery = this.submitQuery.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.testButton = this.testButton.bind(this);
@@ -49,7 +139,7 @@ class Admin extends Component{
         e.preventDefault();
         axios.post('/api/admin',{query : this.state.value})
         .then((res)=>{
-            this.setState({output:res.data.data})
+            this.setState({output:res.data.data, submitted: true})
         })
     }
     handleChange(e){
@@ -64,6 +154,8 @@ class Admin extends Component{
             this.submitQuery(e);
         }
     }
+
+    
 
     componentDidMount() {
         this.input.focus();
@@ -81,9 +173,9 @@ class Admin extends Component{
                     <button onClick={this.testButton} value='SELECT * FROM account' className="queryButton">Get all accounts</button>
                     <button onClick={this.testButton} value="SELECT race_id FROM race WHERE name = '' AND year = ''" className="queryButton">Get race ID</button>
                     <button onClick={this.testButton} value="SELECT rider.firstname || ' ' || rider.lastname as name, price, team, rider_participation_id FROM rider_participation INNER JOIN rider using(rider_id) WHERE race_id = ${race_id}" className="queryButton">Get all riders</button>
-                    <div className="outputTableContainer">
-                        <Outputtable output={this.state.output}/>
-                    </div>
+                    
+                    <Outputtable output={this.state.output}/>
+                    
                 </div>
             </div>
         )
