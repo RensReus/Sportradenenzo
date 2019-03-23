@@ -25,8 +25,11 @@ class Outputtable extends Component{
     render(){
         const responseTotal = this.props.output;
         var queryCount = 1;
+        var error = false;
         if(Array.isArray(responseTotal)){
             queryCount = responseTotal.length;
+        }else if(responseTotal.name){//error
+            error = true;
         }
         var tabHeaders = [];
         var tables = [];
@@ -41,6 +44,7 @@ class Outputtable extends Component{
             }
             commandType = response.command;
             output = response.rows;
+            if(error){output =[]}
             const header = []
             var row = []
             const rows = []

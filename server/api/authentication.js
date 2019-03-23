@@ -20,7 +20,6 @@ module.exports = function (app) {
   });
 
   app.post('/api/isloggedin', function (req, res) {
-    console.log(req.user)
     if (!req.user) {
       res.send({isLoggedIn: false, isAdmin: false})
     } else {
