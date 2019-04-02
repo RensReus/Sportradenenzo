@@ -69,9 +69,10 @@ calculateUserScoresKlassieker = function(year,stage,callback){
     var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
     sqlDB.query(participantsQuery,function(err,res){
         if(err) throw err;
-        var stageselectionQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
-        for (i in res.rows){
+        var totalQuery = '';
+        for (i in res.rows){// voor iedere user
             for(var j = stage; j < 15; j++){// to show correct totalscores for later stages
+                var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
                 var account_participation_id = res.rows[i].account_participation_id;
                 var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
                 var stagescore = `(SELECT SUM(results_points.totalscore) FROM team_selection_rider 
@@ -80,19 +81,21 @@ calculateUserScoresKlassieker = function(year,stage,callback){
                                 WHERE rider_participation.race_id = ${race_id} AND account_participation_id = ${account_participation_id} and stage_id = ${stage_id})`;
                 var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
                 var prevstagesScore = 0
-                if(stage != 1){
+                if(j != 1){
                     var prevstagesScore = `(SELECT SUM(stagescore) FROM stage_selection
                     WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages})`;
                 }
                 var totalscore = `${prevstagesScore} + ${stagescore}`;
-                stageselectionQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore}),`;
+                scoreQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore})`;
+                scoreQuery += `ON CONFLICT (account_participation_id,stage_id)
+                DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore; `
+                totalQuery += scoreQuery;
+
             }
         }
-        stageselectionQuery = stageselectionQuery.slice(0, -1) + `ON CONFLICT (account_participation_id,stage_id)
-        DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore`
-        sqlDB.query(stageselectionQuery,(err, res) => {
+        sqlDB.query(totalQuery,(err, res) => {
             if (err) throw err;
-            console.log(stageselectionQuery)
+            console.log(totalQuery)
             console.log("res:",res);
         })
     })
@@ -244,9 +247,42 @@ function attrIndex(array, attr, value) {
 }
 
 
+function stageNumKlassieker(){
+    var dates = [new Date("2017-10-01") // omloop
+                ,new Date("2017-10-01") // KBK
+                ,new Date("2017-10-01") // Strade
+                ,new Date("2017-10-01") // MS
+                ,new Date("2017-10-01") // E3
+                ,new Date("2017-10-01") // GW
+                ,new Date("2019-04-03") // DDV
+                ,new Date("2019-04-07") // RVV
+                ,new Date("2019-04-10") // Schelde
+                ,new Date("2019-04-14") // roubaix
+                ,new Date("2019-04-21") // AGR
+                ,new Date("2019-04-24") // waalse pijl
+                ,new Date("2019-04-28") // LBL
+                ,new Date("2019-05-01")] // frankfurt
+
+
+    var currDate = new Date();
+    // if(currDate < dates[0]){ Return team selection
+    //     return 0;
+    // }
+    for (i in dates){
+        if (currDate <= dates[i]){
+            return parseInt(i)+1
+        }
+    }
+    return parseInt(dates.length) + 1 // return eindklassement
+
+                
+}
+
+
 module.exports.calculateUserScores = calculateUserScores;
 module.exports.transferUsers = transferUsers;
 module.exports.transferEtappes = transferEtappes;
 module.exports.optimaleScoresUser = optimaleScoresUser;
 module.exports.returnEtappeWinnaars = returnEtappeWinnaars;
 module.exports.calculateUserScoresKlassieker = calculateUserScoresKlassieker;
+module.exports.stageNumKlassieker = stageNumKlassieker;

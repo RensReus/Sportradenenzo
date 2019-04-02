@@ -41,6 +41,9 @@ class Navbar extends Component {
                 {this.props.isAdmin &&
                 <div className="item"><div><a  className='nolink' href="/admin">Admin</a></div></div>
                 }
+                {this.props.isAdmin &&
+                <div className="item"><div><a  className='nolink' href="/manualupdate">Manual Update</a></div></div>
+                }
                 <div className="item">
                     {buttonLog}
                 </div>

@@ -20,7 +20,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = ({ isLoggedIn: false,
-                    redirect: '/stage/4',
+                    redirect: '/',
                   isAdmin: false });//de default voor redirect
   }
 
@@ -56,6 +56,16 @@ class App extends Component {
       .catch(function (error) {
         throw error
       });
+      if(this.state.redirect === '/'){
+        axios.post('/api/currentstagenum')
+          .then(res =>{
+            var newRedir = '/stage/' + res.data;
+            console.log("lint",newRedir)
+            this.setState({redirect: newRedir})
+            console.log(this.state.redirect)
+          })
+      }
+
     return (
       <div className="content">
         <div className="backgroundImage"></div>
@@ -69,12 +79,13 @@ class App extends Component {
           <Route path="/teamselection" component={Teamselection} history={this.props.history} />
           {this.state.isAdmin &&// dit kan wss mooier maar non-admins kunnen nooit op de admin pagina komen
                 <Route path="/admin" component={Admin} history={this.props.history} />}
+          {this.state.isAdmin &&// dit kan wss mooier maar non-admins kunnen nooit op de admin pagina komen
+                <Route path="/manualupdate" component={ManualUpdate} history={this.props.history} />}
           
           <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
           <Route path="/overzicht" component={Overzicht} history={this.props.history} />
           <Route path="/charts/:chartname" component={Charts} history={this.props.history} />
           <Route path="/vs/:username" component={Versus} history={this.props.history} />
-          <Route path="/manualupdate" component={ManualUpdate} history={this.props.history} />
         </div>
       </div>
     );

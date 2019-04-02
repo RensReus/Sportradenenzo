@@ -2,6 +2,7 @@
 
 module.exports = function (app) {
     const sqlDB = require('../db/sqlDB')
+    const functies = require('../functies')
 
     app.post('/api/getstagevictories', function (req, response) {
         if(!req.user){
@@ -156,16 +157,22 @@ module.exports = function (app) {
             })
         }
     })
+
+
+
+
+    //CHARTS
     //CHARTS misschien nieuwe file
     app.post('/api/chartuserstagescores',function(req,res){
         if(!req.user){
             res.redirect('/')
         }else{
+            var currentStageNum = functies.stageNumKlassieker();
             var query = `SELECT username, stagenr, totalscore FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = 4
+            WHERE stage.race_id = 4 AND stage.stagenr <= ${currentStageNum}
             ORDER BY username, stagenr`
             sqlDB.query(query, (err,results)=>{
                 if(err) throw err;
@@ -217,12 +224,13 @@ module.exports = function (app) {
         if(!req.user){
             res.redirect('/')
         }else{
+            var currentStageNum = functies.stageNumKlassieker();
             var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = 4)`
             var query = `SELECT totalscore, lastname, stagenr FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
             INNER JOIN rider USING (rider_id)
             INNER JOIN stage USING (stage_id)
-            WHERE rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) AND totalscore > 0
+            WHERE rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) AND totalscore > 0 AND stage.stagenr <= ${currentStageNum}
             ORDER by lastname, stagenr`
             sqlDB.query(query, (err,results)=>{
                 if(err) throw err;
@@ -261,6 +269,7 @@ module.exports = function (app) {
         if(!req.user){
             res.redirect('/')
         }else{
+            var currentStageNum = functies.stageNumKlassieker();
             var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = 4)`
             var query = `SELECT totalscore, lastname, stagenr FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
@@ -273,7 +282,7 @@ module.exports = function (app) {
             left join rider_participation using(rider_participation_id)
             left join rider using(rider_id)
             left join stage using(stage_id)
-            where account_participation_id = ${account_participation_id}
+            where account_participation_id = ${account_participation_id} AND stage.stagenr <= ${currentStageNum}
             group by lastname`
 
             sqlDB.query(query2, (err,results)=>{
@@ -290,7 +299,7 @@ module.exports = function (app) {
                     }
                     var rider = results.rows[i]
                     var total = 0;
-                    for(var j = 0; j < 4; j++){
+                    for(var j = 0; j < currentStageNum+1; j++){
                         var index = rider.stages.indexOf(j);
                         if(index + 1){// index not -1
                             total += rider.scores[index];
