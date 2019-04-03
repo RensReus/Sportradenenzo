@@ -265,6 +265,7 @@ function stageNumKlassieker(){
 
 
     var currDate = new Date();
+    currDate.setHours(0,0,0,0);
     // if(currDate < dates[0]){ Return team selection
     //     return 0;
     // }
