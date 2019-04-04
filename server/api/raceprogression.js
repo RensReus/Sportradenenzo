@@ -12,7 +12,6 @@ module.exports = function (app) {
     })
 
     app.post('/api/currentstagenum',function(req,res){
-        console.log("in api",functies.stageNumKlassieker())
         res.send(functies.stageNumKlassieker().toString())
     })
 }

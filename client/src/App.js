@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Redirect, Switch } from 'react-router-dom';
 import './index.css';
 import axios from 'axios';
 
@@ -60,32 +60,37 @@ class App extends Component {
         axios.post('/api/currentstagenum')
           .then(res =>{
             var newRedir = '/stage/' + res.data;
-            console.log("lint",newRedir)
             this.setState({redirect: newRedir})
-            console.log(this.state.redirect)
           })
       }
 
     return (
+      // alle routing moet ff in een aparte file komen 
+      // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
+      //maar maken admin en manual update onbereikbaar wss vanwege de admin check
       <div className="content">
         <div className="backgroundImage"></div>
         <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} />
         <div className="pageContainer">
-          <Route exact path="/" render={() => (
-            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<Home history={this.props.history} />)
-          )} />
-          <Route path="/profile" component={Profile} history={this.props.history} />
-          <Route path="/stage/:stagenumber" component={Stage} history={this.props.history} />
-          <Route path="/teamselection" component={Teamselection} history={this.props.history} />
-          {this.state.isAdmin &&// dit kan wss mooier maar non-admins kunnen nooit op de admin pagina komen
-                <Route path="/admin" component={Admin} history={this.props.history} />}
-          {this.state.isAdmin &&// dit kan wss mooier maar non-admins kunnen nooit op de admin pagina komen
-                <Route path="/manualupdate" component={ManualUpdate} history={this.props.history} />}
-          
-          <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
-          <Route path="/overzicht" component={Overzicht} history={this.props.history} />
-          <Route path="/charts/:chartname" component={Charts} history={this.props.history} />
-          <Route path="/vs/:username" component={Versus} history={this.props.history} />
+        
+        {/* <Switch> */}
+            <Route exact path="/" render={() => (
+              this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<Home history={this.props.history} />)
+            )} />
+            <Route path="/profile" component={Profile} history={this.props.history} />
+            <Route exact path="/stage/:stagenumber" component={Stage} history={this.props.history} />
+            <Route path="/teamselection" component={Teamselection} history={this.props.history} />
+            {this.state.isAdmin &&// dit kan wss mooier maar non-admins kunnen nooit op de admin pagina komen
+                  <Route path="/admin" component={Admin} history={this.props.history} />}
+            {this.state.isAdmin &&// dit kan wss mooier maar non-admins kunnen nooit op de admin pagina komen
+                  <Route path="/manualupdate" component={ManualUpdate} history={this.props.history} />}
+            
+            <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
+            <Route path="/overzicht/:selection" component={Overzicht} history={this.props.history} />
+            <Route path="/charts/:chartname" component={Charts} history={this.props.history} />
+            <Route path="/vs/:username" component={Versus} history={this.props.history} />
+            {/* <Redirect to='/'/>
+          </Switch> */}
         </div>
       </div>
     );

@@ -97,6 +97,10 @@ class charts extends Component {
 				this.userscores();
 				this.setState({ chartType: "line" })
 				break;
+			case "userrank":
+				this.userranking();
+				this.setState({chartType: "line"})
+				break;
 			case "riderpercentage":
 				this.riderpercentage()
 				this.setState({ chartType: "stackedColumn" })
@@ -120,7 +124,7 @@ class charts extends Component {
 				}
 			})
 	}
-
+	
 	buildUserscores() {
 		var data = this.state.data;
 		for (var i in data) {
@@ -139,6 +143,43 @@ class charts extends Component {
 			},
 			axisY: {
 				title: "Points"
+			},
+			toolTip: {
+				shared: true
+			},
+			data: data
+		}
+		this.setState({ options: options })
+	}
+	
+	userranking(){
+		axios.post('/api/chartuserranking', { race_id: 4, poule_id: 0 })
+			.then((res) => {
+				if (res) {
+					this.setState({ data: res.data })
+					this.buildUserranking()
+				}
+			})
+	}
+
+	buildUserranking(){
+		var data = this.state.data;
+		for (var i in data) {
+			data[i].type = this.state.chartType
+		}
+		var options = {
+			title: {
+				text: "Ranking"
+			},
+			subtitles: [{
+				text: "Positie na iedere etappe"
+			}],
+			axisX: {
+				interval: 1,
+				title: "Stage"
+			},
+			axisY: {
+				title: "Rank"
 			},
 			toolTip: {
 				shared: true

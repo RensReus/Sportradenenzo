@@ -27,6 +27,7 @@ class Navbar extends Component {
                     <button className="item dropbtn">Charts</button>
                     <div className="dropdown-content">
                         <a href="/charts/userscores">Relatief Scoreverloop</a>
+                        <a href="/charts/userrank">Ranking</a>
                         <a href="/charts/riderpercentage">Puntenaandeel Renner per Etappe</a>
                         <a href="/charts/riderpercentagetotal">Puntenaandeel Renner totaal</a>
                     </div>
@@ -34,7 +35,8 @@ class Navbar extends Component {
                 <div className="dropdown" onClick={() => { this.showDropdown() }}>
                     <button className="item dropbtn">Statistieken</button>
                     <div className="dropdown-content">
-                        <a href="/overzicht">Overzicht renners</a>
+                        <a href="/overzicht/all">Overzicht alle renners</a>
+                        <a href="/overzicht/selected">Overzicht geselecteerde renners</a>
                         <a href="/etappewinsten">Uitslagen per etappe</a>
                     </div>
                 </div> 

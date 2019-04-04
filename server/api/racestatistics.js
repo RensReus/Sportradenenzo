@@ -10,12 +10,12 @@ module.exports = function (app) {
         }else{
             var race_id = req.body.race_id;
             var poule_id = req.body.poule_id;
-            var subquery1 = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore desc) FROM stage_selection
+            var subquery1 = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore DESC) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
             WHERE stage.race_id = ${race_id}) AS subquery`
-            var subquery2 = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore desc) FROM stage_selection
+            var subquery2 = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore DESC) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
@@ -135,7 +135,7 @@ module.exports = function (app) {
         }
     })
 
-    app.post('/api/getallriderpoints',function(req,res){
+    app.post('/api/getriderpointsall',function(req,res){
         if(!req.user){
             res.redirect('/')
         }else{
@@ -158,7 +158,29 @@ module.exports = function (app) {
         }
     })
 
+    app.post('/api/getriderpointsselected',function(req,res){
+        if(!req.user){
+            res.redirect('/')
+        }else{
+            var query = `SELECT  concat(firstname, ' ', lastname) as name, team, SUM(stagescore)/GREATEST(count(DISTINCT username),1) as stagescore, price, 
+            SUM(teamscore)/GREATEST(count(DISTINCT username),1) as teamscore, SUM(totalscore)/GREATEST(count(DISTINCT username),1) as totalscore, 
+            ROUND(SUM(totalscore)/GREATEST(count(DISTINCT username),1)*1e6/price,0) as pointspermil,  
+            count(DISTINCT username) as usercount, string_agg(DISTINCT username, ', ') as users FROM results_points
+            INNER JOIN rider_participation USING (rider_participation_id)
+            INNER JOIN rider USING(rider_id)
+            LEFT JOIN team_selection_rider on results_points.rider_participation_id = team_selection_rider.rider_participation_id
+            LEFT JOIN account_participation USING(account_participation_id)
+            LEFT JOIN account USING (account_id)
+            WHERE rider_participation.race_id = 4 AND rider_participation.rider_participation_id in (select rider_participation_id from team_selection_rider) 
+            GROUP BY name, team, price
+            ORDER BY pointspermil DESC`
 
+            sqlDB.query(query,(err,results)=>{
+                if(err) throw err;
+                res.send({overzicht: results.rows})
+            })
+        }
+    })
 
 
     //CHARTS
@@ -214,6 +236,54 @@ module.exports = function (app) {
                         data[user].dataPoints[i].y -= avg;
                     }
                 }
+                console.log(data)
+                data.sort(function(a,b){return b.dataPoints[b.dataPoints.length - 1].y - a.dataPoints[a.dataPoints.length - 1].y})
+                res.send(data);
+            })
+        }
+    })
+
+    app.post('/api/chartuserranking',function(req,res){
+        if(!req.user){
+            res.redirect('/')
+        }else{
+            var currentStageNum = functies.stageNumKlassieker();
+            var query = `SELECT username, stagenr, rank() over (PARTITION BY stagenr ORDER BY totalscore desc) FROM stage_selection
+            INNER JOIN account_participation USING (account_participation_id)
+            INNER JOIN account USING (account_id)
+            INNER JOIN stage USING (stage_id)
+            WHERE stage.race_id = 4 AND stage.stagenr <= ${currentStageNum}
+            ORDER BY username, stagenr`
+            sqlDB.query(query, (err,results)=>{
+                if(err) throw err;
+                var username = results.rows[0].username;
+                var userObj = {
+                    type: "line", 
+                    name: username,
+                    showInLegend: true,
+                    dataPoints:[] 
+                }
+                var data = [];
+
+                for(var i in results.rows){
+                    if(userObj.name == results.rows[i].username){
+                        userObj.dataPoints.push({x: results.rows[i].stagenr, y:parseInt(results.rows[i].rank)})
+                    }else{
+                        data.push(userObj);
+                        username = results.rows[i].username;
+                        userObj = {
+                            type: "line", 
+                            name: username,
+                            showInLegend: true,
+                            dataPoints:[] 
+                        }
+                        userObj.dataPoints.push({x:results.rows[i].stagenr, y:parseInt(results.rows[i].rank)})
+                    }
+                    
+                }
+                data.push(userObj)
+                console.log(data)
+
                 data.sort(function(a,b){return b.dataPoints[b.dataPoints.length - 1].y - a.dataPoints[a.dataPoints.length - 1].y})
                 res.send(data);
             })
