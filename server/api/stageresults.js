@@ -55,19 +55,43 @@ module.exports = function (app) {
                                 GROUP BY stagepos, firstname, lastname, team, stageresult
                                 ORDER BY stagepos ASC; `;
             
-            var totalQuery = teamresultQuery + userscoresQuery + stageresultsQuery;
+            var selectionsQuery = `SELECT username, COUNT(rider_participation_id), STRING_AGG(lastname, ', ') as riders FROM results_points
+            INNER JOIN team_selection_rider USING(rider_participation_id)
+            INNER JOIN account_participation USING(account_participation_id)
+            INNER JOIN account USING(account_id)
+            INNER JOIN rider_participation USING (rider_participation_id)
+            INNER JOIN rider USING (rider_id)
+            WHERE stage_id = ${stage_id} and rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider)
+            GROUP BY username; `
             
+            
+            
+            var totalQuery = teamresultQuery + userscoresQuery + stageresultsQuery + selectionsQuery;
+            
+            
+
+
             sqlDB.query(totalQuery, (err, results) => {
                 if (err) throw err;
                 // if (!response.rows[0]) { 
                 //     res.send({'mode': '404'});
                 //     return;
                 // nieuwe exists check moet nog toegevoegd worden
+                var userscores = results[1].rows;
+                var selecties = results[3].rows
+                for (var i in userscores){
+                    for (var j in selecties){
+                        if (userscores[i].username == selecties[j].username){
+                            userscores[i]['riderCount'] = selecties[j].count;
+                            userscores[i]['riders'] = selecties[j].riders;
+                        }
+                    }
+                }
                 console.log(results)
                 res.send({
                     mode: '',
                     teamresult: results[0].rows,
-                    userscores: results[1].rows,
+                    userscores: userscores,
                     stageresults: results[2].rows,
                     prevText: prevText,
                     currText: currText,

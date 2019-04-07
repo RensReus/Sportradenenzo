@@ -20,7 +20,10 @@ class PouleTableRow extends Component {
     render() {
         return (
             <tr>
-                <td>{this.props.username}</td>
+                <td className="pouleUser">
+                    <div>{this.props.username}</div>
+                    <div className="selectionInfo">renners #: {this.props.ridercount} namen:{this.props.riders}</div>
+                </td>
                 <td>{this.props.stagescore}</td>
                 <td>{this.props.totalscore}</td>
             </tr>
@@ -85,6 +88,8 @@ class PouleTable extends Component {
             rows.push(
                 <PouleTableRow
                     username={user.username}
+                    ridercount={user.riderCount}
+                    riders={user.riders}
                     stagescore={user.stagescore}
                     totalscore={user.totalscore}
                 />
@@ -200,9 +205,18 @@ class Stage extends Component {
         })
         this.updateData((currentstage + 1).toString())
     }
-    componentDidMount() {
-        this.updateData(parseInt(this.state.stage))
+    
+    getSelectionDetails(stage){
+
+
     }
+    componentDidMount() {
+        this.updateData(parseInt(this.state.stage));
+        this.getSelectionDetails(parseInt(this.state.stage));
+    }
+
+
+    
 
     render() {
         const mode = this.state.mode
@@ -217,7 +231,7 @@ class Stage extends Component {
             stResTable = ''
         } else {
             resTable = <ResultsTable userTeamResult={this.state.userTeamResult} />
-            pTable = <PouleTable userScores={this.state.userScores} />
+            pTable = <PouleTable userScores={this.state.userScores}/>
             stResTable = <StageResultsTable stageresults={this.state.stageresults} />
         }
         return (

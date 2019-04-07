@@ -65,3 +65,17 @@ th, td {
 table {
     border: 1px solid black;
   }
+
+  .selectionInfo {
+      display: none;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .pouleUser:hover .selectionInfo {display: block;}
+
+
+
+.pouleUser:hover {
+    cursor: pointer;
+}
