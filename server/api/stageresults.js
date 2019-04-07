@@ -55,7 +55,7 @@ module.exports = function (app) {
                                 GROUP BY stagepos, firstname, lastname, team, stageresult
                                 ORDER BY stagepos ASC; `;
             
-            var selectionsQuery = `SELECT username, COUNT(rider_participation_id), STRING_AGG(lastname, ', ') as riders FROM results_points
+            var selectionsQuery = `SELECT username, COUNT(rider_participation_id), STRING_AGG(lastname || ':' || totalscore, ', ') as riders FROM results_points
             INNER JOIN team_selection_rider USING(rider_participation_id)
             INNER JOIN account_participation USING(account_participation_id)
             INNER JOIN account USING(account_id)
