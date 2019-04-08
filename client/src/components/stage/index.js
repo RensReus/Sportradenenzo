@@ -16,13 +16,14 @@ class ResultsTableRow extends Component {
     }
 }
 
+
 class PouleTableRow extends Component {
     render() {
         return (
             <tr>
                 <td className="pouleUser">
                     <div>{this.props.username}</div>
-                    <div className="selectionInfo">renners #: {this.props.ridercount} namen:{this.props.riders}</div>
+                    <div className="selectionInfo">renners #: {this.props.ridercount} <SelectionsTable riders={this.props.riders} /></div>
                 </td>
                 <td>{this.props.stagescore}</td>
                 <td>{this.props.totalscore}</td>
@@ -39,6 +40,17 @@ class StageResultsTableRow extends Component {
                 <td>{this.props.firstname} {this.props.lastname}</td>
                 <td>{this.props.team}</td>
                 <td>{this.props.time}</td>
+            </tr>
+        )
+    }
+}
+
+class SelectionsTableRow extends Component {
+    render() {
+        return (
+            <tr className= {"inteam" + this.props.inteam}>
+                <td>{this.props.firstname} {this.props.lastname}</td>
+                <td>{this.props.totalscore}</td>
             </tr>
         )
     }
@@ -138,6 +150,38 @@ class StageResultsTable extends Component {
                         <th>Name</th>
                         <th>Team</th>
                         <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+            </table>
+        )
+    }
+}
+
+class SelectionsTable extends Component {
+    render() {
+        const rows = [];
+        const riders = this.props.riders
+        riders.forEach(rider => {
+            console.log(rider)
+            rows.push(
+                <SelectionsTableRow
+                    firstname={rider.firstname}
+                    lastname={rider.lastname}
+                    totalscore={rider.totalscore}
+                    inteam={rider.inteam}
+                />
+            )
+        });
+
+        return (
+            <table className="selectionsTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Points</th>
                     </tr>
                 </thead>
                 <tbody>

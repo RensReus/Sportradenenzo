@@ -55,14 +55,19 @@ module.exports = function (app) {
                                 GROUP BY stagepos, firstname, lastname, team, stageresult
                                 ORDER BY stagepos ASC; `;
             
-            var selectionsQuery = `SELECT username, COUNT(rider_participation_id), STRING_AGG(lastname || ':' || totalscore, ', ') as riders FROM results_points
-            INNER JOIN team_selection_rider USING(rider_participation_id)
-            INNER JOIN account_participation USING(account_participation_id)
-            INNER JOIN account USING(account_id)
-            INNER JOIN rider_participation USING (rider_participation_id)
-            INNER JOIN rider USING (rider_id)
-            WHERE stage_id = ${stage_id} and rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider)
-            GROUP BY username; `
+            var selectionsQuery = `SELECT username, COUNT(rider_participation_id), ARRAY_AGG(json_build_object(
+                                'firstname', firstname, 
+                                'lastname', lastname, 
+                                'totalscore', totalscore ,
+                                'inteam', CASE WHEN rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 1 ELSE 0 END 
+                                )) as riders FROM  results_points
+                                INNER JOIN team_selection_rider USING(rider_participation_id)
+                                INNER JOIN account_participation USING(account_participation_id)
+                                INNER JOIN account USING(account_id)
+                                INNER JOIN rider_participation USING (rider_participation_id)
+                                INNER JOIN rider USING (rider_id)
+                                WHERE stage_id = ${stage_id} and rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider)
+                                GROUP BY username; `
             
             
             
@@ -83,7 +88,7 @@ module.exports = function (app) {
                     for (var j in selecties){
                         if (userscores[i].username == selecties[j].username){
                             userscores[i]['riderCount'] = selecties[j].count;
-                            userscores[i]['riders'] = selecties[j].riders;
+                            userscores[i]['riders'] = selecties[j].riders.sort(function(a,b){return b.totalscore - a.totalscore});
                         }
                     }
                 }
