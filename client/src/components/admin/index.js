@@ -60,10 +60,10 @@ class Outputtable extends Component{
             var extraRow = []
 
             const properties = Object.keys(response)
+            for(var prop in properties){
+                extraHeader.push(<th>{prop}</th>)
+            }
 
-            properties.forEach(function(property){
-                extraHeader.push(<th>{property}</th>)
-            })
             var extraRowEl = [];
             for (var property in response){
                 var text = String(response[property]).substring(0,20);
@@ -80,7 +80,7 @@ class Outputtable extends Component{
                     header.push(<th>{property}</th>)
                 })
                 for(var i=0;i<output.length;i++){
-                    for (var property in output[i]) {
+                    for (property in output[i]) {
                         row.push(<td>{output[i][property] == null ? "null" : output[i][property].toString()}</td>);
                     }
                     rows.push(<tr>{row}</tr>)
@@ -176,7 +176,6 @@ class Admin extends Component{
                     </form>
                     <button onClick={this.testButton} value='SELECT * FROM account' className="queryButton">Get all accounts</button>
                     <button onClick={this.testButton} value="SELECT race_id FROM race WHERE name = '' AND year = ''" className="queryButton">Get race ID</button>
-                    <button onClick={this.testButton} value="SELECT rider.firstname || ' ' || rider.lastname as name, price, team, rider_participation_id FROM rider_participation INNER JOIN rider using(rider_id) WHERE race_id = ${race_id}" className="queryButton">Get all riders</button>
                     
                     <Outputtable output={this.state.output}/>
                     

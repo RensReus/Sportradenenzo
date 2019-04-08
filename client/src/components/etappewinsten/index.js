@@ -9,7 +9,7 @@ class Table extends Component{
       for (var i in this.props.data.header){
         header.push(<th>{this.props.data.header[i]}</th>)
       }
-      for(var i in this.props.data.rows){
+      for(i in this.props.data.rows){
         var row = []
         for(var j in this.props.data.rows[i]){
           row.push(<td>{this.props.data.rows[i][j]}</td>);
