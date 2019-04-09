@@ -73,63 +73,6 @@ module.exports = function (app) {
                     })
 
                     response.send({rankTable:{header: headersRank, rows: rowsRank}, countTable:{header: headersCount, rows: rowsCount}})
-
-                    // response.send({stagerankings: stagerankings, rankingscount:rankingscount});
-                    // var stage = 1;
-                    // var stagerankings = [];
-                    // var stagerankingsForCount = [];
-                    // var rankingscount = [];
-                    // var rankingsObj = {};
-                    // var rankingsObjForCount = {};
-                    // for (var i in res.rows){
-                        
-                    //     rankingsObj["stage"] = stage;
-                    //     rankingsObjForCount["stage"] = stage;
-            
-                    //     var username = res.rows[i].username;
-                    //     var rank = res.rows[i].rank;
-                    //     if(res.rows[i].stagenr == stage){
-                    //         rankingsObj[rank+"e"] = username + " (" + res.rows[i].stagescore + ")";
-                    //         rankingsObjForCount[rank+"e"] = username;
-                    //     }else{
-                    //         stagerankings.push(rankingsObj);
-                    //         stagerankingsForCount.push(rankingsObjForCount);
-                    //         stage++;
-                    //         var rankingsObj = {};
-                    //         var rankingsObjForCount = {};
-                    //         rankingsObj["stage"] = stage;
-                    //         rankingsObjForCount["stage"] = stage;
-                    //         rankingsObj[rank+"e"] = username + " (" + res.rows[i].stagescore + ")";
-                    //         rankingsObjForCount[rank+"e"] = username;
-                    //     }
-                    //     if(i == res.rows.length - 1){
-                    //       stagerankings.push(rankingsObj);
-                    //       stagerankingsForCount.push(rankingsObjForCount);
-                    //     }
-            
-                    // }
-                    // var totalAccounts = res.rows.length/stage;
-                    // for(var j = 1; j <totalAccounts+1; j++){
-                    //     var userObj = {name:stagerankingsForCount[0][j+"e"]}
-                    //     for(var k = 1; k <totalAccounts+1; k++){
-                    //         userObj[k+"e"] = 0;
-                    //     }
-                    //     for(var i in stagerankingsForCount){
-                    //         for(var k = 1; k <totalAccounts+1; k++){
-                    //             if(stagerankingsForCount[i][k+"e"] == userObj.name){
-                    //                 userObj[k+"e"] += 1;
-                    //             }
-                    //         }
-                    //     }
-                    //     rankingscount.push(userObj);
-                    // }
-                    // rankingscount.sort(function(a,b){
-                    //     for(var i = 1; i <totalAccounts+1; i++){
-                    //         if(a[i+"e"]>b[i+"e"]) return false;
-                    //         if(a[i+"e"]<b[i+"e"]) return true;
-                    //     }
-                    //     return false})
-                    // response.send({stagerankings: stagerankings, rankingscount:rankingscount});
                 }
             })
         }
@@ -150,10 +93,13 @@ module.exports = function (app) {
             WHERE rider_participation.race_id = 4
             GROUP BY name, team
             ORDER BY totalscore DESC`
+            //0 for string 1 for number
+            var coltype = {name:0,team:0,stagescore:1,teamscore:1,totalscore:1,usercount:1,users:0};
 
             sqlDB.query(query,(err,results)=>{
                 if(err) throw err;
-                res.send({overzicht: results.rows})
+                res.send({overzicht: results.rows,
+                    coltype: coltype})
             })
         }
     })
@@ -162,7 +108,7 @@ module.exports = function (app) {
         if(!req.user){
             res.redirect('/')
         }else{
-            var query = `SELECT  concat(firstname, ' ', lastname) as name, team, SUM(stagescore)/GREATEST(count(DISTINCT username),1) as stagescore, price, 
+            var query = `SELECT  concat(firstname, ' ', lastname) as name, team, price, SUM(stagescore)/GREATEST(count(DISTINCT username),1) as stagescore,  
             SUM(teamscore)/GREATEST(count(DISTINCT username),1) as teamscore, SUM(totalscore)/GREATEST(count(DISTINCT username),1) as totalscore, 
             ROUND(SUM(totalscore)/GREATEST(count(DISTINCT username),1)*1e6/price,0) as pointspermil,  
             count(DISTINCT username) as usercount, string_agg(DISTINCT username, ', ') as users FROM results_points
@@ -174,10 +120,12 @@ module.exports = function (app) {
             WHERE rider_participation.race_id = 4 AND rider_participation.rider_participation_id in (select rider_participation_id from team_selection_rider) 
             GROUP BY name, team, price
             ORDER BY pointspermil DESC`
-
+            //0 for string 1 for number
+            var coltype = {name:0,team:0,price:1,stagescore:1,teamscore:1,totalscore:1,pointspermil:1,usercount:1,users:0};
             sqlDB.query(query,(err,results)=>{
                 if(err) throw err;
-                res.send({overzicht: results.rows})
+                res.send({overzicht: results.rows,
+                coltype: coltype})
             })
         }
     })
