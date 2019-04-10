@@ -7,48 +7,43 @@ class Navbar extends Component {
         let buttonSignProfile;
         let currStage;
         if (this.props.isLoggedIn) {
-            buttonSignProfile = <div><a  className='nolink' href="/profile">Profile</a></div>;
-            buttonLog = <div><a  className='nolink' href="/logout">Logout</a></div>;
-            currStage = <div><a  className='nolink' href="/">Current Stage</a></div>;
+            buttonSignProfile = <a className='item' href="/profile">Profile</a>;
+            buttonLog = <a className='item' href="/logout">Logout</a>;
+            currStage = <a className='item' href="/">Current Stage</a>;
 
         } else {
-            buttonSignProfile = <div><a  className='nolink' href="/signup">Signup</a></div>;
-            buttonLog = <div><a  className='nolink' href="/login">Login</a></div>;
+            buttonSignProfile = <a className='item' href="/signup">Signup</a>;
+            buttonLog = <a className='item' href="/login">Login</a>;
         }
         return (
             <div className="navbar">
-                <div className="item">
-                    {buttonSignProfile}
-                </div>
-                <div className="item">
-                    {currStage}
-                </div>
+                {buttonSignProfile}
+                {currStage}
                 <div className="dropdown">
                     <button className="item dropbtn">Charts</button>
                     <div className="dropdown-content">
-                        <a href="/charts/userscores">Relatief Scoreverloop</a>
-                        <a href="/charts/userrank">Ranking</a>
-                        <a href="/charts/riderpercentage">Puntenaandeel Renner per Etappe</a>
-                        <a href="/charts/riderpercentagetotal">Puntenaandeel Renner totaal</a>
+                        <a className='item'href="/charts/userscores">Relatief Scoreverloop</a>
+                        <a className='item'href="/charts/userrank">Ranking</a>
+                        <a className='item'href="/charts/riderpercentage">Puntenaandeel Renner per Etappe</a>
+                        <a className='item'href="/charts/riderpercentagetotal">Puntenaandeel Renner totaal</a>
                     </div>
                 </div> 
-                <div className="dropdown" onClick={() => { this.showDropdown() }}>
+                <div className="dropdown">
                     <button className="item dropbtn">Statistieken</button>
                     <div className="dropdown-content">
-                        <a href="/overzicht/all">Overzicht alle renners</a>
-                        <a href="/overzicht/selected">Overzicht geselecteerde renners</a>
-                        <a href="/etappewinsten">Uitslagen per etappe</a>
+                        <a className='item'href="/overzicht/all">Overzicht alle renners</a>
+                        <a className='item'href="/overzicht/selected">Overzicht geselecteerde renners</a>
+                        <a className='item'href="/etappewinsten">Uitslagen per etappe</a>
                     </div>
                 </div> 
+                
                 {this.props.isAdmin &&
-                <div className="item"><div><a  className='nolink' href="/admin">Admin</a></div></div>
+                <a  className='item' href="/admin">Admin</a>
                 }
                 {this.props.isAdmin &&
-                <div className="item"><div><a  className='nolink' href="/manualupdate">Manual Update</a></div></div>
+                <a  className='item' href="/manualupdate">Manual Update</a>
                 }
-                <div className="item">
-                    {buttonLog}
-                </div>
+                {buttonLog}
             </div>
         )
     }

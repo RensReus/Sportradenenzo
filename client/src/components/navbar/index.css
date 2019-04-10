@@ -8,31 +8,20 @@ div.navbar{
     position: absolute;
     box-shadow: 0px 5px 5px 0px rgba(136,136,136,0.3);
 }
-div.navbar ul{
-    margin-left: auto;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: inline-block;
-}
+
 
  /* Dropdown Button */
  .item {
     background-color: #4CAF50;
-    color: white;
+    color: black;
     font-size: 16px;
     border: 5px;
     margin: 0 1px;
     line-height: 5vh;/* hele nare hack graag verwijderen*/
-    text-decoration: navy
+    text-decoration: black
   }
 
-  .nolink {
-    text-decoration: none;
-    color: white
-  }
-
-  .item :hover{
+  .item:hover{
     background-color: rgb(44, 102, 46);
     cursor: pointer;
   }
@@ -47,7 +36,7 @@ div.navbar ul{
   .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #f1f1f1;
+    /* background-color: #f1f1f1; */
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
@@ -60,18 +49,8 @@ div.navbar ul{
     text-decoration: none;
     display: block;
   }
-  
-  /* Change color of dropdown links on hover */
-  .dropdown-content a:hover {background-color: #ddd;}
-  .dropdown-content :hover{
-    background-color: rgb(129, 129, 129);
-  }
+
 
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown-content {display: block;}
   
-  /* Change the background color of the dropdown button when the dropdown content is shown */
-  .dropdown:hover .dropbtn {
-    cursor: pointer;
-    background-color: rgb(44, 102, 46);
-  } 
