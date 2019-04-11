@@ -60,8 +60,8 @@ class Outputtable extends Component{
             var extraRow = []
 
             const properties = Object.keys(response)
-            for(var prop in properties){
-                extraHeader.push(<th>{prop}</th>)
+            for(var i in properties){
+                extraHeader.push(<th>{properties[i]}</th>)
             }
 
             var extraRowEl = [];

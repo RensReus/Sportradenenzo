@@ -39,3 +39,14 @@ div.discription {
     grid-column: 1/5;
     grid-row: auto
 }
+
+input.inprogress {
+    background-color: yellow;
+}
+input.completed {
+    background-color: green;
+}
+
+input.error {
+    background-color: red;
+}

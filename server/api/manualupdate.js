@@ -8,9 +8,11 @@ module.exports = function (app) {
     if (req.user.admin) {
       var year = parseInt(req.body.year);
       var stage = parseInt(req.body.stage);
-      kScrape.getStartlist(year,stage,function(){ 
+      kScrape.getStartlist(year,stage,function(err,arg){ 
+        if(err) res.send("error");
         console.log("Got startlist Klassieker year %s, stage %s", year,stage)
-        res.send("done")})
+        res.send("completed")
+      })
     }
   })
 
@@ -21,22 +23,13 @@ module.exports = function (app) {
       kScrape.getResult(year,stage,function(){ 
         console.log("Got Results Klassieker year %s, stage %s", year,stage)
         functies.calculateUserScoresKlassieker(year,stage,function(err,arg){ 
+          if(err) res.send("error");
           console.log("Caluculated userscores Klassieker year %s, stage %s", year,stage); 
-          res.send("done")
+          res.send("completed")
         })
       })
     }
   });
-
-  app.post('/api/getstartlistklassiek', function (req, res) {
-    if (req.user.admin) {
-      var year = parseInt(req.body.year);
-      var stage = parseInt(req.body.stage);
-      kScrape.getStartlist(year,stage,function(){ 
-        console.log("Got startlist Klassieker year %s, stage %s", year,stage)
-        res.send("done")})
-    }
-  })
 
   app.post('/api/getstartlist', function (req, res) {
     if (req.user.admin) {

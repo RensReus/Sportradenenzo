@@ -23,7 +23,7 @@ class PouleTableRow extends Component {
             <tr>
                 <td className="pouleUser">
                     <div>{this.props.username}</div>
-                    <div className="selectionInfo">renners #: {this.props.ridercount} <SelectionsTable riders={this.props.riders} /></div>
+                    <div className="selectionInfo">renners #: {this.props.riderCount} <SelectionsTable riders={this.props.riders} /></div>
                 </td>
                 <td>{this.props.stagescore}</td>
                 <td>{this.props.totalscore}</td>
@@ -97,11 +97,13 @@ class PouleTable extends Component {
         const rows = [];
         const userScores = this.props.userScores
         userScores.forEach(user => {
+            var riders = []
+            if (user.riderCount>0) riders = user.riders;
             rows.push(
                 <PouleTableRow
                     username={user.username}
-                    ridercount={user.riderCount}
-                    riders={user.riders}
+                    riderCount={user.riderCount}
+                    riders={riders}
                     stagescore={user.stagescore}
                     totalscore={user.totalscore}
                 />

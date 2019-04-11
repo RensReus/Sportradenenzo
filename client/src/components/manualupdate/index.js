@@ -21,15 +21,21 @@ class manualupdate extends Component {
 
         this.state = {
             gskStage: "",
+            gskStatus: "",
             grkStage: "",
+            grkstatus: "",
             grStage: "",
+            grstatus: "",
+            gsStatus: "",
             year: "2019",
             raceName: "giro"
         }
     }
 
     //button click handlers
-    getStartlistKlassiek() {
+    getStartlistKlassiek(e) {
+        e.preventDefault();
+        this.setState({gskStage: "In Progress",gskStatus: "inprogress" })
         var stage = Number(this.state.gskStage);
         if (Number.isInteger(stage)) {
             stage = parseInt(stage);
@@ -37,7 +43,10 @@ class manualupdate extends Component {
                 console.log("stage:", stage);
                 axios.post('/api/getstartlistklassiek', { year: 2019, stage: stage })
                     .then((res) => {
-                        this.setState({ gskStage: res.data })
+                        this.setState({ 
+                            gskStage: "",
+                            gskStatus: res.data
+                        })
                     })
             } else {
                 console.log("not in range", stage)
@@ -47,7 +56,9 @@ class manualupdate extends Component {
         }
     }
 
-    getResultsKlassiek() {
+    getResultsKlassiek(e) {
+        e.preventDefault();
+        this.setState({grkStage: "In Progress",grkStatus: "inprogress" })
         var stage = Number(this.state.grkStage);
         if (Number.isInteger(stage)) {
             stage = parseInt(stage);
@@ -56,6 +67,10 @@ class manualupdate extends Component {
                 axios.post('/api/getresultsklassiek', { year: 2019, stage: stage })
                     .then((res) => {
                         this.setState({ grkStage: res.data })
+                        this.setState({ 
+                            grkStage: "",
+                            grkStatus: res.data
+                        })
                     })
             } else {
                 console.log("not in range", stage)
@@ -72,7 +87,8 @@ class manualupdate extends Component {
         })
     }
 
-    getResults() {
+    getResults(e) {
+        e.preventDefault();
         var stage = Number(this.state.grStage);
         if (Number.isInteger(stage)) {
             stage = parseInt(stage);
@@ -119,9 +135,6 @@ class manualupdate extends Component {
     }
 
     render() {
-        console.log("renderK", this.state.year)
-        console.log("render", this.state.raceName)
-
         return (
             <div className="mainContainer">
                 <div className="iets">
@@ -135,18 +148,17 @@ class manualupdate extends Component {
                         </select>
                     </div>
 
-                    <div className="row">
+                    <form className="row" action="" onSubmit={this.getStartlistKlassiek}>
                         <div className="discription">Get Startlist </div>
-                        <input className="inputfield" id="gsk" placeholder="Stage #" value={this.state.gskStage} onChange={this.changeGSKText} />
-                        <button onClick={this.getStartlistKlassiek}>Send</button>
-                    </div>
+                        <input className={this.state.gskStatus} id="gsk" ref="gsk" placeholder="Stage #" value={this.state.gskStage} onChange={this.changeGSKText} />
+                        <button>Submit</button>
+                    </form>
 
-                    <div className="row">
+                    <form className="row" action="" onSubmit={this.getResultsKlassiek}>
                         <div className="discription">Get Results incl. userscores </div>
-                        <input className="inputfield" id="grk" placeholder="Stage #" value={this.state.grkStage} onChange={this.changeGRKText} />
-                        <button onClick={this.getResultsKlassiek}>Send</button>
-                    </div>
-
+                        <input className={this.state.grkStatus} id="grk" ref="grk" placeholder="Stage #" value={this.state.grkStage} onChange={this.changeGRKText} />
+                        <button>Submit</button>
+                    </form>
                 </div>
                 <div className="iets">
                     <div className="title">Grote Ronde</div>
@@ -154,7 +166,6 @@ class manualupdate extends Component {
                         <div>year</div>
                         <select value={this.state.year} onChange={this.handleChangeYear}>
                             <option value="2019">2019</option>
-                            <option value="2020">2020</option>
                         </select>
 
                         <div>Name</div>
@@ -169,11 +180,11 @@ class manualupdate extends Component {
                         <button onClick={this.getStartlist}>Get Startlist</button>
                     </div>
 
-                    <div className="row">
-                        <div className="discription">Get Results incl. userscores</div>
-                        <input className="inputfield" id="gk" placeholder="Stage #" value={this.state.grStage} onChange={this.changeGRText} />
-                        <button onClick={this.getResults}>Send</button>
-                    </div>
+                    <form className="row" action="" onSubmit={this.getResultsKlassiek}>
+                        <div className="discription">Get Results incl. userscores </div>
+                        <input className="inputfield" id="gk" ref="gk" placeholder="Stage #" value={this.state.grStage} onChange={this.changeGRText} />
+                        <button>Submit</button>
+                    </form>
                 </div>
 
             </div>

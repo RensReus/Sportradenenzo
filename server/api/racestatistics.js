@@ -21,10 +21,10 @@ module.exports = function (app) {
             INNER JOIN stage USING (stage_id)
             WHERE stage.race_id = ${race_id} 
             GROUP BY username, stagescore, stagenr
-            HAVING SUM(stagescore) > 0) AS subquery`
+            HAVING SUM(stagescore) > 0 OR stagenr < 10) AS subquery`
             var query1 = `SELECT ARRAY_AGG(username ORDER BY stagescore DESC) as usernames, ARRAY_AGG(stagescore ORDER BY stagescore DESC) as scores, stagenr FROM ${subquery1}
             GROUP BY stagenr
-            HAVING SUM(stagescore) > 0; `;//ranking per stage
+            HAVING SUM(stagescore) > 0 OR stagenr < 10; `;//ranking per stage
             var query2 = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
             (SELECT username, rank, COUNT(rank) FROM ${subquery2} GROUP BY username,rank) b
             GROUP BY username`//aantal keer per ranking

@@ -75,10 +75,10 @@ calculateUserScoresKlassieker = function(year,stage,callback){
                 var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
                 var account_participation_id = res.rows[i].account_participation_id;
                 var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
-                var stagescore = `(SELECT SUM(results_points.totalscore) FROM team_selection_rider 
+                var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM team_selection_rider 
                                 INNER JOIN rider_participation USING (rider_participation_id)
                                 INNER JOIN results_points USING (rider_participation_id)
-                                WHERE rider_participation.race_id = ${race_id} AND account_participation_id = ${account_participation_id} and stage_id = ${stage_id})`;
+                                WHERE rider_participation.race_id = ${race_id} AND account_participation_id = ${account_participation_id} and stage_id = ${stage_id}),0)`;
                 var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
                 var prevstagesScore = 0
                 if(j != 1){
@@ -95,8 +95,8 @@ calculateUserScoresKlassieker = function(year,stage,callback){
         }
         sqlDB.query(totalQuery,(err, res) => {
             if (err) throw err;
-            console.log(totalQuery)
-            console.log("res:",res);
+            // console.log(totalQuery)
+            // console.log("res:",res);
         })
     })
     callback(null, 'Calculated User Scores');

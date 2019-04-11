@@ -70,16 +70,17 @@ getStartlist = function (year, racenr, callback) {
                 results_pointsQuery = results_pointsQuery.slice(0, -1) + `ON CONFLICT (stage_id, rider_participation_id)
                 DO NOTHING; `;
                 var totalQuery = deleteQuery +  riderQuery + participationQuery + results_pointsQuery;
-
+                var error = null;
                 sqlDB.query(totalQuery, (err, res) => {
                     if (err) throw err;
                     else {
                         console.log(res);
                     }
+                    error = err;
                 });
                 
                 console.log("just before callback");
-                callback();
+                callback(error,"res");
             }
         })
     }
