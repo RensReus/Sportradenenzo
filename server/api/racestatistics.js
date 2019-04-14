@@ -94,12 +94,12 @@ module.exports = function (app) {
             GROUP BY name, team
             ORDER BY totalscore DESC`
             //0 for string 1 for number
-            var coltype = {name:0,team:0,stagescore:1,teamscore:1,totalscore:1,usercount:1,users:0};
-
+            var coltype = {name:0,team:0,stagescore:1,teamscore:1,totalscore:1,usercount:1};
             sqlDB.query(query,(err,results)=>{
                 if(err) throw err;
                 res.send({overzicht: results.rows,
-                    coltype: coltype})
+                    coltype: coltype,
+                tableName: "Alle Renners"})
             })
         }
     })
@@ -121,14 +121,43 @@ module.exports = function (app) {
             GROUP BY name, team, price
             ORDER BY pointspermil DESC`
             //0 for string 1 for number
-            var coltype = {name:0,team:0,price:1,stagescore:1,teamscore:1,totalscore:1,pointspermil:1,usercount:1,users:0};
+            var coltype = {name:0,team:0,price:1,stagescore:1,teamscore:1,totalscore:1,pointspermil:1,usercount:1};
             sqlDB.query(query,(err,results)=>{
                 if(err) throw err;
                 res.send({overzicht: results.rows,
-                coltype: coltype})
+                coltype: coltype,
+                tableName: "Alle Geselecteerde Renners"})
             })
         }
     })
+
+    app.post('/api/getriderresults',function(req,res){
+        if(!req.user){
+            res.redirect('/')
+        }else{
+            var query = `SELECT stagenr, stagepos, stagescore, teamscore, totalscore FROM results_points
+            INNER JOIN rider_participation USING(rider_participation_id)
+            INNER JOIN rider USING(rider_id)
+            INNER JOIN stage USING(stage_id)
+            WHERE rider_participation_id = ${req.body.rider_participation_id}
+            ORDER BY stagenr; 
+            SELECT name, year, firstname, lastname FROM rider_participation
+            INNER JOIN race USING(race_id)
+            INNER JOIN rider USING(rider_id)
+            WHERE rider_participation_id = ${req.body.rider_participation_id}`
+            //0 for string 1 for number
+            var coltype = {};
+            sqlDB.query(query,(err,results)=>{
+                if(err) throw err;
+                var headerinfo = results[1].rows[0];
+                var tableName = headerinfo.firstname + " " +  headerinfo.lastname + " - " + headerinfo.name + " " + headerinfo.year;
+                res.send({overzicht: results[0].rows,
+                coltype: coltype,
+                tableName: tableName})
+            })
+        }
+    })
+
 
 
     //CHARTS

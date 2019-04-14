@@ -13,6 +13,7 @@ import Admin from './components/admin';
 import Etappewinsten from './components/etappewinsten';
 import Overzicht from './components/overzicht';
 import Charts from './components/charts';
+import Rider from './components/rider';
 import Versus from './components/versus';
 import ManualUpdate from './components/manualupdate'
 
@@ -87,6 +88,7 @@ class App extends Component {
             
             <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
             <Route path="/overzicht/:selection" component={Overzicht} history={this.props.history} />
+            <Route path="/rider/:rider_participation_id" component={Rider} history={this.props.history} />
             <Route path="/charts/:chartname" component={Charts} history={this.props.history} />
             <Route path="/vs/:username" component={Versus} history={this.props.history} />
             {/* <Redirect to='/'/>

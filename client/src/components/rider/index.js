@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './index.css';
 import axios from 'axios';
 
 class ScoreTable extends Component {
@@ -99,38 +98,17 @@ class ScoreTable extends Component {
 
 
 
-class overzicht extends Component {
+class Rider extends Component {
   constructor(props) {
     super(props);
     this.state = ({ overzicht: [],
     tableName: '' });
   }
 
+
   componentWillMount() {
-    switch (this.props.match.params.selection) {
-      case "all": this.renderAll(); break;
-      case "selected": this.renderSelected(); break;
-      default: this.renderAll(); break;
-    }
-
-  }
-
-  renderAll() {
-    axios.post('/api/getriderpointsall', { race_id: 4, poule_id: 0 })
-      .then((res) => {
-        if (res) {
-          this.setState({
-            overzicht: res.data.overzicht,
-            coltype: res.data.coltype,
-            tableName: res.data.tableName
-          })
-        }
-      })
-  }
-
-  renderSelected() {
-    console.log('getriderpointsselected')
-    axios.post('/api/getriderpointsselected', { race_id: 4, poule_id: 0 })
+    console.log(this.props)
+    axios.post('/api/getriderresults', { rider_participation_id: this.props.match.params.rider_participation_id })
       .then((res) => {
         if (res) {
           this.setState({
@@ -143,8 +121,6 @@ class overzicht extends Component {
   }
 
   render() {
-    console.log("parent", this.state.overzicht.length)
-    var time = new Date().getMilliseconds();
     return (
       <div className="overzichtContainer">
         <div>{this.state.tableName}</div>
@@ -156,4 +132,4 @@ class overzicht extends Component {
 
 }
 
-export default overzicht
+export default Rider
