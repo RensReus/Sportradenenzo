@@ -1,29 +1,15 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './index.css';
-
-class ResultsTableRow extends Component {
-    render() {
-        return (
-            <tr>
-                <td>{this.props.firstname} {this.props.lastname}</td>
-                <td>{this.props.team}</td>
-                <td>{this.props.stagescore}</td>
-                <td>{this.props.teamscore}</td>
-                <td>{this.props.totalscore}</td>
-            </tr>
-        )
-    }
-}
-
+import Table from '../table'
 
 class PouleTableRow extends Component {
     render() {
         return (
             <tr>
                 <td className="pouleUser">
-                    <div>{this.props.username}</div>
-                    <div className="selectionInfo">renners #: {this.props.riderCount} <SelectionsTable riders={this.props.riders} /></div>
+                    {this.props.username}
+                    <div className="selectionInfo"><Table data={this.props.riders} title={"renners #: "+ this.props.riderCount} /></div>
                 </td>
                 <td>{this.props.stagescore}</td>
                 <td>{this.props.totalscore}</td>
@@ -32,65 +18,6 @@ class PouleTableRow extends Component {
     }
 }
 
-class StageResultsTableRow extends Component {
-    render() {
-        return (
-            <tr className= {"inteam" + this.props.inteam}>
-                <td>{this.props.stagepos}</td>
-                <td>{this.props.firstname} {this.props.lastname}</td>
-                <td>{this.props.team}</td>
-                <td>{this.props.time}</td>
-            </tr>
-        )
-    }
-}
-
-class SelectionsTableRow extends Component {
-    render() {
-        return (
-            <tr className= {"inteam" + this.props.inteam}>
-                <td>{this.props.firstname} {this.props.lastname}</td>
-                <td>{this.props.totalscore}</td>
-            </tr>
-        )
-    }
-}
-
-class ResultsTable extends Component {
-    render() {
-        const rows = [];
-        const userTeam = this.props.userTeamResult
-        userTeam.forEach(rider => {
-            rows.push(
-                <ResultsTableRow
-                    firstname={rider.firstname}
-                    lastname={rider.lastname}
-                    team={rider.team}
-                    stagescore={rider.stagescore}
-                    teamscore={rider.teamscore}
-                    totalscore={rider.totalscore}
-                />
-            )
-        });
-
-        return (
-            <table className="scoreTable">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Team</th>
-                        <th>Stage</th>
-                        <th>Team</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
-        )
-    }
-}
 
 class PouleTable extends Component {
     render() {
@@ -127,72 +54,7 @@ class PouleTable extends Component {
     }
 }
 
-class StageResultsTable extends Component {
-    render() {
-        const rows = [];
-        const stageresults = this.props.stageresults
-        stageresults.forEach(rider => {
-            rows.push(
-                <StageResultsTableRow
-                    stagepos={rider.stagepos}
-                    firstname={rider.firstname}
-                    lastname={rider.lastname}
-                    team={rider.team}
-                    time={rider.stageresult}
-                    inteam={rider.inteam}
-                />
-            )
-        });
 
-        return (
-            <table className="resultsTable">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Name</th>
-                        <th>Team</th>
-                        <th>Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
-        )
-    }
-}
-
-class SelectionsTable extends Component {
-    render() {
-        const rows = [];
-        const riders = this.props.riders
-        riders.forEach(rider => {
-            console.log(rider)
-            rows.push(
-                <SelectionsTableRow
-                    firstname={rider.firstname}
-                    lastname={rider.lastname}
-                    totalscore={rider.totalscore}
-                    inteam={rider.inteam}
-                />
-            )
-        });
-
-        return (
-            <table className="selectionsTable">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Points</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
-        )
-    }
-}
 
 class Stage extends Component {
     
@@ -227,6 +89,7 @@ class Stage extends Component {
                         mode: '',
                         userTeamResult: res.data.teamresult,
                         userScores: res.data.userscores,
+                        userScoresColtype: res.userScoresColtype,
                         stageresults: res.data.stageresults,
                         prevText: res.data.prevText,
                         currText: res.data.currText,
@@ -276,9 +139,14 @@ class Stage extends Component {
             pTable = ''
             stResTable = ''
         } else {
-            resTable = <ResultsTable userTeamResult={this.state.userTeamResult} />
+            // resTable = <ResultsTable userTeamResult={this.state.userTeamResult} />
+        
+            resTable = <Table data={this.state.userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={this.state.userScores}/>
-            stResTable = <StageResultsTable stageresults={this.state.stageresults} />
+            // pTable = <Table data={this.state.userScores} title={"Poule Stand"} />
+            // stResTable = <StageResultsTable stageresults={this.state.stageresults} />
+            console.log(this.state.stageresults)
+            stResTable = <Table data={this.state.stageresults} title={"Uitslag"} />
         }
         return (
             <div className="stageContainer">

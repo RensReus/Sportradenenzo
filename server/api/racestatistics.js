@@ -82,9 +82,9 @@ module.exports = function (app) {
         if(!req.user){
             res.redirect('/')
         }else{
-            var query = `SELECT  concat(firstname, ' ', lastname) as name, team, SUM(stagescore)/GREATEST(count(DISTINCT username),1) as stagescore, 
-            SUM(teamscore)/GREATEST(count(DISTINCT username),1) as teamscore, SUM(totalscore)/GREATEST(count(DISTINCT username),1) as totalscore, 
-            count(DISTINCT username) as usercount, string_agg(DISTINCT username, ', ') as users FROM results_points
+            var query = `SELECT  concat(firstname, ' ', lastname) AS name, team, SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS stagescore, 
+            SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS teamscore, SUM(totalscore)/GREATEST(count(DISTINCT username),1) AS totalscore, 
+            count(DISTINCT username) AS usercount, string_agg(DISTINCT username, ', ') AS users FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
             INNER JOIN rider USING(rider_id)
             LEFT JOIN team_selection_rider on results_points.rider_participation_id = team_selection_rider.rider_participation_id
@@ -97,9 +97,9 @@ module.exports = function (app) {
             var coltype = {name:0,team:0,stagescore:1,teamscore:1,totalscore:1,usercount:1};
             sqlDB.query(query,(err,results)=>{
                 if(err) throw err;
-                res.send({overzicht: results.rows,
+                res.send({tableData: results.rows,
                     coltype: coltype,
-                tableName: "Alle Renners"})
+                title: "Alle Renners"})
             })
         }
     })
@@ -108,25 +108,25 @@ module.exports = function (app) {
         if(!req.user){
             res.redirect('/')
         }else{
-            var query = `SELECT  concat(firstname, ' ', lastname) as name, team, price, SUM(stagescore)/GREATEST(count(DISTINCT username),1) as stagescore,  
-            SUM(teamscore)/GREATEST(count(DISTINCT username),1) as teamscore, SUM(totalscore)/GREATEST(count(DISTINCT username),1) as totalscore, 
-            ROUND(SUM(totalscore)/GREATEST(count(DISTINCT username),1)*1e6/price,0) as pointspermil,  
-            count(DISTINCT username) as usercount, string_agg(DISTINCT username, ', ') as users FROM results_points
+            var query = `SELECT  concat(firstname, ' ', lastname) AS "Name", team AS "Team",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Stagescore",  
+            SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Teamscore", SUM(totalscore)/GREATEST(count(DISTINCT username),1) AS "Totalscore", 
+            ROUND(SUM(totalscore)/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "Points per Million",  
+            count(DISTINCT username) AS "Usercount", string_agg(DISTINCT username, ', ') AS "Users" FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
             INNER JOIN rider USING(rider_id)
             LEFT JOIN team_selection_rider on results_points.rider_participation_id = team_selection_rider.rider_participation_id
             LEFT JOIN account_participation USING(account_participation_id)
             LEFT JOIN account USING (account_id)
             WHERE rider_participation.race_id = 4 AND rider_participation.rider_participation_id in (select rider_participation_id from team_selection_rider) 
-            GROUP BY name, team, price
-            ORDER BY pointspermil DESC`
+            GROUP BY "Name", "Team", "Price"
+            ORDER BY "Points per Million" DESC`
             //0 for string 1 for number
-            var coltype = {name:0,team:0,price:1,stagescore:1,teamscore:1,totalscore:1,pointspermil:1,usercount:1};
+            var coltype = {"Name":0,"Team":0,"Price":1,"Stagescore":1,"Teamscore":1,"Totalscore":1,"Points per Million":1,"Usercount":1};
             sqlDB.query(query,(err,results)=>{
                 if(err) throw err;
-                res.send({overzicht: results.rows,
+                res.send({tableData: results.rows,
                 coltype: coltype,
-                tableName: "Alle Geselecteerde Renners"})
+                title: "Alle Geselecteerde Renners"})
             })
         }
     })
@@ -144,16 +144,22 @@ module.exports = function (app) {
             SELECT name, year, firstname, lastname FROM rider_participation
             INNER JOIN race USING(race_id)
             INNER JOIN rider USING(rider_id)
+            WHERE rider_participation_id = ${req.body.rider_participation_id};
+            SELECT 0 AS stagenr,  0 AS stagepos, SUM(stagescore) AS Stagescore, sum(teamscore) AS Teamscore, SUM(totalscore) AS Totalscore FROM results_points
             WHERE rider_participation_id = ${req.body.rider_participation_id}`
             //0 for string 1 for number
             var coltype = {};
             sqlDB.query(query,(err,results)=>{
                 if(err) throw err;
+                var total = results[2].rows[0];
+                total.stagenr = "Total";
+                total.stagepos = "";
+                results[0].rows.push(total)
                 var headerinfo = results[1].rows[0];
-                var tableName = headerinfo.firstname + " " +  headerinfo.lastname + " - " + headerinfo.name + " " + headerinfo.year;
-                res.send({overzicht: results[0].rows,
+                var title = headerinfo.firstname + " " +  headerinfo.lastname + " - " + headerinfo.name + " " + headerinfo.year;
+                res.send({tableData: results[0].rows,
                 coltype: coltype,
-                tableName: tableName})
+                title: title})
             })
         }
     })

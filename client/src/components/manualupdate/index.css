@@ -1,10 +1,6 @@
 div.mainContainer {
-    margin-left: 10vw;
-    margin-right: 10vw;
-    padding-top: 5vh;
     background-color: rgba(230,230,240);
     overflow: auto;
-    height: 90vh;
     display:grid;
     grid-template-rows: repeat(3,1fr)    
 }

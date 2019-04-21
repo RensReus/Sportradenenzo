@@ -5,17 +5,14 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+
 div.stageContainer{  
-    height: 100vh;
-    overflow: auto;
     display: grid;
     grid-template-columns: auto auto;
     grid-template-rows: auto auto auto;
     grid-gap: 1em;
+    padding-bottom: 1vh;
     background-color: rgba(230,230,240,0.98);
-    margin-left: 10vw;
-    margin-right: 10vw;
-    padding-top: 5vh;
     justify-items: center;
 }
 div#titlebuttons {
@@ -42,30 +39,6 @@ div.stage {
     grid-row: 3;
 }
 
-tr.inteam1{
-    font-weight: bold;
-}
-
-
-th{
-    background: rgb(49, 49, 49);
-    color: white
-    
-}
-
-th, td {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 5px;
-    padding-right: 5px;
-    text-align: center;
-    font-size: 17px
-}
-
-table {
-    border: 1px solid black;
-}
-
 .selectionInfo {
     display: none;
     position: absolute;
@@ -74,8 +47,6 @@ table {
 }
 
 .pouleUser:hover .selectionInfo {display: block;}
-
-
 
 .pouleUser:hover {
     cursor: pointer;

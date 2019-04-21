@@ -41,17 +41,12 @@ body {
     z-index: 0;
   }
 }
-div.standardContainer{
-  margin-left: 0;
-  margin-right: 0;
-  padding-top: 5vh;
-  background-color: rgba(230,230,240,0.98);
-  min-height: 93vh
-}
 
-@media only screen and (min-width: 768px) {
-  div.standardContainer {
-    margin-left: 10vw;
-    margin-right: 10vw;
-  }
+div.pageContainer{  
+  height: 95vh;
+  overflow: auto;
+  background-color: rgba(230,230,240,0.68);
+  margin-left: 10vw;
+  margin-right: 10vw;
+  padding-top: 5vh;
 }

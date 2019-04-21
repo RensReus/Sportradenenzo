@@ -18,6 +18,7 @@ class Table extends Component{
       }
       return(
           <table className="winnaarsTable">
+              <caption>{this.props.title}</caption>
               <thead>
                   <tr>
                       {header}
@@ -55,10 +56,8 @@ class etappewinsten extends Component {
   render() {
     return (
       <div className="etappewinstenContainer">
-        <div>Etappe Uitslagen</div>
-      <Table data={this.state.rankTable}/>
-      <div>Hoe vaak welke positie</div>
-      <Table data={this.state.countTable}/>
+      <Table data={this.state.rankTable} title="Etappe Uitslagen"/>
+      <Table data={this.state.countTable} title="Hoe vaak welke positie"/>
       </div>
 
     )

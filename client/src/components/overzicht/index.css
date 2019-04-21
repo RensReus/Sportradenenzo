@@ -1,38 +1,6 @@
-div.overzichtContainer{
-    margin-left: 10vw;
-    margin-right: 10vw;
-    padding-top: 5vh;
-    background-color: rgba(230,230,240,0.68);
-    overflow: auto;
-    height: 90vh;
-}
+/* div.overzichtContainer{
+} */
 
 table.ScoreTable tr.inteam {
     font-weight: bold;
-}
-
-tr:nth-child(odd) {
-    background: #a8a8a8;
-}
-tr:nth-child(even) {
-    background: rgb(95, 95, 95);
-}
-
-th{
-    background: rgb(49, 49, 49);
-    color: white
-    
-}
-
-th.sortable{
-    cursor: pointer;
-}
-
-th, td {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 5px;
-    padding-right: 5px;
-    text-align: center;
-    font-size: 17px
 }

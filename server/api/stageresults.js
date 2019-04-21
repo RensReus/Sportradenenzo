@@ -32,34 +32,35 @@ module.exports = function (app) {
             var account_participation_id = `(SELECT account_participation_id FROM account_participation 
                 WHERE account_id=${req.user.account_id} AND race_id=${race_id})`;
             
-            teamresultQuery =   `SELECT *
+            var teamresultQuery =   `SELECT concat(firstname, ' ', lastname) AS "Name", team AS "Team", stagescore as "Stage Score", teamscore as "Team Score", totalscore as "Total"
                                 FROM team_selection_rider 
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 INNER JOIN results_points USING(rider_participation_id)
                                 INNER JOIN rider USING(rider_id)
                                 WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id}
-                                ORDER BY totalscore DESC, team ; `;
+                                ORDER BY "Total" DESC, "Team" ; `;
             
-            userscoresQuery =   `SELECT username, stagescore, totalscore FROM stage_selection
+            var userscoresQuery =   `SELECT username, stagescore, totalscore FROM stage_selection
                                 INNER JOIN account_participation USING(account_participation_id)
                                 INNER JOIN account USING(account_id)
                                 WHERE stage_id=${stage_id}
                                 ORDER BY totalscore DESC; `;
 
-            stageresultsQuery = `SELECT stagepos, firstname, lastname, team, stageresult, SUM(CASE account_participation_id WHEN ${account_participation_id} THEN 1 END) AS inteam
+            // concat('<a href="/rider/', rider_participation_id,'">',firstname, ' ', lastname,'</a>') voor later
+
+            var stageresultsQuery = `SELECT stagepos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", stageresult AS "Time", CASE SUM(CASE account_participation_id WHEN ${account_participation_id} THEN 1 END) WHEN 1 THEN 'inteam' ELSE '' END AS "rowClassName"
                                 FROM results_points
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 INNER JOIN rider USING(rider_id)
                                 LEFT JOIN team_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND stagepos > 0 
-                                GROUP BY stagepos, firstname, lastname, team, stageresult
-                                ORDER BY stagepos ASC; `;
+                                GROUP BY " ", "Name", "Team", "Time"
+                                ORDER BY " " ASC; `;
             
-            var selectionsQuery = `SELECT username, COUNT(rider_participation_id), ARRAY_AGG(json_build_object(
-                                'firstname', firstname, 
-                                'lastname', lastname, 
+            var selectionsQuery = `SELECT username, COALESCE(COUNT(rider_participation_id),0) as count, ARRAY_AGG(json_build_object(
+                                'Name', CONCAT(firstname, ' ', lastname), 
                                 'totalscore', totalscore ,
-                                'inteam', CASE WHEN rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 1 ELSE 0 END 
+                                'inteam', CASE WHEN rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'inteam' ELSE ' ' END 
                                 )) as riders FROM  results_points
                                 INNER JOIN team_selection_rider USING(rider_participation_id)
                                 INNER JOIN account_participation USING(account_participation_id)
@@ -74,14 +75,10 @@ module.exports = function (app) {
             var totalQuery = teamresultQuery + userscoresQuery + stageresultsQuery + selectionsQuery;
             
             
-
+            var userScoresColtype = {stagescore:1, totalscore:1};
 
             sqlDB.query(totalQuery, (err, results) => {
                 if (err) throw err;
-                // if (!response.rows[0]) { 
-                //     res.send({'mode': '404'});
-                //     return;
-                // nieuwe exists check moet nog toegevoegd worden
                 var userscores = results[1].rows;
                 var selecties = results[3].rows
                 for (var i in userscores){
@@ -98,6 +95,7 @@ module.exports = function (app) {
                     teamresult: results[0].rows,
                     userscores: userscores,
                     stageresults: results[2].rows,
+                    userScoresColtype: userScoresColtype,
                     prevText: prevText,
                     currText: currText,
                     nextText: nextText,

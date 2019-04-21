@@ -1,0 +1,17 @@
+Overview of table use
+- etappewinsten
+- (teamselection)
+- (admin)
+
+attributen
+- custom column names
+- links
+- tabs (optioneel lengte lijst meegeven als attribuut?)
+- kolommen toevoegen of weglaten
+    - full data
+    - displaydata
+- (hover on links show popup)
+    
+Argumenten die je mee moet geven
+    - (table count) default 1 or just extracted from data
+    - (tab count or max number of rows/dan tabs bereken dmv data of gewoon een extra loop) default 1 or no limit 
