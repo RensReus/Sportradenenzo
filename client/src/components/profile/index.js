@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 //import './index.css';
+import underConstruction from '../../under_construction.gif'
 
 class ActiveRacesTable extends Component{
     render(){
@@ -28,6 +29,7 @@ class Profile extends Component{
                 <div className="activeRaces">
                     <ActiveRacesTable/>
                 </div>
+                <img src={underConstruction} />
             </div>
         )
     }

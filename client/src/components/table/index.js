@@ -122,7 +122,6 @@ class Table extends Component {
     }
 
     render() {
-        console.log("title", this.state.data)
         return (
             <table className={this.state.classNames}>
                 <caption>{this.state.title}</caption>

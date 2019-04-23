@@ -12,6 +12,7 @@ module.exports = function (app) {
             var prevText = "";
             var currText = "";
             var nextText = "";
+            var lastStage = false;
             var stagenr = parseInt(req.body.stageNumber);
 
             if(stagenr > 1 && stagenr < raceNames.length){
@@ -25,6 +26,7 @@ module.exports = function (app) {
                 prevText = "Naar " + (stagenr - 1) + ": " + raceNames[stagenr - 2];
                 currText = stagenr + ": " + raceNames[stagenr - 1];
                 nextText = "Naar Einduitslag";
+                lastStage = true;
             }
             
             var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = ${req.body.year})`;
@@ -70,9 +72,10 @@ module.exports = function (app) {
                                 WHERE stage_id = ${stage_id} and rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider)
                                 GROUP BY username; `
             
+            var raceStartedQuery = `SELECT CURRENT_TIMESTAMP > starttime as racestarted from stage
+            WHERE race_id = 4 and stagenr = 1; `
             
-            
-            var totalQuery = teamresultQuery + userscoresQuery + stageresultsQuery + selectionsQuery;
+            var totalQuery = teamresultQuery + userscoresQuery + stageresultsQuery + selectionsQuery + raceStartedQuery;
             
             
             var userScoresColtype = {stagescore:1, totalscore:1};
@@ -99,8 +102,26 @@ module.exports = function (app) {
                     prevText: prevText,
                     currText: currText,
                     nextText: nextText,
+                    lastStage: lastStage,
+                    raceStarted: results[4].rows[0].racestarted
                 });
             })
         }
     });
+
+    app.post('/api/getfinalclassics', function (req, res) {
+        if (!req.user) {
+            res.send({ 'mode': '404' });
+            return;
+        } else {
+            console.log("userdata: ",req.user)
+            var prevText = "Naar 14: Eschborn-Frankfurt";//TODO get race name or stage 21 for GT
+            var lastStageLink = "/stage/14";
+            res.send({
+                prevText: prevText,
+                lastStageLink: lastStageLink,
+                username: req.user.username
+            })
+        }
+    })
 }

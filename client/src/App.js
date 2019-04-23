@@ -14,8 +14,8 @@ import Etappewinsten from './components/etappewinsten';
 import Overzicht from './components/overzicht';
 import Charts from './components/charts';
 import Rider from './components/rider';
-import Versus from './components/versus';
 import ManualUpdate from './components/manualupdate'
+import FinalStandings from './components/eindstand';
 
 class App extends Component {
   constructor(props) {
@@ -90,7 +90,7 @@ class App extends Component {
             <Route path="/overzicht/:selection" component={Overzicht} history={this.props.history} />
             <Route path="/rider/:rider_participation_id" component={Rider} history={this.props.history} />
             <Route path="/charts/:chartname" component={Charts} history={this.props.history} />
-            <Route path="/vs/:username" component={Versus} history={this.props.history} />
+            <Route path="/finalstandings" component={FinalStandings} history={this.props.history} />
             {/* <Redirect to='/'/>
           </Switch> */}
         </div>

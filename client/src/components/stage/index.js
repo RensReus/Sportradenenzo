@@ -71,6 +71,8 @@ class Stage extends Component {
             prevText: "",
             currText: "",
             nextText: "",
+            lastStage: false,
+            raceStarted: false,
         }
         this.previousStage = this.previousStage.bind(this);
         this.nextStage = this.nextStage.bind(this);
@@ -94,31 +96,38 @@ class Stage extends Component {
                         prevText: res.data.prevText,
                         currText: res.data.currText,
                         nextText: res.data.nextText,
+                        lastStage: res.data.lastStage,
+                        raceStarted: res.data.raceStarted
                     })
                 }
             })
     }
     previousStage() {
         const currentstage = parseInt(this.state.stage)
-        this.props.history.push('/stage/' + (currentstage - 1).toString())
-        this.setState({
-            stage: (currentstage - 1).toString()
-        })
-        this.updateData((currentstage - 1).toString())
-    }
+        if(currentstage>1){
+            this.props.history.push('/stage/' + (currentstage - 1).toString())
+            this.setState({
+                stage: (currentstage - 1).toString()
+            })
+            this.updateData((currentstage - 1).toString())
+        }
+}
     nextStage() {
-        const currentstage = parseInt(this.state.stage)
-        this.props.history.push('/stage/' + (currentstage + 1).toString())
-        this.setState({
-            stage: (currentstage + 1).toString()
-        })
-        this.updateData((currentstage + 1).toString())
+        if(!this.state.lastStage){
+            const currentstage = parseInt(this.state.stage)
+            this.props.history.push('/stage/' + (currentstage + 1).toString())
+            this.setState({
+                stage: (currentstage + 1).toString()
+            })
+            this.updateData((currentstage + 1).toString())
+        }else{
+            this.props.history.push('/finalstandings')
+        }
     }
     
     getSelectionDetails(stage){
-
-
     }
+
     componentDidMount() {
         this.updateData(parseInt(this.state.stage));
         this.getSelectionDetails(parseInt(this.state.stage));
@@ -133,27 +142,26 @@ class Stage extends Component {
         let resTable
         let pTable
         let stResTable
+        var prevButton = ''
         if (mode === '404') {
             message = <h3>404: Data not found</h3>
             resTable = ''
             pTable = ''
             stResTable = ''
         } else {
-            // resTable = <ResultsTable userTeamResult={this.state.userTeamResult} />
-        
             resTable = <Table data={this.state.userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={this.state.userScores}/>
-            // pTable = <Table data={this.state.userScores} title={"Poule Stand"} />
-            // stResTable = <StageResultsTable stageresults={this.state.stageresults} />
-            console.log(this.state.stageresults)
             stResTable = <Table data={this.state.stageresults} title={"Uitslag"} />
+        }
+        if(!this.state.raceStarted || this.state.stage !== 1){
+            prevButton = <div id="prevStageButton">
+            <button  onClick={this.previousStage}>{this.state.prevText}</button>
+            </div>;
         }
         return (
             <div className="stageContainer">
                 <div id="titlebuttons">
-                    <div id="previousStageButton">
-                        <button  onClick={this.previousStage}>{this.state.prevText}</button>
-                    </div>
+                    {prevButton}
                     <div id='title'>{this.state.currText}</div>
                     <div id="nextStageButton">
                         <button onClick={this.nextStage}>{this.state.nextText}</button>
