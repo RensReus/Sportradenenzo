@@ -71,7 +71,7 @@ class App extends Component {
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
       <div className="content">
         <div className="backgroundImage"></div>
-        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} />
+        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} history={this.props.history}/>
         <div className="pageContainer">
         
         {/* <Switch> */}

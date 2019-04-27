@@ -19,6 +19,16 @@ module.exports = function (app) {
     })(req, res, next);
   });
 
+  //Logout
+  app.post('/api/logout', function (req, res){
+    if(!req.user){
+      res.send(false)
+    }else{
+      req.logout();
+      res.send(true)
+    }
+  })
+
   app.post('/api/isloggedin', function (req, res) {
     if (!req.user) {
       res.send({isLoggedIn: false, isAdmin: false})

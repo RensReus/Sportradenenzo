@@ -1,19 +1,33 @@
 import React, { Component } from 'react';
 import './index.css';
+import axios from 'axios';
 
 class Navbar extends Component {
+    redirect = (url) => {
+        this.props.history.push(url);
+    }
+    logout(){
+        axios.post('/api/logout')
+        .then((res) => {
+            if(res.data){
+                this.props.history.push('/')
+            }else{
+
+            }
+        })   
+    }
     render() {
         let buttonLog;
         let buttonSignProfile;
         let currStage;
         if (this.props.isLoggedIn) {
-            buttonSignProfile = <a className='item' href="/profile">Profile</a>;
-            buttonLog = <a className='item' href="/logout">Logout</a>;
-            currStage = <a className='item' href="/">Current Stage</a>;
-
+            buttonSignProfile = <button className='item' onClick={() => this.redirect('/profile')}>Profile</button>;
+            buttonLog = <button className='item' onClick={() => this.logout()}>Logout</button>;
+            currStage = <button className='item' onClick={() => this.redirect('/')}>Current stage</button>;
         } else {
-            buttonSignProfile = <a className='item' href="/signup">Signup</a>;
-            buttonLog = <a className='item' href="/login">Login</a>;
+            buttonSignProfile = <button className='item' onClick={() => this.redirect('/signup')}>Sign up</button>;
+            buttonLog = <button className='item' onClick={() => this.redirect('/login')}>Sign in</button>;
+            currStage = '';
         }
         return (
             <div className="navbar">
@@ -38,10 +52,10 @@ class Navbar extends Component {
                 </div> 
                 
                 {this.props.isAdmin &&
-                <a  className='item' href="/admin">Admin</a>
+                <button className='item' onClick={() => this.redirect('/admin')}>Admin</button>
                 }
                 {this.props.isAdmin &&
-                <a  className='item' href="/manualupdate">Manual Update</a>
+                <button className='item' onClick={() => this.redirect('/manualupdate')}>Manual Update</button>
                 }
                 {buttonLog}
             </div>
