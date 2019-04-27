@@ -12,7 +12,7 @@ class Headers extends Component {
         if (data.length > 0) {
             const properties = Object.keys(data[0])
             properties.forEach(function (property) {
-                if (property != "rowClassName") {
+                if (property !== "rowClassName") {
 
                     var headerText = property;
                     if (colNames != null && colNames[property] != null) {
@@ -44,7 +44,7 @@ class Rows extends Component {
         for (var i = 0; i < data.length; i++) {
             var className = "";
             for (var property in data[i]) {
-                if (property != "rowClassName") {
+                if (property !== "rowClassName") {
                     row.push(<td>{data[i][property]}</td>);
                 } else {
                     className = data[i][property];

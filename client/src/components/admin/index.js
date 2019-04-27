@@ -79,7 +79,7 @@ class Outputtable extends Component{
                 properties.forEach(function(property){
                     header.push(<th>{property}</th>)
                 })
-                for(var i=0;i<output.length;i++){
+                for(i=0;i<output.length;i++){
                     for (property in output[i]) {
                         row.push(<td>{output[i][property] == null ? "null" : output[i][property].toString()}</td>);
                     }

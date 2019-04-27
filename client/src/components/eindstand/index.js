@@ -45,7 +45,7 @@ class FinalStandings extends Component{
                     </div>
                     <div id='title'>Eindstand</div>
                 </div>
-                <img src={underConstruction} />
+                <img src={underConstruction} alt="still building" />
                 <font size="+4">Nog even geduld {this.state.username}</font>
                 <div></div>
             </div>

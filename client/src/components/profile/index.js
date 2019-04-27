@@ -28,7 +28,7 @@ class Profile extends Component{
                 <div className="activeRaces">
                     <ActiveRacesTable/>
                 </div>
-                <img src={underConstruction} />
+                <img src={underConstruction}  alt="still building" />
             </div>
         )
     }
