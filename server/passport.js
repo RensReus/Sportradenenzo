@@ -33,7 +33,8 @@ module.exports = function(passport) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, email, password, done) {
-
+        console.log(email)
+        console.log(password)
         // asynchronous
         // User.findOne wont fire unless data is sent back
         process.nextTick(function() {
@@ -41,11 +42,11 @@ module.exports = function(passport) {
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
         SQLread.getLogin(email.toLowerCase(),function(err,result){
-            if (err)
-                return done(err);
-            
-            if(result.rowCount != 0){ //email is already taken
-                return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
+            if (err){
+                return done(err, false);
+            }
+            if(result != null){ //email is already taken
+                return done(null, false);
             }else{
                 //still available make new user
                 var passwordToStore = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
@@ -78,10 +79,10 @@ module.exports = function(passport) {
                 return done(err);
 
             if (account == null) //no account with that email
-                return done(null, false, req.flash('loginMessage', 'Incorrect email/password combination'));
+                return done(null, false);
             
             if (!bcrypt.compareSync(password, account.password)) //incorrect password
-                return done(null, false, req.flash('loginMessage', 'Incorrect email/password combination'));
+                return done(null, false);
             
             return done(null,account)
 

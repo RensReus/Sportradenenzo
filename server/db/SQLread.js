@@ -77,10 +77,10 @@ module.exports = {
      * @param {function} callback
      */
     getLogin: function (email, callback) {
-        var query = `SELECT * FROM account
-                WHERE email = '${email}'`;
+        var values = [email]
+        var query = `SELECT * FROM account WHERE email = $1`;
 
-        sqlDB.query(query, (err, res) => {
+        sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows[0])
         })

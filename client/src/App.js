@@ -25,7 +25,7 @@ class App extends Component {
                   isAdmin: false });//de default voor redirect
   }
 
-  componentWillMount() {
+  componentDidMount() {
     //Voordat de pagina wordt geladen kijken of de gebruiker is ingelogd
     axios.post('/api/isloggedin', { withCredentials: true }) //to: authentication.js
       .then((res) => {

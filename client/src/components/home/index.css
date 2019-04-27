@@ -77,3 +77,8 @@ button.loginButton{
     width: 9vw;
     color: white;
 }
+
+div.errordiv{
+    border-radius: 3px;
+    background-color: rgb(220,90,90);
+}
