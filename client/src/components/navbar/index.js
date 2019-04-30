@@ -1,20 +1,13 @@
 import React, { Component } from 'react';
 import './index.css';
-import axios from 'axios';
 
 class Navbar extends Component {
     redirect = (url) => {
         this.props.history.push(url);
     }
     logout(){
-        axios.post('/api/logout')
-        .then((res) => {
-            if(res.data){
-                this.props.history.push('/')
-            }else{
-
-            }
-        })   
+        localStorage.removeItem('authToken');
+        this.props.history.push('/')
     }
     render() {
         let buttonLog;

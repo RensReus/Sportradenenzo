@@ -6,3 +6,4 @@ node_modules
 server/db/SQL tables.txt
 server/db/sqlDBlink
 client/src/examples
+server/jwtsecret

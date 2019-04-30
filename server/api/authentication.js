@@ -1,6 +1,25 @@
 module.exports = function (app) {
   var passport = require('passport');
   const sqlDB = require('../db/sqlDB')
+  const fs = require('fs');
+  const jwt = require('jsonwebtoken')
+
+  function getSecret(){
+    if (fs.existsSync('./server/jwtsecret.js')) {
+      return secret = require('../jwtsecret');
+    } else {
+      return secret = process.env.JWT_SECRET;
+    }
+  }
+
+  function generateToken(user){
+    //Create the authentication token
+    var payload = {
+      email : user.email,
+      admin : user.admin
+    }
+    return token = jwt.sign(payload, getSecret(), {expiresIn: 60*60*24*7})
+  }
 
   //Register a new account
   app.post("/api/signup", function(req,res,next) {
@@ -28,7 +47,12 @@ module.exports = function (app) {
               if (err){
                 return next(err)
               }
-              return res.send({succes: true, error: null})
+              var token = generateToken(user)
+              return res.send({
+                succes: true, 
+                error: null,
+                token: token
+              })
             });
           }
         })(req, res, next);
@@ -51,7 +75,11 @@ module.exports = function (app) {
         if (err) { 
           return next(err);
         }
-        return res.send(true);
+        var token = generateToken(user)
+        return res.send({
+          succes: true,
+          token: token
+        })
       });
     })(req, res, next);
   });
@@ -67,10 +95,12 @@ module.exports = function (app) {
   })
 
   app.post('/api/isloggedin', function (req, res) {
-    if (!req.user) {
-      res.send({isLoggedIn: false, isAdmin: false})
-    } else {
-      res.send({isLoggedIn: true, isAdmin: req.user.admin})
-    }
+    jwt.verify(req.body.token, getSecret(), function(err, decoded){
+      if(err){
+        res.send({isLoggedIn: false, isAdmin: false})
+      }else{
+        res.send({isLoggedIn: true, isAdmin: decoded.admin})
+      }
+    });
   });
 };

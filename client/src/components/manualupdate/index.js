@@ -41,7 +41,7 @@ class manualupdate extends Component {
             stage = parseInt(stage);
             if (stage > 0 && stage < 15) {
                 console.log("stage:", stage);
-                axios.post('/api/getstartlistklassiek', { year: 2019, stage: stage })
+                axios.post('/api/getstartlistklassiek', { year: 2019, stage: stage, token: localStorage.getItem('authToken') })
                     .then((res) => {
                         this.setState({ 
                             gskStage: "",
@@ -64,7 +64,7 @@ class manualupdate extends Component {
             stage = parseInt(stage);
             if (stage > 0 && stage < 15) {
                 console.log("stage:", stage);
-                axios.post('/api/getresultsklassiek', { year: 2019, stage: stage })
+                axios.post('/api/getresultsklassiek', { year: 2019, stage: stage, token: localStorage.getItem('authToken') })
                     .then((res) => {
                         this.setState({ grkStage: res.data })
                         this.setState({ 
@@ -81,7 +81,7 @@ class manualupdate extends Component {
     }
 
     getStartlist() {
-        axios.post('/api/getstartlist', { raceName: this.state.raceName, year: 2019})
+        axios.post('/api/getstartlist', { raceName: this.state.raceName, year: 2019, token: localStorage.getItem('authToken')})
         .then((res) => {
             this.setState({ grStage: res.data })            
         })
@@ -94,7 +94,7 @@ class manualupdate extends Component {
             stage = parseInt(stage);
             if (stage > 0 && stage < 22) {
                 console.log("stage:", stage);
-                axios.post('/api/getresults', { raceName: this.state.raceName, year: this.state.year, stage: stage })
+                axios.post('/api/getresults', { raceName: this.state.raceName, year: this.state.year, stage: stage, token: localStorage.getItem('authToken') })
                     .then((res) => {
                         this.setState({ grStage: res.data })
                     })

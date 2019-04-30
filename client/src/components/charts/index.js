@@ -116,7 +116,7 @@ class charts extends Component {
 	}
 
 	userscores() {
-		axios.post('/api/chartuserstagescores', { race_id: 4, poule_id: 0 })
+		axios.post('/api/chartuserstagescores', { race_id: 4, poule_id: 0, token: localStorage.getItem('authToken') })
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -153,7 +153,7 @@ class charts extends Component {
 	}
 	
 	userranking(){
-		axios.post('/api/chartuserranking', { race_id: 4, poule_id: 0 })
+		axios.post('/api/chartuserranking', { race_id: 4, poule_id: 0, token: localStorage.getItem('authToken') })
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })

@@ -141,7 +141,7 @@ class Admin extends Component{
     }
     submitQuery = (e) => {
         e.preventDefault();
-        axios.post('/api/admin',{query : this.state.value})
+        axios.post('/api/admin',{ token: localStorage.getItem('authToken'), query : this.state.value})
         .then((res)=>{
             this.setState({output:res.data.data, submitted: true})
         })

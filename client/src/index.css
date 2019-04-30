@@ -50,3 +50,11 @@ div.pageContainer{
   margin-right: 10vw;
   padding-top: 5vh;
 }
+
+img.loadingGif{
+  height: 20%;
+  margin-left: 0%;
+  margin-top: 5%;
+  margin-bottom: 0;
+  padding: 0;
+}
