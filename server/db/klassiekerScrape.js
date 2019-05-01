@@ -1,4 +1,4 @@
-const sqlDB = require('./sqlDB')
+const sqlDB = require('./sqlDB');
 const cheerio = require('cheerio');
 const request = require('request');
 const schedule = require('node-schedule');

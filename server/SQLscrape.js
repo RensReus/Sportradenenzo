@@ -2,46 +2,43 @@ const cheerio = require('cheerio');
 const request = require('request');
 const functies = require('./functies');
 const schedule = require('node-schedule');
+const sqlDB = require('./db/sqlDB');
+const fs = require('fs');
 
 module.exports = {
-    sqlDB: null,
-
-    passConnection: function (sqlDB) {
-        this.sqlDB = sqlDB;
-    },
-
-    getStartlist: function (raceName, year, callback) {
+        getStartlist: function (raceName, year, callback) {
         var raceString = "";
         var prijzenfile = "";
         switch (raceName) {
             case "giro":
                 raceString = "giro-d-italia";
-                prijzenfile = "Giroprijzen.txt";
+                prijzenfile = "./server/Giroprijzen.txt";
                 break;
             case "tour":
                 raceString = "tour-de-france";
-                prijzenfile = "tourprijzen.txt";
+                prijzenfile = "./server/tourprijzen.txt";
                 break;
             case "vuelta":
                 raceString = "vuelta-a-espana";
-                prijzenfile = "prijzen.txt";
+                prijzenfile = "./server/prijzen.txt";
                 break;
         }
         var race_id = `(SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})`;
-        if (res.rowCount > 0) race_id = res.rows[0].race;
         fs.readFile(prijzenfile, function (err, file) {
+
             var data = file.toString();
             var renners = data.split("\n");
             request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, function (error, response, html) {
                 if (!error && response.statusCode == 200) {
                     var $ = cheerio.load(html);
-                    var riderQuery = `INSERT INTO rider(pcsid, country, firstname, lastname, initials) VALUES`;
+                    var riderQuery = `INSERT INTO rider(pcs_id, country, firstname, lastname, initials) VALUES`;
                     var participationQuery = `INSERT INTO rider_participation (race_id,rider_id,price,team) VALUES`;
                     var startlist_IDs = '(';
 
-                    $(".black").each(function (index, element) { //gaat ieder team af
-                        var teamName = $(this).text();
-                        $(this).parent().children(".rider").each(function (index, element) { //gaat iedere renner af
+                    $(".team").each(function (index, element) { //gaat ieder team af
+                        var teamName = $(this).children().first().text();
+                        // $(this).children()
+                        $(this).children().eq(2).children(".rider").each(function (index, element) { //gaat iedere renner af
                             var name = $(this).text();
                             // sla achternaam voor naam en voorletters op
                             var lastname = $(this).children().first().text();
@@ -81,30 +78,41 @@ module.exports = {
                             }
                             //sqlcode
                             //insert rider or do nothing
-                            riderQuery += `('${pcsid}', '${country}', '${voornaam}', '${lastname}', '${voorletters}'),`;
-                            var rider = `(SELECT rider_id FROM rider WHERE PCS_id = '${pcsid}')`;
-                            participationQuery += `(${race_id},${rider}, ${prijs}, '${teamName}'),`;
-                            var rider_participation = `(SELECT rider_participation_id FROM rider_participation WHERE rider_id = ${rider} AND race_id = ${race_id})`;
-                            startlist_IDs += `${rider_participation},`
+                            if(prijs !== 66666666){// only add riders if they have a correct price, no riders with incorrect price like this hopefully
+                                riderQuery += `('${pcsid}', '${country}', '${voornaam}', '${lastname}', '${voorletters}'),`;
+                                var rider = `(SELECT rider_id FROM rider WHERE PCS_id = '${pcsid}')`;
+                                participationQuery += `(${race_id},${rider}, ${prijs}, '${teamName}'),`;
+                                var rider_participation = `(SELECT rider_participation_id FROM rider_participation WHERE rider_id = ${rider} AND race_id = ${race_id})`;
+                                startlist_IDs += `${rider_participation},`
+                            }
                         })
                     });
 
                     startlist_IDs = startlist_IDs.slice(0,-1) +')'
-                    var deleteQuery = `DELETE FROM rider_participation WHERE rider_participation_id NOT IN ${startlist_IDs}; `;
+
+                    var ridersInRace = `(SELECT rider_participation_id FROM rider_participation WHERE race_id = ${race_id})`
+
+                    var deleteStageSelectionQuery = `DELETE FROM stage_selection_rider WHERE rider_participation_id NOT IN ${startlist_IDs} AND rider_participation_id IN ${ridersInRace};\n `
+
+                    var deleteKopmanQuery = `UPDATE stage_selection SET kopman_id = NULL WHERE kopman_id NOT IN ${startlist_IDs} AND kopman_id IN ${ridersInRace};\n `
+
+                    var deleteTeamSelectionQuery = `DELETE FROM team_selection_rider WHERE rider_participation_id NOT IN ${startlist_IDs} AND rider_participation_id IN ${ridersInRace};\n `
+
+                    var deleteStartlistQuery = `DELETE FROM rider_participation WHERE rider_participation_id NOT IN ${startlist_IDs} AND race_id = ${race_id};\n `;
                     
                     riderQuery = riderQuery.slice(0,-1) +  ` ON CONFLICT (PCS_id) 
-                    DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials; `;
+                    DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials;\n `;
                 
-                    participationQuery = participationQuery.slice(0, -1) + `ON CONFLICT (race_id,rider_id) 
-                    DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team; `;
+                    participationQuery = participationQuery.slice(0, -1) + ` ON CONFLICT (race_id,rider_id) 
+                    DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team;\n `;
 
-                    var totalQuery = deleteQuery + riderQuery + participationQuery
-
+                    var totalQuery = deleteStageSelectionQuery + deleteKopmanQuery + deleteTeamSelectionQuery + deleteStartlistQuery + riderQuery + participationQuery;
+                    console.log(totalQuery)
                     sqlDB.query(totalQuery, (err, res) => {
                         if (err) throw err;
                         else {
                             console.log(res);
-                            callback();
+                            callback(err,"");
                         }
                     });
 

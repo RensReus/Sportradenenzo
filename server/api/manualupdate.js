@@ -2,6 +2,7 @@ const kScrape = require('../db/klassiekerScrape');
 const functies = require('../functies');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const sqlScrape = require('../SQLscrape');
 
 function getSecret() {
     if (fs.existsSync('./server/jwtsecret.js')) {
@@ -56,6 +57,11 @@ module.exports = function (app) {
       if(decoded.admin){
         var year = parseInt(req.body.year);
         var raceName = req.body.raceName;
+        sqlScrape.getStartlist(raceName,year,function(err,arg){ 
+          if(err) res.send("error");
+          console.log("Got startlist %s year %s",raceName, year)
+          res.send("completed")
+        })
         res.send("doet nog niks")
       }
     })
