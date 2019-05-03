@@ -43,6 +43,7 @@ module.exports = function (app) {
             });
         }
     });
+
     app.post('/api/teamselectionadd', function (req, res) {
         if(!req.user){
             res.redirect('/')
@@ -80,6 +81,7 @@ module.exports = function (app) {
         }
 
     });
+
     app.post('/api/teamselectionaddclassics', function (req, res) {
         if(!req.user){
             res.redirect('/')
@@ -133,6 +135,7 @@ module.exports = function (app) {
             });
         }       
     });
+
     app.post('/api/teamselectionremove', function (req, res) {
         console.log("remove");
         console.log(req.body)
@@ -150,6 +153,7 @@ module.exports = function (app) {
                 
         }
     });
+
     //Voor klassiekerspel:
     app.post('/api/getuserteamselection', function (req,res){
         if(!req.user){
@@ -176,6 +180,7 @@ module.exports = function (app) {
             });
         }
     });
+
     //Haalt de data van een enkele renner van pcs
     app.post('/api/getrider', function(req, res){
         SQLscrape.getRider(req.body.pcsid, function(response){
@@ -186,4 +191,27 @@ module.exports = function (app) {
             }
         });
     });
+
+    app.post('/api/addparticipation',function(req,res){
+        if(!req.user){
+            res.send(false)
+            res.redirect('/')
+        }else{
+            var account_id = req.user.account_id;
+            var race_id = req.body.race_id;
+            var budgetParticipation = false;
+            if(req.user.username.includes("budget") || req.user.username.includes("Budget")){
+                budgetParticipation = true;
+            }
+            query = `INSERT INTO account_participation (account_id, race_id, budgetParticipation) 
+            VALUES($1, $2, $3)
+            ON CONFLICT (account_id, budgetParticipation) DO NOTHING`
+            var values = [account_id,race_id,budgetParticipation];
+
+            sqlDB.query(query, values, (err) => {
+                if(err)
+                  throw err;
+            });
+        }
+    })
 }

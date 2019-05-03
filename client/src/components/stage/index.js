@@ -20,6 +20,13 @@ class PouleTableRow extends Component {
 
 
 class PouleTable extends Component {
+    componentDidUpdate(prevProps) {
+        if(this.props !== prevProps){// zorgt voor update van andere teams popup
+            this.forceUpdate();
+        }
+
+    }
+
     render() {
         const rows = [];
         const userScores = this.props.userScores
@@ -91,7 +98,6 @@ class Stage extends Component {
                         mode: '',
                         userTeamResult: res.data.teamresult,
                         userScores: res.data.userscores,
-                        userScoresColtype: res.userScoresColtype,
                         stageresults: res.data.stageresults,
                         prevText: res.data.prevText,
                         currText: res.data.currText,
@@ -151,7 +157,7 @@ class Stage extends Component {
         } else {
             resTable = <Table data={this.state.userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={this.state.userScores}/>
-            stResTable = <Table data={this.state.stageresults} title={"Uitslag"} />
+            stResTable = <Table data={this.state.stageresults} title={"Uitslag"} maxRows={20} />
         }
         if(!this.state.raceStarted || this.state.stage !== 1){
             prevButton = <div id="prevStageButton">

@@ -41,3 +41,12 @@ th, td {
     text-align: center;
     font-size: 17px
 }
+
+.scrollButton {
+    background-color: grey;
+    color: black;
+    border: 5px;
+    margin: 0 1px;
+    line-height: 5vh;/* hele nare hack graag verwijderen*/
+    text-decoration: black
+  }
