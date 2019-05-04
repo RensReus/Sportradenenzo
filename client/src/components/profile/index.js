@@ -12,13 +12,26 @@ class ActiveRacesTable extends Component{
 }
 
 class Profile extends Component{
-    componentDidMount() {
-        var query = `select * from results_points
-        inner join rider_participation using (rider_participation_id)
-        inner join rider using(rider_id)`;
-        axios.post('/api/testasync', { async: false, count: 100, query: query }) //to: userparticipation.js
+    constructor(props) {
+        super(props);
+        this.state = ({
+            upcomingRace_id: 5,
+            upcomingParticipation: false          
+        });
+      }
+
+    componentWillMount(){
+        console.log("mount")
+        axios.post('/api/getracepartcipation',{race_id : this.state.upcomingRace_id})
         .then((res)=>{
-            console.log(res)
+            this.setState({upcomingParticipation: res.data.rowCount>0})
+        })
+    }
+
+    addParticipation(race_id){
+        axios.post('/api/addparticipation',{race_id : race_id})
+        .then((res)=>{
+            console.log(res);
         })
     }
     
@@ -29,6 +42,11 @@ class Profile extends Component{
                     <ActiveRacesTable/>
                 </div>
                 <img src={underConstruction}  alt="still building" />
+                <div style={{display: this.state.upcomingParticipation ? 'none' : 'block'}}>
+                    Mee doen aan Giro.
+                    Budget en gewoon in 1 account;
+                    <button onClick={() => {this.addParticipation(5)}} >Click me {";)"}</button>
+                </div>
             </div>
         )
     }

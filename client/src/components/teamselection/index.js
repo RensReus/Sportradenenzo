@@ -7,32 +7,37 @@ import './index.css';
 class Teamselection extends Component{
     constructor(props){
         super(props);
-        this.state = {riders: [],userSelection: [], race: 'vuelta', year: '2018', budget: 0}
+        this.state = {
+            allRidersGewoon: [],
+            allRidersBudget: [],
+            userSelectionGewoon: [], 
+            userSelectionBudget: [], 
+            race: 'giro', 
+            year: '2019', 
+            budgetGewoon: 0,
+            budgetBudget: 0,
+        showBudget: false}
         this.selectRider = this.selectRider.bind(this);
         this.removeRider = this.removeRider.bind(this);
+        this.updatePage = this.updatePage.bind(this);
     }
     selectRider = (riderID) =>{
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/teamselectionadd',{race: race, year: year, rider_participation_id : riderID})
+        axios.post('/api/teamselectionadd',{race: race, year: year, rider_participation_id : riderID, budget:this.state.showBudget})
         .then((res)=>{
             if(res){
-                const userSelection = this.state.userSelection.push(riderID)
-                this.setState({
-                    userSelection : userSelection
-                })
+               this.updatePage();
             }
         })
     }
     removeRider = (riderID) =>{
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/teamselectionremove',{race: race, year: year, rider_participation_id : riderID})
+        axios.post('/api/teamselectionremove',{race: race, year: year, rider_participation_id : riderID, budget:this.state.showBudget})
         .then((res)=>{
-            console.log(res)
-            const userSelection = this.state.userSelection.pop(riderID)
             if(res){
-                this.setState({userSelection:userSelection})
+                this.updatePage();
             }
         })
     }
@@ -42,24 +47,60 @@ class Teamselection extends Component{
         axios.post('/api/getridersandteam',{race: race, year: year}) //to: teamselection.js
         .then((res)=>{
             this.setState({
-                riders: res.data.allRiders,
-                userSelection: res.data.userSelection,
-                budget: res.data.budget
+                allRidersGewoon: res.data.allRidersGewoon,
+                userSelectionGewoon: res.data.userSelectionGewoon,
+                budgetGewoon: res.data.budgetGewoon,
+                allRidersBudget: res.data.allRidersBudget,
+                userSelectionBudget: res.data.userSelectionBudget,
+                budgetBudget: res.data.budgetBudget
             })
         })
     }
+
+    updatePage(){
+        const race = this.state.race
+        const year = this.state.year
+        axios.post('/api/getridersandteam',{race: race, year: year}) //to: teamselection.js
+        .then((res)=>{
+            this.setState({
+                allRidersGewoon: res.data.allRidersGewoon,
+                userSelectionGewoon: res.data.userSelectionGewoon,
+                budgetGewoon: res.data.budgetGewoon,
+                allRidersBudget: res.data.allRidersBudget,
+                userSelectionBudget: res.data.userSelectionBudget,
+                budgetBudget: res.data.budgetBudget
+            })
+        })
+    }
+
+    budgetSwitch(){
+        this.setState({showBudget:!this.state.showBudget})
+    }
+
     render(){
-        const riders = this.state.riders
-        const selection = this.state.userSelection
-        const selectionlength = this.state.userSelection.length
-        const budget = this.state.budget
+        const ridersGewoon = this.state.allRidersGewoon
+        const selectionGewoon = this.state.userSelectionGewoon
+        const selectionGewoonlength = this.state.userSelectionGewoon.length
+        const budgetGewoon = this.state.budgetGewoon
+        const ridersBudget = this.state.allRidersBudget
+        const selectionBudget = this.state.userSelectionBudget
+        const selectionBudgetlength = this.state.userSelectionBudget.length
+        const budgetBudget = this.state.budgetBudget
         return(
             <div className="container">
-                <div className="ridertablecontainer">
-                    <Riderselectiontable riders={riders} selectionLength={selectionlength} budget={budget} selectRider={this.selectRider}/>
+                {this.state.showBudget ? 'Budget':'Gewone'} Team
+                <button onClick={this.budgetSwitch.bind(this)}>Swicht naar {!this.state.showBudget ? 'Budget':'Gewoon'} </button>
+                <div className="ridertablecontainer" style={{display: this.state.showBudget ? 'none' : 'block'}}>
+                    <Riderselectiontable riders={ridersGewoon} selectionLength={selectionGewoonlength} budget={budgetGewoon} selectRider={this.selectRider}/>
                 </div>
-                <div className="usertablecontainer">
-                    <Userselectiontable selection={selection} removeRider={this.removeRider}/>
+                <div className="usertablecontainer" style={{display: this.state.showBudget ? 'none' : 'block'}}>
+                    <Userselectiontable selection={selectionGewoon} removeRider={this.removeRider}/>
+                </div>
+                <div className="ridertablecontainer" style={{display: !this.state.showBudget ? 'none' : 'block'}}>
+                    <Riderselectiontable riders={ridersBudget} selectionLength={selectionBudgetlength} budget={budgetBudget} selectRider={this.selectRider}/>
+                </div>
+                <div className="usertablecontainer" style={{display: !this.state.showBudget ? 'none' : 'block'}}>
+                    <Userselectiontable selection={selectionBudget} removeRider={this.removeRider}/>
                 </div>
             </div>
         )

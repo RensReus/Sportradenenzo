@@ -22,10 +22,10 @@ module.exports = {
      * @param {function} callback
      * @returns {Array} array of riders [{ name: , price: , team: ,rider_participation: },...]
      */
-    getTeamSelection: function (account_id, raceName, year, callback) {
-        var values = [account_id, raceName, year];//$1,$2,$3
+    getTeamSelection: function (account_id, budgetParticipation, raceName, year, callback) {
+        var values = [account_id, raceName, year, budgetParticipation];//$1,$2,$3
         var race_id = `(SELECT race_id FROM race WHERE name = $2 AND year = $3)`;
-        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id})`;
+        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id} AND budgetParticipation = $4)`;
         var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
         var query = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id FROM rider_participation
                 INNER JOIN rider using(rider_id)

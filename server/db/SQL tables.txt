@@ -36,7 +36,7 @@ CREATE TABLE account_participation (
   account_id INT NOT NULL REFERENCES account (account_id),
   race_id INT NOT NULL REFERENCES race (race_id),
   budgetParticipation bool DEFAULT FALSE,
-  UNIQUE(account_id,race_id)
+  UNIQUE(account_id,race_id,budgetParticipation)
 );
 
 CREATE TABLE rider (

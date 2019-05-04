@@ -1,24 +1,41 @@
 module.exports = function (app) {
     const async = require('async')
     const SQLread = require('../db/SQLread')
+    const sqlDB = require('../db/sqlDB')
 
     app.post('/api/getracepartcipation', function (req, res) {
-        SQLread.getCurrentRace(function(err,race){
-            console.log(race)
-            if(err) throw err
-            async.auto({
-                stageStarttime: function(callback){
-                    SQLread.getStageStarttime(race.race_id, '1', callback)
-                },
-                userParticipation: function(callback){
-                    SQLread.getUserRaceParticipation(req.user.account_id, race.race_id, callback)
-                }
-            }),function(err,results){
-                if(err) throw err;
-                console.log(results)
+        var query = `SELECT * FROM account_participation 
+        WHERE race_id = ${req.body.race_id} AND account_id = ${req.user.account_id}`
+        sqlDB.query(query, (err,results) => {
+            if(err)
+              throw err;
+              else{
+                  console.log(results)
                 res.send(results)
             }
         });
     });
+
+    app.post('/api/addparticipation',function(req,res){
+        if(!req.user){
+            res.send(false)
+            res.redirect('/')
+        }else{
+            var account_id = req.user.account_id;
+            var race_id = req.body.race_id;
+            query = `INSERT INTO account_participation (account_id, race_id, budgetParticipation) 
+            VALUES($1, $2, FALSE),($1, $2, TRUE)
+            ON CONFLICT (account_id, race_id, budgetParticipation) DO NOTHING`
+            var values = [account_id,race_id];
+
+            sqlDB.query(query, values, (err) => {
+                if(err)
+                  throw err;
+                  else{
+                      res.send("added")
+                  }
+            });
+        }
+    })
 
 }

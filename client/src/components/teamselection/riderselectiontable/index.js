@@ -30,7 +30,7 @@ class Riderselectiontable extends Component{
     render(){
         const rows = [];
         this.props.riders.map(({name,team,price,rider_participation_id,selected})=>{
-            if((this.props.budget<price || this.props.selectionLength>=20) && selected!=='selected'){
+            if((this.props.budget<price + 500000*(20-this.props.selectionLength) || this.props.selectionLength>=20) && selected!=='selected'){
                 rows.push(<Riderrow name={name} team={team} price={price} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} selectRider={this.props.selectRider}/>)
             }else{
                 rows.push(<Riderrow name={name} team={team} price={price} selected={selected} key={rider_participation_id} riderID={rider_participation_id} selectRider={this.props.selectRider}/>)

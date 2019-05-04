@@ -7,9 +7,9 @@ module.exports = {
  * @param {number} race_id 
  * @param {function} callback 
  */
-addRiderToSelection: function(rider_participation_id, account_id, race_id, callback) {
-  var values = [rider_participation_id, account_id, race_id];
-  var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $2 AND race_id = $3)`;
+addRiderToSelection: function(rider_participation_id, account_id, budgetParticipation, race_id, callback) {
+  var values = [rider_participation_id, account_id, race_id, budgetParticipation];
+  var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $2 AND race_id = $3 AND budgetParticipation = $4)`;
   var query = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
               VALUES($1,${account_participation_id})`;
   
@@ -26,9 +26,9 @@ addRiderToSelection: function(rider_participation_id, account_id, race_id, callb
  * @param {int} year
  * @param {function} callback
  */
-removeRiderFromSelection: function(account_id, rider_participation_id, race_id, callback) {
-  var values = [account_id, rider_participation_id, race_id];
-  var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = $3)`;
+removeRiderFromSelection: function(account_id, rider_participation_id, budgetParticipation, race_id, callback) {
+  var values = [account_id, rider_participation_id, race_id, budgetParticipation,];
+  var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = $3 AND budgetParticipation = $4)`;
   var query = `DELETE FROM team_selection_rider 
               WHERE account_participation_id = ${account_participation_id}
               AND rider_participation_id = $2`;
