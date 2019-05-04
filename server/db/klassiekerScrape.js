@@ -148,10 +148,10 @@ getResult = function (year, et, callback) {
 
                 //STAGE
                 var stagepos = parseInt(i) + 1;
-                var stagescore = getPunten(stagepos) * raceWeight[et - 1];
+                var stagescore = getPuntenKlas(stagepos) * raceWeight[et - 1];
                 var stageresult = ridersDay[i].result;
                 //TEAM
-                var teamscore = getTeamPunten(stagepos, teamRider, teamWinners) * raceWeight[et - 1];
+                var teamscore = getTeamPuntenKlas(stagepos, teamRider, teamWinners) * raceWeight[et - 1];
                 //TOTAL
                 var totalscore = stagescore + teamscore;
 
@@ -176,7 +176,7 @@ getResult = function (year, et, callback) {
     });
 }
 
-getPunten = function (pos) {
+getPuntenKlas = function (pos) {
     pos -= 1;
     var dag = [100, 88, 80, 72, 64, 60, 56, 52, 48, 44, 40, 36, 32, 28, 24, 20, 16, 12, 8, 4];
     if (pos < 0) return 0;
@@ -184,7 +184,7 @@ getPunten = function (pos) {
     return 0;
 }
 
-getTeamPunten = function (pos, teamRider, teamWinners) {
+getTeamPuntenKlas = function (pos, teamRider, teamWinners) {
     var teamPoints = 0;
     // console.log(pos, teamRider, teamWinners[0])
     if (pos != 1 && teamRider == teamWinners[0]) teamPoints += 20;
@@ -194,50 +194,5 @@ getTeamPunten = function (pos, teamRider, teamWinners) {
     return teamPoints;
 }
 
-getTimetoFinish = function (callback) {
-    request({
-        url: 'https://www.procyclingstats.com/',
-        headers: { "Connection": "keep-alive" }
-    }, function (error, response, html) {
-        var $ = cheerio.load(html);
-        var rule = new schedule.RecurrenceRule()
-        var finished = false;
-        var girobeschikbaar = false;
-
-        $(".ind_td").first().children().eq(1).children().each(function () {
-            if ($(this).children().eq(2).text().startsWith('La Vuelta ciclista a España')) { // voor de giro
-                girobeschikbaar = true;
-                if ($(this).children().eq(5).text() != 'finished') {
-                    var timeRemaining = $(this).children().eq(0).text();
-                    if (timeRemaining[timeRemaining.length - 1] == 'm' || timeRemaining[0] == 1) { // als nog een uur of minder
-                        rule.minute = new schedule.Range(0, 59, 5); // iedere 5 min checken
-                        callback([finished, rule]);
-                        return;
-                    } else {
-                        rule.minute = 7; // ieder uur als finish nog ver weg
-                        callback([finished, rule]);
-                        return;
-
-                    }
-
-                } else {//als gefinisht
-                    rule.minute = new schedule.Range(0, 59, 1); // iedere minuut checken
-                    finished = true;
-                    callback([finished, rule]);
-                    return;
-                }
-            }
-        });
-        if (!girobeschikbaar) {
-            rule.minute = 7;
-            callback([finished, rule]);
-            return;
-        }
-    });
-
-
-}
-
 module.exports.getStartlist = getStartlist;
 module.exports.getResult = getResult;
-module.exports.getTimetoFinish = getTimetoFinish;

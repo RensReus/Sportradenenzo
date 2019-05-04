@@ -29,7 +29,7 @@ module.exports = {
             var data = file.toString();
             var renners = data.split("\n");
             request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, function (error, response, html) {
-                if (!error && response.statusCode == 200) {
+                if (!error && response.statusCode === 200) {
                     var $ = cheerio.load(html);
                     var riderQuery = `INSERT INTO rider(pcs_id, country, firstname, lastname, initials) VALUES`;
                     var participationQuery = `INSERT INTO rider_participation (race_id,rider_id,price,team) VALUES`;
@@ -141,22 +141,23 @@ module.exports = {
             headers: { "Connection": "keep-alive" }
         }, function (error, response, html) {
             if (error) console.log(error);
-            if (!error && response.statusCode == 200) {
+            if (!error && response.statusCode === 200) {
                 var $ = cheerio.load(html);
-                var teamWinners = new Array(5).fill("");
+                var teamWinners = [];
                 var cases = new Array();
-                $(".resTabnav").each(function (index, element) {
-                    cases.push($(this).attr("class").split(' ')[2]);
+                $(".tabnav").each(function (index, element) {
+                    cases.push($(this).text());
                 })
-                if (!cases.length) {
-                    cases.push('stage');
+                if (!cases.length || cases[0] !== 'Stage') {
+                    cases[0] = 'Stage';
                 }
+
                 // store the team and id of the leader of each classification and stage winner for teampoints
                 $(".basic").each(function (index, element) {
                     var end = $(this).children().eq(1).children().first().children().length;
                     var classification = cases[index];
 
-                    if (end && classification != 'teams') {
+                    if (end && classification !== 'Teams') {
                         var columns = new Array();
                         $(this).children().first().children().first().children().each(function (index, element) {
                             columns.push($(this).text())
@@ -165,17 +166,16 @@ module.exports = {
                         teamWinners[classification] = $(this).children().eq(1).children().first().children().eq(teamCol).children().eq(0).text();
                     }
                 });
-
                 var ridersDay = new Array();
                 var ridersDNF = new Array();
-                var ridersGc = new Array();
+                var ridersGC = new Array();
                 var ridersPoints = new Array();
                 var ridersYoc = new Array();
                 var ridersKom = new Array();
                 //process the full results and store in riders* arrays
                 $(".basic").each(function (index, element) {
                     var end = $(this).children().eq(1).children().first().children().length;
-                    if (end && cases[index] != 'teams') {
+                    if (end && cases[index] !== 'Teams') {
                         var classification = cases[index];
                         var columns = new Array();
                         $(this).children().first().children().first().children().each(function (index, element) {
@@ -185,12 +185,13 @@ module.exports = {
                         var teamCol = columns.indexOf("Team");
 
                         $(this).children().eq(1).children().each(function (index, element) {//voor iedere renner in de uitslag
+                            // console.log($(this).children().eq(1).children().eq(1))
                             var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
                             var teamName = $(this).children().eq(teamCol).children().eq(0).text();
                             var timeCol = columns.indexOf('Time');
                             var pntCol = columns.indexOf('Pnt');
                             switch (classification) {
-                                case 'stage'://Dag uitslag
+                                case 'Stage'://Dag uitslag
                                     var pos = $(this).children().first().text();
                                     pos = parseInt(pos);
                                     if (isNaN(pos)) pos = 0; //als DNF enzo
@@ -203,25 +204,25 @@ module.exports = {
                                     }
                                     break;
 
-                                case 'gc'://Algemeen Klassement
+                                case 'GC'://Algemeen Klassement
                                     var result = $(this).children().eq(timeCol).children().eq(0).text();
                                     var rider = { pcsid: id, team: teamName, result: result };
-                                    ridersGc.push(rider);
+                                    ridersGC.push(rider);
                                     break;
 
-                                case 'points'://Sprinter Klassement
+                                case 'Points'://Sprinter Klassement
                                     var result = $(this).children().eq(pntCol).text();
                                     var rider = { pcsid: id, team: teamName, result: result };
                                     ridersPoints.push(rider);
                                     break;
 
-                                case 'youth'://Jongeren Klassement
+                                case 'Youth'://Jongeren Klassement
                                     var result = $(this).children().eq(timeCol).children().eq(0).text();
                                     var rider = { pcsid: id, team: teamName, result: result };
                                     ridersYoc.push(rider);
                                     break;
 
-                                case 'kom'://Berg Klassement
+                                case 'KOM'://Berg Klassement
                                     var result = $(this).children().eq(pntCol).text();
                                     var rider = { pcsid: id, team: teamName, result: result };
                                     ridersKom.push(rider);
@@ -235,64 +236,70 @@ module.exports = {
                 // change DNF to true for ridersDNF
                 var dnfquery = `UPDATE rider_participation SET dnf = TRUE 
                 WHERE race_id = (SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})
-                AND rider IN ( `
+                AND rider_id IN ( `
                 for (var rider in ridersDNF) {
-                    dnfquery += `(SELECT rider_id FROM rider WHERE pcsid = '${ridersDNF[rider].pcsid}'),`
+                    dnfquery += `(SELECT rider_id FROM rider WHERE pcs_id = '${ridersDNF[rider].pcsid}'),`
                 }
                 dnfquery = dnfquery.slice(0, -1) + ")";
-                this.sqlDB.query(dnfquery)
-                    .then(console.log("%i riders updated to DNF", ridersDNF.length))
-                    .catch(e => console.error(e.stack));
+                console.log("Riders DNF: ", ridersDNF.length)
+                if(ridersDNF.length){ //only submit if > 0
+                    sqlDB.query(dnfquery, (err, res) => {
+                        if (err) throw err;
+                        else {
+                            console.log("Riders DNF updated" )
+                        }
+                    });
+                }
 
                 // process scores for each finished rider and send to db
                 var GTfinished = false;
-                if (et == 21) GTfinished = true; // laatste etappe
+                if (et === 21) GTfinished = true; // laatste etappe
                 var resultsQuery = `INSERT INTO results_points(stage_id, rider_participation_id, 
                                 stagepos, gcpos, pointspos, kompos, yocpos, 
                                 stagescore, gcscore, pointsscore, komscore, yocscore, teamscore, totalscore, 
                                 stageresult, gcresult, pointsresult, komresult, yocresult) 
                                 VALUES`
 
-                for (var i in ridersDay) {// for each rider get the variables for the results_points table
+                for (var i =0;i<1;i++) {// for each rider get the variables for the results_points table
                     var pcsid = ridersDay[i].pcsid;
-                    var teamRider = ridersDay[i].teamName;
+                    var teamRider = ridersDay[i].team;
                     var teamscore = 0;
 
                     //STAGE
                     var stagepos = parseInt(i) + 1;
-                    var stagescore = getPunten('stage', stagepos);
+                    var stagescore = getPunten('Stage', stagepos);
                     var stageresult = ridersDay[i].result;
-                    if (teamRider == teamWinners['stage'] && stagepos != 1 && !TTstages.contains(et)) teamscore += 10;
+                    if (teamRider === teamWinners['Stage'] && stagepos !== 1 && !TTstages.contains(et)) teamscore += 10;
 
                     //GC
-                    var gcpos = getIndex(ridersGc, 'pcsid', pcsid) + 1;
+                    var gcpos = getIndex(ridersGC, 'pcsid', pcsid) + 1;
                     var gcscore = 0;
                     var gcresult = "";
                     if (gcpos) {
-                        gcscore = getPunten('gc', gcpos);
-                        gcresult = ridersGc[gcpos - 1].result;
+                        gcscore = getPunten('GC', gcpos);
+                        gcresult = ridersGC[gcpos - 1].result;
                     }
-                    if (teamRider == teamWinners['gc'] && gcpos != 1) teamscore += 8;
+                    if (teamRider === teamWinners['GC'] && gcpos !== 1) teamscore += 8;
 
                     //POINTS
                     var pointspos = getIndex(ridersPoints, 'pcsid', pcsid) + 1;
                     var pointsscore = 0;
                     var pointsresult = "";
                     if (pointspos) {
-                        pointsscore = getPunten('points', pointspos);
+                        pointsscore = getPunten('Points', pointspos);
                         pointsresult = ridersPoints[pointspos - 1].result;
                     }
-                    if (teamRider == teamWinners['points'] && pointspos != 1) teamscore += 6;
+                    if (teamRider === teamWinners['Points'] && pointspos !== 1) teamscore += 6;
 
                     //KOM
                     var kompos = getIndex(ridersKom, 'pcsid', pcsid) + 1;
                     var komscore = 0;
                     var komresult = "";
                     if (kompos) {
-                        komscore = getPunten('kom', kompos);
+                        komscore = getPunten('KOM', kompos);
                         komresult = ridersKom[kompos - 1].result;
                     }
-                    if (teamRider == teamWinners['kom'] && kompos != 1) teamscore += 3;
+                    if (teamRider === teamWinners['KOM'] && kompos !== 1) teamscore += 3;
 
                     //YOC
                     var yocpos = getIndex(ridersYoc, 'pcsid', pcsid) + 1;
@@ -302,7 +309,7 @@ module.exports = {
                         yocscore = getPunten('yoc', yocpos);
                         yocresult = ridersYoc[yocpos - 1].result;
                     }
-                    if (teamRider == teamWinners['yoc'] && yocpos != 1) teamscore += 2;
+                    if (teamRider === teamWinners['yoc'] && yocpos !== 1) teamscore += 2;
 
                     //TOTAL
                     var totalscore = stagescore + gcscore + pointsscore + komscore + yocscore + teamscore;
@@ -310,89 +317,27 @@ module.exports = {
                     // SQLQUERY addition
                     var race_id = `(SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})`;
                     var stage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et} AND race_id = ${race_id})`
-                    var rider_id = `(SELECT rider_id FROM rider WHERE pcsid = '${pcsid}')`
-                    var rider_participation_id = `SELECT rider_participation_id FROM rider_participation WHERE race_id = ${race_id} AND rider_id = ${rider_id}`
+                    var rider_id = `(SELECT rider_id FROM rider WHERE pcs_id = '${pcsid}')`
+                    var rider_participation_id = `(SELECT rider_participation_id FROM rider_participation WHERE race_id = ${race_id} AND rider_id = ${rider_id})`
                     resultsQuery += `(${stage_id},${rider_participation_id},
                                 ${stagepos},    ${gcpos},   ${pointspos},   ${kompos},  ${yocpos}, 
                                 ${stagescore},  ${gcscore}, ${pointsscore}, ${komscore},${yocscore},${teamscore},${totalscore},
                                 '${stageresult}','${gcresult}','${pointsresult}','${komresult}','${yocresult}'),`;
                 }
 
-                resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage,rider_participation) DO NOTHING';
+                resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO NOTHING';
                 deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
                 totalQuery = deleteQuery + resultsQuery;
-                this.sqlDB.query(resultsQuery,(err,res)=>{
-                    callback()
+                console.log(totalQuery)
+                sqlDB.query(totalQuery,(err,res)=>{
+                    if (err) throw err;
+                        else {
+                            console.log("Processed results \n",res)
+                            callback();
+                        }
                 })
             }
         });
-    },
-
-
-    getIndex: function (array, attr, value) {
-        for (var i = 0; i < array.length; i += 1) {
-            if (array[i][attr] === value) {
-                return i;
-            }
-        }
-        return -1;
-    },
-
-    getPunten: function (kl, pos) {
-        pos -= 1;
-        var dag = [50, 44, 40, 36, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2];
-        var ak = [10, 8, 6, 4, 2];
-        var punt = [8, 6, 4, 2, 1];
-        var jong = [5, 3, 1];
-        var berg = [6, 4, 3, 2, 1];
-        if (pos < 0) return 0;
-        switch (kl) {
-            case 'stage'://dag
-                if (pos < dag.length) return dag[pos];
-                return 0;
-            case 'gc'://ak
-                if (pos < ak.length) return ak[pos];
-                return 0;
-            case 'points'://punt
-                if (pos < punt.length) return punt[pos];
-                return 0;
-            case 'youth'://jong
-                if (pos < jong.length) return jong[pos];
-                return 0;
-            case 'kom'://berg
-                if (pos < berg.length) return berg[pos];
-                return 0;
-        }
-    },
-
-    getEindPunten: function (kl, pos) {
-        pos -= 1;
-        var ak = [100, 80, 60, 50, 40, 36, 32, 28, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2];
-        var punt = [80, 60, 40, 30, 20, 10, 8, 6, 4, 2];
-        var jong = [50, 30, 20, 10, 5];
-        var berg = [60, 40, 30, 20, 10];
-        if (pos < 0) return 0;
-        switch (kl) {
-            case 'gc'://ak
-                if (pos < ak.length) return ak[pos];
-                return 0;
-            case 'points'://punt
-                if (pos < punt.length) return punt[pos];
-                return 0;
-            case 'youth'://jong
-                if (pos < jong.length) return jong[pos];
-                return 0;
-            case 'kom'://berg
-                if (pos < berg.length) return berg[pos];
-                return 0;
-        }
-    },
-
-    getTTTPunten: function (pos) {
-        if (pos < 0) return 0;
-        var punten = [40, 32, 28, 24, 20, 16, 12, 8];
-        if (pos < punten.length) return punten[pos];
-        return 0;
     },
 
     getTimetoFinish: function (callback) {
@@ -407,7 +352,7 @@ module.exports = {
                     girobeschikbaar = true;
                     if ($(this).children().eq(5).text() != 'finished') {
                         var timeRemaining = $(this).children().eq(0).text();
-                        if (timeRemaining[timeRemaining.length - 1] == 'm' || timeRemaining[0] == 1) { // als nog een uur of minder
+                        if (timeRemaining[timeRemaining.length - 1] === 'm' || timeRemaining[0] === 1) { // als nog een uur of minder
                             rule.minute = new schedule.Range(0, 59, 5); // iedere 5 min checken
                             callback([finished, rule]);
                             return;
@@ -436,10 +381,10 @@ module.exports = {
 
     getRider: function (pcsid, callback) {
         request(`https://www.procyclingstats.com/rider/${pcsid}`, function (err, res, html) {
-            if (!err && res.statusCode == 200) {
+            if (!err && res.statusCode === 200) {
                 var $ = cheerio.load(html);
                 var entry = $('.entry').children('h1').text()
-                if (entry == 'Could not find rider') { //Kijk of de pagina bestaat, volledig afhankelijk van de 404 pagina layout
+                if (entry === 'Could not find rider') { //Kijk of de pagina bestaat, volledig afhankelijk van de 404 pagina layout
                     callback(404)
                     return;
                 } else {
@@ -476,3 +421,71 @@ module.exports = {
         });
     }
 }
+
+//functies voor intern gebruik
+getIndex = function (array, attr, value) {
+    for (var i = 0; i < array.length; i += 1) {
+        if (array[i][attr] === value) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+getPunten = function (kl, pos) {
+    pos -= 1;
+    var dag = [50, 44, 40, 36, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2];
+    var ak = [10, 8, 6, 4, 2];
+    var punt = [8, 6, 4, 2, 1];
+    var jong = [5, 3, 1];
+    var berg = [6, 4, 3, 2, 1];
+    if (pos < 0) return 0;
+    switch (kl) {
+        case 'Stage'://dag
+            if (pos < dag.length) return dag[pos];
+            return 0;
+        case 'GC'://ak
+            if (pos < ak.length) return ak[pos];
+            return 0;
+        case 'Points'://punt
+            if (pos < punt.length) return punt[pos];
+            return 0;
+        case 'Youth'://jong
+            if (pos < jong.length) return jong[pos];
+            return 0;
+        case 'KOM'://berg
+            if (pos < berg.length) return berg[pos];
+            return 0;
+    }
+}
+
+getEindPunten = function (kl, pos) {
+    pos -= 1;
+    var ak = [100, 80, 60, 50, 40, 36, 32, 28, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2];
+    var punt = [80, 60, 40, 30, 20, 10, 8, 6, 4, 2];
+    var jong = [50, 30, 20, 10, 5];
+    var berg = [60, 40, 30, 20, 10];
+    if (pos < 0) return 0;
+    switch (kl) {
+        case 'gc'://ak
+            if (pos < ak.length) return ak[pos];
+            return 0;
+        case 'points'://punt
+            if (pos < punt.length) return punt[pos];
+            return 0;
+        case 'youth'://jong
+            if (pos < jong.length) return jong[pos];
+            return 0;
+        case 'kom'://berg
+            if (pos < berg.length) return berg[pos];
+            return 0;
+    }
+}
+
+getTTTPunten= function (pos) {
+    if (pos < 0) return 0;
+    var punten = [40, 32, 28, 24, 20, 16, 12, 8];
+    if (pos < punten.length) return punten[pos];
+    return 0;
+}
+
