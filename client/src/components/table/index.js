@@ -19,16 +19,16 @@ class Headers extends Component {
                         headerText = colNames[property];
                     }
                     if (coltype != null && coltype[property] != null) {
-                        headers.push(<th className="sortable" onClick={() => { this.props.onSort(property) }}>{headerText}</th>)
+                        headers.push(<th className="sortable" key={property} onClick={() => { this.props.onSort(property) }}>{headerText}</th>)
                     } else {
-                        headers.push(<th>{headerText}</th>)
+                        headers.push(<th key={property}>{headerText}</th>)
                     }
                 }
             }, this)
         }
         return (
             <thead>
-                <tr>
+                <tr key="headers">
                     {headers}
                 </tr>
             </thead>
@@ -45,15 +45,12 @@ class Rows extends Component {
             var className = "";
             for (var property in data[i]) {
                 if (property !== "rowClassName") {
-                    row.push(<td>{data[i][property]}</td>);
+                    row.push(<td key={i + property} >{data[i][property]}</td>);
                 } else {
                     className = data[i][property];
                 }
             }
-
-            rows.push(<tr className={className}>{row}</tr>)
-
-
+            rows.push(<tr className={className} key={i}>{row}</tr>)
             row = []
         }
         return (
@@ -92,12 +89,11 @@ class Table extends Component {
                 classNames: this.props.classNames,
                 maxRows: this.props.maxRows,
             })
-            if(this.state.maxRows < this.state.data.length){ //if more rows than allows spread over multiple tabs
-                var scrollCount = Math.ceil(this.state.data.length/this.state.maxRows);
+            if(this.props.maxRows < this.props.data.length){ //if more rows than allows spread over multiple tabs
+                var scrollCount = Math.ceil(this.props.data.length/this.props.maxRows);
                 for(var i = 0; i < scrollCount; i++){
                     this.state.scrollShow[i]= !i ? 'block' : 'none'
                 }
-                console.log("initial",this.state.scrollShow)
             }
             if (this.props.coltype != null) {
                 this.setState({
@@ -135,8 +131,6 @@ class Table extends Component {
     scrollClick(i,step){
         var scrollShow = this.state.scrollShow;
         var curr = scrollShow.indexOf('block');
-        console.log(i, scrollShow.length)
-
         if(i<0){// i<0 betekent prev of next
             if(curr + step >= 0 && curr + step < scrollShow.length){ // not out of bounds
                 i = curr + step;
@@ -146,44 +140,41 @@ class Table extends Component {
         }
         scrollShow[curr] = 'none';
         scrollShow[i] = 'block';
-        console.log(i, scrollShow)
         this.setState({scrollShow: scrollShow});
     }
 
 
-    render() {
-        
+    render() { 
         var tables = []; 
-        
-        var extraTabs = ""
-        if(this.state.title === 'Uitslag'){// checkt of er meerdere tabbladen zijn moet nog afgemaakt worden
-            extraTabs = <div class="btn-group">
-                            <button id="klassementknop0" class="klassementbutton selected" onclick="">Dag</button>
-                            <button id="klassementknop1" class="klassementbutton" onclick="">AK</button>
-                        </div>
-        }
+        // var extraTabs = ""
+        // if(this.state.title === 'Uitslag'){// checkt of er meerdere tabbladen zijn moet nog afgemaakt worden
+        //     extraTabs = <div className="btn-group">
+        //                     <button id="klassementknop0" className="klassementbutton selected" onClick="">Dag</button>
+        //                     <button id="klassementknop1" className="klassementbutton" onClick="">AK</button>
+        //                 </div>
+        // }
         var scrollButtons = "";
         var scrollCount = 1;
         
         if(this.state.maxRows < this.state.data.length){ //if more rows than allows spread over multiple tabs
             scrollCount = Math.ceil(this.state.data.length/this.state.maxRows);
             var buttons = [];
-            buttons.push(<button className="scrollButton" onClick={this.scrollClick.bind(this,-1,-1)}>prev</button>)
+            buttons.push(<button className="scrollButton" key="prev" onClick={this.scrollClick.bind(this,-1,-1)}>prev</button>)
             
             for(var i = 0; i < scrollCount; i++){//build tabs
-                buttons.push(<button className="scrollButton" onClick={this.scrollClick.bind(this,i,0)} >{i+1}</button>)
+                buttons.push(<button className="scrollButton" key={i} onClick={this.scrollClick.bind(this,i,0)} >{i+1}</button>)
                 var begin = 20*i;
                 var end = Math.min(20*(i+1),this.state.data.length)
-                tables.push( <table className={this.state.classNames} style={{display: this.state.scrollShow[i] }}>
+                tables.push( <table key={i} className={this.state.classNames} style={{display: this.state.scrollShow[i] }}>
                             <caption>{this.state.title}</caption>
                             <Headers data={this.state.data} colNames={this.state.colNames} coltype={this.state.coltype} onSort={this.onSort} />
                             <Rows data={this.state.data.slice(begin,end)} />
                         </table>)
 
             }
-            buttons.push(<button className="scrollButton" onClick={this.scrollClick.bind(this,-1,1)}>next</button>)
+            buttons.push(<button className="scrollButton" key="next" onClick={this.scrollClick.bind(this,-1,1)}>next</button>)
 
-            scrollButtons = <div class="btn-group">
+            scrollButtons = <div className="btn-group">
                                 {buttons}
                             </div>
         }else{
@@ -195,7 +186,7 @@ class Table extends Component {
         }
         return (
             <div>
-                {extraTabs}
+                {/* {extraTabs} */}
                 {scrollButtons}
                 {tables}
             </div>

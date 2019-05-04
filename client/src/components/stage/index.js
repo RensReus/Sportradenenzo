@@ -34,7 +34,7 @@ class PouleTable extends Component {
             var riders = []
             if (user.riderCount>0) riders = user.riders;
             rows.push(
-                <PouleTableRow
+                <PouleTableRow key={user.username}
                     username={user.username}
                     riderCount={user.riderCount}
                     riders={riders}
