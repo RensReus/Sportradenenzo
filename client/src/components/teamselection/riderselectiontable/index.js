@@ -29,8 +29,21 @@ class Riderrow extends Component{
 class Riderselectiontable extends Component{
     render(){
         const rows = [];
-        this.props.riders.map(({name,team,price,rider_participation_id,selected})=>{
-            if((this.props.budget<price + 500000*(20-this.props.selectionLength) || this.props.selectionLength>=20) && selected!=='selected'){
+        const selectionIDs = this.props.selectionIDs;
+        const selectionLength = selectionIDs.length;
+        this.props.riders.map(({name,team,price,rider_participation_id})=>{
+            var selected = 'unselected';
+            if(selectionIDs.includes(rider_participation_id)){
+                selected = 'selected'
+            }
+            var teamCount = 0;
+            for(var i in this.props.selectionTeams){
+                if(this.props.selectionTeams[i] === team){
+                    teamCount += 1;
+                }
+            }
+            console.log(name,teamCount)
+            if(((this.props.budget<price + 500000*(20-selectionLength) || selectionLength>=20 || teamCount >= 4) && selected!=='selected') || (price>750000 && this.props.budgetParticipation)){
                 rows.push(<Riderrow name={name} team={team} price={price} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} selectRider={this.props.selectRider}/>)
             }else{
                 rows.push(<Riderrow name={name} team={team} price={price} selected={selected} key={rider_participation_id} riderID={rider_participation_id} selectRider={this.props.selectRider}/>)

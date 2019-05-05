@@ -32,37 +32,33 @@ module.exports = function (app) {
                 var budgetGewoon = results.race.budget;   
                 
                 var budgetBudget = 11250000;
-                console.log("begin",budgetBudget)
-                console.log(typeof(budgetBudget))
                 for(var i=0;i<results.userSelectionGewoon.length;i++){
                     IDsGewoon.push(results.userSelectionGewoon[i].rider_participation_id)
                     budgetGewoon -= results.userSelectionGewoon[i].price
-                console.log("update",budgetBudget)
                 }
                 for(var i=0;i<results.userSelectionBudget.length;i++){
                     IDsBudget.push(results.userSelectionBudget[i].rider_participation_id)
                     budgetBudget -= results.userSelectionBudget[i].price
                 }
-                var allRidersGewoon = results.allRiders.map(({name,team,price,rider_participation_id}) => {
-                    var allRidersGewoon = {};                    
-                    if(IDsGewoon.includes(rider_participation_id)){
-                        allRidersGewoon = {name, team, price, rider_participation_id, selected: 'selected'}
-                    }else{
-                        allRidersGewoon = {name, team, price, rider_participation_id, selected: 'unselected'}
-                    }
-                    return allRidersGewoon
-                });
-                var allRidersBudget = results.allRiders.map(({name,team,price,rider_participation_id}) => {
-                    var allRidersBudget = {};                    
-                    if(IDsBudget.includes(rider_participation_id)){
-                        allRidersBudget = {name, team, price, rider_participation_id, selected: 'selected'}
-                    }else{
-                        allRidersBudget = {name, team, price, rider_participation_id, selected: 'unselected'}
-                    }
-                    return allRidersBudget
-                });
-                console.log("end",budgetBudget)
-                res.send({allRidersGewoon: allRidersGewoon,allRidersBudget: allRidersBudget,userSelectionGewoon: results.userSelectionGewoon,userSelectionBudget: results.userSelectionBudget, budgetGewoon: budgetGewoon, budgetBudget:budgetBudget})
+                // var allRidersGewoon = results.allRiders.map(({name,team,price,rider_participation_id}) => {
+                //     var allRidersGewoon = {};                    
+                //     if(IDsGewoon.includes(rider_participation_id)){
+                //         allRidersGewoon = {name, team, price, rider_participation_id, selected: 'selected'}
+                //     }else{
+                //         allRidersGewoon = {name, team, price, rider_participation_id, selected: 'unselected'}
+                //     }
+                //     return allRidersGewoon
+                // });
+                // var allRidersBudget = results.allRiders.map(({name,team,price,rider_participation_id}) => {
+                //     var allRidersBudget = {};                    
+                //     if(IDsBudget.includes(rider_participation_id)){
+                //         allRidersBudget = {name, team, price, rider_participation_id, selected: 'selected'}
+                //     }else{
+                //         allRidersBudget = {name, team, price, rider_participation_id, selected: 'unselected'}
+                //     }
+                //     return allRidersBudget
+                // });
+                res.send({allRiders: results.allRiders,userSelectionGewoon: results.userSelectionGewoon,userSelectionBudget: results.userSelectionBudget, budgetGewoon: budgetGewoon, budgetBudget:budgetBudget})
             });
         }
     });
@@ -71,32 +67,53 @@ module.exports = function (app) {
         if(!req.user){
             res.redirect('/')
         }else{
-            async.auto({
-                rider: function(callback){
-                    SQLread.getRider(req.body.rider_participation_id,callback)
-                },
-                userSelection: function(callback){
-                    SQLread.getTeamSelection(req.user.account_id,req.body.budget,req.body.race,req.body.year,callback)
-                },
-                race: function(callback){
-                    SQLread.getRace(req.body.race,req.body.year,callback)
-                }
-            },function(err,results){
+            var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = ${req.body.year})`;
+            var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${req.body.budgetParticipation})`;
+            var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
+            
+            var riderQuery = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id FROM rider_participation
+            INNER JOIN rider using(rider_id)
+            WHERE rider_participation_id = ${req.body.rider_participation_id};\n`
+            
+            var teamselectionQuery = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id FROM rider_participation
+                INNER JOIN rider using(rider_id)
+                WHERE rider_participation_id IN ${teamselection};\n`;
+            var budget = 11250000;
+            var budgetQuery = `SELECT budget, race_id FROM race WHERE race_id = ${race_id}`
+
+            var totalQuery = riderQuery + teamselectionQuery + budgetQuery;
+
+            sqlDB.query(totalQuery,function(err,results){
+                var start = Date.now()
                 if(err) throw err;
-                var budget = results.race.budget;   
-                for(var i=0;i<results.userSelection.length;i++){
-                    budget = budget - results.userSelection.price
+                if(!req.body.budgetParticipation){
+                    budget = results[2].rows[0].budget;   
                 }
-                if(results.userSelection.length>=20||budget<results.rider.price + (20-results.userSelection.length)*500000 ){
+                var ridersSameTeam = 0;
+                for(var i=0;i<results[1].rows.length;i++){
+                    budget -= results[1].rows[i].price
+                    if(results[0].team === results[1].rows[i].team){
+                        ridersSameTeam += 1;
+                    }
+                }
+                if(results[1].rows.length>=20||budget<results[0].rows[0].price + (19-results[1].rows.length)*500000 || ridersSameTeam >= 4){
                     res.send(false)
                 }else{
-                    async.auto({
-                        rider: function(callback){
-                            SQLwrite.addRiderToSelection(req.body.rider_participation_id,req.user.account_id,req.body.budget,results.race.race_id,callback)
+                    var query = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
+                                VALUES(${req.body.rider_participation_id},${account_participation_id}) 
+                                ON CONFLICT (account_participation_id, rider_participation_id) DO NOTHING`;
+                    
+                    sqlDB.query(query, (err, response) => {
+                        if (err) throw err;
+                        results[1].rows.push(results[0].rows[0])
+                        var budgetLeft = results[2].rows[0].budget;   
+                        if(req.body.budgetParticipation){
+                            budgetLeft = 11250000;
                         }
-                    },function(err){
-                        if(err) throw err;
-                        res.send(true)
+                        for(var i=0;i<results[1].rows.length;i++){
+                            budgetLeft -= results[1].rows[i].price;
+                        }
+                        res.send({userSelection: results[1].rows, budget: budgetLeft})
                     })
                 }
             })
@@ -159,20 +176,39 @@ module.exports = function (app) {
     });
 
     app.post('/api/teamselectionremove', function (req, res) {
-        console.log("remove");
-        console.log(req.body)
         if(!req.user){
             res.send(false)
             res.redirect('/')
         }else{
-            SQLread.getRace(req.body.race,req.body.year,function(err,race){
+            var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = ${req.body.year})`;
+            var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${req.body.budgetParticipation})`;
+            var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
+            
+            var removeQuery = `DELETE FROM team_selection_rider 
+            WHERE account_participation_id = ${account_participation_id}
+            AND rider_participation_id = ${req.body.rider_participation_id};\n`
+
+            var teamselectionQuery = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id FROM rider_participation
+                INNER JOIN rider using(rider_id)
+                WHERE rider_participation_id IN ${teamselection};\n`;
+
+            var budgetQuery = `SELECT budget, race_id FROM race WHERE race_id = ${race_id}`
+
+            var totalQuery = removeQuery + teamselectionQuery + budgetQuery;
+            console.log(totalQuery)
+
+            sqlDB.query(totalQuery,function(err,results){
                 if(err) throw err
-                SQLwrite.removeRiderFromSelection(req.user.account_id, req.body.rider_participation_id, req.body.budget, race.race_id,function(err,results){
-                    if(err) throw err
-                    res.send(true)
-                })
-            })
-                
+
+                var budgetLeft = results[2].rows[0].budget;   
+                if(req.body.budgetParticipation){
+                    budgetLeft = 11250000;
+                }
+                for(var i=0;i<results[1].rows.length;i++){
+                    budgetLeft -= results[1].rows[i].price;
+                }
+                res.send({userSelection: results[1].rows, budget: budgetLeft})
+            })                
         }
     });
 

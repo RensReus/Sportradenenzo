@@ -8,3 +8,24 @@ div.ridertablecontainer{
 div.usertablecontainer{
     width: 50%;
 }
+div.budget{
+    background-color: lightgray;
+}
+
+div.budget{
+    text-align: center;
+    background-color: lightgray;
+    width: 400px;
+}
+
+button.budgetSwitch{
+    text-align: center;
+    background-color: lightgray;
+    border: 2px solid  gray;
+}
+
+div.teamindicator{
+    text-align: center;
+    background-color: lightgray;
+    width: 400px;
+}

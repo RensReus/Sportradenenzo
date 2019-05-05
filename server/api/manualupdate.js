@@ -62,7 +62,6 @@ module.exports = function (app) {
           console.log("Got startlist %s year %s",raceName, year)
           res.send("completed")
         })
-        res.send("doet nog niks")
       }
     })
   });

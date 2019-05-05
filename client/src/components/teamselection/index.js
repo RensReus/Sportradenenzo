@@ -8,8 +8,7 @@ class Teamselection extends Component{
     constructor(props){
         super(props);
         this.state = {
-            allRidersGewoon: [],
-            allRidersBudget: [],
+            allRiders: [],
             userSelectionGewoon: [], 
             userSelectionBudget: [], 
             race: 'giro', 
@@ -24,20 +23,20 @@ class Teamselection extends Component{
     selectRider = (riderID) =>{
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/teamselectionadd',{race: race, year: year, rider_participation_id : riderID, budget:this.state.showBudget})
+        axios.post('/api/teamselectionadd',{race: race, year: year, rider_participation_id : riderID, budgetParticipation:this.state.showBudget})
         .then((res)=>{
             if(res){
-               this.updatePage();
+               this.updatePage(res.data,this.state.showBudget);
             }
         })
     }
     removeRider = (riderID) =>{
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/teamselectionremove',{race: race, year: year, rider_participation_id : riderID, budget:this.state.showBudget})
+        axios.post('/api/teamselectionremove',{race: race, year: year, rider_participation_id : riderID, budgetParticipation:this.state.showBudget})
         .then((res)=>{
             if(res){
-                this.updatePage();
+               this.updatePage(res.data,this.state.showBudget);
             }
         })
     }
@@ -47,30 +46,32 @@ class Teamselection extends Component{
         axios.post('/api/getridersandteam',{race: race, year: year}) //to: teamselection.js
         .then((res)=>{
             this.setState({
-                allRidersGewoon: res.data.allRidersGewoon,
+                allRiders: res.data.allRiders,
                 userSelectionGewoon: res.data.userSelectionGewoon,
                 budgetGewoon: res.data.budgetGewoon,
-                allRidersBudget: res.data.allRidersBudget,
                 userSelectionBudget: res.data.userSelectionBudget,
                 budgetBudget: res.data.budgetBudget
             })
         })
     }
 
-    updatePage(){
-        const race = this.state.race
-        const year = this.state.year
-        axios.post('/api/getridersandteam',{race: race, year: year}) //to: teamselection.js
-        .then((res)=>{
-            this.setState({
-                allRidersGewoon: res.data.allRidersGewoon,
-                userSelectionGewoon: res.data.userSelectionGewoon,
-                budgetGewoon: res.data.budgetGewoon,
-                allRidersBudget: res.data.allRidersBudget,
-                userSelectionBudget: res.data.userSelectionBudget,
-                budgetBudget: res.data.budgetBudget
-            })
-        })
+    updatePage(data,showBudget){
+        console.log(data)
+        console.log("budget",showBudget)
+        if(data){
+            if(showBudget){
+                console.log()
+                this.setState({
+                    userSelectionBudget: data.userSelection,
+                    budgetBudget: data.budget
+                })
+            }else{
+                this.setState({
+                    userSelectionGewoon: data.userSelection,
+                    budgetGewoon: data.budget,
+                })
+            }
+        }
     }
 
     budgetSwitch(){
@@ -78,28 +79,39 @@ class Teamselection extends Component{
     }
 
     render(){
-        const ridersGewoon = this.state.allRidersGewoon
+        const allRiders = this.state.allRiders
         const selectionGewoon = this.state.userSelectionGewoon
-        const selectionGewoonlength = this.state.userSelectionGewoon.length
         const budgetGewoon = this.state.budgetGewoon
-        const ridersBudget = this.state.allRidersBudget
         const selectionBudget = this.state.userSelectionBudget
-        const selectionBudgetlength = this.state.userSelectionBudget.length
+        console.log(this.state)
+        console.log("bud",selectionBudget)
         const budgetBudget = this.state.budgetBudget
         return(
             <div className="container">
-                {this.state.showBudget ? 'Budget':'Gewone'} Team
-                <button onClick={this.budgetSwitch.bind(this)}>Swicht naar {!this.state.showBudget ? 'Budget':'Gewoon'} </button>
+                
+                <button className="budgetSwitch" onClick={this.budgetSwitch.bind(this)}>Swicht naar {!this.state.showBudget ? 'Budget':'Gewoon'} </button>
                 <div className="ridertablecontainer" style={{display: this.state.showBudget ? 'none' : 'block'}}>
-                    <Riderselectiontable riders={ridersGewoon} selectionLength={selectionGewoonlength} budget={budgetGewoon} selectRider={this.selectRider}/>
+                    <div className="teamindicator">
+                        Gewone Team Selectie
+                    </div>
+                    <Riderselectiontable riders={allRiders} selectionIDs={selectionGewoon.map(rider=> rider.rider_participation_id)} selectionTeams={selectionGewoon.map(rider=> rider.team)} budget={budgetGewoon} selectRider={this.selectRider}/>
                 </div>
                 <div className="usertablecontainer" style={{display: this.state.showBudget ? 'none' : 'block'}}>
+                    <div className="budget">
+                        Budget Left: {this.state.budgetGewoon}
+                    </div>
                     <Userselectiontable selection={selectionGewoon} removeRider={this.removeRider}/>
                 </div>
                 <div className="ridertablecontainer" style={{display: !this.state.showBudget ? 'none' : 'block'}}>
-                    <Riderselectiontable riders={ridersBudget} selectionLength={selectionBudgetlength} budget={budgetBudget} selectRider={this.selectRider}/>
+                    <div className="teamindicator">
+                        Budget Team Selectie
+                    </div>
+                    <Riderselectiontable riders={allRiders} selectionIDs={selectionBudget.map(rider=> rider.rider_participation_id)} selectionTeams={selectionBudget.map(rider=> rider.team)} budget={budgetBudget} selectRider={this.selectRider} budgetParticipation={true}/>
                 </div>
                 <div className="usertablecontainer" style={{display: !this.state.showBudget ? 'none' : 'block'}}>
+                    <div className="budget">
+                        Budget Left: {this.state.budgetBudget}
+                    </div>
                     <Userselectiontable selection={selectionBudget} removeRider={this.removeRider}/>
                 </div>
             </div>
