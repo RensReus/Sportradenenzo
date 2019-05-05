@@ -36,7 +36,7 @@ module.exports = {
                     var startlist_IDs = '(';
 
                     $(".team").each(function (index, element) { //gaat ieder team af
-                        var teamName = $(this).children().first().text();
+                        var teamName = $(this).children().first().children().last().text();
                         // $(this).children()
                         $(this).children().eq(2).children(".rider").each(function (index, element) { //gaat iedere renner af
                             var name = $(this).text();
