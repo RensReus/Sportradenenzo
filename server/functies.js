@@ -1,6 +1,6 @@
 const sqlDB             = require('./db/sqlDB')
 
-calculateUserScores = function (et, callback) {
+calculateUserScoresOld = function (et, callback) {
     User.find({'teamselectie.userrenners': {$size: 20}}, function (err, users) {
         if (err) throw err;
         users.forEach(function (user, index) {//get all users
@@ -64,6 +64,50 @@ calculateUserScores = function (et, callback) {
 * @param {function} callback
 * @returns {Array} array of riders [{ name: , price: , team: ,rider_participation: },...]
  */
+
+calculateUserScores = function(name,year,stage,callback){
+    var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = '${name}')`
+    var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
+    sqlDB.query(participantsQuery,function(err,res){
+        if(err) throw err;
+        var totalQuery = '';
+        for (i in res.rows){// voor iedere gewone user
+            for(var j = stage; j < 23; j++){// to show correct totalscores for later stages
+                var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
+                var account_participation_id = res.rows[i].account_participation_id;
+                var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
+                var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id = ${stage_id})`
+                var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM stage_selection_rider 
+                                INNER JOIN results_points USING (rider_participation_id)
+                                WHERE stage_selection_id = ${stage_selection_id}),0) `;
+                if(res.rows[i].budgetParticipation){// andere stage score voor budget
+                    stagescore = `COALESCE((SELECT SUM(results_points.totalscore - results_points.teamscore) FROM stage_selection_rider 
+                    INNER JOIN results_points USING (rider_participation_id)
+                    WHERE stage_selection_id = ${stage_selection_id}),0)` ;
+                }
+                var kopmanScore = `(COALESCE (SELECT 0.5 * stagescore FROM results_points
+                                    WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${stage_selection_id}),0)`
+                stagescore += kopmanScore;
+                var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
+                var prevstagesScore = `COALESCE((SELECT SUM(stagescore) FROM stage_selection
+                    WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages}),0)`;
+                var totalscore = `${prevstagesScore} + ${stagescore}`;
+                scoreQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore})`;
+                scoreQuery += `ON CONFLICT (account_participation_id,stage_id)
+                DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore; `
+                totalQuery += scoreQuery;
+
+            }
+        }
+        sqlDB.query(totalQuery,(err, res) => {
+            if (err) throw err;
+            // console.log(totalQuery)
+            // console.log("res:",res);
+            callback(err, 'Calculated User Scores');
+        })
+    })
+}
+
 calculateUserScoresKlassieker = function(year,stage,callback){
     var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = 'classics')`
     var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
@@ -95,8 +139,6 @@ calculateUserScoresKlassieker = function(year,stage,callback){
         }
         sqlDB.query(totalQuery,(err, res) => {
             if (err) throw err;
-            // console.log(totalQuery)
-            // console.log("res:",res);
         })
     })
     callback(null, 'Calculated User Scores');
