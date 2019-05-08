@@ -74,7 +74,11 @@ module.exports = function (app) {
         var year = parseInt(req.body.year);
         var raceName = req.body.raceName;
         var stage = parseInt(req.body.stage);
-        res.send("doet nog niks")
+        sqlScrape.getResult(raceName,year,stage,function(err,arg){ 
+          if(err) res.send("error");
+          console.log("Got results %s year %s stage %s",raceName, year, stage)
+          res.send("completed")
+        })
       }
     })
   });

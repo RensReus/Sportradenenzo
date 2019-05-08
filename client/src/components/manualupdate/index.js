@@ -89,6 +89,7 @@ class manualupdate extends Component {
 
     getResults(e) {
         e.preventDefault();
+        this.setState({grStage: "In Progress",grstatus: "inprogress" })
         var stage = Number(this.state.grStage);
         if (Number.isInteger(stage)) {
             stage = parseInt(stage);
@@ -180,9 +181,9 @@ class manualupdate extends Component {
                         <button onClick={this.getStartlist}>Get Startlist</button>
                     </div>
 
-                    <form className="row" action="" onSubmit={this.getResultsKlassiek}>
+                    <form className="row" action="" onSubmit={this.getResults}>
                         <div className="discription">Get Results incl. userscores </div>
-                        <input className="inputfield" id="gk" ref="gk" placeholder="Stage #" value={this.state.grStage} onChange={this.changeGRText} />
+                        <input className={"inputfield " + this.state.grStatus} id="gr" ref="gr" placeholder="Stage #" value={this.state.grStage} onChange={this.changeGRText} />
                         <button>Submit</button>
                     </form>
                 </div>

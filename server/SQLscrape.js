@@ -234,9 +234,9 @@ module.exports = {
                 });
 
                 // change DNF to true for ridersDNF
+                var race_id = `(SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})`;
                 var dnfquery = `UPDATE rider_participation SET dnf = TRUE 
-                WHERE race_id = (SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})
-                AND rider_id IN ( `
+                WHERE race_id = ${race_id} AND rider_id IN ( `
                 for (var rider in ridersDNF) {
                     dnfquery += `(SELECT rider_id FROM rider WHERE pcs_id = '${ridersDNF[rider].pcsid}'),`
                 }
@@ -259,8 +259,9 @@ module.exports = {
                                 stagescore, gcscore, pointsscore, komscore, yocscore, teamscore, totalscore, 
                                 stageresult, gcresult, pointsresult, komresult, yocresult) 
                                 VALUES`
+                var stage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et} AND race_id = ${race_id})`
 
-                for (var i =0;i<1;i++) {// for each rider get the variables for the results_points table
+                for (var i =0;i<ridersDay.length;i++) {// for each rider get the variables for the results_points table
                     var pcsid = ridersDay[i].pcsid;
                     var teamRider = ridersDay[i].team;
                     var teamscore = 0;
@@ -315,8 +316,6 @@ module.exports = {
                     var totalscore = stagescore + gcscore + pointsscore + komscore + yocscore + teamscore;
 
                     // SQLQUERY addition
-                    var race_id = `(SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})`;
-                    var stage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et} AND race_id = ${race_id})`
                     var rider_id = `(SELECT rider_id FROM rider WHERE pcs_id = '${pcsid}')`
                     var rider_participation_id = `(SELECT rider_participation_id FROM rider_participation WHERE race_id = ${race_id} AND rider_id = ${rider_id})`
                     resultsQuery += `(${stage_id},${rider_participation_id},
@@ -329,13 +328,15 @@ module.exports = {
                 deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
                 totalQuery = deleteQuery + resultsQuery;
                 console.log(totalQuery)
-                sqlDB.query(totalQuery,(err,res)=>{
-                    if (err) throw err;
-                        else {
-                            console.log("Processed results \n",res)
-                            callback();
-                        }
-                })
+                if(ridersDay.length){// don't send if no results
+                    sqlDB.query(totalQuery,(err,res)=>{
+                        if (err) throw err;
+                            else {
+                                console.log("Processed results \n",res)
+                                functies.calculateUserScores(raceName,year,et,callback)
+                            }
+                    })
+                }
             }
         });
     },
