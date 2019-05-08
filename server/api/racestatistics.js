@@ -30,7 +30,7 @@ module.exports = function (app) {
             GROUP BY username`//aantal keer per ranking
             var query = query1 + query2;
             sqlDB.query(query,(err, res) => {
-                if (err) throw err;
+                if (err) {console.log("WRONG QUERY:",query); throw err;}
                 else {
                     var headersRank=["Stage"];
                     var headersCount=["User"];
@@ -96,7 +96,7 @@ module.exports = function (app) {
             //0 for string 1 for number
             var coltype = {name:0,team:0,stagescore:1,teamscore:1,totalscore:1,usercount:1};
             sqlDB.query(query,(err,results)=>{
-                if(err) throw err;
+                if (err) {console.log("WRONG QUERY:",query); throw err;}
                 res.send({tableData: results.rows,
                     coltype: coltype,
                 title: "Alle Renners"})
@@ -123,7 +123,7 @@ module.exports = function (app) {
             //0 for string 1 for number
             var coltype = {"Name":0,"Team":0,"Price":1,"Stagescore":1,"Teamscore":1,"Totalscore":1,"Points per Million":1,"Usercount":1};
             sqlDB.query(query,(err,results)=>{
-                if(err) throw err;
+                if (err) {console.log("WRONG QUERY:",query); throw err;}
                 res.send({tableData: results.rows,
                 coltype: coltype,
                 title: "Alle Geselecteerde Renners"})
@@ -150,7 +150,7 @@ module.exports = function (app) {
             //0 for string 1 for number
             var coltype = {};
             sqlDB.query(query,(err,results)=>{
-                if(err) throw err;
+                if (err) {console.log("WRONG QUERY:",query); throw err;}
                 var total = results[2].rows[0];
                 total.stagenr = "Total";
                 total.stagepos = "";
@@ -180,7 +180,7 @@ module.exports = function (app) {
             WHERE stage.race_id = 4 AND stage.stagenr <= ${currentStageNum}
             ORDER BY username, stagenr`
             sqlDB.query(query, (err,results)=>{
-                if(err) throw err;
+                if (err) {console.log("WRONG QUERY:",query); throw err;}
                 var username = results.rows[0].username;
                 var userObj = {
                     type: "line", 
@@ -238,7 +238,7 @@ module.exports = function (app) {
             WHERE stage.race_id = 4 AND stage.stagenr <= ${currentStageNum}
             ORDER BY username, stagenr`
             sqlDB.query(query, (err,results)=>{
-                if(err) throw err;
+                if (err) {console.log("WRONG QUERY:",query); throw err;}
                 var username = results.rows[0].username;
                 var userObj = {
                     type: "line", 
@@ -286,7 +286,7 @@ module.exports = function (app) {
             WHERE rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) AND totalscore > 0 AND stage.stagenr <= ${currentStageNum}
             ORDER by lastname, stagenr`
             sqlDB.query(query, (err,results)=>{
-                if(err) throw err;
+                if (err) {console.log("WRONG QUERY:",query); throw err;}
                 var lastname = results.rows[0].lastname;
                 var riderObj = {
                     type: "stackedColumn", 
@@ -339,7 +339,7 @@ module.exports = function (app) {
             group by lastname`
 
             sqlDB.query(query2, (err,results)=>{
-                if(err) throw err;
+                if (err) {console.log("WRONG QUERY:",query2); throw err;}
                 var data = [];
                 
                 for (var i in results.rows){

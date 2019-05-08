@@ -12,7 +12,7 @@ module.exports = function (app) {
             var starttime = `Select starttime FROM stage WHERE race_id=${race_id} and stagenr='${req.body.stage}'`;
             console.log(starttime)
             sqlDB.query(starttime, (err, results) => {
-                if (err) throw err;
+                if (err) {console.log("WRONG QUERY:",starttime); throw err;}
                 console.log(results.rows[0].starttime)
                 console.log(now)
                 if(now<results.rows[0].starttime){
@@ -103,7 +103,7 @@ module.exports = function (app) {
             var userScoresColtype = {stagescore:1, totalscore:1};
 
             sqlDB.query(totalQuery, (err, results) => {
-                if (err) throw err;
+                if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                 var userscores = results[1].rows;
                 var selecties = results[3].rows
                 for (var i in userscores){
