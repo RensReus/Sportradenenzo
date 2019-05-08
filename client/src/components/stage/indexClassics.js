@@ -20,6 +20,13 @@ class PouleTableRow extends Component {
 
 
 class PouleTable extends Component {
+    componentDidUpdate(prevProps) {
+        if(this.props !== prevProps){// zorgt voor update van andere teams popup
+            this.forceUpdate();
+        }
+
+    }
+
     render() {
         const rows = [];
         const userScores = this.props.userScores
@@ -27,7 +34,7 @@ class PouleTable extends Component {
             var riders = []
             if (user.riderCount>0) riders = user.riders;
             rows.push(
-                <PouleTableRow
+                <PouleTableRow key={user.username}
                     username={user.username}
                     riderCount={user.riderCount}
                     riders={riders}
@@ -61,8 +68,8 @@ class Stage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            mode: 'loading',
-            race: 'giro',
+            mode: '',
+            race: 'classics',
             year: '2019',
             stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
             userTeamResult: [],
@@ -82,6 +89,7 @@ class Stage extends Component {
         const year = this.state.year
         axios.post('/api/getstageresultsclassics', { race: race, year: year, stageNumber: stage }) //to: stageresults.js
             .then((res) => {
+                console.log(res.data)
                 if (res.data.mode === '404') {
                     this.setState({
                         mode: '404'
@@ -91,7 +99,6 @@ class Stage extends Component {
                         mode: '',
                         userTeamResult: res.data.teamresult,
                         userScores: res.data.userscores,
-                        userScoresColtype: res.userScoresColtype,
                         stageresults: res.data.stageresults,
                         prevText: res.data.prevText,
                         currText: res.data.currText,
@@ -133,18 +140,17 @@ class Stage extends Component {
         this.getSelectionDetails(parseInt(this.state.stage));
     }
 
+
+    
+
     render() {
         const mode = this.state.mode
-        let loadingGif
         let message
         let resTable
         let pTable
         let stResTable
         var prevButton = ''
-        if (mode === 'loading'){
-            loadingGif = <img className="loadingGif" src="/images/bicycleWheel.gif" alt="bicycleWheel.gif"></img>
-            message = <h3>Fetching data..</h3>
-        }else if (mode === '404') {
+        if (mode === '404') {
             message = <h3>404: Data not found</h3>
             resTable = ''
             pTable = ''
@@ -152,7 +158,7 @@ class Stage extends Component {
         } else {
             resTable = <Table data={this.state.userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={this.state.userScores}/>
-            stResTable = <Table data={this.state.stageresults} title={"Uitslag"} />
+            stResTable = <Table data={this.state.stageresults} title={"Uitslag"} maxRows={20} />
         }
         if(!this.state.raceStarted || this.state.stage !== 1){
             prevButton = <div id="prevStageButton">
@@ -168,7 +174,6 @@ class Stage extends Component {
                         <button onClick={this.nextStage}>{this.state.nextText}</button>
                     </div>
                 </div>
-                {loadingGif}
                 {message}
                 <div className="res">{resTable}</div>
                 <div className="poule">{pTable}</div>

@@ -2,6 +2,28 @@
 const sqlDB = require('../db/sqlDB')
 
 module.exports = function (app) {
+    app.post('/api/getstage', function(req,res){
+        if(!req.user){
+            res.send({ 'mode': '404' });
+            return;
+        } else {
+            var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = '${req.body.year}')`;
+            var now = new Date();
+            var starttime = `Select starttime FROM stage WHERE race_id=${race_id} and stagenr='${req.body.stage}'`;
+            console.log(starttime)
+            sqlDB.query(starttime, (err, results) => {
+                if (err) throw err;
+                console.log(results.rows[0].starttime)
+                console.log(now)
+                if(now<results.rows[0].starttime){
+                    console.log('pre start')
+                }else{
+
+                }
+            })
+            res.send(true)
+        }
+    })
     app.post('/api/getstageresultsclassics', function (req, res) {
         
         if (!req.user) {

@@ -12,6 +12,10 @@ class PouleTableRow extends Component {
                     <div className="selectionInfo"><Table data={this.props.riders} title={"renners #: "+ this.props.riderCount} /></div>
                 </td>
                 <td>{this.props.stagescore}</td>
+                <td>{this.props.gcscore}</td>
+                <td>{this.props.pointscore}</td>
+                <td>{this.props.komscore}</td>
+                <td>{this.props.youngscore}</td>
                 <td>{this.props.totalscore}</td>
             </tr>
         )
@@ -20,13 +24,6 @@ class PouleTableRow extends Component {
 
 
 class PouleTable extends Component {
-    componentDidUpdate(prevProps) {
-        if(this.props !== prevProps){// zorgt voor update van andere teams popup
-            this.forceUpdate();
-        }
-
-    }
-
     render() {
         const rows = [];
         const userScores = this.props.userScores
@@ -34,11 +31,15 @@ class PouleTable extends Component {
             var riders = []
             if (user.riderCount>0) riders = user.riders;
             rows.push(
-                <PouleTableRow key={user.username}
+                <PouleTableRow
                     username={user.username}
                     riderCount={user.riderCount}
                     riders={riders}
                     stagescore={user.stagescore}
+                    gcscore={user.gcscore}
+                    pointscore={user.pointscore}
+                    komscore={user.komscore}
+                    youngscore={user.youngscore}
                     totalscore={user.totalscore}
                 />
             )
@@ -68,8 +69,8 @@ class Stage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            mode: '',
-            race: 'classics',
+            mode: 'loading',
+            race: 'giro',
             year: '2019',
             stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
             userTeamResult: [],
@@ -87,17 +88,24 @@ class Stage extends Component {
     updateData(stage) {
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/getstageresultsclassics', { race: race, year: year, stageNumber: stage }) //to: stageresults.js
+        axios.post('/api/getstage', { race: race, year: year, stage: stage }) //to: stageresults.js
             .then((res) => {
                 if (res.data.mode === '404') {
                     this.setState({
                         mode: '404'
                     })
-                } else {
+                } else if (res.data.mode === 'selection') {
                     this.setState({
-                        mode: '',
+                        mode: 'selection',
+                        userTeam: res.data.userteam,
+                        
+                    })
+                } else if (res.data.mode === 'results') {
+                    this.setState({
+                        mode: 'results',
                         userTeamResult: res.data.teamresult,
                         userScores: res.data.userscores,
+                        userScoresColtype: res.userScoresColtype,
                         stageresults: res.data.stageresults,
                         prevText: res.data.prevText,
                         currText: res.data.currText,
@@ -139,25 +147,29 @@ class Stage extends Component {
         this.getSelectionDetails(parseInt(this.state.stage));
     }
 
-
-    
-
     render() {
         const mode = this.state.mode
+        let loadingGif
         let message
         let resTable
         let pTable
         let stResTable
         var prevButton = ''
-        if (mode === '404') {
+
+        if (mode === 'loading'){
+            loadingGif = <img className="loadingGif" src="/images/bicycleWheel.gif" alt="bicycleWheel.gif"></img>
+            message = <h3>Fetching data..</h3>
+        }else if (mode === '404') {
             message = <h3>404: Data not found</h3>
             resTable = ''
             pTable = ''
             stResTable = ''
-        } else {
+        } else if (mode === 'selection') {
+
+        } else if (mode === 'results') {
             resTable = <Table data={this.state.userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={this.state.userScores}/>
-            stResTable = <Table data={this.state.stageresults} title={"Uitslag"} maxRows={20} />
+            stResTable = <Table data={this.state.stageresults} title={"Uitslag"} />
         }
         if(!this.state.raceStarted || this.state.stage !== 1){
             prevButton = <div id="prevStageButton">
@@ -173,6 +185,7 @@ class Stage extends Component {
                         <button onClick={this.nextStage}>{this.state.nextText}</button>
                     </div>
                 </div>
+                {loadingGif}
                 {message}
                 <div className="res">{resTable}</div>
                 <div className="poule">{pTable}</div>
