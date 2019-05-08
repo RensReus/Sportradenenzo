@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 
 class Deselectionbutton extends Component{
     removeRider=()=> {
-        this.props.removeRider(this.props.riderID);
+        this.props.removeRider(this.props.riderID, this.props.budgetParticipation);
     }
     render(){
         return(
-            <button className={this.props.selected} onClick={() => this.removeRider(this.props.riderID)}>Remove Rider</button>
+            <button className={this.props.selected} onClick={() => this.removeRider(this.props.riderID, this.props.budgetParticipation)}>Remove Rider</button>
         )
     }
 }
@@ -20,7 +20,7 @@ class UserRiderrow extends Component{
                 <td>{rider.lastname}</td>
                 <td>{rider.team}</td>
                 <td>{rider.price}</td>
-                <td><Deselectionbutton removeRider={this.props.removeRider} riderID={this.props.riderID}/></td>
+                <td><Deselectionbutton removeRider={this.props.removeRider} riderID={this.props.riderID} budgetParticipation={this.props.budgetParticipation}/></td>
             </tr>
         )
     }
@@ -30,7 +30,7 @@ class Userselectiontable extends Component{
         const rows = [];
         this.props.selection.map(({firstname,lastname,team,price,rider_participation_id})=>{
             rows.push(
-                <UserRiderrow firstname={firstname} lastname={lastname} team={team} price={price} key={rider_participation_id} riderID={rider_participation_id} removeRider={this.props.removeRider}/>
+                <UserRiderrow firstname={firstname} lastname={lastname} team={team} price={price} key={rider_participation_id} riderID={rider_participation_id} budgetParticipation={this.props.budgetParticipation} removeRider={this.props.removeRider}/>
             )
         });
         return(

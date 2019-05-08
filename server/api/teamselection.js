@@ -85,7 +85,7 @@ module.exports = function (app) {
 
             sqlDB.query(totalQuery,function(err,results){
                 var start = Date.now()
-                if(err) throw err;
+                if(err) {console.log("query: ",totalQuery);throw err};
                 if(!req.body.budgetParticipation){
                     budget = results[2].rows[0].budget;   
                 }
