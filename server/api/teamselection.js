@@ -85,7 +85,7 @@ module.exports = function (app) {
 
             sqlDB.query(totalQuery,function(err,results){
                 var start = Date.now()
-                if(err) throw err;
+                if(err) {console.log("query: ",totalQuery);throw err};
                 if(!req.body.budgetParticipation){
                     budget = results[2].rows[0].budget;   
                 }
@@ -99,13 +99,15 @@ module.exports = function (app) {
                 if(results[1].rows.length>=20||budget<results[0].rows[0].price + (19-results[1].rows.length)*500000 || ridersSameTeam >= 4){
                     res.send(false)
                 }else{
-                    var query = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
+                    var addQuery = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
                                 VALUES(${req.body.rider_participation_id},${account_participation_id}) 
                                 ON CONFLICT (account_participation_id, rider_participation_id) DO NOTHING`;
                     
-                    sqlDB.query(query, (err, response) => {
-                        if (err) throw err;
-                        results[1].rows.push(results[0].rows[0])
+                    sqlDB.query(addQuery, (err, response) => {
+                        if (err) {console.log("WRONG QUERY:",addQuery); throw err;}
+                        if(response.rowCount){ //Only add if sql added rider to DB
+                            results[1].rows.push(results[0].rows[0])
+                        }
                         var budgetLeft = results[2].rows[0].budget;   
                         if(req.body.budgetParticipation){
                             budgetLeft = 11250000;
@@ -198,7 +200,7 @@ module.exports = function (app) {
             console.log(totalQuery)
 
             sqlDB.query(totalQuery,function(err,results){
-                if(err) throw err
+                if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
 
                 var budgetLeft = results[2].rows[0].budget;   
                 if(req.body.budgetParticipation){

@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 
 class Selectionbutton extends Component{
-    selectRider=()=> {
+    addRider=()=> {
         if(this.props.selected==='unselected'){
-            this.props.selectRider(this.props.riderID);
+            this.props.addRider(this.props.riderID, this.props.budgetParticipation);
         }
     }
     render(){
         return(
-            <button className={this.props.selected} onClick={() => this.selectRider(this.props.riderID)}>{this.props.selected}</button>
+            <button className={this.props.selected} onClick={() => this.addRider(this.props.riderID, this.props.budgetParticipation)}>{this.props.selected}</button>
         )
     }
 }
@@ -20,7 +20,7 @@ class Riderrow extends Component{
                 <td className={this.props.selected}>{this.props.name}</td>
                 <td className={this.props.selected}>{this.props.team}</td>
                 <td className={this.props.selected}>{this.props.price}</td>
-                <td><Selectionbutton selected={this.props.selected} selectRider={this.props.selectRider} riderID={this.props.riderID}/></td>
+                <td><Selectionbutton selected={this.props.selected} addRider={this.props.addRider} riderID={this.props.riderID} budgetParticipation={this.props.budgetParticipation}/></td>
             </tr>
         )
     }
@@ -42,11 +42,10 @@ class Riderselectiontable extends Component{
                     teamCount += 1;
                 }
             }
-            console.log(name,teamCount)
             if(((this.props.budget<price + 500000*(20-selectionLength) || selectionLength>=20 || teamCount >= 4) && selected!=='selected') || (price>750000 && this.props.budgetParticipation)){
-                rows.push(<Riderrow name={name} team={team} price={price} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} selectRider={this.props.selectRider}/>)
+                rows.push(<Riderrow name={name} team={team} price={price} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} budgetParticipation={this.props.budgetParticipation} addRider={this.props.addRider}/>)
             }else{
-                rows.push(<Riderrow name={name} team={team} price={price} selected={selected} key={rider_participation_id} riderID={rider_participation_id} selectRider={this.props.selectRider}/>)
+                rows.push(<Riderrow name={name} team={team} price={price} selected={selected} key={rider_participation_id} riderID={rider_participation_id} budgetParticipation={this.props.budgetParticipation} addRider={this.props.addRider}/>)
             }
         })
         return(

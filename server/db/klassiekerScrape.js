@@ -72,7 +72,7 @@ getStartlist = function (year, racenr, callback) {
                 var totalQuery = deleteQuery +  riderQuery + participationQuery + results_pointsQuery;
                 var error = null;
                 sqlDB.query(totalQuery, (err, res) => {
-                    if (err) throw err;
+                    if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}                                
                     else {
                         console.log(res);
                     }
@@ -166,8 +166,10 @@ getResult = function (year, et, callback) {
                 resultsquery = resultsquery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO UPDATE SET stagepos = EXCLUDED.stagepos, stagescore = EXCLUDED.stagescore, stageresult = EXCLUDED.stageresult, teamscore = EXCLUDED.teamscore, totalscore = EXCLUDED.totalscore';
                 // console.log(resultsquery)
                 sqlDB.query(resultsquery, (err, res) =>{
-                    if(err) throw err;
-                    callback()
+                    if (err) {console.log("WRONG QUERY:",resultsquery); throw err;} 
+                    else{
+                        callback()
+                    }                      
                 })
             }else{
                 callback();

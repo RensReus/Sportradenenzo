@@ -109,7 +109,7 @@ module.exports = {
                     var totalQuery = deleteStageSelectionQuery + deleteKopmanQuery + deleteTeamSelectionQuery + deleteStartlistQuery + riderQuery + participationQuery;
                     console.log(totalQuery)
                     sqlDB.query(totalQuery, (err, res) => {
-                        if (err) throw err;
+                        if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                         else {
                             console.log(res);
                             callback(err,"");
@@ -244,7 +244,7 @@ module.exports = {
                 console.log("Riders DNF: ", ridersDNF.length)
                 if(ridersDNF.length){ //only submit if > 0
                     sqlDB.query(dnfquery, (err, res) => {
-                        if (err) throw err;
+                        if (err) {console.log("WRONG QUERY:",dnfquery); throw err;}
                         else {
                             console.log("Riders DNF updated" )
                         }
@@ -330,11 +330,11 @@ module.exports = {
                 console.log(totalQuery)
                 if(ridersDay.length){// don't send if no results
                     sqlDB.query(totalQuery,(err,res)=>{
-                        if (err) throw err;
-                            else {
-                                console.log("Processed results \n",res)
-                                functies.calculateUserScores(raceName,year,et,callback)
-                            }
+                        if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+                        else {
+                            console.log("Processed results \n",res)
+                            functies.calculateUserScores(raceName,year,et,callback)
+                        }
                     })
                 }
             }

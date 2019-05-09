@@ -7,8 +7,7 @@ module.exports = function (app) {
         var query = `SELECT * FROM account_participation 
         WHERE race_id = ${req.body.race_id} AND account_id = ${req.user.account_id}`
         sqlDB.query(query, (err,results) => {
-            if(err)
-              throw err;
+            if (err) {console.log("WRONG QUERY:",query); throw err;}            
               else{
                   console.log(results)
                 res.send(results)
@@ -29,11 +28,10 @@ module.exports = function (app) {
             var values = [account_id,race_id];
 
             sqlDB.query(query, values, (err) => {
-                if(err)
-                  throw err;
-                  else{
-                      res.send("added")
-                  }
+                if (err) {console.log("WRONG QUERY:",query); throw err;}                                    
+                else{
+                    res.send("added")
+                }
             });
         }
     })
