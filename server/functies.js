@@ -1,4 +1,6 @@
-const sqlDB             = require('./db/sqlDB')
+const sqlDB = require('./db/sqlDB')
+const schedule = require('node-schedule')
+const SQLscrape = require('./SQLscrape');
 
 calculateUserScoresOld = function (et, callback) {
     User.find({'teamselectie.userrenners': {$size: 20}}, function (err, users) {
@@ -230,7 +232,7 @@ optimaleScoresUser = function (teamselectie, etappes, callback) {
                 punten[i]+=totaalpunten[k].punten;
             }
             // moet nog 0.5*dagpunten voor de beste in de dag uitslag van deze groep maar deze code wordt wss nooit gerund 
-            //en zelfs dan zal het wss toch 0 zij
+            //en zelfs dan zal het wss toch 0 zijn
         }
         callback(punten);
     })
@@ -316,10 +318,124 @@ function stageNumKlassieker(){
             return parseInt(i)+1
         }
     }
-    return parseInt(dates.length) + 1 // return eindklassement
-
-                
+    return parseInt(dates.length) + 1 // return eindklassement           
 }
+
+
+//voor scheduling
+
+//scheduling
+
+
+function startSchedule(){
+    var resultsRule = new schedule.RecurrenceRule()
+    // checkt 1x of de etappe bijna gefinisht is en stelt de benodige scrape frequentie in
+    SQLscrape.getTimetoFinish(function (stageFinished,newResultsRule) {// check hoe lang nog tot the finish
+      console.log("first run");
+      finished = stageFinished; // returns boolean
+      resultsRule = newResultsRule; // returns ieder uur als de finish nog verweg is, ieder 5 min indien dichtbij en iedere min na de finish
+      scrapeResults.reschedule(resultsRule);  //update new schedule
+    })
+}
+
+
+var scrapeResults = schedule.scheduleJob(new schedule.RecurrenceRule(), function () {
+  var race_id = 5;//TODO niet hardcoded
+  console.log("scrape run at: " + new Date().toTimeString());
+  var stageQuery = `SELECT * FROM STAGE
+                    WHERE starttime < now() AND race_id = ${race_id}
+                    ORDER BY stagenr
+                    LIMIT 1`;
+  sqlDB.query(stageQuery,function(err,results){//returns the most recent stage that started
+    if (err) {console.log("WRONG QUERY:",query); throw err;}
+    else{
+      if(results.rows.length){// if some results, so at least after start of stage 1
+        var stage = results.rows[0];
+        if(!stage.finished){
+          SQLscrape.getTimetoFinish(function(stageFinished,newResultsRule){// getTimetoFinish if not finished
+            if(stageFinished){
+              var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
+              sqlDB.query(updateStageQuery,function(err,results){
+                if (err) {console.log("WRONG QUERY:",query); throw err;}
+                else{
+                  console.log("Stage %s finished",stage.stagenr)
+                }
+              });
+              SQLscrape.getResult('giro',2019,stage.stagenr,function(err,response){//TODO niet hardcoded
+                if(err) throw err;
+                else console.log(response, "stage", stage.stagenr);
+              })
+            }
+            resultsRule = newResultsRule;
+            scrapeResults.reschedule(resultsRule);  //update new schedule
+          })
+        }else if(!stage.complete){//get results if not complete
+          SQLscrape.getResult('giro',2019,stage.stagenr,function(err,response){//TODO niet hardcoded 
+            if(err) throw err;
+            else console.log(response, "stage", stage.stagenr);
+          })
+        }else{// if finished and complete set schedule to run again at start of next stage
+          var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage.stagenr + 1}`
+          sqlDB.query(nextStageQuery,function(err,nextStageResults){
+            if (err) {console.log("WRONG QUERY:",query); throw err;}
+            else{
+              if(nextStageResults.rows.length){
+                resultsRule = nextStageResults.rows[0].starttime;
+                scrapeResults.cancel();// cancel updates until they are restarted by copyOpstelling
+                copyOpstelling.reschedule(resultsRule);  //update new schedule
+              }
+            }
+          })
+        }
+      }
+      console.log("before stage 1")
+    }
+  })
+});
+
+var copyOpstelling = schedule.scheduleJob(new schedule.RecurrenceRule(), function () {
+    var resultsRule = new schedule.RecurrenceRule()
+  resultsRule.hour = new schedule.Range(0, 23, 1); // na de start ieder uur checken tenzij frequentie wordt verhoogd door getTimeofFinish
+  scrapeResults.reschedule(resultsRule);
+  var race_id = 5; //TODO remove hardcoded
+  var stage_id = `(SELECT stage_id FROM stage
+                    WHERE starttime < NOW() AND race_id = ${race_id}
+                    ORDER BY stagenr
+                    LIMIT 1)`;
+  var currentStagenr = `(SELECT stagenr FROM stage
+                WHERE starttime < NOW() AND race_id = ${race_id}
+                ORDER BY stagenr
+                LIMIT 1)`;
+  var prevStage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${currentStagenr} - 1)`;
+  var accountsWithoutSelectionQuery = `SELECT account_participation_id, stage_selection_id FROM stage_selection
+                                      LEFT JOIN stage_selection_rider USING (stage_selection_id)
+                                      WHERE stage_id = ${stage_id} 
+                                      GROUP BY account_participation_id, stage_selection_id
+                                      HAVING COUNT(rider_participation_id) = 0`;
+  sqlDB.query(accountsWithoutSelectionQuery,function(err,res){
+    if (err) {console.log("WRONG QUERY:",accountsWithoutSelectionQuery); throw err;}
+    var totalQuery = '';
+    for(var i in res.rows){//for each account_participation with an empty stage_selection for the stage that just started
+      var prevStage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE stage = ${prevStage_id} AND account_participation_id = ${res.rows[i].account_participation_id})`;
+      //SELECT all riders from previous stage selection and insert into current stage
+      var insertPrevSelection = `INSERT INTO stage_selection_rider(stage_selection_id, rider_participation_id)
+                                SELECT ${res.rows[i].stage_selection_id}, rider_participation_id WHERE stage_selection_id = ${prevStage_selection_id};\n`;
+      var prevKopman_id = `(SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${prevStage_selection_id})`;
+      var insertPrevKopman = `DO UPDATE SET kopman_id = ${prevKopman_id};\n`;
+      totalQuery += insertPrevSelection + insertPrevKopman;
+    }
+
+    if(res.rows.length){
+      sqlDB.query(totalQuery,function(err,results){
+        if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+        console.log("Copied %s selections",res.rows.length);
+      })
+    }
+  })
+
+});
+
+
 
 
 module.exports.calculateUserScores = calculateUserScores;
@@ -329,3 +445,4 @@ module.exports.optimaleScoresUser = optimaleScoresUser;
 module.exports.returnEtappeWinnaars = returnEtappeWinnaars;
 module.exports.calculateUserScoresKlassieker = calculateUserScoresKlassieker;
 module.exports.stageNumKlassieker = stageNumKlassieker;
+module.exports.startSchedule = startSchedule;

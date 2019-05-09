@@ -123,7 +123,7 @@ module.exports = {
     },
 
     getResult: function (raceName, year, et, callback) {
-        var TTstages = [1, 9];
+        var TTstages = [1, 9, 21];
         var raceString = "";
         switch (raceName) {
             case "giro":
@@ -347,34 +347,36 @@ module.exports = {
             headers: { "Connection": "keep-alive" }
         }, function (error, response, html) {
             var $ = cheerio.load(html);
-
-            $(".ind_td").first().children().eq(1).children().each(function () {
+            var rule = new schedule.RecurrenceRule()
+            var finished = false;   
+            var girobeschikbaar = false;
+            $(".home1").first().children().eq(1).children().first().children().first().children().eq(1).children().each(function () {
                 if ($(this).children().eq(2).text().startsWith('La Vuelta ciclista a España')) { // voor de giro
                     girobeschikbaar = true;
                     if ($(this).children().eq(5).text() != 'finished') {
                         var timeRemaining = $(this).children().eq(0).text();
                         if (timeRemaining[timeRemaining.length - 1] === 'm' || timeRemaining[0] === 1) { // als nog een uur of minder
                             rule.minute = new schedule.Range(0, 59, 5); // iedere 5 min checken
-                            callback([finished, rule]);
+                            callback(finished, rule);
                             return;
                         } else {
                             rule.minute = 7; // ieder uur als finish nog ver weg
-                            callback([finished, rule]);
+                            callback(finished, rule);
                             return;
-
                         }
 
                     } else {//als gefinisht
                         rule.minute = new schedule.Range(0, 59, 1); // iedere minuut checken
                         finished = true;
-                        callback([finished, rule]);
+                        callback(finished, rule);
                         return;
                     }
                 }
             });
             if (!girobeschikbaar) {
-                rule.minute = 7;
-                callback([finished, rule]);
+                console.log("Race not available")
+                rule = new Date() + 1000*17; //check again at 10 am
+                callback(finished, rule);
                 return;
             }
         });

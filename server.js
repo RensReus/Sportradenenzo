@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors') //Zorgt voor authentication tussen proxy en server (snap het niet helemaal maar het werkt)
 const app = express();
+const functies = require('./server/functies');
 app.use(cors({
   credentials: true
 }))
@@ -44,6 +45,7 @@ app.set("port", process.env.PORT || 3001);
 app.listen(app.get("port"), () => {
   console.log(`Magicka accidit`);
 });
+// functies.startSchedule();//starts scheduling the auto scrape werkt nog niet helemaal lekker
 
 require('./server/passport')(passport);
 
