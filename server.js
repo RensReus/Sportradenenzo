@@ -45,7 +45,6 @@ app.listen(app.get("port"), () => {
   console.log(`Magicka accidit`);
 });
 
-
 require('./server/passport')(passport);
 
 require('./server/api/admin')(app)

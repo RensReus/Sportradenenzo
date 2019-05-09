@@ -62,7 +62,63 @@ class PouleTable extends Component {
     }
 }
 
+class Selectionbutton extends Component{
+    selectRider=()=> {
+        if(this.props.selected==='unselected'){
+            this.props.selectRider(this.props.riderID);
+        }
+    }
+    render(){
+        return(
+            <button className={this.props.selected} onClick={() => this.selectRider(this.props.riderID)}>{this.props.selected}</button>
+        )
+    }
+}
 
+class SelecTableRow extends Component{
+    render(){
+        return(
+            <tr >
+                <td className={this.props.selected}>{this.props.name}</td>
+                <td className={this.props.selected}>{this.props.team}</td>
+                <td><Selectionbutton selected={this.props.selected} selectRider={this.props.selectRider} riderID={this.props.riderID}/></td>
+            </tr>
+        )
+    }
+}
+
+
+class SelecTable extends Component {
+    render() {
+        const rows = [];
+        const selectionIDs = this.props.selectionIDs;
+        const selectionLength = selectionIDs.length;
+        this.props.userTeam.map(({lastname,team,rider_participation_id})=>{
+            var selected = 'unselected';
+            if(selectionIDs.includes(rider_participation_id)){
+                selected = 'selected'
+            }
+            if( selectionLength>=9 && selected!=='selected'){
+                rows.push(<SelecTableRow name={lastname} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} selectRider={this.props.selectRider}/>)
+            }else{
+                rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} selectRider={this.props.selectRider}/>)
+            }
+        })
+        return(
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Team</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+            </table>
+        )
+    }
+}
 
 class Stage extends Component {
     
@@ -73,6 +129,8 @@ class Stage extends Component {
             race: 'giro',
             year: '2019',
             stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
+            stageSelectionGewoon: [],
+            stageSelectionBudget: [],
             userTeamResult: [],
             userScores: [],
             stageresults: [],
@@ -82,14 +140,16 @@ class Stage extends Component {
             lastStage: false,
             raceStarted: false,
         }
+        this.selectRider = this.selectRider.bind(this)
         this.previousStage = this.previousStage.bind(this);
         this.nextStage = this.nextStage.bind(this);
     }
     updateData(stage) {
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/getstage', { race: race, year: year, stage: stage }) //to: stageresults.js
+        axios.post('/api/getstage', { race: race, year: year, stage: stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
             .then((res) => {
+                console.log(res.data)
                 if (res.data.mode === '404') {
                     this.setState({
                         mode: '404'
@@ -97,8 +157,10 @@ class Stage extends Component {
                 } else if (res.data.mode === 'selection') {
                     this.setState({
                         mode: 'selection',
-                        userTeam: res.data.userteam,
-                        
+                        userTeamGewoon: res.data.userTeamGewoon,
+                        userTeamBudget: res.data.userTeamBudget,
+                        stageSelectionGewoon: res.data.stageSelectionGewoon,
+                        stageSelectionBudget: res.data.stageSelectionBudget
                     })
                 } else if (res.data.mode === 'results') {
                     this.setState({
@@ -139,7 +201,24 @@ class Stage extends Component {
         }
     }
     
-    getSelectionDetails(stage){
+    selectRider(riderID) {
+        window.alert('called' + this.state.stage)
+        const stage = this.state.stage
+        const race = this.state.race
+        const year = this.state.year
+        const budget = false
+        console.log(stage)
+        //axios.post('/api/addridertostage', { 
+        //    race: race, 
+        //    year: year, 
+        //    stage: stage, 
+        //    rider_id: riderID, 
+        //    budgetParticipation: budget, 
+        //    token: localStorage.getItem('authToken') 
+        //})
+        //    .then((res) => {
+        //        console.log(res.data)
+        //    })
     }
 
     componentDidMount() {
@@ -149,11 +228,14 @@ class Stage extends Component {
 
     render() {
         const mode = this.state.mode
+        const stageSelectionGewoon = this.state.stageSelectionGewoon
         let loadingGif
         let message
         let resTable
         let pTable
         let stResTable
+        let selecTable
+        let selectionTable
         var prevButton = ''
 
         if (mode === 'loading'){
@@ -165,7 +247,8 @@ class Stage extends Component {
             pTable = ''
             stResTable = ''
         } else if (mode === 'selection') {
-
+            selecTable = <SelecTable userTeam={this.state.userTeamGewoon} selectionIDs={stageSelectionGewoon.map(rider=> rider.rider_participation_id)} selectRider={this.selectRider}/>
+            selectionTable = <Table stageTeam={this.state.stageSelectionGewoon}/>
         } else if (mode === 'results') {
             resTable = <Table data={this.state.userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={this.state.userScores}/>
@@ -185,6 +268,8 @@ class Stage extends Component {
                         <button onClick={this.nextStage}>{this.state.nextText}</button>
                     </div>
                 </div>
+                {selectionTable}
+                {selecTable}
                 {loadingGif}
                 {message}
                 <div className="res">{resTable}</div>

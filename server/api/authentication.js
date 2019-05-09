@@ -15,6 +15,7 @@ module.exports = function (app) {
   function generateToken(user){
     //Create the authentication token
     var payload = {
+      account_id : user.account_id,
       email : user.email,
       admin : user.admin
     }
