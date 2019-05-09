@@ -14,25 +14,6 @@ function getSecret() {
 }
 
 module.exports = function (app) {
-<<<<<<< HEAD
-=======
-    app.post('/api/getstage', function(req,res){
-        if(!req.user){
-            res.send({ 'mode': '404' });
-            return;
-        } else {
-            var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = '${req.body.year}')`;
-            var now = new Date();
-            var starttime = `Select starttime FROM stage WHERE race_id=${race_id} and stagenr='${req.body.stage}'`;
-            console.log(starttime)
-            sqlDB.query(starttime, (err, results) => {
-                if (err) {console.log("WRONG QUERY:",starttime); throw err;}
-                console.log(results.rows[0].starttime)
-                console.log(now)
-                if(now<results.rows[0].starttime){
-                    console.log('pre start')
-                }else{
->>>>>>> 19f681c8793a65858e061db1462437041e904023
 
     app.post('/api/addridertostage', function (req, res) {
         console.log(req.body)
