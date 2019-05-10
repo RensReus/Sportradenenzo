@@ -76,17 +76,38 @@ class Selectionbutton extends Component{
 }
 
 class SelecTableRow extends Component{
+    removeRider=()=> {
+        this.props.removeRider(this.props.riderID);
+    }
+    setKopman=()=> {
+        this.props.setKopman(this.props.riderID);
+    }
     render(){
+        let removeButton
+        let setKopmanButton
+        if(this.props.selected==='selected'){
+            if(this.props.kopman===this.props.riderID){
+                setKopmanButton = <button onClick={() => this.setKopman(this.props.riderID)}>IS DE KOPMAN</button>
+                removeButton = <button onClick={() => this.removeRider(this.props.riderID)}>Remove rider</button>
+            }else{
+                setKopmanButton = <button onClick={() => this.setKopman(this.props.riderID)}>Maak kopman</button>
+                removeButton = <button onClick={() => this.removeRider(this.props.riderID)}>Remove rider</button>
+            }
+        }else{
+            removeButton = ''
+            setKopmanButton = ''
+        }
         return(
             <tr >
+                <td>{setKopmanButton}</td>
                 <td className={this.props.selected}>{this.props.name}</td>
                 <td className={this.props.selected}>{this.props.team}</td>
                 <td><Selectionbutton selected={this.props.selected} selectRider={this.props.selectRider} riderID={this.props.riderID}/></td>
+                <td>{removeButton}</td>
             </tr>
         )
     }
 }
-
 
 class SelecTable extends Component {
     render() {
@@ -99,9 +120,13 @@ class SelecTable extends Component {
                 selected = 'selected'
             }
             if( selectionLength>=9 && selected!=='selected'){
-                rows.push(<SelecTableRow name={lastname} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} selectRider={this.props.selectRider}/>)
+                rows.push(<SelecTableRow name={lastname} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider}/>)
             }else{
-                rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} selectRider={this.props.selectRider}/>)
+                if(selected === 'selected'){
+                    rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider} removeRider={this.props.removeRider} setKopman={this.props.setKopman}/>)
+                }else{
+                    rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider}/>)
+                }
             }
         })
         return(
@@ -128,26 +153,31 @@ class Stage extends Component {
             mode: 'loading',
             race: 'giro',
             year: '2019',
+            budget: false,
             stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
             stageSelectionGewoon: [],
             stageSelectionBudget: [],
+            userTeamGewoon: [],
+            userTeamBudget: [],
+            kopmanGewoon: '',
+            kopmanBudget: '',
             userTeamResult: [],
             userScores: [],
             stageresults: [],
-            prevText: "",
-            currText: "",
-            nextText: "",
             lastStage: false,
             raceStarted: false,
         }
         this.selectRider = this.selectRider.bind(this)
+        this.removeRider = this.removeRider.bind(this)
+        this.setKopman = this.setKopman.bind(this)
+        this.budgetSwitch = this.budgetSwitch.bind(this)
         this.previousStage = this.previousStage.bind(this);
         this.nextStage = this.nextStage.bind(this);
     }
     updateData(stage) {
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/getstage', { race: race, year: year, stage: stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
+        axios.post('/api/getstage', { race, year, stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
             .then((res) => {
                 console.log(res.data)
                 if (res.data.mode === '404') {
@@ -160,7 +190,9 @@ class Stage extends Component {
                         userTeamGewoon: res.data.userTeamGewoon,
                         userTeamBudget: res.data.userTeamBudget,
                         stageSelectionGewoon: res.data.stageSelectionGewoon,
-                        stageSelectionBudget: res.data.stageSelectionBudget
+                        stageSelectionBudget: res.data.stageSelectionBudget,
+                        kopmanGewoon: res.data.kopmanGewoon.kopman_id,
+                        kopmanBudget: res.data.kopmanBudget.kopman_id,
                     })
                 } else if (res.data.mode === 'results') {
                     this.setState({
@@ -186,8 +218,10 @@ class Stage extends Component {
                 stage: (currentstage - 1).toString()
             })
             this.updateData((currentstage - 1).toString())
+        }else{
+            this.props.history.push('/teamselection')
         }
-}
+    }
     nextStage() {
         if(!this.state.lastStage){
             const currentstage = parseInt(this.state.stage)
@@ -200,35 +234,66 @@ class Stage extends Component {
             this.props.history.push('/finalstandings')
         }
     }
-    
-    selectRider(riderID) {
-        window.alert('called' + this.state.stage)
+
+    budgetSwitch() {
+        if(this.state.budget){
+            this.setState({budget: false})
+        }else{
+            this.setState({budget: true})
+        }
+    }
+
+    setKopman(rider_participation_id) {
         const stage = this.state.stage
         const race = this.state.race
         const year = this.state.year
-        const budget = false
-        console.log(stage)
-        //axios.post('/api/addridertostage', { 
-        //    race: race, 
-        //    year: year, 
-        //    stage: stage, 
-        //    rider_id: riderID, 
-        //    budgetParticipation: budget, 
-        //    token: localStorage.getItem('authToken') 
-        //})
-        //    .then((res) => {
-        //        console.log(res.data)
-        //    })
+        const budget = this.state.budget
+        axios.post('/api/setkopman', { race, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
+            .then((res) => {
+                if(budget){
+                    this.setState({kopmanBudget:res.data.kopman})
+                }else{
+                    this.setState({kopmanGewoon:res.data.kopman})
+                }
+            })
+    }
+
+    removeRider(rider_participation_id) {
+        const stage = this.state.stage
+        const race = this.state.race
+        const year = this.state.year
+        const budget = this.state.budget
+        axios.post('/api/removeriderfromstage', { race, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
+            .then((res) => {
+                if(budget){
+                    this.setState({stageSelectionBudget:res.data})
+                }else{
+                    this.setState({stageSelectionGewoon:res.data})
+                }
+            })
+    }
+
+    selectRider(rider_participation_id) {
+        const stage = this.state.stage
+        const race = this.state.race
+        const year = this.state.year
+        const budget = this.state.budget
+        axios.post('/api/addridertostage', { race, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
+            .then((res) => {
+                if(budget){
+                    this.setState({stageSelectionBudget:res.data})
+                }else{
+                    this.setState({stageSelectionGewoon:res.data})
+                }
+            })
     }
 
     componentDidMount() {
         this.updateData(parseInt(this.state.stage));
-        this.getSelectionDetails(parseInt(this.state.stage));
     }
 
     render() {
         const mode = this.state.mode
-        const stageSelectionGewoon = this.state.stageSelectionGewoon
         let loadingGif
         let message
         let resTable
@@ -236,8 +301,18 @@ class Stage extends Component {
         let stResTable
         let selecTable
         let selectionTable
-        var prevButton = ''
-
+        let stageSelection
+        let userTeam
+        let kopman
+        if (this.state.budget){
+            stageSelection = this.state.stageSelectionBudget
+            userTeam = this.state.userTeamBudget
+            kopman = this.state.kopmanBudget
+        }else{
+            stageSelection = this.state.stageSelectionGewoon
+            userTeam = this.state.userTeamGewoon
+            kopman = this.state.kopmanGewoon
+        }
         if (mode === 'loading'){
             loadingGif = <img className="loadingGif" src="/images/bicycleWheel.gif" alt="bicycleWheel.gif"></img>
             message = <h3>Fetching data..</h3>
@@ -247,34 +322,32 @@ class Stage extends Component {
             pTable = ''
             stResTable = ''
         } else if (mode === 'selection') {
-            selecTable = <SelecTable userTeam={this.state.userTeamGewoon} selectionIDs={stageSelectionGewoon.map(rider=> rider.rider_participation_id)} selectRider={this.selectRider}/>
-            selectionTable = <Table stageTeam={this.state.stageSelectionGewoon}/>
+            selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider=> rider.rider_participation_id)} kopman={kopman} selectRider={this.selectRider} removeRider={this.removeRider} setKopman={this.setKopman}/>
+            //selectionTable = <TeamTable stageTeam={stageSelection}/>
         } else if (mode === 'results') {
             resTable = <Table data={this.state.userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={this.state.userScores}/>
             stResTable = <Table data={this.state.stageresults} title={"Uitslag"} />
         }
-        if(!this.state.raceStarted || this.state.stage !== 1){
-            prevButton = <div id="prevStageButton">
-            <button  onClick={this.previousStage}>{this.state.prevText}</button>
-            </div>;
-        }
         return (
             <div className="stageContainer">
                 <div id="titlebuttons">
-                    {prevButton}
-                    <div id='title'>{this.state.currText}</div>
-                    <div id="nextStageButton">
-                        <button onClick={this.nextStage}>{this.state.nextText}</button>
-                    </div>
+                <div id="prevStageButton">
+                        <button onClick={this.previousStage}>To previous stage </button>
                 </div>
-                {selectionTable}
-                {selecTable}
-                {loadingGif}
-                {message}
-                <div className="res">{resTable}</div>
-                <div className="poule">{pTable}</div>
-                <div className="stage">{stResTable}</div>
+                <div id='title'>{this.state.currText}</div>
+                <div id="nextStageButton">
+                    <button onClick={this.nextStage}>To next stage </button>
+                </div>
+            </div>
+            <button onClick={this.budgetSwitch}>Switch mode normaal/budget</button>
+            {selectionTable}
+            {selecTable}
+            {loadingGif}
+            {message}
+            <div className="res">{resTable}</div>
+            <div className="poule">{pTable}</div>
+            <div className="stage">{stResTable}</div>
             </div>
         )
     }

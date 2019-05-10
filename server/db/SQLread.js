@@ -60,6 +60,19 @@ module.exports = {
         })
     },
 
+    getKopman: function(account_id, budgetParticipation, raceName, year, stagenr, callback){
+        var values = [account_id, raceName, year, budgetParticipation, stagenr];
+        var race_id = `(SELECT race_id FROM race WHERE name = $2 AND year = $3)`;
+        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id} AND budgetParticipation = $4)`;
+        var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=$5 AND race_id=${race_id})`
+        var query = `SELECT kopman_id FROM stage_selection
+                    WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id}`;
+        sqlDB.query(query, values, (err, res) => {
+            if (err) throw err;
+            else callback(err, res.rows[0])
+        })
+    },
+
     /** Returns all riders for a given race/year
      * @param {String} raceName giro/tour/vuelta
      * @param {number} year 
