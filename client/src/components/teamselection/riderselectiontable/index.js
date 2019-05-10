@@ -42,7 +42,7 @@ class Riderselectiontable extends Component{
                     teamCount += 1;
                 }
             }
-            if(((this.props.budget<price + 500000*(20-selectionLength) || selectionLength>=20 || teamCount >= 4) && selected!=='selected') || (price>750000 && this.props.budgetParticipation)){
+            if(((this.props.budget<price + 500000*(19-selectionLength) || selectionLength>=20 || teamCount >= 4) && selected!=='selected') || (price>750000 && this.props.budgetParticipation)){
                 rows.push(<Riderrow name={name} team={team} price={price} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} budgetParticipation={this.props.budgetParticipation} addRider={this.props.addRider}/>)
             }else{
                 rows.push(<Riderrow name={name} team={team} price={price} selected={selected} key={rider_participation_id} riderID={rider_participation_id} budgetParticipation={this.props.budgetParticipation} addRider={this.props.addRider}/>)

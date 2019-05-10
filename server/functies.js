@@ -321,25 +321,7 @@ function stageNumKlassieker(){
     return parseInt(dates.length) + 1 // return eindklassement           
 }
 
-
-//voor scheduling
-
-//scheduling
-
-
-function startSchedule(){
-    var resultsRule = new schedule.RecurrenceRule()
-    // checkt 1x of de etappe bijna gefinisht is en stelt de benodige scrape frequentie in
-    SQLscrape.getTimetoFinish(function (stageFinished,newResultsRule) {// check hoe lang nog tot the finish
-      console.log("first run");
-      finished = stageFinished; // returns boolean
-      resultsRule = newResultsRule; // returns ieder uur als de finish nog verweg is, ieder 5 min indien dichtbij en iedere min na de finish
-      scrapeResults.reschedule(resultsRule);  //update new schedule
-    })
-}
-
-
-var scrapeResults = schedule.scheduleJob(new schedule.RecurrenceRule(), function () {
+var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to run every minute to initialize at the start.
   var race_id = 5;//TODO niet hardcoded
   console.log("scrape run at: " + new Date().toTimeString());
   var stageQuery = `SELECT * FROM STAGE
@@ -356,7 +338,7 @@ var scrapeResults = schedule.scheduleJob(new schedule.RecurrenceRule(), function
             if(stageFinished){
               var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
               sqlDB.query(updateStageQuery,function(err,results){
-                if (err) {console.log("WRONG QUERY:",query); throw err;}
+                if (err) {console.log("WRONG QUERY:",updateStageQuery); throw err;}
                 else{
                   console.log("Stage %s finished",stage.stagenr)
                 }
@@ -366,8 +348,7 @@ var scrapeResults = schedule.scheduleJob(new schedule.RecurrenceRule(), function
                 else console.log(response, "stage", stage.stagenr);
               })
             }
-            resultsRule = newResultsRule;
-            scrapeResults.reschedule(resultsRule);  //update new schedule
+            scrapeResults.reschedule(newResultsRule);  //update new schedule
           })
         }else if(!stage.complete){//get results if not complete
           SQLscrape.getResult('giro',2019,stage.stagenr,function(err,response){//TODO niet hardcoded 
@@ -377,26 +358,30 @@ var scrapeResults = schedule.scheduleJob(new schedule.RecurrenceRule(), function
         }else{// if finished and complete set schedule to run again at start of next stage
           var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage.stagenr + 1}`
           sqlDB.query(nextStageQuery,function(err,nextStageResults){
-            if (err) {console.log("WRONG QUERY:",query); throw err;}
+            if (err) {console.log("WRONG QUERY:",nextStageQuery); throw err;}
             else{
               if(nextStageResults.rows.length){
-                resultsRule = nextStageResults.rows[0].starttime;
+                nextStageTime = nextStageResults.rows[0].starttime;
+                resultsRule = `${d.getSeconds()+5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
                 scrapeResults.cancel();// cancel updates until they are restarted by copyOpstelling
                 copyOpstelling.reschedule(resultsRule);  //update new schedule
+              }else{// laatste etappe compleet geen scrapes meer nodig
+                  copyOpstelling.cancel();
+                  scrapeResults.cancel();
               }
             }
           })
         }
       }
       console.log("before stage 1")
+      scrapeResults.reschedule('0 18 * * *')// als voor een race check dan opnieuw iedere dag om 18:00
     }
   })
 });
 
-var copyOpstelling = schedule.scheduleJob(new schedule.RecurrenceRule(), function () {
-    var resultsRule = new schedule.RecurrenceRule()
-  resultsRule.hour = new schedule.Range(0, 23, 1); // na de start ieder uur checken tenzij frequentie wordt verhoogd door getTimeofFinish
-  scrapeResults.reschedule(resultsRule);
+var copyOpstelling = schedule.scheduleJob('15 10 * * *', function () {
+  console.log("copyopstelling run at: " + new Date().toTimeString());
+    console.log("restarte scrapeResult",scrapeResults.reschedule('15 * * * *')); //ieder uur
   var race_id = 5; //TODO remove hardcoded
   var stage_id = `(SELECT stage_id FROM stage
                     WHERE starttime < NOW() AND race_id = ${race_id}
@@ -445,4 +430,3 @@ module.exports.optimaleScoresUser = optimaleScoresUser;
 module.exports.returnEtappeWinnaars = returnEtappeWinnaars;
 module.exports.calculateUserScoresKlassieker = calculateUserScoresKlassieker;
 module.exports.stageNumKlassieker = stageNumKlassieker;
-module.exports.startSchedule = startSchedule;

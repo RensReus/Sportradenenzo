@@ -104,13 +104,14 @@ module.exports = {
                     DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials;\n `;
                 
                     participationQuery = participationQuery.slice(0, -1) + ` ON CONFLICT (race_id,rider_id) 
-                    DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team;\n `;
+                    DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team, price = EXCLUDED.price;\n `;
 
                     var totalQuery = deleteStageSelectionQuery + deleteKopmanQuery + deleteTeamSelectionQuery + deleteStartlistQuery + riderQuery + participationQuery;
                     console.log(totalQuery)
                     sqlDB.query(totalQuery, (err, res) => {
                         if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                         else {
+
                             console.log(res);
                             callback(err,"");
                         }
@@ -347,26 +348,26 @@ module.exports = {
             headers: { "Connection": "keep-alive" }
         }, function (error, response, html) {
             var $ = cheerio.load(html);
-            var rule = new schedule.RecurrenceRule()
+            var rule = '';
             var finished = false;   
             var girobeschikbaar = false;
-            $(".home1").first().children().eq(1).children().first().children().first().children().eq(1).children().each(function () {
+            $(".home1").first().children('.homeTbl1').first().children().first().children().first().children().eq(1).children().each(function () {
                 if ($(this).children().eq(2).text().startsWith('La Vuelta ciclista a España')) { // voor de giro
                     girobeschikbaar = true;
-                    if ($(this).children().eq(5).text() != 'finished') {
+                    if ($(this).children().eq(0).text() != 'finished') {
                         var timeRemaining = $(this).children().eq(0).text();
                         if (timeRemaining[timeRemaining.length - 1] === 'm' || timeRemaining[0] === 1) { // als nog een uur of minder
-                            rule.minute = new schedule.Range(0, 59, 5); // iedere 5 min checken
+                            rule = '*/5 * * * *';// iedere 5 min checken 
                             callback(finished, rule);
                             return;
                         } else {
-                            rule.minute = 7; // ieder uur als finish nog ver weg
+                            rule = '15 * * * *';// ieder uur op XX:15
                             callback(finished, rule);
                             return;
                         }
 
                     } else {//als gefinisht
-                        rule.minute = new schedule.Range(0, 59, 1); // iedere minuut checken
+                        rule = '* * * * *';// iedere 1 min checken 
                         finished = true;
                         callback(finished, rule);
                         return;
@@ -374,8 +375,8 @@ module.exports = {
                 }
             });
             if (!girobeschikbaar) {
-                console.log("Race not available")
-                rule = new Date() + 1000*17; //check again at 10 am
+                console.log("Race not available");
+                rule = '0 0 10 * *'; // check at 10am
                 callback(finished, rule);
                 return;
             }

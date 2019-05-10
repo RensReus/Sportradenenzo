@@ -58,7 +58,7 @@ module.exports = function (app) {
                 //     }
                 //     return allRidersBudget
                 // });
-                res.send({allRiders: results.allRiders,userSelectionGewoon: results.userSelectionGewoon,userSelectionBudget: results.userSelectionBudget, budgetGewoon: budgetGewoon, budgetBudget:budgetBudget})
+                res.send({allRiders: results.allRiders,userSelectionGewoon: results.userSelectionGewoon,userSelectionBudget: results.userSelectionBudget, budgetGewoon, budgetBudget})
             });
         }
     });
@@ -73,11 +73,11 @@ module.exports = function (app) {
             
             var riderQuery = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id FROM rider_participation
             INNER JOIN rider using(rider_id)
-            WHERE rider_participation_id = ${req.body.rider_participation_id};\n`
+            WHERE rider_participation_id = ${req.body.rider_participation_id};\n `
             
             var teamselectionQuery = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id FROM rider_participation
                 INNER JOIN rider using(rider_id)
-                WHERE rider_participation_id IN ${teamselection};\n`;
+                WHERE rider_participation_id IN ${teamselection};\n `;
             var budget = 11250000;
             var budgetQuery = `SELECT budget, race_id FROM race WHERE race_id = ${race_id}`
 
@@ -186,30 +186,34 @@ module.exports = function (app) {
             var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${req.body.budgetParticipation})`;
             var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
             
-            var removeQuery = `DELETE FROM team_selection_rider 
+            var stage_selections = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id})`;
+
+            var deleteStageSelectionQuery = `DELETE FROM stage_selection_rider WHERE stage_selection_id IN ${stage_selections} AND rider_participation_id = ${req.body.rider_participation_id};\n  `;
+           
+            var deleteKopmanQuery = `UPDATE stage_selection SET kopman_id = NULL WHERE stage_selection_id IN ${stage_selections} AND kopman_id = ${req.body.rider_participation_id};\n  `;
+
+            var removeTeamSelectionQuery = `DELETE FROM team_selection_rider 
             WHERE account_participation_id = ${account_participation_id}
-            AND rider_participation_id = ${req.body.rider_participation_id};\n`
+            AND rider_participation_id = ${req.body.rider_participation_id};\n `;
 
             var teamselectionQuery = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id FROM rider_participation
                 INNER JOIN rider using(rider_id)
-                WHERE rider_participation_id IN ${teamselection};\n`;
+                WHERE rider_participation_id IN ${teamselection};\n `;
 
-            var budgetQuery = `SELECT budget, race_id FROM race WHERE race_id = ${race_id}`
+            var budgetQuery = `SELECT budget, race_id FROM race WHERE race_id = ${race_id};\n `;
 
-            var totalQuery = removeQuery + teamselectionQuery + budgetQuery;
-            console.log(totalQuery)
+            var totalQuery = deleteStageSelectionQuery + deleteKopmanQuery + removeTeamSelectionQuery + teamselectionQuery + budgetQuery;
 
             sqlDB.query(totalQuery,function(err,results){
                 if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
-
-                var budgetLeft = results[2].rows[0].budget;   
+                var budgetLeft = results[4].rows[0].budget;   
                 if(req.body.budgetParticipation){
                     budgetLeft = 11250000;
                 }
-                for(var i=0;i<results[1].rows.length;i++){
-                    budgetLeft -= results[1].rows[i].price;
+                for(var i=0;i<results[3].rows.length;i++){
+                    budgetLeft -= results[3].rows[i].price;
                 }
-                res.send({userSelection: results[1].rows, budget: budgetLeft})
+                res.send({userSelection: results[3].rows, budget: budgetLeft})
             })                
         }
     });

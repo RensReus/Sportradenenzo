@@ -33,7 +33,6 @@ class Teamselection extends Component{
     removeRider = (riderID, budgetParticipation) =>{
         const race = this.state.race
         const year = this.state.year
-        var budgetParticipation = this.state.showBudget;
         axios.post('/api/teamselectionremove',{race: race, year: year, rider_participation_id : riderID, budgetParticipation:budgetParticipation})
         .then((res)=>{
             if(res){
@@ -94,7 +93,7 @@ class Teamselection extends Component{
                 </div>
                 <div className="usertablecontainer" style={{display: this.state.showBudget ? 'none' : 'block'}}>
                     <div className="budget">
-                        Budget Left: {this.state.budgetGewoon}
+                        Budget Left: {this.state.budgetGewoon} Renners {selectionGewoon.length}/20
                     </div>
                     <Userselectiontable selection={selectionGewoon} removeRider={this.removeRider} budgetParticipation = {false}/>
                 </div>
@@ -106,7 +105,7 @@ class Teamselection extends Component{
                 </div>
                 <div className="usertablecontainer" style={{display: !this.state.showBudget ? 'none' : 'block'}}>
                     <div className="budget">
-                        Budget Left: {this.state.budgetBudget}
+                        Budget Left: {this.state.budgetBudget} Renners {selectionBudget.length}/20
                     </div>
                     <Userselectiontable selection={selectionBudget} removeRider={this.removeRider} budgetParticipation = {true}/>
                 </div>

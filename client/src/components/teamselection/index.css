@@ -27,3 +27,11 @@ div.teamindicator{
     background-color: lightgray;
     width: 400px;
 }
+
+.selected{
+    background-color: green
+}
+
+.unselectable{
+    background-color: red
+}
