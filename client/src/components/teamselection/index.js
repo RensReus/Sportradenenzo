@@ -23,7 +23,7 @@ class Teamselection extends Component{
     addRider = (riderID, budgetParticipation) =>{
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/teamselectionadd',{race: race, year: year, rider_participation_id : riderID, budgetParticipation:budgetParticipation})
+        axios.post('/api/teamselectionadd',{race, year, rider_participation_id : riderID, budgetParticipation, token: localStorage.getItem('authToken') })
         .then((res)=>{
             if(res){
                this.updatePage(res.data,budgetParticipation);
@@ -33,7 +33,7 @@ class Teamselection extends Component{
     removeRider = (riderID, budgetParticipation) =>{
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/teamselectionremove',{race: race, year: year, rider_participation_id : riderID, budgetParticipation:budgetParticipation})
+        axios.post('/api/teamselectionremove',{race, year, rider_participation_id : riderID, budgetParticipation, token: localStorage.getItem('authToken') })
         .then((res)=>{
             if(res){
                this.updatePage(res.data,budgetParticipation);
@@ -43,7 +43,7 @@ class Teamselection extends Component{
     componentDidMount() {
         const race = this.state.race
         const year = this.state.year
-        axios.post('/api/getridersandteam',{race: race, year: year}) //to: teamselection.js
+        axios.post('/api/getridersandteam',{race, year, token: localStorage.getItem('authToken')}) //to: teamselection.js
         .then((res)=>{
             this.setState({
                 allRiders: res.data.allRiders,
@@ -65,7 +65,7 @@ class Teamselection extends Component{
             }else{
                 this.setState({
                     userSelectionGewoon: data.userSelection,
-                    budgetGewoon: data.budget,
+                    budgetGewoon: data.budget
                 })
             }
         }
