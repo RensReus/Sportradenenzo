@@ -60,7 +60,10 @@ class App extends Component {
     if(this.state.redirect === '/'){
       axios.post('/api/currentstagenum')
         .then(res =>{
-          var newRedir = '/stage/' + res.data;
+          var newRedir = '/teamselection';          
+          if(res.data.stage !== '0'){
+            newRedir = '/stage/' + res.data.stage;
+          }
           this.setState({redirect: newRedir})
         })
     }

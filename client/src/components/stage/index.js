@@ -193,6 +193,7 @@ class Stage extends Component {
                         stageSelectionBudget: res.data.stageSelectionBudget,
                         kopmanGewoon: res.data.kopmanGewoon.kopman_id,
                         kopmanBudget: res.data.kopmanBudget.kopman_id,
+                        currText: "Stage " + this.state.stage,
                     })
                 } else if (res.data.mode === 'results') {
                     this.setState({
@@ -202,7 +203,7 @@ class Stage extends Component {
                         userScoresColtype: res.userScoresColtype,
                         stageresults: res.data.stageresults,
                         prevText: res.data.prevText,
-                        currText: res.data.currText,
+                        currText: "Stage " + this.state.stage,
                         nextText: res.data.nextText,
                         lastStage: res.data.lastStage,
                         raceStarted: res.data.raceStarted

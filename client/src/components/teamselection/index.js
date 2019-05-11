@@ -75,6 +75,10 @@ class Teamselection extends Component{
         this.setState({showBudget:!this.state.showBudget})
     }
 
+    redirect = (url) => {
+        this.props.history.push(url);
+    }
+
     render(){
         const allRiders = this.state.allRiders
         const selectionGewoon = this.state.userSelectionGewoon
@@ -108,6 +112,9 @@ class Teamselection extends Component{
                         Budget Left: {this.state.budgetBudget} Renners {selectionBudget.length}/20
                     </div>
                     <Userselectiontable selection={selectionBudget} removeRider={this.removeRider} budgetParticipation = {true}/>
+                </div>
+                <div id="stage1button">
+                        <button onClick={() => this.redirect('/stage/1')}>To stages </button>
                 </div>
             </div>
         )
