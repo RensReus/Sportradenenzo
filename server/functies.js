@@ -85,26 +85,25 @@ calculateUserScores = function(name,year,stage,callback){
                 if(res.rows[i].budgetParticipation){// andere stage score voor budget
                     stagescore = `COALESCE((SELECT SUM(results_points.totalscore - results_points.teamscore) FROM stage_selection_rider 
                     INNER JOIN results_points USING (rider_participation_id)
-                    WHERE stage_selection_id = ${stage_selection_id}),0)` ;
+                    WHERE stage_selection_id = ${stage_selection_id}),0) ` ;
                 }
-                var kopmanScore = `(COALESCE (SELECT 0.5 * stagescore FROM results_points
-                                    WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${stage_selection_id}),0)`
-                stagescore += kopmanScore;
+                var kopmanScore = ` + (COALESCE ((SELECT 0.5 * stagescore FROM results_points
+                                    WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${stage_selection_id})),0))`
+                stagescore +=  kopmanScore;
                 var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
                 var prevstagesScore = `COALESCE((SELECT SUM(stagescore) FROM stage_selection
                     WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages}),0)`;
                 var totalscore = `${prevstagesScore} + ${stagescore}`;
                 scoreQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore})`;
-                scoreQuery += `ON CONFLICT (account_participation_id,stage_id)
+                scoreQuery += ` ON CONFLICT (account_participation_id,stage_id)
                 DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore; `
                 totalQuery += scoreQuery;
 
             }
         }
         sqlDB.query(totalQuery,(err, res) => {
-            if (err) throw err;
-            // console.log(totalQuery)
-            // console.log("res:",res);
+            if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+            console.log('Calculated Userscores')
             callback(err, 'Calculated User Scores');
         })
     })

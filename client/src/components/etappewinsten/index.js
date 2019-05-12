@@ -41,8 +41,11 @@ class etappewinsten extends Component {
     this.state = ({rankTable: {},countTable: {}});
   }
 
-  componentWillMount() {
-    axios.post('/api/getstagevictories', { race_id: 4, poule_id: 0 })
+  componentDidMount() {
+    //TODO remove hard code race_id and write code that does a getrace 
+    // of 1 centrale plek waar huidige race_id gedefinieerd is en alle oude paginas zijn op te vragen
+    //dmv extra paramters eg. /etappewinsten vs /etappewinsten/race_id of /etappewinsten/racename/year
+    axios.post('/api/getstagevictories', { race_id: 5, poule_id: 0, token: localStorage.getItem('authToken')})
       .then((res) => {
         if (res) {
           this.setState({

@@ -23,7 +23,7 @@ class overzicht extends Component {
   }
 
   renderAll() {
-    axios.post('/api/getriderpointsall', { race_id: 4, poule_id: 0 })
+    axios.post('/api/getriderpointsall', { race_id: 5, poule_id: 0 })
       .then((res) => {
         if (res) {
           this.setState({
@@ -36,8 +36,7 @@ class overzicht extends Component {
   }
 
   renderSelected() {
-    console.log('getriderpointsselected')
-    axios.post('/api/getriderpointsselected', { race_id: 4, poule_id: 0 })
+    axios.post('/api/getriderpointsselected', { race_id: 5, poule_id: 0 })
       .then((res) => {
         if (res) {
           this.setState({

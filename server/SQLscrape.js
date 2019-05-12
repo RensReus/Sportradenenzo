@@ -186,7 +186,6 @@ module.exports = {
                         var teamCol = columns.indexOf("Team");
 
                         $(this).children().eq(1).children().each(function (index, element) {//voor iedere renner in de uitslag
-                            // console.log($(this).children().eq(1).children().eq(1))
                             var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
                             var teamName = $(this).children().eq(teamCol).children().eq(0).text();
                             var timeCol = columns.indexOf('Time');
@@ -271,7 +270,7 @@ module.exports = {
                     var stagepos = parseInt(i) + 1;
                     var stagescore = getPunten('Stage', stagepos);
                     var stageresult = ridersDay[i].result;
-                    if (teamRider === teamWinners['Stage'] && stagepos !== 1 && !TTstages.contains(et)) teamscore += 10;
+                    if (teamRider === teamWinners['Stage'] && stagepos !== 1 && !TTstages.includes(et)) teamscore += 10;
 
                     //GC
                     var gcpos = getIndex(ridersGC, 'pcsid', pcsid) + 1;
@@ -287,6 +286,7 @@ module.exports = {
                     var pointspos = getIndex(ridersPoints, 'pcsid', pcsid) + 1;
                     var pointsscore = 0;
                     var pointsresult = "";
+
                     if (pointspos) {
                         pointsscore = getPunten('Points', pointspos);
                         pointsresult = ridersPoints[pointspos - 1].result;
@@ -296,7 +296,7 @@ module.exports = {
                     //KOM
                     var kompos = getIndex(ridersKom, 'pcsid', pcsid) + 1;
                     var komscore = 0;
-                    var komresult = "";
+                    var komresult = 0;
                     if (kompos) {
                         komscore = getPunten('KOM', kompos);
                         komresult = ridersKom[kompos - 1].result;
@@ -308,7 +308,7 @@ module.exports = {
                     var yocscore = 0;
                     var yocresult = "";
                     if (yocpos) {
-                        yocscore = getPunten('yoc', yocpos);
+                        yocscore = getPunten('Youth', yocpos);
                         yocresult = ridersYoc[yocpos - 1].result;
                     }
                     if (teamRider === teamWinners['yoc'] && yocpos !== 1) teamscore += 2;
@@ -328,7 +328,6 @@ module.exports = {
                 resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO NOTHING';
                 deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
                 totalQuery = deleteQuery + resultsQuery;
-                console.log(totalQuery)
                 if(ridersDay.length){// don't send if no results
                     sqlDB.query(totalQuery,(err,res)=>{
                         if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
@@ -352,7 +351,7 @@ module.exports = {
             var finished = false;   
             var girobeschikbaar = false;
             $(".home1").first().children('.homeTbl1').first().children().first().children().first().children().eq(1).children().each(function () {
-                if ($(this).children().eq(2).text().startsWith('La Vuelta ciclista a España')) { // voor de giro
+                if ($(this).children().eq(2).text().startsWith('Giro d\'Italia')) { // voor de giro
                     girobeschikbaar = true;
                     if ($(this).children().eq(0).text() != 'finished') {
                         var timeRemaining = $(this).children().eq(0).text();
