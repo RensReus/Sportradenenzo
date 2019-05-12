@@ -9,13 +9,13 @@ class PouleTableRow extends Component {
             <tr>
                 <td className="pouleUser">
                     {this.props.username}
-                    <div className="selectionInfo"><Table data={this.props.riders} title={"renners #: "+ this.props.riderCount} /></div>
+                    {/* <div className="selectionInfo"><Table data={this.props.riders} title={"renners #: "+ this.props.riderCount} /></div> */}
                 </td>
                 <td>{this.props.stagescore}</td>
-                <td>{this.props.gcscore}</td>
-                <td>{this.props.pointscore}</td>
-                <td>{this.props.komscore}</td>
-                <td>{this.props.youngscore}</td>
+                {/* <td>{this.props.gcscore}</td> */}
+                {/* <td>{this.props.pointscore}</td> */}
+                {/* <td>{this.props.komscore}</td> */}
+                {/* <td>{this.props.youngscore}</td> */}
                 <td>{this.props.totalscore}</td>
             </tr>
         )
@@ -33,13 +33,13 @@ class PouleTable extends Component {
             rows.push(
                 <PouleTableRow
                     username={user.username}
-                    riderCount={user.riderCount}
-                    riders={riders}
+                    // riderCount={user.riderCount}
+                    // riders={riders}
                     stagescore={user.stagescore}
-                    gcscore={user.gcscore}
-                    pointscore={user.pointscore}
-                    komscore={user.komscore}
-                    youngscore={user.youngscore}
+                    // gcscore={user.gcscore}
+                    // pointscore={user.pointscore}
+                    // komscore={user.komscore}
+                    // youngscore={user.youngscore}
                     totalscore={user.totalscore}
                 />
             )
@@ -179,7 +179,6 @@ class Stage extends Component {
         const year = this.state.year
         axios.post('/api/getstage', { race, year, stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
             .then((res) => {
-                console.log(res.data)
                 if (res.data.mode === '404') {
                     this.setState({
                         mode: '404'
@@ -326,6 +325,7 @@ class Stage extends Component {
             selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider=> rider.rider_participation_id)} kopman={kopman} selectRider={this.selectRider} removeRider={this.removeRider} setKopman={this.setKopman}/>
             //selectionTable = <TeamTable stageTeam={stageSelection}/>
         } else if (mode === 'results') {
+
             resTable = <Table data={this.state.userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={this.state.userScores}/>
             stResTable = <Table data={this.state.stageresults} title={"Uitslag"} />

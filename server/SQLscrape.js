@@ -336,6 +336,8 @@ module.exports = {
                             functies.calculateUserScores(raceName,year,et,callback)
                         }
                     })
+                }else{
+                    functies.calculateUserScores(raceName,year,et,callback)                    
                 }
             }
         });

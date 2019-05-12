@@ -129,7 +129,7 @@ module.exports = function (app) {
                 var now = new Date();
                 var query = `SELECT starttime FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
                 sqlDB.query(query, (err, results) => {
-                    if (err) throw err;
+                            if (err) {console.log("WRONG QUERY:",query); throw err;}
                     if (now < results.rows[0].starttime) {
                         async.auto({
                             userSelectionGewoon: function (callback) {
@@ -150,31 +150,31 @@ module.exports = function (app) {
                             kopmanBudget: function (callback) {
                                 SQLread.getKopman(user.account_id, true, req.body.race, req.body.year, req.body.stage, callback)
                             }
-                        }, function (err, results) {
+                        }, function (err, asyncresults) {
                             if (err) throw err;
                             res.send({
                                 'mode': 'selection',
-                                'userTeamGewoon': results.userSelectionGewoon,
-                                'userTeamBudget': results.userSelectionBudget,
-                                'stageSelectionGewoon': results.stageSelectionGewoon,
-                                'stageSelectionBudget': results.stageSelectionBudget,
-                                'kopmanGewoon': results.kopmanGewoon,
-                                'kopmanBudget': results.kopmanBudget
+                                'userTeamGewoon': asyncresults.userSelectionGewoon,
+                                'userTeamBudget': asyncresults.userSelectionBudget,
+                                'stageSelectionGewoon': asyncresults.stageSelectionGewoon,
+                                'stageSelectionBudget': asyncresults.stageSelectionBudget,
+                                'kopmanGewoon': asyncresults.kopmanGewoon,
+                                'kopmanBudget': asyncresults.kopmanBudget
                             })
                         });
                     } else {
 
                         var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
                         var account_participation_id = `(SELECT account_participation_id FROM account_participation 
-                            WHERE account_id=${user.account_id} AND race_id=${race_id})`;
-            
+                            WHERE account_id=${user.account_id} AND race_id=${race_id} AND NOT budgetparticipation)`;
+                        var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
 
-                        var teamresultQuery = `SELECT concat(firstname, ' ', lastname) AS "Name", team AS "Team", stagescore as "Stage Score", teamscore as "Team Score", totalscore as "Total"
-                                FROM team_selection_rider 
+                        var teamresultQuery = `SELECT concat(firstname, ' ', lastname) AS "Name", team AS "Team", stagescore AS "Stage", gcscore AS "AK", pointsscore AS "Punten", komscore AS "Berg", yocscore AS "Jong",  teamscore as "Team", totalscore as "Total"
+                                FROM stage_selection_rider 
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 INNER JOIN results_points USING(rider_participation_id)
                                 INNER JOIN rider USING(rider_id)
-                                WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id}
+                                WHERE stage_selection_id = ${stage_selection_id}
                                 ORDER BY "Total" DESC, "Team" ; `;
 
                         var userscoresQuery = `SELECT username, stagescore, totalscore FROM stage_selection
@@ -204,13 +204,35 @@ module.exports = function (app) {
                                             INNER JOIN rider USING (rider_id)
                                             WHERE stage_id = ${stage_id} and rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider)
                                             GROUP BY username; `
-                        // var childquery = `SELECT * FROM iets`;
-                        // sqlDB.query(childquery, (err, sqlres) => {
-                        //     if (err) throw err;
-                        //     res.send({
-                        //         'mode': 'results'
-                        //     })
-                        // })
+                        var totalQuery = teamresultQuery + userscoresQuery + stageresultsQuery;
+                        var userScoresColtype = { stagescore: 1, totalscore: 1 };
+                        sqlDB.query(totalQuery, (err, uitslagresults) => {
+                            if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+                            var userscores = uitslagresults[1].rows;
+                            // for (var i in userscores) { // VOOR DE selecties popup
+                            //     for (var j in selecties) {
+                            //         if (userscores[i].username == selecties[j].username) {
+                            //             userscores[i]['riderCount'] = selecties[j].count;
+                            //             userscores[i]['riders'] = selecties[j].riders.sort(function (a, b) { return b.totalscore - a.totalscore });
+                            //         }
+                            //     }
+                            // }
+                            var teamresult = [];
+                            if(uitslagresults[0].rowCount){
+                                teamresult = uitslagresults[0].rows;
+                            }
+                            var stageresults = [];
+                            if(uitslagresults[2].rowCount){
+                                stageresults = uitslagresults[2].rows;
+                            }
+                            res.send({
+                                'mode': 'results',
+                                teamresult,
+                                userscores,
+                                stageresults,
+                                userScoresColtype: userScoresColtype,
+                            })
+                        })
                     }
                 })
             }

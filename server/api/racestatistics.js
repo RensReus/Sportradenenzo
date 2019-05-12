@@ -203,12 +203,12 @@ module.exports = function (app) {
         if (!req.user) {
             res.redirect('/')
         } else {
-            var currentStageNum = functies.stageNumKlassieker();
+            var race_id = 5;
             var query = `SELECT username, stagenr, totalscore FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = 4 AND stage.stagenr <= ${currentStageNum}
+            WHERE stage.race_id = ${race_id} AND stage.finished
             ORDER BY username, stagenr`
             sqlDB.query(query, (err, results) => {
                 if (err) { console.log("WRONG QUERY:", query); throw err; }

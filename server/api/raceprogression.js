@@ -12,7 +12,7 @@ module.exports = function (app) {
         var race_id = 5; //TODO remove hardcoding
         var stageQuery = `SELECT * FROM STAGE
                     WHERE starttime < now() AND race_id = ${race_id}
-                    ORDER BY stagenr
+                    ORDER BY stagenr desc
                     LIMIT 1`;
         sqlDB.query(stageQuery, function (err, results) {
             if (results.rows.length) {// if some results, so at least after start of stage 1

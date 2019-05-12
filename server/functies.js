@@ -371,9 +371,10 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
             }
           })
         }
+      }else{
+          console.log("before stage 1")
+          scrapeResults.reschedule('0 18 * * *')// als voor een race check dan opnieuw iedere dag om 18:00
       }
-      console.log("before stage 1")
-      scrapeResults.reschedule('0 18 * * *')// als voor een race check dan opnieuw iedere dag om 18:00
     }
   })
 });
