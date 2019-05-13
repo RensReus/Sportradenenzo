@@ -81,14 +81,14 @@ calculateUserScores = function(name,year,stage,callback){
                 var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id = ${stage_id})`
                 var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM stage_selection_rider 
                                 INNER JOIN results_points USING (rider_participation_id)
-                                WHERE stage_selection_id = ${stage_selection_id}),0) `;
+                                WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}),0) `;
                 if(res.rows[i].budgetParticipation){// andere stage score voor budget
                     stagescore = `COALESCE((SELECT SUM(results_points.totalscore - results_points.teamscore) FROM stage_selection_rider 
                     INNER JOIN results_points USING (rider_participation_id)
-                    WHERE stage_selection_id = ${stage_selection_id}),0) ` ;
+                    WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}),0) ` ;
                 }
                 var kopmanScore = ` + (COALESCE ((SELECT 0.5 * stagescore FROM results_points
-                                    WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${stage_selection_id})),0))`
+                                    WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${stage_selection_id}) AND stage_id = ${stage_id}),0))`
                 stagescore +=  kopmanScore;
                 var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
                 var prevstagesScore = `COALESCE((SELECT SUM(stagescore) FROM stage_selection

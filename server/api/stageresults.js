@@ -169,12 +169,12 @@ module.exports = function (app) {
                             WHERE account_id=${user.account_id} AND race_id=${race_id} AND NOT budgetparticipation)`;
                         var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
 
-                        var teamresultQuery = `SELECT concat(firstname, ' ', lastname) AS "Name", team AS "Team", stagescore AS "Stage", gcscore AS "AK", pointsscore AS "Punten", komscore AS "Berg", yocscore AS "Jong",  teamscore as "Team", totalscore as "Total"
+                        var teamresultQuery = `SELECT concat(firstname, ' ', lastname) AS "Name", stagescore AS "Stage", gcscore AS "AK", pointsscore AS "Punten", komscore AS "Berg", yocscore AS "Jong",  teamscore as "Team", totalscore as "Total"
                                 FROM stage_selection_rider 
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 INNER JOIN results_points USING(rider_participation_id)
                                 INNER JOIN rider USING(rider_id)
-                                WHERE stage_selection_id = ${stage_selection_id}
+                                WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}
                                 ORDER BY "Total" DESC, "Team" ; `;
 
                         var userscoresQuery = `SELECT username, stagescore, totalscore FROM stage_selection
