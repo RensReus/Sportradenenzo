@@ -128,6 +128,7 @@ module.exports = function (app) {
                 var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = '${req.body.year}')`;
                 var now = new Date();
                 var query = `SELECT starttime FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
+                if(Number.isInteger(parseInt(req.body.stage)) && req.body.stage > 0 && req.body.stage <22 ){
                 sqlDB.query(query, (err, results) => {
                             if (err) {console.log("WRONG QUERY:",query); throw err;}
                     if (now < results.rows[0].starttime) {
@@ -189,9 +190,9 @@ module.exports = function (app) {
                                             INNER JOIN account USING(account_id)
                                             WHERE stage_id=${stage_id} AND NOT budgetparticipation
                                             ORDER BY totalscore DESC; `;   
-                                            
-                        var rowClassNameGewoon = `CASE SUM(CASE stage_selection_id WHEN ${stage_selection_idGewoon} THEN 1 END) WHEN 1 THEN 'inteam' ELSE '' END AS "rowClassName"`;
 
+                    var rowClassNameGewoon = `CASE SUM(CASE stage_selection_id WHEN ${stage_selection_idGewoon} THEN 1 END) WHEN 1 THEN 'inteam' ELSE '' END AS "rowClassName"`;
+                                            
                         var stageresultsGewoonQuery = `SELECT stagepos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", stageresult AS "Time", ${rowClassNameGewoon}
                                 FROM results_points
                                 INNER JOIN rider_participation USING(rider_participation_id)
@@ -290,6 +291,9 @@ module.exports = function (app) {
                         })
                     }
                 })
+            }else{
+                res.send({})
+            }
             }
         })
     });
