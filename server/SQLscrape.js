@@ -262,8 +262,9 @@ module.exports = {
                     var prevQuery = `SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${stage_id} AND NOT gcpos = 0 `
                     sqlDB.query(prevQuery,function(err,prevRes){
                         if (err) {console.log("WRONG QUERY:",prevQuery); throw err;}
-                        
-                        var akComp = ridersGC.length + ridersDNF.length == GCprevlength;
+                        GCprevlength = prevRes.rows[0].count;
+
+                        var akComp = (ridersGC.length + ridersDNF.length) == GCprevlength;
                         var sprintComp = ridersPoints.length;
                         var bergComp = ridersKom.length;
                         var jongComp = ridersYoc.length; //+ jongDNF.length == ;

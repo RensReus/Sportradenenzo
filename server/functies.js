@@ -360,7 +360,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
             if (err) {console.log("WRONG QUERY:",nextStageQuery); throw err;}
             else{
               if(nextStageResults.rows.length){
-                nextStageTime = nextStageResults.rows[0].starttime;
+                var d = nextStageResults.rows[0].starttime;
                 resultsRule = `${d.getSeconds()+5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
                 scrapeResults.cancel();// cancel updates until they are restarted by copyOpstelling
                 copyOpstelling.reschedule(resultsRule);  //update new schedule
