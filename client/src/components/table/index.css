@@ -3,10 +3,10 @@ table {
 }
 
 tr:nth-child(odd) {
-    background: #a8a8a8;
+    background: #c7c7c7;
 }
 tr:nth-child(even) {
-    background: rgb(95, 95, 95);
+    background: rgb(141, 141, 141);
 }
 
 th{

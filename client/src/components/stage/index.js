@@ -162,7 +162,8 @@ class Stage extends Component {
             kopmanGewoon: '',
             kopmanBudget: '',
             userTeamResult: [],
-            userScores: [],
+            userScoresGewoon: [],
+            userScoresBudget: [],
             stageresults: [],
             lastStage: false,
             raceStarted: false,
@@ -178,6 +179,7 @@ class Stage extends Component {
     updateData(stage) {
         const race = this.state.race
         const year = this.state.year
+        var start = new Date();
         axios.post('/api/getstage', { race, year, stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
             .then((res) => {
                 if (res.data.mode === '404') {
@@ -185,6 +187,8 @@ class Stage extends Component {
                         mode: '404'
                     })
                 } else if (res.data.mode === 'selection') {
+                    console.log("time to get selection",new Date()-start)
+
                     this.setState({
                         mode: 'selection',
                         userTeamGewoon: res.data.userTeamGewoon,
@@ -197,12 +201,16 @@ class Stage extends Component {
                         starttime: res.data.starttime
                     })
                 } else if (res.data.mode === 'results') {
+                    console.log("time to get results",new Date()-start)
                     this.setState({
                         mode: 'results',
-                        userTeamResult: res.data.teamresult,
-                        userScores: res.data.userscores,
+                        userTeamResultGewoon: res.data.teamresultGewoon,
+                        userTeamResultBudget: res.data.teamresultBudget,
+                        userScoresGewoon: res.data.userscoresGewoon,
+                        userScoresBudget: res.data.userscoresBudget,
                         userScoresColtype: res.userScoresColtype,
-                        stageresults: res.data.stageresults,
+                        stageresultsGewoon: res.data.stageresultsGewoon,
+                        stageresultsBudget: res.data.stageresultsBudget,
                         prevText: res.data.prevText,
                         currText: "Stage " + this.state.stage,
                         nextText: res.data.nextText,
@@ -307,16 +315,34 @@ class Stage extends Component {
         let userTeam
         let kopman
         let starttimeString
+        let userTeamResult
+        let userScores
+        let stageresults
 
+        //selection
         if (this.state.budget){
             stageSelection = this.state.stageSelectionBudget
             userTeam = this.state.userTeamBudget
             kopman = this.state.kopmanBudget
+
         }else{
             stageSelection = this.state.stageSelectionGewoon
             userTeam = this.state.userTeamGewoon
             kopman = this.state.kopmanGewoon
         }
+        //results
+        if (this.state.budget){
+            console.log("bg",this.state.userscoresBudget)
+            userTeamResult = this.state.userTeamResultBudget
+            userScores = this.state.userScoresBudget
+            stageresults = this.state.stageresultsBudget
+        }else{
+            console.log("gw",this.state.userscoresBudget)
+            userTeamResult = this.state.userTeamResultGewoon
+            userScores = this.state.userScoresGewoon
+            stageresults = this.state.stageresultsGewoon
+        }
+        console.log("us",userScores)
         if (mode === 'loading'){
             loadingGif = <img className="loadingGif" src="/images/bicycleWheel.gif" alt="bicycleWheel.gif"></img>
             message = <h3>Fetching data..</h3>
@@ -334,9 +360,9 @@ class Stage extends Component {
             //selectionTable = <TeamTable stageTeam={stageSelection}/>
         } else if (mode === 'results') {
 
-            resTable = <Table data={this.state.userTeamResult} title={"Selectie"} />
-            pTable = <PouleTable userScores={this.state.userScores}/>
-            stResTable = <Table data={this.state.stageresults} title={"Uitslag"} />
+            resTable = <Table data={userTeamResult} title={"Selectie"} />
+            pTable = <PouleTable userScores={userScores}/>
+            stResTable = <Table data={stageresults} title={"Uitslag"} />
         }
         return (
             <div className="stageContainer">
@@ -344,7 +370,7 @@ class Stage extends Component {
                 <div id="prevStageButton">
                         <button onClick={this.previousStage}>To previous stage </button>
                 </div> 
-                <div id='title'>{this.state.currText}{starttimeString}</div>
+                <div id='title'>{this.state.currText}{this.state.budget ? ' Budget' : ' Gewoon'}{starttimeString}</div>
                 <div id="nextStageButton">
                     <button onClick={this.nextStage}>To next stage </button>
                 </div>

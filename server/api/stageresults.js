@@ -169,30 +169,30 @@ module.exports = function (app) {
                     } else {
 
                         var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
-                        var account_participation_id = `(SELECT account_participation_id FROM account_participation 
+                        var account_participation_idGewoon = `(SELECT account_participation_id FROM account_participation 
                             WHERE account_id=${user.account_id} AND race_id=${race_id} AND NOT budgetparticipation)`;
-                        var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
+                        var stage_selection_idGewoon = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_idGewoon} AND stage_id=${stage_id})`
 
-                        var stagescore = `CASE rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id}) THEN stagescore * 1.5 ELSE stagescore END`
-                        var totalscore = `CASE rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id}) THEN totalscore + stagescore * .5 ELSE totalscore END`
+                        var stagescoreGewoon = `CASE rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idGewoon} AND stage_id=${stage_id}) THEN stagescore * 1.5 ELSE stagescore END`
+                        var totalscoreGewoon = `CASE rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idGewoon} AND stage_id=${stage_id}) THEN totalscore + stagescore * .5 ELSE totalscore END`
                         
-                        var teamresultQuery = `SELECT concat(firstname, ' ', lastname) AS "Name", ${stagescore} AS "Stage", gcscore AS "AK", pointsscore AS "Punten", komscore AS "Berg", yocscore AS "Jong",  teamscore as "Team", ${totalscore} as "Total"
+                        var teamresultGewoonQuery = `SELECT concat(firstname, ' ', lastname) AS "Name", ${stagescoreGewoon} AS "Stage", gcscore AS "AK", pointsscore AS "Punten", komscore AS "Berg", yocscore AS "Jong",  teamscore as "Team", ${totalscoreGewoon} as "Total"
                                 FROM stage_selection_rider 
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 INNER JOIN results_points USING(rider_participation_id)
                                 INNER JOIN rider USING(rider_id)
-                                WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}
-                                ORDER BY "Total" DESC, "Team" ; `;
+                                WHERE stage_selection_id = ${stage_selection_idGewoon} AND results_points.stage_id = ${stage_id}
+                                ORDER BY "Total" DESC, "Stage" DESC; `;
 
-                        var userscoresQuery = `SELECT username, stagescore, totalscore FROM stage_selection
+                        var userscoresGewoonQuery = `SELECT username, stagescore, totalscore FROM stage_selection
                                             INNER JOIN account_participation USING(account_participation_id)
                                             INNER JOIN account USING(account_id)
-                                            WHERE stage_id=${stage_id}
+                                            WHERE stage_id=${stage_id} AND NOT budgetparticipation
                                             ORDER BY totalscore DESC; `;   
                                             
-                        var rowClassName = `CASE SUM(CASE stage_selection_id WHEN ${stage_selection_id} THEN 1 END) WHEN 1 THEN 'inteam' ELSE '' END AS "rowClassName"`;
+                        var rowClassNameGewoon = `CASE SUM(CASE stage_selection_id WHEN ${stage_selection_idGewoon} THEN 1 END) WHEN 1 THEN 'inteam' ELSE '' END AS "rowClassName"`;
 
-                        var stageresultsQuery = `SELECT stagepos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", stageresult AS "Time", ${rowClassName}
+                        var stageresultsGewoonQuery = `SELECT stagepos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", stageresult AS "Time", ${rowClassNameGewoon}
                                 FROM results_points
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 INNER JOIN rider USING(rider_id)
@@ -204,7 +204,7 @@ module.exports = function (app) {
                         var selectionsQuery = `SELECT username, COALESCE(COUNT(rider_participation_id),0) as count, ARRAY_AGG(json_build_object(
                                             'Name', CONCAT(firstname, ' ', lastname), 
                                             'totalscore', totalscore ,
-                                            'inteam', CASE WHEN rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'inteam' ELSE ' ' END 
+                                            'inteam', CASE WHEN rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_idGewoon}) THEN 'inteam' ELSE ' ' END 
                                             )) as riders FROM  results_points
                                             INNER JOIN team_selection_rider USING(rider_participation_id)
                                             INNER JOIN account_participation USING(account_participation_id)
@@ -213,11 +213,46 @@ module.exports = function (app) {
                                             INNER JOIN rider USING (rider_id)
                                             WHERE stage_id = ${stage_id} and rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider)
                                             GROUP BY username; `
-                        var totalQuery = teamresultQuery + userscoresQuery + stageresultsQuery;
+
+                        var account_participation_idBudget = `(SELECT account_participation_id FROM account_participation 
+                            WHERE account_id=${user.account_id} AND race_id=${race_id} AND budgetparticipation)`;
+                        var stage_selection_idBudget = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_idBudget} AND stage_id=${stage_id})`
+
+                        var stagescoreBudget = `CASE rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idBudget} AND stage_id=${stage_id}) THEN stagescore * 1.5 ELSE stagescore END`
+                        var totalscoreBudget = `CASE rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idBudget} AND stage_id=${stage_id}) THEN totalscore + stagescore * .5 - teamscore ELSE totalscore - teamscore END`
+                        
+                        var teamresultBudgetQuery = `SELECT concat(firstname, ' ', lastname) AS "Name", ${stagescoreBudget} AS "Stage", gcscore AS "AK", pointsscore AS "Punten", komscore AS "Berg", yocscore AS "Jong", ${totalscoreBudget} as "Total"
+                                FROM stage_selection_rider 
+                                INNER JOIN rider_participation USING(rider_participation_id)
+                                INNER JOIN results_points USING(rider_participation_id)
+                                INNER JOIN rider USING(rider_id)
+                                WHERE stage_selection_id = ${stage_selection_idBudget} AND results_points.stage_id = ${stage_id}
+                                ORDER BY "Total" DESC, "Stage" DESC; `;
+
+                        var userscoresBudgetQuery = `SELECT username, stagescore, totalscore FROM stage_selection
+                                            INNER JOIN account_participation USING(account_participation_id)
+                                            INNER JOIN account USING(account_id)
+                                            WHERE stage_id=${stage_id} AND budgetparticipation
+                                            ORDER BY totalscore DESC; `;   
+                                            
+                        var rowClassNameBudget = `CASE SUM(CASE stage_selection_id WHEN ${stage_selection_idBudget} THEN 1 END) WHEN 1 THEN 'inteam' ELSE '' END AS "rowClassName"`;
+
+                        var stageresultsBudgetQuery = `SELECT stagepos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", stageresult AS "Time", ${rowClassNameBudget}
+                                FROM results_points
+                                INNER JOIN rider_participation USING(rider_participation_id)
+                                INNER JOIN rider USING(rider_id)
+                                LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                WHERE stage_id=${stage_id} AND stagepos > 0 
+                                GROUP BY " ", "Name", "Team", "Time"
+                                ORDER BY " " ASC; `;
+                        var gewoonQuery = teamresultGewoonQuery + userscoresGewoonQuery + stageresultsGewoonQuery;
+                        var budgetQuery = teamresultBudgetQuery + userscoresBudgetQuery + stageresultsBudgetQuery;
+                        var totalQuery = gewoonQuery + budgetQuery;
                         var userScoresColtype = { stagescore: 1, totalscore: 1 };
                         sqlDB.query(totalQuery, (err, uitslagresults) => {
                             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
-                            var userscores = uitslagresults[1].rows;
+                            var userscoresGewoon = uitslagresults[1].rows;
+                            var userscoresBudget = uitslagresults[4].rows;
                             // for (var i in userscores) { // VOOR DE selecties popup
                             //     for (var j in selecties) {
                             //         if (userscores[i].username == selecties[j].username) {
@@ -226,19 +261,30 @@ module.exports = function (app) {
                             //         }
                             //     }
                             // }
-                            var teamresult = [];
+                            var teamresultGewoon = [];
                             if(uitslagresults[0].rowCount){
-                                teamresult = uitslagresults[0].rows;
+                                teamresultGewoon = uitslagresults[0].rows;
                             }
-                            var stageresults = [];
+                            var stageresultsGewoon = [];
                             if(uitslagresults[2].rowCount){
-                                stageresults = uitslagresults[2].rows;
+                                stageresultsGewoon = uitslagresults[2].rows;
+                            }
+                            var teamresultBudget = [];
+                            if(uitslagresults[3].rowCount){
+                                teamresultBudget = uitslagresults[3].rows;
+                            }
+                            var stageresultsBudget = [];
+                            if(uitslagresults[5].rowCount){
+                                stageresultsBudget = uitslagresults[5].rows;
                             }
                             res.send({
                                 'mode': 'results',
-                                teamresult,
-                                userscores,
-                                stageresults,
+                                teamresultGewoon,
+                                userscoresGewoon,
+                                stageresultsGewoon,
+                                teamresultBudget,
+                                userscoresBudget,
+                                stageresultsBudget,
                                 userScoresColtype: userScoresColtype,
                             })
                         })

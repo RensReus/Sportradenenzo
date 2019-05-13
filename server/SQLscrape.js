@@ -326,14 +326,14 @@ module.exports = {
                     if (teamRider === teamWinners['Points'] && pointspos !== 1) teamscore += 6;
 
                     //KOM
-                    var Compos = getIndex(ridersKom, 'pcsid', pcsid) + 1;
+                    var kompos = getIndex(ridersKom, 'pcsid', pcsid) + 1;
                     var komscore = 0;
                     var komresult = 0;
-                    if (Compos) {
-                        komscore = getPunten('KOM', Compos);
-                        komresult = ridersKom[Compos - 1].result;
+                    if (kompos) {
+                        komscore = getPunten('KOM', kompos);
+                        komresult = ridersKom[kompos - 1].result;
                     }
-                    if (teamRider === teamWinners['KOM'] && Compos !== 1) teamscore += 3;
+                    if (teamRider === teamWinners['KOM'] && kompos !== 1) teamscore += 3;
 
                     //YOC
                     var yocpos = getIndex(ridersYoc, 'pcsid', pcsid) + 1;
@@ -352,7 +352,7 @@ module.exports = {
                     var rider_id = `(SELECT rider_id FROM rider WHERE pcs_id = '${pcsid}')`
                     var rider_participation_id = `(SELECT rider_participation_id FROM rider_participation WHERE race_id = ${race_id} AND rider_id = ${rider_id})`
                     resultsQuery += `(${stage_id},${rider_participation_id},
-                                ${stagepos},    ${gcpos},   ${pointspos},   ${Compos},  ${yocpos}, 
+                                ${stagepos},    ${gcpos},   ${pointspos},   ${kompos},  ${yocpos}, 
                                 ${stagescore},  ${gcscore}, ${pointsscore}, ${komscore},${yocscore},${teamscore},${totalscore},
                                 '${stageresult}','${gcresult}','${pointsresult}','${komresult}','${yocresult}'),`;
                 }
@@ -389,12 +389,15 @@ module.exports = {
                     girobeschikbaar = true;
                     if ($(this).children().eq(0).text() != 'finished') {
                         var timeRemaining = $(this).children().eq(0).text();
+                        console.log("Time Remaining: ",timeRemaining);
                         if (timeRemaining[timeRemaining.length - 1] === 'm' || timeRemaining[0] === 1) { // als nog een uur of minder
                             rule = '*/5 * * * *';// iedere 5 min checken 
+                            console.log("next run in 5 min")
                             callback(finished, rule);
                             return;
                         } else {
                             rule = '15 * * * *';// ieder uur op XX:15
+                            console.log("next run in 1 hour")
                             callback(finished, rule);
                             return;
                         }
