@@ -241,7 +241,6 @@ module.exports = {
                     dnfquery += `(SELECT rider_id FROM rider WHERE pcs_id = '${ridersDNF[rider].pcsid}'),`
                 }
                 dnfquery = dnfquery.slice(0, -1) + ")";
-                console.log("Riders DNF: ", ridersDNF.length)
                 if(ridersDNF.length){ //only submit if > 0
                     sqlDB.query(dnfquery, (err, res) => {
                         if (err) {console.log("WRONG QUERY:",dnfquery); throw err;}
@@ -252,11 +251,11 @@ module.exports = {
                 }
                 var stage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et} AND race_id = ${race_id})`
 
-                var jongDNF = 0;
-                for (i in rennersDNF) {
-                    if (jongprev.map(jongeren => jongeren._id).includes(rennersDNF[i]))
-                        jongDNF++;
-                }
+                // var jongDNF = 0;
+                // for (i in ridersDNF) {
+                //     if (jongprev.map(jongeren => jongeren._id).includes(rennersDNF[i]))
+                //         jongDNF++;
+                // }
                 var uitslagCompleet = false;
                 var GCprevlength = 176;
                 if (et != 1) {
@@ -364,7 +363,7 @@ module.exports = {
                     sqlDB.query(totalQuery,(err,res)=>{
                         if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                         else {
-                            console.log("Processed results stage ",et,"Riders ",res.rowCount)
+                            console.log("Processed results stage ",et,"Riders ",res[1].rowCount)
                             functies.calculateUserScores(raceName,year,et,callback)
                         }
                     })
