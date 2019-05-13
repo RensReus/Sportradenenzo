@@ -166,6 +166,7 @@ class Stage extends Component {
             stageresults: [],
             lastStage: false,
             raceStarted: false,
+            starttime: '',
         }
         this.selectRider = this.selectRider.bind(this)
         this.removeRider = this.removeRider.bind(this)
@@ -193,6 +194,7 @@ class Stage extends Component {
                         kopmanGewoon: res.data.kopmanGewoon.kopman_id,
                         kopmanBudget: res.data.kopmanBudget.kopman_id,
                         currText: "Stage " + this.state.stage,
+                        starttime: res.data.starttime
                     })
                 } else if (res.data.mode === 'results') {
                     this.setState({
@@ -304,6 +306,8 @@ class Stage extends Component {
         let stageSelection
         let userTeam
         let kopman
+        let starttimeString
+
         if (this.state.budget){
             stageSelection = this.state.stageSelectionBudget
             userTeam = this.state.userTeamBudget
@@ -322,6 +326,10 @@ class Stage extends Component {
             pTable = ''
             stResTable = ''
         } else if (mode === 'selection') {
+            var starttime = new Date(this.state.starttime);
+            console.log("st",starttime);
+            console.log(typeof starttime)
+            starttimeString = " Starttijd: " + starttime.getHours() + ":" + starttime.getMinutes();
             selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider=> rider.rider_participation_id)} kopman={kopman} selectRider={this.selectRider} removeRider={this.removeRider} setKopman={this.setKopman}/>
             //selectionTable = <TeamTable stageTeam={stageSelection}/>
         } else if (mode === 'results') {
@@ -335,8 +343,8 @@ class Stage extends Component {
                 <div id="titlebuttons">
                 <div id="prevStageButton">
                         <button onClick={this.previousStage}>To previous stage </button>
-                </div>
-                <div id='title'>{this.state.currText}</div>
+                </div> 
+                <div id='title'>{this.state.currText}{starttimeString}</div>
                 <div id="nextStageButton">
                     <button onClick={this.nextStage}>To next stage </button>
                 </div>

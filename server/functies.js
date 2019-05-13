@@ -103,7 +103,6 @@ calculateUserScores = function(name,year,stage,callback){
         }
         sqlDB.query(totalQuery,(err, res) => {
             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
-            console.log('Calculated Userscores')
             callback(err, 'Calculated User Scores');
         })
     })
@@ -325,7 +324,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
   console.log("scrape run at: " + new Date().toTimeString());
   var stageQuery = `SELECT * FROM STAGE
                     WHERE starttime < now() AND race_id = ${race_id}
-                    ORDER BY stagenr
+                    ORDER BY stagenr DESC
                     LIMIT 1`;
   sqlDB.query(stageQuery,function(err,results){//returns the most recent stage that started
     if (err) {console.log("WRONG QUERY:",query); throw err;}
@@ -355,7 +354,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
             else console.log(response, "stage", stage.stagenr);
           })
         }else{// if finished and complete set schedule to run again at start of next stage
-          var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage.stagenr + 1}`
+          var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage.stagenr + 1}`;
           sqlDB.query(nextStageQuery,function(err,nextStageResults){
             if (err) {console.log("WRONG QUERY:",nextStageQuery); throw err;}
             else{
@@ -379,9 +378,9 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
   })
 });
 
-var copyOpstelling = schedule.scheduleJob('15 10 * * *', function () {
+var copyOpstelling = schedule.scheduleJob('15 10 10 * *', function () {
   console.log("copyopstelling run at: " + new Date().toTimeString());
-    console.log("restarte scrapeResult",scrapeResults.reschedule('15 * * * *')); //ieder uur
+    console.log("restart scrapeResult",scrapeResults.reschedule('15 * * * *')); //ieder uur
   var race_id = 5; //TODO remove hardcoded
   var stage_id = `(SELECT stage_id FROM stage
                     WHERE starttime < NOW() AND race_id = ${race_id}
