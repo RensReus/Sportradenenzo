@@ -90,22 +90,16 @@ module.exports = function (app) {
                 throw err;
         } else {
             var race_id = req.body.race_id;
-            var budgetparticipation = false;
-            var query = `SELECT  concat(firstname, ' ', lastname) AS name, team, price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Etappe",
-            SUM(gcscore)/GREATEST(count(DISTINCT username),1) AS "AK", SUM(pointsscore)/GREATEST(count(DISTINCT username),1) AS "Punten", SUM(komscore)/GREATEST(count(DISTINCT username),1) AS "Berg", SUM(yocscore)/GREATEST(count(DISTINCT username),1) AS "Jong", 
-            SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS teamscore, SUM(totalscore)/GREATEST(count(DISTINCT username),1) AS totalscore, 
-            ROUND(SUM(totalscore)/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "Points per Million",
-            count(DISTINCT username) AS usercount, string_agg(DISTINCT username, ', ') AS users FROM results_points
-            INNER JOIN rider_participation USING (rider_participation_id)
+            var query = `SELECT  concat(firstname, ' ', lastname) AS "Name", team AS "Team ", price AS "Price", SUM(stagescore) AS "Etappe",
+            SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong", 
+            SUM(teamscore) AS "Team", SUM(totalscore) AS "Total", ROUND(SUM(totalscore)*1e6/price,0) AS "Points per Million" FROM rider_participation  
+            INNER JOIN results_points USING (rider_participation_id)
             INNER JOIN rider USING(rider_id)
-            LEFT JOIN team_selection_rider on results_points.rider_participation_id = team_selection_rider.rider_participation_id
-            LEFT JOIN account_participation USING(account_participation_id)
-            LEFT JOIN account USING (account_id)
-            WHERE rider_participation.race_id = ${race_id} AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
-            GROUP BY name, team, "Price"
-            ORDER BY totalscore DESC`
+            WHERE rider_participation.race_id = ${race_id}
+            GROUP BY "Name", "Team ", "Price"
+            ORDER BY "Total" DESC`
             //0 for string 1 for number
-            var coltype = { name: 0, team: 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, teamscore: 1, totalscore: 1, usercount: 1 };
+            var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Points per Million": 1};
             sqlDB.query(query, (err, results) => {
                 if (err) { console.log("WRONG QUERY:", query); throw err; }
                 res.send({
@@ -125,9 +119,8 @@ module.exports = function (app) {
                 throw err;
         } else {
             var race_id = req.body.race_id;
-            var budgetparticipation = false;
-            var query = `SELECT  concat(firstname, ' ', lastname) AS "Name", team AS "Team",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Stagescore",  
-            SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Teamscore", SUM(totalscore)/GREATEST(count(DISTINCT username),1) AS "Totalscore", 
+            var query = `SELECT  concat(firstname, ' ', lastname) AS "Name", team AS "Team ",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Etappe",  
+            SUM(gcscore)/GREATEST(count(DISTINCT username),1) AS "AK", SUM(pointsscore)/GREATEST(count(DISTINCT username),1) AS "Punten", SUM(komscore)/GREATEST(count(DISTINCT username),1) AS "Berg", SUM(yocscore)/GREATEST(count(DISTINCT username),1) AS "Jong", SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Team", SUM(totalscore)/GREATEST(count(DISTINCT username),1) AS "Total", 
             ROUND(SUM(totalscore)/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "Points per Million",  
             count(DISTINCT username) AS "Usercount", string_agg(DISTINCT username, ', ') AS "Users" FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
@@ -136,10 +129,10 @@ module.exports = function (app) {
             LEFT JOIN account_participation USING(account_participation_id)
             LEFT JOIN account USING (account_id)
             WHERE rider_participation.race_id = ${race_id} AND rider_participation.rider_participation_id in (select rider_participation_id from team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
-            GROUP BY "Name", "Team", "Price"
+            GROUP BY "Name", "Team ", "Price"
             ORDER BY "Points per Million" DESC`
             //0 for string 1 for number
-            var coltype = { "Name": 0, "Team": 0, "Price": 1, "Stagescore": 1, "Teamscore": 1, "Totalscore": 1, "Points per Million": 1, "Usercount": 1 };
+            var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Points per Million": 1, "Usercount": 1 };
             sqlDB.query(query, (err, results) => {
                 if (err) { console.log("WRONG QUERY:", query); throw err; }
                 res.send({
@@ -200,8 +193,6 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-            var budgetparticipation = false;
-
             var query = `SELECT username, stagenr, totalscore FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
@@ -262,7 +253,6 @@ module.exports = function (app) {
                 throw err;
             } else {
             var currentStageNum = functies.stageNumKlassieker();
-            var budgetparticipation = false;
 
             var query = `SELECT username, stagenr, rank() over (PARTITION BY stagenr ORDER BY totalscore desc) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
@@ -313,7 +303,6 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-            var budgetparticipation = false;
             var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = 5 AND budgetparticipation = ${req.body.budgetparticipation})`
             var query = `SELECT totalscore, lastname, stagenr FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
@@ -361,7 +350,6 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-            var budgetparticipation = false;
             var currentStageNum = functies.stageNumKlassieker();//TODO change to Grote ronde
             var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = 5 AND budgetparticipation = ${req.body.budgetparticipation})`
             var query = `SELECT totalscore, lastname, stagenr FROM results_points
