@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Table from '../../table'
 
 class PouleTableRow extends Component {
     render() {
@@ -6,7 +7,7 @@ class PouleTableRow extends Component {
             <tr>
                 <td className="pouleUser">
                     {this.props.username}
-                    {/* <div className="selectionInfo"><Table data={this.props.riders} title={"renners #: "+ this.props.riderCount} /></div> */}
+                    <div className="selectionInfo"><Table data={this.props.riders} title={"renners"} /></div>
                 </td>
                 <td>{this.props.stagescore}</td>
                 <td>{this.props.totalscore}</td>
@@ -20,13 +21,13 @@ class PouleTable extends Component {
         const rows = [];
         const userScores = this.props.userScores
         userScores.forEach(user => {
-            // var riders = []
-            // if (user.riderCount>0) riders = user.riders;
+            var riders = []
+            if (user.riders) riders = user.riders;
             rows.push(
                 <PouleTableRow
                     username={user.username}
-                    // riderCount={user.riderCount}
-                    // riders={riders}
+                    riderCount={user.riderCount}
+                    riders={riders}
                     stagescore={user.stagescore}
                     totalscore={user.totalscore}
                 />

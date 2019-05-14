@@ -239,18 +239,17 @@ module.exports = function (app) {
 
                         var resultsGewoonQuery = stageresultsGewoonQuery + GCresultsGewoonQuery + pointsresultsGewoonQuery + komresultsGewoonQuery + youthresultsGewoonQuery;
 
-                        var selectionsQuery = `SELECT username, COALESCE(COUNT(rider_participation_id),0) as count, ARRAY_AGG(json_build_object(
-                                            'Name', CONCAT(firstname, ' ', lastname), 
-                                            'totalscore', totalscore ,
-                                            'inteam', CASE WHEN rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_idGewoon}) THEN 'inteam' ELSE ' ' END 
-                                            )) as riders FROM  results_points
-                                            INNER JOIN team_selection_rider USING(rider_participation_id)
-                                            INNER JOIN account_participation USING(account_participation_id)
-                                            INNER JOIN account USING(account_id)
-                                            INNER JOIN rider_participation USING (rider_participation_id)
-                                            INNER JOIN rider USING (rider_id)
-                                            WHERE stage_id = ${stage_id} and rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider)
-                                            GROUP BY username; `
+                        var selectionsQueryGewoon = `SELECT username, ARRAY_AGG(json_build_object(
+                            'Name', CONCAT(firstname, ' ', lastname), 'totalscore', results_points.totalscore ,'rowClassName', CASE WHEN rider_participation_id in 
+                            (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_idGewoon}) THEN 'inteam' ELSE ' ' END )) as riders FROM  stage_selection_rider
+                            INNER JOIN rider_participation USING (rider_participation_id)
+                            INNER JOIN rider USING (rider_id)
+                            INNER JOIN stage_selection USING(stage_selection_id)
+                            INNER JOIN account_participation USING(account_participation_id)
+                            INNER JOIN account USING(account_id)
+                            INNER JOIN results_points USING(rider_participation_id)
+                            WHERE stage_selection.stage_id = ${stage_id} AND results_points.stage_id = ${stage_id} AND NOT budgetparticipation 
+                            GROUP BY username; `;
 
                         var account_participation_idBudget = `(SELECT account_participation_id FROM account_participation 
                             WHERE account_id=${user.account_id} AND race_id=${race_id} AND budgetparticipation)`;
@@ -320,24 +319,45 @@ module.exports = function (app) {
                                 GROUP BY " ", "Name", "Team", "Time"
                                 ORDER BY " " ASC; `;
 
+                        var selectionsQueryBudget = `SELECT username, ARRAY_AGG(json_build_object(
+                            'Name', CONCAT(firstname, ' ', lastname), 'totalscore', results_points.totalscore - results_points.teamscore ,'rowClassName', CASE WHEN rider_participation_id in 
+                            (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_idBudget}) THEN 'inteam' ELSE ' ' END )) as riders 
+                            FROM stage_selection_rider
+                            INNER JOIN rider_participation USING (rider_participation_id)
+                            INNER JOIN rider USING (rider_id)
+                            INNER JOIN stage_selection USING(stage_selection_id)
+                            INNER JOIN account_participation USING(account_participation_id)
+                            INNER JOIN account USING(account_id)
+                            INNER JOIN results_points USING(rider_participation_id)
+                            WHERE stage_selection.stage_id = ${stage_id} AND results_points.stage_id = ${stage_id} AND budgetparticipation 
+                            GROUP BY username; `;
+
                         var resultsBudgetQuery = stageresultsBudgetQuery + GCresultsBudgetQuery + pointsresultsBudgetQuery + komresultsBudgetQuery + youthresultsBudgetQuery;
                     
-                        var gewoonQuery = teamresultGewoonQuery + userscoresGewoonQuery + resultsGewoonQuery;
-                        var budgetQuery = teamresultBudgetQuery + userscoresBudgetQuery + resultsBudgetQuery;
+                        var gewoonQuery = teamresultGewoonQuery + userscoresGewoonQuery + resultsGewoonQuery + selectionsQueryGewoon;
+                        var budgetQuery = teamresultBudgetQuery + userscoresBudgetQuery + resultsBudgetQuery + selectionsQueryBudget;
                         var totalQuery = gewoonQuery + budgetQuery;
                         var userScoresColtype = { stagescore: 1, totalscore: 1 };
                         sqlDB.query(totalQuery, (err, uitslagresults) => {
                             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                             var userscoresGewoon = uitslagresults[1].rows;
-                            var userscoresBudget = uitslagresults[8].rows;
-                            // for (var i in userscores) { // VOOR DE selecties popup
-                            //     for (var j in selecties) {
-                            //         if (userscores[i].username == selecties[j].username) {
-                            //             userscores[i]['riderCount'] = selecties[j].count;
-                            //             userscores[i]['riders'] = selecties[j].riders.sort(function (a, b) { return b.totalscore - a.totalscore });
-                            //         }
-                            //     }
-                            // }
+                            var userscoresBudget = uitslagresults[9].rows;
+                            var selectiesGewoon = uitslagresults[7].rows;
+                            var selectiesBudget = uitslagresults[15].rows;
+                            for (var i in userscoresGewoon) { // VOOR DE selecties popup
+                                for (var j in selectiesGewoon) {
+                                    if (userscoresGewoon[i].username == selectiesGewoon[j].username) {
+                                        userscoresGewoon[i]['riders'] = selectiesGewoon[j].riders.sort(function (a, b) { return b.totalscore - a.totalscore });
+                                    }
+                                }
+                            }
+                            for (var i in userscoresBudget) { // VOOR DE selecties popup
+                                for (var j in selectiesBudget) {
+                                    if (userscoresBudget[i].username == selectiesBudget[j].username) {
+                                        userscoresBudget[i]['riders'] = selectiesBudget[j].riders.sort(function (a, b) { return b.totalscore - a.totalscore });
+                                    }
+                                }
+                            }
                             var teamresultGewoon = [];
                             if(uitslagresults[0].rowCount){
                                 teamresultGewoon = uitslagresults[0].rows;
@@ -351,16 +371,16 @@ module.exports = function (app) {
                                 stageresultsGewoon.push(uitslagresults[6].rows);
                             }
                             var teamresultBudget = [];
-                            if(uitslagresults[7].rowCount){
-                                teamresultBudget = uitslagresults[7].rows;
+                            if(uitslagresults[8].rowCount){
+                                teamresultBudget = uitslagresults[8].rows;
                             }
                             var stageresultsBudget = [];
-                            if(uitslagresults[9].rowCount){
-                                stageresultsBudget.push(uitslagresults[9].rows);
+                            if(uitslagresults[10].rowCount){
                                 stageresultsBudget.push(uitslagresults[10].rows);
                                 stageresultsBudget.push(uitslagresults[11].rows);
                                 stageresultsBudget.push(uitslagresults[12].rows);
                                 stageresultsBudget.push(uitslagresults[13].rows);
+                                stageresultsBudget.push(uitslagresults[14].rows);
                             }
 
                             res.send({

@@ -252,13 +252,12 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-            var currentStageNum = functies.stageNumKlassieker();
 
             var query = `SELECT username, stagenr, rank() over (PARTITION BY stagenr ORDER BY totalscore desc) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${req.body.race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.stagenr <= ${currentStageNum} AND NOT username = 'tester'
+            WHERE stage.race_id = ${req.body.race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished AND NOT username = 'tester'
             ORDER BY username, stagenr`
             sqlDB.query(query, (err, results) => {
                 if (err) { console.log("WRONG QUERY:", query); throw err; }
