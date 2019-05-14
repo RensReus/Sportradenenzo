@@ -64,3 +64,16 @@ div.stage {
 .pouleUser:hover {
     cursor: pointer;
 }
+.klassementButton{
+    background-color: gray;
+    font-size: 16px;
+}
+
+.klassementButton:hover{
+    background-color: lightgray;
+    cursor: pointer;
+}
+button.block{
+    background: rgb(61, 61, 61);
+    color: white;
+}

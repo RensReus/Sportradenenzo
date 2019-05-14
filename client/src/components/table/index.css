@@ -18,6 +18,7 @@ caption{
     background: rgb(46, 46, 46);
     color: white;
     font-size: 25px;
+    text-align: center;
 }
 th.sortable{
     cursor: pointer;

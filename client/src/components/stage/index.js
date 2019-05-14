@@ -5,6 +5,54 @@ import Table from '../table'
 import SelecTable from './stageselection'
 import PouleTable from './stageresult'
 
+
+class StageResults extends Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            scrollShow: ['block','none','none','none','none']
+        }
+    }
+    showResult(i){
+        var scrollShow = this.state.scrollShow;
+        var curr = scrollShow.indexOf('block');
+        scrollShow[curr] = 'none';
+        scrollShow[i] = 'block';
+        this.setState({scrollShow: scrollShow});
+    }
+    render(){
+        var buttons = []
+        buttons.push(<button className={"klassementButton " + this.state.scrollShow[0]} key="Etappe" onClick={this.showResult.bind(this,0)}>Etappe</button>)
+        buttons.push(<button className={"klassementButton " + this.state.scrollShow[1]} key="Algemeen" onClick={this.showResult.bind(this,1)}>Algemeen</button>)
+        buttons.push(<button className={"klassementButton " + this.state.scrollShow[2]} key="Punten" onClick={this.showResult.bind(this,2)}>Punten</button>)
+        buttons.push(<button className={"klassementButton " + this.state.scrollShow[3]} key="Berg" onClick={this.showResult.bind(this,3)}>Berg</button>)
+        buttons.push(<button className={"klassementButton " + this.state.scrollShow[4]} key="Jong" onClick={this.showResult.bind(this,4)}>Jong</button>)
+        console.log("state inside",this.state)
+        return(
+            <div>
+                {buttons}
+                <div style={{display: this.state.scrollShow[0]}}>
+                    <Table data={this.props.data[0]} title={"Etappe"} />
+                </div>
+                <div style={{display: this.state.scrollShow[1]}}>
+                    <Table data={this.props.data[1]} title={"Algemeen Klassement"} />
+                </div>
+                <div style={{display: this.state.scrollShow[2]}}>
+                    <Table data={this.props.data[2]} title={"Punten Klassement"} />
+                </div>
+                <div style={{display: this.state.scrollShow[3]}}>
+                    <Table data={this.props.data[3]} title={"Berg Klassement"} />
+                </div>
+                <div style={{display: this.state.scrollShow[4]}}>
+                    <Table data={this.props.data[4]} title={"Jongeren Klassement"} />
+                </div>
+            </div>
+
+
+        )
+    }
+}
+
 class Stage extends Component {
     
     constructor(props) {
@@ -73,7 +121,6 @@ class Stage extends Component {
                         mode: '404'
                     })
                 } else if (res.data.mode === 'selection') {
-                    console.log("time to get selection",new Date()-start)
                     this.setState({
                         mode: 'selection',
                         userTeamGewoon: res.data.userTeamGewoon,
@@ -86,7 +133,6 @@ class Stage extends Component {
                         starttime: res.data.starttime
                     })
                 } else if (res.data.mode === 'results') {
-                    console.log("time to get results",new Date()-start)
                     this.setState({
                         mode: 'results',
                         userTeamResultGewoon: res.data.teamresultGewoon,
@@ -192,17 +238,14 @@ class Stage extends Component {
         }
         //results
         if (this.state.budget){
-            console.log("bg",this.state.userscoresBudget)
             userTeamResult = this.state.userTeamResultBudget
             userScores = this.state.userScoresBudget
             stageresults = this.state.stageresultsBudget
         }else{
-            console.log("gw",this.state.userscoresBudget)
             userTeamResult = this.state.userTeamResultGewoon
             userScores = this.state.userScoresGewoon
             stageresults = this.state.stageresultsGewoon
         }
-        console.log("us",userScores)
         if (mode === 'loading'){
             loadingGif = <img className="loadingGif" src="/images/bicycleWheel.gif" alt="bicycleWheel.gif"></img>
             message = <h3>Fetching data..</h3>
@@ -213,15 +256,13 @@ class Stage extends Component {
             stResTable = ''
         } else if (mode === 'selection') {
             var starttime = new Date(this.state.starttime);
-            console.log("st",starttime);
-            console.log(typeof starttime)
             starttimeString = " Starttijd: " + starttime.getHours() + ":" + starttime.getMinutes();
             selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider=> rider.rider_participation_id)} kopman={kopman} selectRider={this.selectRider} removeRider={this.removeRider} setKopman={this.setKopman}/>
         } else if (mode === 'results') {
 
             resTable = <Table data={userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={userScores}/>
-            stResTable = <Table data={stageresults} title={"Uitslag"} />
+            stResTable = <StageResults data={stageresults}/>
         }
         return (
             <div className="stageContainer">

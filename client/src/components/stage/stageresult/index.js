@@ -9,10 +9,6 @@ class PouleTableRow extends Component {
                     {/* <div className="selectionInfo"><Table data={this.props.riders} title={"renners #: "+ this.props.riderCount} /></div> */}
                 </td>
                 <td>{this.props.stagescore}</td>
-                {/* <td>{this.props.gcscore}</td> */}
-                {/* <td>{this.props.pointscore}</td> */}
-                {/* <td>{this.props.komscore}</td> */}
-                {/* <td>{this.props.youngscore}</td> */}
                 <td>{this.props.totalscore}</td>
             </tr>
         )
@@ -24,18 +20,14 @@ class PouleTable extends Component {
         const rows = [];
         const userScores = this.props.userScores
         userScores.forEach(user => {
-            var riders = []
-            if (user.riderCount>0) riders = user.riders;
+            // var riders = []
+            // if (user.riderCount>0) riders = user.riders;
             rows.push(
                 <PouleTableRow
                     username={user.username}
                     // riderCount={user.riderCount}
                     // riders={riders}
                     stagescore={user.stagescore}
-                    // gcscore={user.gcscore}
-                    // pointscore={user.pointscore}
-                    // komscore={user.komscore}
-                    // youngscore={user.youngscore}
                     totalscore={user.totalscore}
                 />
             )

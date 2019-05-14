@@ -69,6 +69,7 @@ class SelecTable extends Component {
         })
         return(
             <table>
+                <caption>{selectionLength}/9</caption>
                 <thead>
                     <tr>
                         <th>Name</th>

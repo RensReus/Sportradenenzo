@@ -201,6 +201,44 @@ module.exports = function (app) {
                                 GROUP BY " ", "Name", "Team", "Time"
                                 ORDER BY " " ASC; `;
 
+                        var GCresultsGewoonQuery = `SELECT gcpos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", gcresult AS "Time", ${rowClassNameGewoon}
+                                FROM results_points
+                                INNER JOIN rider_participation USING(rider_participation_id)
+                                INNER JOIN rider USING(rider_id)
+                                LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                WHERE stage_id=${stage_id} AND gcpos > 0 
+                                GROUP BY " ", "Name", "Team", "Time"
+                                ORDER BY " " ASC; `;
+
+                        var pointsresultsGewoonQuery = `SELECT pointspos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", pointsresult AS "Punten", ${rowClassNameGewoon}
+                                FROM results_points
+                                INNER JOIN rider_participation USING(rider_participation_id)
+                                INNER JOIN rider USING(rider_id)
+                                LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                WHERE stage_id=${stage_id} AND pointspos > 0 
+                                GROUP BY " ", "Name", "Team", "Punten"
+                                ORDER BY " " ASC; `;
+
+                        var komresultsGewoonQuery = `SELECT kompos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", komresult AS "Punten", ${rowClassNameGewoon}
+                                FROM results_points
+                                INNER JOIN rider_participation USING(rider_participation_id)
+                                INNER JOIN rider USING(rider_id)
+                                LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                WHERE stage_id=${stage_id} AND kompos > 0 
+                                GROUP BY " ", "Name", "Team", "Punten"
+                                ORDER BY " " ASC; `;
+
+                        var youthresultsGewoonQuery = `SELECT yocpos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", yocresult AS "Time", ${rowClassNameGewoon}
+                                FROM results_points
+                                INNER JOIN rider_participation USING(rider_participation_id)
+                                INNER JOIN rider USING(rider_id)
+                                LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                WHERE stage_id=${stage_id} AND yocpos > 0 
+                                GROUP BY " ", "Name", "Team", "Time"
+                                ORDER BY " " ASC; `;
+
+                        var resultsGewoonQuery = stageresultsGewoonQuery + GCresultsGewoonQuery + pointsresultsGewoonQuery + komresultsGewoonQuery + youthresultsGewoonQuery;
+
                         var selectionsQuery = `SELECT username, COALESCE(COUNT(rider_participation_id),0) as count, ARRAY_AGG(json_build_object(
                                             'Name', CONCAT(firstname, ' ', lastname), 
                                             'totalscore', totalscore ,
@@ -245,14 +283,53 @@ module.exports = function (app) {
                                 WHERE stage_id=${stage_id} AND stagepos > 0 
                                 GROUP BY " ", "Name", "Team", "Time"
                                 ORDER BY " " ASC; `;
-                        var gewoonQuery = teamresultGewoonQuery + userscoresGewoonQuery + stageresultsGewoonQuery;
-                        var budgetQuery = teamresultBudgetQuery + userscoresBudgetQuery + stageresultsBudgetQuery;
+                
+                        var GCresultsBudgetQuery = `SELECT gcpos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", gcresult AS "Time", ${rowClassNameBudget}
+                                FROM results_points
+                                INNER JOIN rider_participation USING(rider_participation_id)
+                                INNER JOIN rider USING(rider_id)
+                                LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                WHERE stage_id=${stage_id} AND gcpos > 0 
+                                GROUP BY " ", "Name", "Team", "Time"
+                                ORDER BY " " ASC; `;
+
+                        var pointsresultsBudgetQuery = `SELECT pointspos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", pointsresult AS "Punten", ${rowClassNameBudget}
+                                FROM results_points
+                                INNER JOIN rider_participation USING(rider_participation_id)
+                                INNER JOIN rider USING(rider_id)
+                                LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                WHERE stage_id=${stage_id} AND pointspos > 0 
+                                GROUP BY " ", "Name", "Team", "Punten"
+                                ORDER BY " " ASC; `;
+
+                        var komresultsBudgetQuery = `SELECT kompos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", komresult AS "Punten", ${rowClassNameBudget}
+                                FROM results_points
+                                INNER JOIN rider_participation USING(rider_participation_id)
+                                INNER JOIN rider USING(rider_id)
+                                LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                WHERE stage_id=${stage_id} AND kompos > 0 
+                                GROUP BY " ", "Name", "Team", "Punten"
+                                ORDER BY " " ASC; `;
+
+                        var youthresultsBudgetQuery = `SELECT yocpos AS " ", concat(firstname, ' ', lastname) AS "Name", team AS "Team", yocresult AS "Time", ${rowClassNameBudget}
+                                FROM results_points
+                                INNER JOIN rider_participation USING(rider_participation_id)
+                                INNER JOIN rider USING(rider_id)
+                                LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                WHERE stage_id=${stage_id} AND yocpos > 0 
+                                GROUP BY " ", "Name", "Team", "Time"
+                                ORDER BY " " ASC; `;
+
+                        var resultsBudgetQuery = stageresultsBudgetQuery + GCresultsBudgetQuery + pointsresultsBudgetQuery + komresultsBudgetQuery + youthresultsBudgetQuery;
+                    
+                        var gewoonQuery = teamresultGewoonQuery + userscoresGewoonQuery + resultsGewoonQuery;
+                        var budgetQuery = teamresultBudgetQuery + userscoresBudgetQuery + resultsBudgetQuery;
                         var totalQuery = gewoonQuery + budgetQuery;
                         var userScoresColtype = { stagescore: 1, totalscore: 1 };
                         sqlDB.query(totalQuery, (err, uitslagresults) => {
                             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                             var userscoresGewoon = uitslagresults[1].rows;
-                            var userscoresBudget = uitslagresults[4].rows;
+                            var userscoresBudget = uitslagresults[8].rows;
                             // for (var i in userscores) { // VOOR DE selecties popup
                             //     for (var j in selecties) {
                             //         if (userscores[i].username == selecties[j].username) {
@@ -267,16 +344,25 @@ module.exports = function (app) {
                             }
                             var stageresultsGewoon = [];
                             if(uitslagresults[2].rowCount){
-                                stageresultsGewoon = uitslagresults[2].rows;
+                                stageresultsGewoon.push(uitslagresults[2].rows);
+                                stageresultsGewoon.push(uitslagresults[3].rows);
+                                stageresultsGewoon.push(uitslagresults[4].rows);
+                                stageresultsGewoon.push(uitslagresults[5].rows);
+                                stageresultsGewoon.push(uitslagresults[6].rows);
                             }
                             var teamresultBudget = [];
-                            if(uitslagresults[3].rowCount){
-                                teamresultBudget = uitslagresults[3].rows;
+                            if(uitslagresults[7].rowCount){
+                                teamresultBudget = uitslagresults[7].rows;
                             }
                             var stageresultsBudget = [];
-                            if(uitslagresults[5].rowCount){
-                                stageresultsBudget = uitslagresults[5].rows;
+                            if(uitslagresults[9].rowCount){
+                                stageresultsBudget.push(uitslagresults[9].rows);
+                                stageresultsBudget.push(uitslagresults[10].rows);
+                                stageresultsBudget.push(uitslagresults[11].rows);
+                                stageresultsBudget.push(uitslagresults[12].rows);
+                                stageresultsBudget.push(uitslagresults[13].rows);
                             }
+
                             res.send({
                                 'mode': 'results',
                                 teamresultGewoon,
