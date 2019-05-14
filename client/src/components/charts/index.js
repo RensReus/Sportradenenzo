@@ -85,7 +85,7 @@ class charts extends Component {
 			chartType: "",
 			chartTypeOptions: [],
 			data: [],
-			theme: "light1"
+			theme: "dark1"
 		};
 		this.handleChange = this.handleChange.bind(this);
 		this.changeTheme = this.changeTheme.bind(this);
@@ -116,7 +116,7 @@ class charts extends Component {
 	}
 
 	userscores() {
-		axios.post('/api/chartuserstagescores', { race_id: 4, poule_id: 0, token: localStorage.getItem('authToken') })
+		axios.post('/api/chartuserstagescores', { race_id: 5, poule_id: 0, budgetparticipation:false, token: localStorage.getItem('authToken') })
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -153,7 +153,7 @@ class charts extends Component {
 	}
 	
 	userranking(){
-		axios.post('/api/chartuserranking', { race_id: 4, poule_id: 0, token: localStorage.getItem('authToken') })
+		axios.post('/api/chartuserranking', { race_id: 5, poule_id: 0,budgetparticipation:false, token: localStorage.getItem('authToken') })
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -179,7 +179,7 @@ class charts extends Component {
 				title: "Stage"
 			},
 			axisY: {
-				title: "Rank"
+				title: "Rank",
 			},
 			toolTip: {
 				shared: true
@@ -190,7 +190,7 @@ class charts extends Component {
 	}
 
 	riderpercentage() {
-		axios.post('/api/chartriderpercentage')
+		axios.post('/api/chartriderpercentage', { race_id: 5, poule_id: 0, token: localStorage.getItem('authToken'), budgetparticipation:false })
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -227,7 +227,7 @@ class charts extends Component {
 	}
 
 	riderpercentagetotal() {
-		axios.post('/api/chartriderpercentagetotal')
+		axios.post('/api/chartriderpercentagetotal', { race_id: 5, poule_id: 0, token: localStorage.getItem('authToken'), budgetparticipation:false })
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })

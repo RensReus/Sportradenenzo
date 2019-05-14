@@ -27,7 +27,6 @@ class StageResults extends Component{
         buttons.push(<button className={"klassementButton " + this.state.scrollShow[2]} key="Punten" onClick={this.showResult.bind(this,2)}>Punten</button>)
         buttons.push(<button className={"klassementButton " + this.state.scrollShow[3]} key="Berg" onClick={this.showResult.bind(this,3)}>Berg</button>)
         buttons.push(<button className={"klassementButton " + this.state.scrollShow[4]} key="Jong" onClick={this.showResult.bind(this,4)}>Jong</button>)
-        console.log("state inside",this.state)
         return(
             <div>
                 {buttons}

@@ -245,43 +245,47 @@ module.exports = {
                     sqlDB.query(dnfquery, (err, res) => {
                         if (err) {console.log("WRONG QUERY:",dnfquery); throw err;}
                         else {
-                            console.log("Riders DNF updated" )
+                            console.log("Riders DNF updated", dnfquery.rowCount )
                         }
                     });
                 }
-                var stage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et} AND race_id = ${race_id})`
+                var stage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et} AND race_id = ${race_id})`;
 
-                // var jongDNF = 0;
-                // for (i in ridersDNF) {
-                //     if (jongprev.map(jongeren => jongeren._id).includes(rennersDNF[i]))
-                //         jongDNF++;
-                // }
                 var uitslagCompleet = false;
                 var GCprevlength = 176;
-                if (et != 1) {
-                    var prevQuery = `SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${stage_id} AND NOT gcpos = 0 `
-                    sqlDB.query(prevQuery,function(err,prevRes){
-                        if (err) {console.log("WRONG QUERY:",prevQuery); throw err;}
+                // var youngPrev = [];
+                var prevstage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et-1} AND race_id = ${race_id})`
+                var prevQuery = `SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT gcpos = 0 `
+                sqlDB.query(prevQuery,function(err,prevRes){
+                    if (err) {console.log("WRONG QUERY:",prevQuery); throw err;}
+                    if(et != 1){
                         GCprevlength = prevRes.rows[0].count;
-
-                        var akComp = (ridersGC.length + ridersDNF.length) == GCprevlength;
-                        var sprintComp = ridersPoints.length;
-                        var bergComp = ridersKom.length;
-                        var jongComp = ridersYoc.length; //+ jongDNF.length == ;
-                        if (et == 1) { jongComp = true; bergComp = true; }
-                        if (akComp && sprintComp && bergComp && jongComp) {
-                            uitslagCompleet = true;
-                        }
-                        
-                        var stageCompleteQuery = `UPDATE stage SET complete = TRUE, finished = TRUE WHERE stage_id = ${stage_id}`
-                        if(uitslagCompleet){
-                            sqlDB.query(stageCompleteQuery,function(err,completeRes){
-                                if (err) {console.log("WRONG QUERY:",stageCompleteQuery); throw err;}
-                                console.log("Stage %s Complete",et)
-                            })
-                        }
-                    })
-                }
+                        // youngprevlength = prevRes.rows[0].youngCount;
+                    }
+                    // var jongDNF = 0;
+                    // for (i in ridersDNF) {
+                    //     if (youngPrev.map(jongeren => jongeren._id).includes(ridersDNF[i]))
+                    //         jongDNF++;
+                    // }
+                    
+                    var akComp = (ridersGC.length + ridersDNF.length) == GCprevlength;
+                    var sprintComp = ridersPoints.length;
+                    var bergComp = ridersKom.length;
+                    var jongComp = ridersYoc.length; //+ jongDNF.length == ;
+                    if (et == 1) { jongComp = true; bergComp = true; }
+                    console.log(ridersGC.length , ridersDNF.length,GCprevlength)
+                    if (akComp && sprintComp && bergComp && jongComp) {
+                        uitslagCompleet = true;
+                    }
+                    
+                    var stageCompleteQuery = `UPDATE stage SET complete = TRUE, finished = TRUE WHERE stage_id = ${stage_id}`
+                    if(uitslagCompleet){
+                        sqlDB.query(stageCompleteQuery,function(err,completeRes){
+                            if (err) {console.log("WRONG QUERY:",stageCompleteQuery); throw err;}
+                            console.log("Stage %s Complete",et)
+                        })
+                    }
+                })
 
 
                 // process scores for each finished rider and send to db

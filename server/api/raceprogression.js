@@ -16,7 +16,7 @@ module.exports = function (app) {
         sqlDB.query(stageQuery, function (err, results) {
             if (results.rows.length) {// if some results, so at least after start of stage 1
                 var stage = results.rows[0];
-                if(stage.completed) stage.stagenr++;
+                if(stage.complete) stage.stagenr++;
                 res.send({stage});
             } else {
                 res.send({stage:'0'});
