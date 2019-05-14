@@ -3,7 +3,6 @@
 module.exports = function (app) {
     const sqlDB = require('../db/sqlDB');
 
-
     app.post('/api/getstagestatus', function (req, res) {
 
     })
@@ -17,6 +16,7 @@ module.exports = function (app) {
         sqlDB.query(stageQuery, function (err, results) {
             if (results.rows.length) {// if some results, so at least after start of stage 1
                 var stage = results.rows[0];
+                if(stage.completed) stage.stagenr++;
                 res.send({stage});
             } else {
                 res.send({stage:'0'});

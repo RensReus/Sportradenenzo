@@ -17,7 +17,7 @@ module.exports = function (app) {
 
     app.post('/api/setkopman', function (req, res) {
         jwt.verify(req.body.token, getSecret(), function (err, user) {
-            if (err) {
+            if (err || isNaN(req.body.stage) || req.body.stage<1 || req.body.stage>21) {
                 res.send(false)
                 throw err;
             } else {
@@ -38,7 +38,7 @@ module.exports = function (app) {
 
     app.post('/api/removeriderfromstage', function (req, res) {
         jwt.verify(req.body.token, getSecret(), function (err, user) {
-            if (err) {
+            if (err || isNaN(req.body.stage) || req.body.stage<1 || req.body.stage>21) {
                 res.send(false)
                 throw err;
             } else {
@@ -74,7 +74,7 @@ module.exports = function (app) {
 
     app.post('/api/addridertostage', function (req, res) {
         jwt.verify(req.body.token, getSecret(), function (err, user) {
-            if (err) {
+            if (err || isNaN(req.body.stage) || req.body.stage<1 || req.body.stage>21) { //Kijk of de juiste etappe bestaat en de user geverifieerd is
                 res.send(false)
                 throw err;
             } else {
@@ -121,14 +121,13 @@ module.exports = function (app) {
 
     app.post('/api/getstage', function (req, res) {
         jwt.verify(req.body.token, getSecret(), function (err, user) {
-            if (err) {
+            if (err || isNaN(req.body.stage) || req.body.stage<1 || req.body.stage>21) {
                 res.send({ 'mode': '404' })
                 throw err;
             } else {
                 var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = '${req.body.year}')`;
                 var now = new Date();
                 var query = `SELECT starttime FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
-                if(Number.isInteger(parseInt(req.body.stage)) && req.body.stage > 0 && req.body.stage <22 ){
                 sqlDB.query(query, (err, results) => {
                             if (err) {console.log("WRONG QUERY:",query); throw err;}
                     if (now < results.rows[0].starttime) {
@@ -291,9 +290,6 @@ module.exports = function (app) {
                         })
                     }
                 })
-            }else{
-                res.send({})
-            }
             }
         })
     });

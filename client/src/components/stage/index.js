@@ -2,148 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import './index.css';
 import Table from '../table'
-
-class PouleTableRow extends Component {
-    render() {
-        return (
-            <tr>
-                <td className="pouleUser">
-                    {this.props.username}
-                    {/* <div className="selectionInfo"><Table data={this.props.riders} title={"renners #: "+ this.props.riderCount} /></div> */}
-                </td>
-                <td>{this.props.stagescore}</td>
-                {/* <td>{this.props.gcscore}</td> */}
-                {/* <td>{this.props.pointscore}</td> */}
-                {/* <td>{this.props.komscore}</td> */}
-                {/* <td>{this.props.youngscore}</td> */}
-                <td>{this.props.totalscore}</td>
-            </tr>
-        )
-    }
-}
-
-
-class PouleTable extends Component {
-    render() {
-        const rows = [];
-        const userScores = this.props.userScores
-        userScores.forEach(user => {
-            var riders = []
-            if (user.riderCount>0) riders = user.riders;
-            rows.push(
-                <PouleTableRow
-                    username={user.username}
-                    // riderCount={user.riderCount}
-                    // riders={riders}
-                    stagescore={user.stagescore}
-                    // gcscore={user.gcscore}
-                    // pointscore={user.pointscore}
-                    // komscore={user.komscore}
-                    // youngscore={user.youngscore}
-                    totalscore={user.totalscore}
-                />
-            )
-        });
-
-        return (
-            <table className="pouleTable">
-                <thead>
-                    <tr>
-                        <th>Username</th>
-                        <th>Stage</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
-        )
-    }
-}
-
-class Selectionbutton extends Component{
-    selectRider=()=> {
-        if(this.props.selected==='unselected'){
-            this.props.selectRider(this.props.riderID);
-        }
-    }
-    render(){
-        return(
-            <button className={this.props.selected} onClick={() => this.selectRider(this.props.riderID)}>{this.props.selected}</button>
-        )
-    }
-}
-
-class SelecTableRow extends Component{
-    removeRider=()=> {
-        this.props.removeRider(this.props.riderID);
-    }
-    setKopman=()=> {
-        this.props.setKopman(this.props.riderID);
-    }
-    render(){
-        let removeButton
-        let setKopmanButton
-        if(this.props.selected==='selected'){
-            if(this.props.kopman===this.props.riderID){
-                setKopmanButton = <button onClick={() => this.setKopman(this.props.riderID)}>IS DE KOPMAN</button>
-                removeButton = <button onClick={() => this.removeRider(this.props.riderID)}>Remove rider</button>
-            }else{
-                setKopmanButton = <button onClick={() => this.setKopman(this.props.riderID)}>Maak kopman</button>
-                removeButton = <button onClick={() => this.removeRider(this.props.riderID)}>Remove rider</button>
-            }
-        }else{
-            removeButton = ''
-            setKopmanButton = ''
-        }
-        return(
-            <tr >
-                <td>{setKopmanButton}</td>
-                <td className={this.props.selected}>{this.props.name}</td>
-                <td className={this.props.selected}>{this.props.team}</td>
-                <td><Selectionbutton selected={this.props.selected} selectRider={this.props.selectRider} riderID={this.props.riderID}/></td>
-                <td>{removeButton}</td>
-            </tr>
-        )
-    }
-}
-
-class SelecTable extends Component {
-    render() {
-        const rows = [];
-        const selectionIDs = this.props.selectionIDs;
-        const selectionLength = selectionIDs.length;
-        this.props.userTeam.map(({lastname,team,rider_participation_id})=>{
-            var selected = 'unselected';
-            if(selectionIDs.includes(rider_participation_id)){
-                selected = 'selected'
-            }
-            if( selectionLength>=9 && selected!=='selected'){
-                rows.push(<SelecTableRow name={lastname} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider}/>)
-            }else{
-                if(selected === 'selected'){
-                    rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider} removeRider={this.props.removeRider} setKopman={this.props.setKopman}/>)
-                }else{
-                    rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider}/>)
-                }
-            }
-        })
-        return(
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Team</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
-        )
-    }
-}
+import SelecTable from './stageselection'
+import PouleTable from './stageresult'
 
 class Stage extends Component {
     
@@ -175,7 +35,33 @@ class Stage extends Component {
         this.budgetSwitch = this.budgetSwitch.bind(this)
         this.previousStage = this.previousStage.bind(this);
         this.nextStage = this.nextStage.bind(this);
+        this.updateData = this.updateData.bind(this)
     }
+    previousStage() {
+        const currentstage = parseInt(this.state.stage)
+        if(currentstage>1){
+            this.props.history.push('/stage/' + (currentstage - 1).toString())
+            this.setState({
+                stage: currentstage - 1
+            })
+            this.updateData(currentstage - 1)
+        }else{
+            this.props.history.push('/teamselection')
+        }
+    }
+    nextStage() {
+        if(!this.state.lastStage){
+            const currentstage = parseInt(this.state.stage)
+            this.props.history.push('/stage/' + (currentstage + 1).toString())
+            this.setState({
+                stage: currentstage + 1
+            })
+            this.updateData(currentstage + 1)
+        }else{
+            this.props.history.push('/finalstandings')
+        }
+    }
+
     updateData(stage) {
         const race = this.state.race
         const year = this.state.year
@@ -188,7 +74,6 @@ class Stage extends Component {
                     })
                 } else if (res.data.mode === 'selection') {
                     console.log("time to get selection",new Date()-start)
-
                     this.setState({
                         mode: 'selection',
                         userTeamGewoon: res.data.userTeamGewoon,
@@ -220,31 +105,6 @@ class Stage extends Component {
                 }
             })
     }
-    previousStage() {
-        const currentstage = parseInt(this.state.stage)
-        if(currentstage>1){
-            this.props.history.push('/stage/' + (currentstage - 1).toString())
-            this.setState({
-                stage: (currentstage - 1).toString()
-            })
-            this.updateData((currentstage - 1).toString())
-        }else{
-            this.props.history.push('/teamselection')
-        }
-    }
-    nextStage() {
-        if(!this.state.lastStage){
-            const currentstage = parseInt(this.state.stage)
-            this.props.history.push('/stage/' + (currentstage + 1).toString())
-            this.setState({
-                stage: (currentstage + 1).toString()
-            })
-            this.updateData((currentstage + 1).toString())
-        }else{
-            this.props.history.push('/finalstandings')
-        }
-    }
-
     budgetSwitch() {
         if(this.state.budget){
             this.setState({budget: false})
@@ -299,7 +159,7 @@ class Stage extends Component {
     }
 
     componentDidMount() {
-        this.updateData(parseInt(this.state.stage));
+        this.updateData(this.state.stage) 
     }
 
     render() {
@@ -357,7 +217,6 @@ class Stage extends Component {
             console.log(typeof starttime)
             starttimeString = " Starttijd: " + starttime.getHours() + ":" + starttime.getMinutes();
             selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider=> rider.rider_participation_id)} kopman={kopman} selectRider={this.selectRider} removeRider={this.removeRider} setKopman={this.setKopman}/>
-            //selectionTable = <TeamTable stageTeam={stageSelection}/>
         } else if (mode === 'results') {
 
             resTable = <Table data={userTeamResult} title={"Selectie"} />
