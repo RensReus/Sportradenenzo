@@ -10,13 +10,12 @@ module.exports = function (app) {
     app.post('/api/currentstagenum', function (req, res) {
         var race_id = 5; //TODO remove hardcoding
         var stageQuery = `SELECT * FROM STAGE
-                    WHERE starttime < now() AND race_id = ${race_id}
+                    WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
                     ORDER BY stagenr desc
                     LIMIT 1`;
         sqlDB.query(stageQuery, function (err, results) {
             if (results.rows.length) {// if some results, so at least after start of stage 1
                 var stage = results.rows[0];
-                console.log("currentstagenum",stage.stagenr)
                 if(stage.complete) stage.stagenr++;
                 res.send({stage});
             } else {
