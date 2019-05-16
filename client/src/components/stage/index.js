@@ -31,7 +31,7 @@ class StageResults extends Component{
             <div>
                 {buttons}
                 <div style={{display: this.state.scrollShow[0]}}>
-                    <Table data={this.props.data[0]} title={"Etappe"} />
+                    <Table data={this.props.data[0]} title={"Etappe"} maxRows={20} />
                 </div>
                 <div style={{display: this.state.scrollShow[1]}}>
                     <Table data={this.props.data[1]} title={"Algemeen Klassement"} />

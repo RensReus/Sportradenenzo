@@ -32,6 +32,12 @@ th.sortable{
 
 tr.inteam{
     font-weight: bold;
+    color: gray;
+}
+
+tr.inselection{
+    font-weight: bold;
+    color: black;
 }
 
 th, td {
