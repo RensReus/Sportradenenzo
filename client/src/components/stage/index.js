@@ -10,7 +10,7 @@ class StageResults extends Component{
     constructor(props){
         super(props);
         this.state = {
-            scrollShow: ['block','none','none','none','none']
+            scrollShow: ['block','none','none','none','none'],
         }
     }
     showResult(i){
@@ -27,23 +27,35 @@ class StageResults extends Component{
         buttons.push(<button className={"klassementButton " + this.state.scrollShow[2]} key="Punten" onClick={this.showResult.bind(this,2)}>Punten</button>)
         buttons.push(<button className={"klassementButton " + this.state.scrollShow[3]} key="Berg" onClick={this.showResult.bind(this,3)}>Berg</button>)
         buttons.push(<button className={"klassementButton " + this.state.scrollShow[4]} key="Jong" onClick={this.showResult.bind(this,4)}>Jong</button>)
+        var klassementen = [];
+        for(var i = 0; i < 5;i++){
+            if(this.props.data[i]){
+                klassementen.push(this.props.data[i]);
+            }else{
+                klassementen.push([])
+            }
+        }
         return(
             <div>
                 {buttons}
                 <div style={{display: this.state.scrollShow[0]}}>
+<<<<<<< HEAD
                     <Table data={this.props.data[0]} title={"Etappe"} maxRows={20} />
+=======
+                    <Table data={klassementen[0]} title={"Etappe"} />
+>>>>>>> 7a5b0ccc6cb67adc6c3ee22975baf125eed5fce7
                 </div>
                 <div style={{display: this.state.scrollShow[1]}}>
-                    <Table data={this.props.data[1]} title={"Algemeen Klassement"} />
+                    <Table data={klassementen[1]} title={"Algemeen Klassement"} />
                 </div>
                 <div style={{display: this.state.scrollShow[2]}}>
-                    <Table data={this.props.data[2]} title={"Punten Klassement"} />
+                    <Table data={klassementen[2]} title={"Punten Klassement"} />
                 </div>
                 <div style={{display: this.state.scrollShow[3]}}>
-                    <Table data={this.props.data[3]} title={"Berg Klassement"} />
+                    <Table data={klassementen[3]} title={"Berg Klassement"} />
                 </div>
                 <div style={{display: this.state.scrollShow[4]}}>
-                    <Table data={this.props.data[4]} title={"Jongeren Klassement"} />
+                    <Table data={klassementen[4]} title={"Jongeren Klassement"} />
                 </div>
             </div>
 
