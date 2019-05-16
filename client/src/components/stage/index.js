@@ -39,23 +39,19 @@ class StageResults extends Component{
             <div>
                 {buttons}
                 <div style={{display: this.state.scrollShow[0]}}>
-<<<<<<< HEAD
-                    <Table data={this.props.data[0]} title={"Etappe"} maxRows={20} />
-=======
-                    <Table data={klassementen[0]} title={"Etappe"} />
->>>>>>> 7a5b0ccc6cb67adc6c3ee22975baf125eed5fce7
+                    <Table data={klassementen[0]} title={"Etappe"} maxRows={20}/>
                 </div>
                 <div style={{display: this.state.scrollShow[1]}}>
-                    <Table data={klassementen[1]} title={"Algemeen Klassement"} />
+                    <Table data={klassementen[1]} title={"Algemeen Klassement"} maxRows={20}/>
                 </div>
                 <div style={{display: this.state.scrollShow[2]}}>
-                    <Table data={klassementen[2]} title={"Punten Klassement"} />
+                    <Table data={klassementen[2]} title={"Punten Klassement"} maxRows={20}/>
                 </div>
                 <div style={{display: this.state.scrollShow[3]}}>
-                    <Table data={klassementen[3]} title={"Berg Klassement"} />
+                    <Table data={klassementen[3]} title={"Berg Klassement"} maxRows={20}/>
                 </div>
                 <div style={{display: this.state.scrollShow[4]}}>
-                    <Table data={klassementen[4]} title={"Jongeren Klassement"} />
+                    <Table data={klassementen[4]} title={"Jongeren Klassement"} maxRows={20}/>
                 </div>
             </div>
 
@@ -291,8 +287,8 @@ class Stage extends Component {
             {selecTable}
             {loadingGif}
             {message}
-            <div className="res">{resTable}</div>
-            <div className="poule">{pTable}</div>
+            <div className="res">{resTable}{pTable}</div>
+            <div className="poule"></div>
             <div className="stage">{stResTable}</div>
             </div>
         )
