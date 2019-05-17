@@ -431,3 +431,4 @@ module.exports.optimaleScoresUser = optimaleScoresUser;
 module.exports.returnEtappeWinnaars = returnEtappeWinnaars;
 module.exports.calculateUserScoresKlassieker = calculateUserScoresKlassieker;
 module.exports.stageNumKlassieker = stageNumKlassieker;
+module.exports.attrIndex = attrIndex;

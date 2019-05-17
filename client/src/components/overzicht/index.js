@@ -17,6 +17,7 @@ class overzicht extends Component {
     switch (this.props.match.params.selection) {
       case "all": this.renderAll(); break;
       case "selected": this.renderSelected(); break;
+      case "missedpoints": this.renderMissedPoints(); break;
       default: this.renderAll(); break;
     }
 
@@ -24,7 +25,7 @@ class overzicht extends Component {
 
   renderAll() {
     document.title = "Alle Renners Overzicht";
-    axios.post('/api/getriderpointsall', {token: localStorage.getItem('authToken'), race_id: 5, poule_id: 0, budgetparticipation:false})
+    axios.post('/api/getriderpointsall', {token: localStorage.getItem('authToken'), race_id: 5, budgetparticipation:false})
       .then((res) => {
         if (res) {
           this.setState({
@@ -44,6 +45,19 @@ class overzicht extends Component {
           this.setState({
             data: res.data.tableData,
             coltype: res.data.coltype,
+            tableName: res.data.title
+          })
+        }
+      })
+  }
+
+  renderMissedPoints() {
+    document.title = "Gemiste Punten";
+    axios.post('/api/missedpoints', {token: localStorage.getItem('authToken'), race_id: 5, budgetparticipation:false})
+      .then((res) => {
+        if (res) {
+          this.setState({
+            data: res.data.tableData,
             tableName: res.data.title
           })
         }

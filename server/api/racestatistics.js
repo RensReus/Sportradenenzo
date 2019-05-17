@@ -184,6 +184,67 @@ module.exports = function (app) {
 })
 
 
+    app.post('/api/missedpoints',function(req,res){
+        jwt.verify(req.body.token, getSecret(), function (err, user) {
+            if (err) {
+                res.redirect('/')
+                throw err;
+            } else {
+                var teamselection = `SELECT rider_participation_id FROM team_selection_rider
+                INNER JOIN account_participation USING(account_participation_id)
+                WHERE race_id = ${req.body.race_id} AND account_id = ${user.account_id} AND budgetparticipation = ${req.body.budgetparticipation}\n `
+                var ridersQuery = `SELECT stagenr, ARRAY_AGG(JSON_BUILD_OBJECT('id',rider_participation_id,'stage', stagescore,'total',totalscore) ORDER BY totalscore DESC) AS points FROM results_points 
+                INNER JOIN stage USING(stage_id)
+                WHERE rider_participation_id IN (${teamselection})
+                GROUP BY stagenr;\n `;
+                var resultsQuery = `SELECT stagescore FROM stage_selection 
+                INNER JOIN stage USING(stage_id) WHERE account_participation_id = 
+                (SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND budgetparticipation = ${req.body.budgetparticipation} AND race_id = ${req.body.race_id}) AND stagescore > 0
+                ORDER BY stagenr;\n `
+                var totalQuery = ridersQuery + resultsQuery;
+                sqlDB.query(totalQuery,(err,results) =>{
+                    if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+
+                    var outputArray = [];
+                    var actualPoints = results[1].rows.map(a => a.stagescore);
+                    var optimalTotal = 0;
+                    var actualTotal = 0;
+                    var missedTotal = 0;
+                    for (var i = 0; i < results[0].rows.length; i++) {
+                        optimalPoints = 0;
+                        var totalscores = results[0].rows[i].points.map(scores => ({score:scores.total, id: scores.id}));
+                        var stagescores = results[0].rows[i].points.map(scores => ({score:scores.stage, id: scores.id}));
+                        var bestId = stagescores[0].id;
+                        var pos = functies.attrIndex(totalscores,'index',bestId)
+                        var forRenners = 9;
+                        if(pos>8) forRenners = 8;
+                        
+                        for(var j = 0; j < forRenners; j++){
+                            optimalPoints += totalscores[j].score;
+                            if(totalscores[j].id === bestId){
+                                optimalPoints += stagescores[0].score*.5;
+                            }
+                        }
+                        if(forRenners === 8){
+                            outputArray.push({Behaald:"Zeg tegen Rens",Optimaal:"dat er iets",Gemist: "speciaals gebeurt is"})
+                        }else{
+
+                            outputArray.push({Etappe:i+1,Behaald:actualPoints[i],Optimaal:optimalPoints,Gemist: optimalPoints - actualPoints[i]})
+                            optimalTotal += optimalPoints;
+                            actualTotal += actualPoints[i];
+                            missedTotal += optimalPoints - actualPoints[i];
+                        }
+                    }
+                    outputArray.push({Etappe:"Totaal",Behaald:actualTotal,Optimaal:optimalTotal,Gemist: missedTotal})
+                    res.send({tableData:outputArray,
+                        title: "Gemiste Punten"
+                    })
+                })
+            }
+        })
+
+    })
+
 
     //CHARTS
     //CHARTS misschien nieuwe file
