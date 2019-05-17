@@ -52,12 +52,20 @@ class SelecTable extends Component {
         const rows = [];
         const selectionIDs = this.props.selectionIDs;
         const selectionLength = selectionIDs.length;
-        this.props.userTeam.map(({lastname,team,rider_participation_id})=>{
+        const userTeamSorted = this.props.userTeam.sort(function(a,b){//put selected on top
+            var aSelected = selectionIDs.includes(a.rider_participation_id);
+            var bSelected = selectionIDs.includes(b.rider_participation_id);
+            if(aSelected === bSelected) return 0;
+            if(aSelected) return -1;
+            return 1;
+
+        })
+        userTeamSorted      .map(({lastname,team,rider_participation_id, dnf})=>{
             var selected = 'unselected';
             if(selectionIDs.includes(rider_participation_id)){
                 selected = 'selected'
             }
-            if( selectionLength>=9 && selected!=='selected'){
+            if( selectionLength>=9 && selected!=='selected' || dnf){
                 rows.push(<SelecTableRow name={lastname} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider}/>)
             }else{
                 if(selected === 'selected'){

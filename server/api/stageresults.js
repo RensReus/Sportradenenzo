@@ -176,7 +176,12 @@ module.exports = function (app) {
                         var stagescoreGewoon = `CASE stage_selection_rider.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idGewoon} AND stage_id=${stage_id}) THEN stagescore * 1.5 ELSE stagescore END`
                         var totalscoreGewoon = `CASE stage_selection_rider.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idGewoon} AND stage_id=${stage_id}) THEN totalscore + stagescore * .5 ELSE totalscore END`
                         
-                        var teamresultGewoonQuery = `SELECT concat(firstname, ' ', lastname) AS "Name", COALESCE(${stagescoreGewoon},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong",  COALESCE(teamscore,0) as "Team", COALESCE(${totalscoreGewoon},0) as "Total"
+                        var kopmanGewoon = `stage_selection_rider.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idGewoon} AND stage_id=${stage_id})`
+                        var stagescoreGewoon = `CASE ${kopmanGewoon} THEN stagescore * 1.5 ELSE stagescore END`
+                        var totalscoreGewoon = `CASE ${kopmanGewoon} THEN totalscore + stagescore * .5 ELSE totalscore END`
+                        var nameGewoon = `CASE ${kopmanGewoon} THEN CONCAT('*', firstname, ' ', lastname) ELSE CONCAT(firstname, ' ', lastname) END  AS "Name"`
+
+                        var teamresultGewoonQuery = `SELECT ${nameGewoon}, COALESCE(${stagescoreGewoon},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong",  COALESCE(teamscore,0) as "Team", COALESCE(${totalscoreGewoon},0) as "Total"
                                 FROM stage_selection_rider 
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 LEFT JOIN results_points ON results_points.rider_participation_id = stage_selection_rider.rider_participation_id  AND results_points.stage_id = ${stage_id}
@@ -242,7 +247,7 @@ module.exports = function (app) {
                         var resultsGewoonQuery = stageresultsGewoonQuery + GCresultsGewoonQuery + pointsresultsGewoonQuery + komresultsGewoonQuery + youthresultsGewoonQuery;
                         
 
-                        var selectionsQueryGewoon = `SELECT username, ARRAY_AGG(json_build_object('Name', name, 'Score',CASE WHEN kopman THEN totalscore + 0.5*stagescore ELSE totalscore END,'rowClassName',"rowClassName")) AS riders FROM
+                        var selectionsQueryGewoon = `SELECT username, ARRAY_AGG(json_build_object('Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score',CASE WHEN kopman THEN totalscore + 0.5*stagescore ELSE totalscore END,'rowClassName',"rowClassName")) AS riders FROM
                         (SELECT username,CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, kopman_id = stage_selection_rider.rider_participation_id as kopman, ${rowClassNameGewoon}  FROM  stage_selection_rider
                                                     INNER JOIN rider_participation USING (rider_participation_id)
                                                     INNER JOIN rider USING (rider_id)
@@ -257,11 +262,11 @@ module.exports = function (app) {
                         var account_participation_idBudget = `(SELECT account_participation_id FROM account_participation 
                             WHERE account_id=${user.account_id} AND race_id=${race_id} AND budgetparticipation)`;
                         var stage_selection_idBudget = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_idBudget} AND stage_id=${stage_id})`
-
-                        var stagescoreBudget = `CASE stage_selection_rider.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idBudget} AND stage_id=${stage_id}) THEN stagescore * 1.5 ELSE stagescore END`
-                        var totalscoreBudget = `CASE stage_selection_rider.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idBudget} AND stage_id=${stage_id}) THEN totalscore + stagescore * .5 ELSE totalscore END`
-                        
-                        var teamresultBudgetQuery = `SELECT concat(firstname, ' ', lastname) AS "Name", COALESCE(${stagescoreBudget},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong",  COALESCE(teamscore,0) as "Team", COALESCE(${totalscoreBudget},0) as "Total"
+                        var kopmanBudget = `stage_selection_rider.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idBudget} AND stage_id=${stage_id})`
+                        var stagescoreBudget = `CASE ${kopmanBudget} THEN stagescore * 1.5 ELSE stagescore END`
+                        var totalscoreBudget = `CASE ${kopmanBudget} THEN totalscore + stagescore * .5 ELSE totalscore END`
+                        var nameBudget = `CASE ${kopmanBudget} THEN CONCAT('*', firstname, ' ', lastname) ELSE CONCAT(firstname, ' ', lastname) END  AS "Name"`
+                        var teamresultBudgetQuery = `SELECT ${nameBudget}, COALESCE(${stagescoreBudget},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong",  COALESCE(teamscore,0) as "Team", COALESCE(${totalscoreBudget},0) as "Total"
                                 FROM stage_selection_rider 
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 LEFT JOIN results_points ON results_points.rider_participation_id = stage_selection_rider.rider_participation_id  AND results_points.stage_id = ${stage_id}
@@ -324,7 +329,7 @@ module.exports = function (app) {
                                 GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
                                 ORDER BY " " ASC; `;
 
-                        var selectionsQueryBudget = `SELECT username, ARRAY_AGG(json_build_object('Name', name, 'Score',CASE WHEN kopman THEN totalscore + 0.5*stagescore ELSE totalscore END,'rowClassName',"rowClassName")) AS riders FROM
+                        var selectionsQueryBudget = `SELECT username, ARRAY_AGG(json_build_object('Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score',CASE WHEN kopman THEN totalscore + 0.5*stagescore ELSE totalscore END,'rowClassName',"rowClassName")) AS riders FROM
                                 (SELECT username,CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, kopman_id = stage_selection_rider.rider_participation_id as kopman, ${rowClassNameBudget}  FROM  stage_selection_rider
                                                             INNER JOIN rider_participation USING (rider_participation_id)
                                                             INNER JOIN rider USING (rider_id)
@@ -348,8 +353,6 @@ module.exports = function (app) {
                             var userscoresBudget = uitslagresults[9].rows;
                             var selectiesGewoon = uitslagresults[7].rows;
                             var selectiesBudget = uitslagresults[15].rows;
-                            console.log(uitslagresults[7].rows)
-                            console.log("QUERY",selectionsQueryGewoon)
                             for (var i in userscoresGewoon) { // VOOR DE selecties popup
                                 for (var j in selectiesGewoon) {
                                     if (userscoresGewoon[i].username == selectiesGewoon[j].username) {
