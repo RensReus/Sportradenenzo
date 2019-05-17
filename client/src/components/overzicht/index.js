@@ -23,6 +23,7 @@ class overzicht extends Component {
   }
 
   renderAll() {
+    document.title = "Alle Renners Overzicht";
     axios.post('/api/getriderpointsall', {token: localStorage.getItem('authToken'), race_id: 5, poule_id: 0, budgetparticipation:false})
       .then((res) => {
         if (res) {
@@ -36,6 +37,7 @@ class overzicht extends Component {
   }
 
   renderSelected() {
+    document.title = "Gekozen Renners Overzicht";
     axios.post('/api/getriderpointsselected', {token: localStorage.getItem('authToken'), race_id: 5, poule_id: 0, budgetparticipation:false})
       .then((res) => {
         if (res) {

@@ -95,18 +95,22 @@ class charts extends Component {
 		switch (this.state.chartname) {
 			case "userscores":
 				this.userscores();
+				document.title = "Chart: User Scores";
 				this.setState({ chartType: "line" })
 				break;
 			case "userrank":
 				this.userranking();
+				document.title = "User Rankings";
 				this.setState({chartType: "line"})
 				break;
 			case "riderpercentage":
 				this.riderpercentage()
+				document.title = "Chart: Renners Punten Aandeel/Relatief";
 				this.setState({ chartType: "stackedColumn" })
 				break;
 			case "riderpercentagetotal":
 				this.riderpercentagetotal()
+				document.title = "Chart: Renners Punten Aandeel/Absoluut";
 				this.setState({ chartType: "stackedArea" })
 				break;
 			default:

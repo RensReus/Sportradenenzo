@@ -21,7 +21,7 @@ class Profile extends Component{
       }
 
     componentWillMount(){
-        console.log("mount")
+        document.title = "Profiel";
         axios.post('/api/getracepartcipation',{race_id : this.state.upcomingRace_id})
         .then((res)=>{
             this.setState({upcomingParticipation: res.data.rowCount>0})

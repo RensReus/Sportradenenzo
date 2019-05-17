@@ -18,6 +18,7 @@ class Rider extends Component {
     axios.post('/api/getriderresults', { rider_participation_id: this.props.match.params.rider_participation_id })
       .then((res) => {
         if (res) {
+          document.title = res.data.title;
           this.setState({
             data: res.data.tableData,
             coltype: res.data.coltype,

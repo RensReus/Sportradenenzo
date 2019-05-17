@@ -43,6 +43,8 @@ class Teamselection extends Component{
     componentDidMount() {
         const race = this.state.race
         const year = this.state.year
+        document.title = "Team Keuze " + race;
+
         axios.post('/api/getridersandteam',{race, year, token: localStorage.getItem('authToken')}) //to: teamselection.js
         .then((res)=>{
             this.setState({

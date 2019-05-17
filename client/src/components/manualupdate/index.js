@@ -18,7 +18,7 @@ class manualupdate extends Component {
 
         this.handleChangeYear = this.handleChangeYear.bind(this);
         this.handleChangeName = this.handleChangeName.bind(this);
-
+        document.title = "Manuel Update";
         this.state = {
             gskStage: "",
             gskStatus: "",

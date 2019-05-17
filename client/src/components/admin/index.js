@@ -164,6 +164,7 @@ class Admin extends Component{
 
     componentDidMount() {
         this.input.focus();
+        document.title = "Admin";
     }
 
     render(){

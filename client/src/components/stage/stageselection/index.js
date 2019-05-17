@@ -58,14 +58,14 @@ class SelecTable extends Component {
             if(aSelected === bSelected) return 0;
             if(aSelected) return -1;
             return 1;
-
         })
-        userTeamSorted      .map(({lastname,team,rider_participation_id, dnf})=>{
+
+        userTeamSorted.map(({lastname,team,rider_participation_id,dnf})=>{
             var selected = 'unselected';
             if(selectionIDs.includes(rider_participation_id)){
                 selected = 'selected'
             }
-            if( selectionLength>=9 && selected!=='selected' || dnf){
+            if(selectionLength>=9 || selected==='selected' || dnf){
                 rows.push(<SelecTableRow name={lastname} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider}/>)
             }else{
                 if(selected === 'selected'){
