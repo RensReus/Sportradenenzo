@@ -154,17 +154,21 @@ module.exports = {
                 }
 
                 // store the team and id of the leader of each classification and stage winner for teampoints
-                $(".basic").each(function (index, element) {
+                var index = 0;
+                $(".basic").each(function (i, element) {
                     var end = $(this).children().eq(1).children().first().children().length;
-                    var classification = cases[index];
-
-                    if (end && classification !== 'Teams') {
-                        var columns = new Array();
-                        $(this).children().first().children().first().children().each(function (index, element) {
-                            columns.push($(this).text())
-                        })
-                        var teamCol = columns.indexOf("Team");
-                        teamWinners[classification] = $(this).children().eq(1).children().first().children().eq(teamCol).children().eq(0).text();
+                    if($(this).parent().attr("data-id")!=='bonifications' && $(this).parent().attr("data-id")!=='today'){
+                        var classification = cases[index];
+    
+                        if (end && classification !== 'Teams') {
+                            var columns = new Array();
+                            $(this).children().first().children().first().children().each(function (index, element) {
+                                columns.push($(this).text())
+                            })
+                            var teamCol = columns.indexOf("Team");
+                            teamWinners[classification] = $(this).children().eq(1).children().first().children().eq(teamCol).children().eq(0).text();
+                        }
+                        index++;
                     }
                 });
                 var ridersDay = new Array();
@@ -174,23 +178,26 @@ module.exports = {
                 var ridersYoc = new Array();
                 var ridersKom = new Array();
                 //process the full results and store in riders* arrays
-                $(".basic").each(function (index, element) {
+                var index = 0;
+
+                $(".basic").each(function (i, element) {
                     var end = $(this).children().eq(1).children().first().children().length;
-                    if (end && cases[index] !== 'Teams') {
+                    if (end && cases[index] !== 'Teams' && $(this).parent().attr("data-id")!=='bonifications' && $(this).parent().attr("data-id")!=='today') {
                         var classification = cases[index];
+                        index++;
                         var columns = new Array();
                         $(this).children().first().children().first().children().each(function (index, element) {
                             columns.push($(this).text());
                         })
                         var renCol = columns.indexOf("Rider");
                         var teamCol = columns.indexOf("Team");
-
                         $(this).children().eq(1).children().each(function (index, element) {//voor iedere renner in de uitslag
                             var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
                             var teamName = $(this).children().eq(teamCol).children().eq(0).text();
                             var timeCol = columns.indexOf('Time');
                             var pntCol = columns.indexOf('Pnt');
                             switch (classification) {
+                                
                                 case 'Stage'://Dag uitslag
                                     var pos = $(this).children().first().text();
                                     pos = parseInt(pos);
@@ -242,10 +249,11 @@ module.exports = {
                 }
                 dnfquery = dnfquery.slice(0, -1) + ")";
                 if(ridersDNF.length){ //only submit if > 0
-                    sqlDB.query(dnfquery, (err, res) => {
+                    sqlDB.query(dnfquery, (err, dnfres) => {
                         if (err) {console.log("WRONG QUERY:",dnfquery); throw err;}
                         else {
-                            console.log("Riders DNF updated", dnfquery.rowCount )
+                            console.log()
+                            console.log("Riders DNF updated", dnfres.rowCount )
                         }
                     });
                 }
