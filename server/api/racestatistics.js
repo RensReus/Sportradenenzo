@@ -241,7 +241,7 @@ module.exports = function (app) {
                 WHERE race_id = ${race_id} AND account_id = ${account_id} AND budgetparticipation = ${budgetparticipation}\n `
         var totalscore = 'totalscore';
         if(budgetparticipation) totalscore = 'totalscore - teamscore';
-        var ridersQuery = `SELECT stagenr, ARRAY_AGG(JSON_BUILD_OBJECT('id',rider_participation_id,'stage', stagescore,'total',${totalscore}) ORDER BY totalscore DESC) AS points FROM results_points 
+        var ridersQuery = `SELECT stagenr, ARRAY_AGG(JSON_BUILD_OBJECT('id',rider_participation_id,'stage', stagescore,'total',${totalscore}) ORDER BY ${totalscore} DESC) AS points FROM results_points 
                 INNER JOIN stage USING(stage_id)
                 WHERE rider_participation_id IN (${teamselection})
                 GROUP BY stagenr;\n `;
@@ -261,6 +261,7 @@ module.exports = function (app) {
                 optimalPoints = 0;
                 var totalscores = results[0].rows[i].points.map(scores => ({ score: scores.total, id: scores.id }));
                 var stagescores = results[0].rows[i].points.map(scores => ({ score: scores.stage, id: scores.id }));
+                stagescores.sort(function(a,b){return b.score - a.score})
                 var bestId = stagescores[0].id;
                 var pos = functies.attrIndex(totalscores, 'index', bestId)
                 var forRenners = 9;
