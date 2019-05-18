@@ -264,6 +264,10 @@ class Stage extends Component {
             pTable = ''
             stResTable = ''
         } else if (mode === 'selection') {
+            var stageProfile = '';
+            if(this.state.stage >8 && this.state.stage < 22){//TODO netter
+                var stageProfile = <img src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')}  alt="profile" width="700"/>
+            }
             var starttime = new Date(this.state.starttime);
             starttimeString = " Starttijd: " + starttime.getHours() + ":" + starttime.getMinutes();
             selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider=> rider.rider_participation_id)} kopman={kopman} selectRider={this.selectRider} removeRider={this.removeRider} setKopman={this.setKopman}/>
@@ -292,6 +296,8 @@ class Stage extends Component {
             <div className="res">{resTable}{pTable}</div>
             <div className="poule"></div>
             <div className="stage">{stResTable}</div>
+            {stageProfile}
+
             </div>
         )
     }

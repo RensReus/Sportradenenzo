@@ -239,7 +239,9 @@ module.exports = function (app) {
         var teamselection = `SELECT rider_participation_id FROM team_selection_rider
                 INNER JOIN account_participation USING(account_participation_id)
                 WHERE race_id = ${race_id} AND account_id = ${account_id} AND budgetparticipation = ${budgetparticipation}\n `
-        var ridersQuery = `SELECT stagenr, ARRAY_AGG(JSON_BUILD_OBJECT('id',rider_participation_id,'stage', stagescore,'total',totalscore) ORDER BY totalscore DESC) AS points FROM results_points 
+        var totalscore = 'totalscore';
+        if(budgetparticipation) totalscore = 'totalscore - teamscore';
+        var ridersQuery = `SELECT stagenr, ARRAY_AGG(JSON_BUILD_OBJECT('id',rider_participation_id,'stage', stagescore,'total',${totalscore}) ORDER BY totalscore DESC) AS points FROM results_points 
                 INNER JOIN stage USING(stage_id)
                 WHERE rider_participation_id IN (${teamselection})
                 GROUP BY stagenr;\n `;

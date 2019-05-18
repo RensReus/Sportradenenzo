@@ -264,9 +264,9 @@ module.exports = function (app) {
                         var stage_selection_idBudget = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_idBudget} AND stage_id=${stage_id})`
                         var kopmanBudget = `stage_selection_rider.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_idBudget} AND stage_id=${stage_id})`
                         var stagescoreBudget = `CASE ${kopmanBudget} THEN stagescore * 1.5 ELSE stagescore END`
-                        var totalscoreBudget = `CASE ${kopmanBudget} THEN totalscore + stagescore * .5 ELSE totalscore END`
+                        var totalscoreBudget = `CASE ${kopmanBudget} THEN totalscore + stagescore * .5 - teamscore ELSE totalscore - teamscore END`
                         var nameBudget = `CASE ${kopmanBudget} THEN CONCAT('*', firstname, ' ', lastname) ELSE CONCAT(firstname, ' ', lastname) END  AS "Name"`
-                        var teamresultBudgetQuery = `SELECT ${nameBudget}, COALESCE(${stagescoreBudget},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong",  COALESCE(teamscore,0) as "Team", COALESCE(${totalscoreBudget},0) as "Total"
+                        var teamresultBudgetQuery = `SELECT ${nameBudget}, COALESCE(${stagescoreBudget},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", COALESCE(${totalscoreBudget},0) as "Total"
                                 FROM stage_selection_rider 
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 LEFT JOIN results_points ON results_points.rider_participation_id = stage_selection_rider.rider_participation_id  AND results_points.stage_id = ${stage_id}
@@ -370,6 +370,17 @@ module.exports = function (app) {
                             var teamresultGewoon = [];
                             if(uitslagresults[0].rowCount){
                                 teamresultGewoon = uitslagresults[0].rows;
+                                var totalteamGewoon = {"Name":"Totaal","Stage":0,"AK":0,"Punten":0,"Berg":0,"Jong":0,"Team":0,"Total":0}
+                                for(var i in teamresultGewoon){
+                                    totalteamGewoon.Stage += parseInt(teamresultGewoon[i].Stage);
+                                    totalteamGewoon.AK += teamresultGewoon[i].AK;
+                                    totalteamGewoon.Punten += teamresultGewoon[i].Punten;
+                                    totalteamGewoon.Berg += teamresultGewoon[i].Berg;
+                                    totalteamGewoon.Jong += teamresultGewoon[i].Jong;
+                                    totalteamGewoon.Team += teamresultGewoon[i].Team;
+                                    totalteamGewoon.Total += parseInt(teamresultGewoon[i].Total);
+                                }
+                                teamresultGewoon.push(totalteamGewoon);
                             }
                             var stageresultsGewoon = [];
                             if(uitslagresults[2].rowCount){
@@ -382,6 +393,16 @@ module.exports = function (app) {
                             var teamresultBudget = [];
                             if(uitslagresults[8].rowCount){
                                 teamresultBudget = uitslagresults[8].rows;
+                                var totalteamBudget = {"Name":"Totaal","Stage":0,"AK":0,"Punten":0,"Berg":0,"Jong":0,"Total":0}
+                                for(var i in teamresultBudget){
+                                    totalteamBudget.Stage += parseInt(teamresultBudget[i].Stage);
+                                    totalteamBudget.AK += teamresultBudget[i].AK;
+                                    totalteamBudget.Punten += teamresultBudget[i].Punten;
+                                    totalteamBudget.Berg += teamresultBudget[i].Berg;
+                                    totalteamBudget.Jong += teamresultBudget[i].Jong;
+                                    totalteamBudget.Total += parseInt(teamresultBudget[i].Total);
+                                }
+                                teamresultBudget.push(totalteamBudget);
                             }
                             var stageresultsBudget = [];
                             if(uitslagresults[10].rowCount){
