@@ -78,6 +78,28 @@ class Table extends Component {
         this.onSort = this.onSort.bind(this);
         this.scrollClick = this.scrollClick.bind(this);
     }
+    componentDidMount(){
+        this.setState({
+            data: this.props.data,
+            title: this.props.title,
+            colNames: this.props.colNames,
+            displayCol: this.props.displayCol,
+            classNames: this.props.classNames,
+            maxRows: this.props.maxRows,
+        })
+        if(this.props.maxRows < this.props.data.length){ //if more rows than allows spread over multiple tabs
+            var scrollCount = Math.ceil(this.props.data.length/this.props.maxRows);
+            for(var i = 0; i < scrollCount; i++){
+                this.state.scrollShow[i]= !i ? 'block' : 'none'
+            }
+        }
+        if (this.props.coltype != null) {
+            this.setState({
+                coltype: JSON.parse(JSON.stringify(this.props.coltype)),// de double JSON is omdat deze anders verwijzen naar hetzelfde object dit is een soort copy
+                desc: JSON.parse(JSON.stringify(this.props.coltype))// string default sort asc, numbers sort default desc
+            })
+        }
+    }
 
     componentDidUpdate(prevProps) {
         if (this.props !== prevProps) { // compares properties before and after update
@@ -146,13 +168,6 @@ class Table extends Component {
 
     render() { 
         var tables = []; 
-        // var extraTabs = ""
-        // if(this.state.title === 'Uitslag'){// checkt of er meerdere tabbladen zijn moet nog afgemaakt worden
-        //     extraTabs = <div className="btn-group">
-        //                     <button id="klassementknop0" className="klassementbutton selected" onClick="">Dag</button>
-        //                     <button id="klassementknop1" className="klassementbutton" onClick="">AK</button>
-        //                 </div>
-        // }
         var scrollButtons = "";
         var scrollCount = 1;
         
@@ -186,7 +201,6 @@ class Table extends Component {
         }
         return (
             <div>
-                {/* {extraTabs} */}
                 {scrollButtons}
                 {tables}
             </div>

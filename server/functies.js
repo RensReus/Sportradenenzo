@@ -328,7 +328,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
                     ORDER BY stagenr DESC
                     LIMIT 1`;
   sqlDB.query(stageQuery,function(err,results){//returns the most recent stage that started
-    if (err) {console.log("WRONG QUERY:",query); throw err;}
+    if (err) {console.log("WRONG QUERY:",stageQuery); throw err;}
     else{
       if(results.rows.length){// if some results, so at least after start of stage 1
         var stage = results.rows[0];

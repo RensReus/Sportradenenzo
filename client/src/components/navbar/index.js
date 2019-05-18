@@ -33,8 +33,9 @@ class Navbar extends Component {
                 <div className="dropdown-content">
                     <a className='item' href="/etappewinsten">Uitslagen per etappe</a>
                     <a className='item' href="/overzicht/missedpoints">Gemiste punten</a>
-                    <a className='item' href="/overzicht/all">Overzicht alle renners</a>
-                    <a className='item' href="/overzicht/selected">Overzicht geselecteerde renners</a>
+                    <a className='item' href="/overzicht/missedpointsall">Gemiste punten iedereen</a>
+                    <a className='item' href="/overzicht/all">Alle renners</a>
+                    <a className='item' href="/overzicht/selected">Geselecteerde renners</a>
                 </div>
             </div>;
         } else {

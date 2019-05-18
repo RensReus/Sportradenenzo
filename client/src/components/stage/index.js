@@ -284,7 +284,7 @@ class Stage extends Component {
                     <button onClick={this.nextStage}>To next stage </button>
                 </div>
             </div>
-            <button onClick={this.budgetSwitch}>Switch mode normaal/budget</button>
+            <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
             {selectionTable}
             {selecTable}
             {loadingGif}
