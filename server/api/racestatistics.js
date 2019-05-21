@@ -288,6 +288,79 @@ module.exports = function (app) {
         })
     }
 
+    app.post('/api/teamoverzicht', function (req, res) {
+        jwt.verify(req.body.token, getSecret(), function (err, user) {
+            if (err) {
+                res.redirect('/')
+                throw err;
+            } else {
+                teamoverzicht(user.account_id,req.body.race_id,req.body.budgetparticipation,function(err,outputArray){
+                    if(err) throw err;
+                    res.send({
+                        tableData: outputArray,
+                        title: "Gemiste Punten"
+                    })
+                })    
+            }
+        })
+    })
+
+    app.post('/api/teamoverzichtall', function (req, res) {
+        jwt.verify(req.body.token, getSecret(), function (err, user) {
+            if (err) {
+                res.redirect('/')
+                throw err;
+            } else {
+                async.auto({
+                    bierfietsen: function(callback){
+                        teamoverzicht(1,req.body.race_id,req.body.budgetparticipation,callback)
+                    },
+                    rens: function(callback){
+                        teamoverzicht(2,req.body.race_id,req.body.budgetparticipation,callback)
+                    },
+                    sam: function(callback){
+                        teamoverzicht(4,req.body.race_id,req.body.budgetparticipation,callback)
+                    },
+                    yannick: function(callback){
+                        teamoverzicht(5,req.body.race_id,req.body.budgetparticipation,callback)
+                    }
+                }, function (err,results){
+                    if(err) throw err;
+                    var users = []
+                    users.push({tableData: results.bierfietsen, title: "Bierfietsen"});
+                    users.push({tableData: results.rens, title: "Rens"});
+                    users.push({tableData: results.sam, title: "Sam"});
+                    users.push({tableData: results.yannick, title: "Yannick"});
+                    res.send({users})
+            })   
+            }
+        })
+    })
+
+    teamoverzicht = function (account_id, race_id, budgetparticipation, callback){
+        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetparticipation = ${budgetparticipation})`
+        var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
+            INNER JOIN stage_selection USING(stage_selection_id)
+            WHERE account_participation_id = ${account_participation_id}
+            ORDER BY stage_id) a`
+        var totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 ELSE totalscore END`
+        var stagescore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN stagescore * 1.5 ELSE stagescore END`
+        var teamscore = `,  SUM(teamscore) AS "Team"`;
+        if(budgetparticipation){
+            totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 - teamscore ELSE totalscore - teamscore END`
+            teamscore = '';
+        }
+        var query = `SELECT CONCAT(firstname, ' ', lastname) as "Name", SUM(${stagescore}) AS "Stage", SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong" ${teamscore}, sum(${totalscore}) "Total" from rider
+                    INNER JOIN rider_participation USING(rider_id)
+                    RIGHT JOIN ${selected_riders_stages} USING (rider_participation_id)
+                    INNER JOIN results_points USING(stage_id,rider_participation_id)
+                    GROUP BY "Name"
+                    ORDER BY "Total" DESC`
+        sqlDB.query(query,(err,results) => {
+            if (err) { console.log("WRONG QUERY:", query); throw err; }
+            callback(err,results.rows)
+        })
+    }
 
 
     //CHARTS

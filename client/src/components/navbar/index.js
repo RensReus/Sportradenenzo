@@ -34,6 +34,8 @@ class Navbar extends Component {
                     <a className='item' href="/etappewinsten">Uitslagen per etappe</a>
                     <a className='item' href="/overzicht/missedpoints">Gemiste punten</a>
                     <a className='item' href="/overzicht/missedpointsall">Gemiste punten iedereen</a>
+                    <a className='item' href="/overzicht/team">Team overzicht</a>
+                    <a className='item' href="/overzicht/teamall">Team overzicht iedereen</a>
                     <a className='item' href="/overzicht/all">Alle renners</a>
                     <a className='item' href="/overzicht/selected">Geselecteerde renners</a>
                 </div>

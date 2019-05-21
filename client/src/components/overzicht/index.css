@@ -4,3 +4,8 @@
 table.ScoreTable tr.inteam {
     font-weight: bold;
 }
+
+.tableDiv{
+    float: left;
+    padding: 10px;
+}

@@ -64,3 +64,13 @@ table.outputTable{
     border: 1px solid #ccc;
     border-top: none;
   } 
+
+  .varRow {
+    color: white;
+  }
+
+  .varRow textarea { 
+    height: 100px;
+    width: 1000px;
+    font-size: 16px;
+  }

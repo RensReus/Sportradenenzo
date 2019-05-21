@@ -23,6 +23,8 @@ class overzicht extends Component {
       case "selected": this.renderSelected(); break;
       case "missedpoints": this.renderMissedPoints(); break;
       case "missedpointsall": this.renderMissedPointsAll(); break;
+      case "team": this.renderTeam(); break;
+      case "teamall": this.renderTeamAll(); break;
       default: this.renderAll(); break;
     }
   }
@@ -34,6 +36,8 @@ class overzicht extends Component {
       case "selected": this.renderSelected(); break;
       case "missedpoints": this.renderMissedPoints(); break;
       case "missedpointsall": this.renderMissedPointsAll(); break;
+      case "team": this.renderTeam(); break;
+      case "teamall": this.renderTeamAll(); break;
       default: this.renderAll(); break;
     }
     })
@@ -89,7 +93,7 @@ class overzicht extends Component {
         if (res) {
           var extraTables = []
           for(var i in res.data.users){
-              extraTables.push(<Table data={res.data.users[i].tableData} title={res.data.users[i].title}/>)
+              extraTables.push(<div className="tableDiv" ><Table data={res.data.users[i].tableData} title={res.data.users[i].title}/></div>)
           }
           this.setState({
             extraTables: extraTables,
@@ -98,6 +102,39 @@ class overzicht extends Component {
         }
       })
   }
+
+  renderTeam(){
+    document.title = "Team Overzicht";
+    axios.post('/api/teamoverzicht', {token: localStorage.getItem('authToken'), race_id: 5, budgetparticipation:this.state.budget})
+      .then((res) => {
+        if (res) {
+          this.setState({
+            data: res.data.tableData,
+            tableName: res.data.title,
+            switchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+          })
+        }
+      })
+  }
+
+  renderTeamAll() {
+    document.title = "Team Overzicht Iedereen";
+    axios.post('/api/teamoverzichtall', {token: localStorage.getItem('authToken'), race_id: 5, budgetparticipation:this.state.budget})
+      .then((res) => {
+        if (res) {
+          console.log(res.data)
+          var extraTables = []
+          for(var i in res.data.users){
+              extraTables.push(<div className="tableDiv" ><Table data={res.data.users[i].tableData} title={res.data.users[i].title}/></div>)
+          }
+          this.setState({
+            extraTables: extraTables,
+            switchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+          })
+        }
+      })
+  }
+
 
   render() {
     return (
