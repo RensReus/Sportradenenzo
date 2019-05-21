@@ -282,7 +282,7 @@ module.exports = {
                     var jongComp = ridersYoc.length; //+ jongDNF.length == ;
                     if (et == 1) { jongComp = true; bergComp = true; }
                     console.log(ridersGC.length , ridersDNF.length,GCprevlength)
-                    if (akComp && sprintComp && bergComp && jongComp) {
+                    if (akComp && sprintComp && bergComp && jongComp && ridersGC.length === ridersDay.length) {
                         uitslagCompleet = true;
                     }
                     
