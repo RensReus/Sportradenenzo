@@ -399,7 +399,7 @@ module.exports = {
             $(".home1").first().children('.homeTbl1').first().children().first().children().first().children().eq(1).children().each(function () {
                 if ($(this).children().eq(2).text().startsWith('Giro d\'Italia')) { // voor de giro
                     girobeschikbaar = true;
-                    if ($(this).children().eq(0).text() != 'finished' || $(this).children().eq(0).text() != '-') {
+                    if ($(this).children().eq(0).text() != 'finished' && $(this).children().eq(0).text() != '-') {
                         var timeRemaining = $(this).children().eq(0).text();
                         console.log("Time Remaining: ",timeRemaining);
                         if (timeRemaining[timeRemaining.length - 1] === 'm' || timeRemaining[0] === 1 ) { // als nog een uur of minder
