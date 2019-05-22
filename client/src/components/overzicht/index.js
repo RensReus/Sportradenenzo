@@ -111,6 +111,7 @@ class overzicht extends Component {
           this.setState({
             data: res.data.tableData,
             tableName: res.data.title,
+            coltype: res.data.coltype,
             switchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
           })
         }
@@ -125,7 +126,7 @@ class overzicht extends Component {
           console.log(res.data)
           var extraTables = []
           for(var i in res.data.users){
-              extraTables.push(<div className="tableDiv" ><Table data={res.data.users[i].tableData} title={res.data.users[i].title}/></div>)
+              extraTables.push(<div className="tableDiv" ><Table data={res.data.users[i].tableData} title={res.data.users[i].title} coltype={res.data.users[i].coltype}/></div>)
           }
           this.setState({
             extraTables: extraTables,
