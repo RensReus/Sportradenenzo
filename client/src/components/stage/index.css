@@ -1,10 +1,3 @@
-tr:nth-child(odd) {
-    background: #f9f9f9;
-}
-tr:nth-child(even) {
-    background: #fff;
-}
-
 
 div.stageContainer{  
     display: grid;
@@ -76,4 +69,33 @@ div.stage {
 button.block{
     background: rgb(61, 61, 61);
     color: white;
+}
+
+button.selectbutton{
+    height: 30px;
+    width: 100%;
+    cursor: pointer;
+}
+
+td.selectbutton{
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+td.remove{
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    text-align: center;
+    font-size: 10px
+}
+td.add{
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    text-align: center;
+    font-size: 15px
 }

@@ -41,12 +41,12 @@ tr.inselection{
 }
 
 th, td {
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     padding-left: 5px;
     padding-right: 5px;
     text-align: center;
-    font-size: 17px
+    font-size: 15px
 }
 
 .scrollButton {

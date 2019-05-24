@@ -128,8 +128,9 @@ module.exports = function (app) {
                 var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = '${req.body.year}')`;
                 var now = new Date();
                 var query = `SELECT starttime FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
+
                 sqlDB.query(query, (err, results) => {
-                            if (err) {console.log("WRONG QUERY:",query); throw err;}
+                    if (err) {console.log("WRONG QUERY:",query); throw err;}
                     if (now < results.rows[0].starttime) {
                         async.auto({
                             userSelectionGewoon: function (callback) {
@@ -152,6 +153,122 @@ module.exports = function (app) {
                             },
                             startTime: function (callback) {
                                 SQLread.getStageStarttime(5, req.body.stage, callback)// TODO Fix hardcoded race_id
+                            },
+                            prevClassificationsGewoon: function(callback){
+                                var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
+                                var account_participation_id = `(SELECT account_participation_id FROM account_participation 
+                                    WHERE account_id=${user.account_id} AND race_id=${race_id} AND NOT budgetparticipation)`;
+                                var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
+
+                                var inSelection = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'inselection' ELSE '' END`
+                                var inteam = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'inteam' ELSE '' END`
+                                var rowClassName = `CONCAT(${inSelection},' ', ${inteam}) AS "rowClassName"`;
+                                var stage_idPrev = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage-1})`;
+                                var GCresultsQuery = `SELECT gcpos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", gcresult AS "Time", ${rowClassName}
+                                        FROM results_points
+                                        INNER JOIN rider_participation USING(rider_participation_id)
+                                        INNER JOIN rider USING(rider_id)
+                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                        WHERE stage_id=${stage_idPrev} AND gcpos > 0 
+                                        GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
+                                        ORDER BY " " ASC
+                                        LIMIT 5; `;
+
+                                var pointsresultsQuery = `SELECT pointspos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", pointsresult AS "Punten", ${rowClassName}
+                                        FROM results_points
+                                        INNER JOIN rider_participation USING(rider_participation_id)
+                                        INNER JOIN rider USING(rider_id)
+                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                        WHERE stage_id=${stage_idPrev} AND pointspos > 0 
+                                        GROUP BY " ", "Name", "Team", "Punten", stage_selection_rider.rider_participation_id
+                                        ORDER BY " " ASC
+                                        LIMIT 5; `;
+
+                                var komresultsQuery = `SELECT kompos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", komresult AS "Punten", ${rowClassName}
+                                        FROM results_points
+                                        INNER JOIN rider_participation USING(rider_participation_id)
+                                        INNER JOIN rider USING(rider_id)
+                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                        WHERE stage_id=${stage_idPrev} AND kompos > 0 
+                                        GROUP BY " ", "Name", "Team", "Punten", stage_selection_rider.rider_participation_id
+                                        ORDER BY " " ASC
+                                        LIMIT 5; `;
+
+                                var youthresultsQuery = `SELECT yocpos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", yocresult AS "Time", ${rowClassName}
+                                        FROM results_points
+                                        INNER JOIN rider_participation USING(rider_participation_id)
+                                        INNER JOIN rider USING(rider_id)
+                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                        WHERE stage_id=${stage_idPrev} AND yocpos > 0 
+                                        GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
+                                        ORDER BY " " ASC
+                                        LIMIT 5; `;
+
+                                var totalQuery = GCresultsQuery + pointsresultsQuery + komresultsQuery + youthresultsQuery;
+                                sqlDB.query(totalQuery, (err, selectClassResult) => {
+                                    if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+                                    
+                                    callback(err,selectClassResult)
+                                })
+                                
+                            },
+                            prevClassificationsBudget: function(callback){
+                                var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
+                                var account_participation_id = `(SELECT account_participation_id FROM account_participation 
+                                    WHERE account_id=${user.account_id} AND race_id=${race_id} AND budgetparticipation)`;
+                                var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
+
+                                var inSelection = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'inselection' ELSE '' END`
+                                var inteam = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'inteam' ELSE '' END`
+                                var rowClassName = `CONCAT(${inSelection},' ', ${inteam}) AS "rowClassName"`;
+                                var stage_idPrev = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage-1})`;
+                                var GCresultsQuery = `SELECT gcpos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", gcresult AS "Time", ${rowClassName}
+                                        FROM results_points
+                                        INNER JOIN rider_participation USING(rider_participation_id)
+                                        INNER JOIN rider USING(rider_id)
+                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                        WHERE stage_id=${stage_idPrev} AND gcpos > 0 
+                                        GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
+                                        ORDER BY " " ASC
+                                        LIMIT 5; `;
+
+                                var pointsresultsQuery = `SELECT pointspos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", pointsresult AS "Punten", ${rowClassName}
+                                        FROM results_points
+                                        INNER JOIN rider_participation USING(rider_participation_id)
+                                        INNER JOIN rider USING(rider_id)
+                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                        WHERE stage_id=${stage_idPrev} AND pointspos > 0 
+                                        GROUP BY " ", "Name", "Team", "Punten", stage_selection_rider.rider_participation_id
+                                        ORDER BY " " ASC
+                                        LIMIT 5; `;
+
+                                var komresultsQuery = `SELECT kompos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", komresult AS "Punten", ${rowClassName}
+                                        FROM results_points
+                                        INNER JOIN rider_participation USING(rider_participation_id)
+                                        INNER JOIN rider USING(rider_id)
+                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                        WHERE stage_id=${stage_idPrev} AND kompos > 0 
+                                        GROUP BY " ", "Name", "Team", "Punten", stage_selection_rider.rider_participation_id
+                                        ORDER BY " " ASC
+                                        LIMIT 5; `;
+
+                                var youthresultsQuery = `SELECT yocpos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", yocresult AS "Time", ${rowClassName}
+                                        FROM results_points
+                                        INNER JOIN rider_participation USING(rider_participation_id)
+                                        INNER JOIN rider USING(rider_id)
+                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
+                                        WHERE stage_id=${stage_idPrev} AND yocpos > 0 
+                                        GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
+                                        ORDER BY " " ASC
+                                        LIMIT 5; `;
+
+                                var totalQuery = GCresultsQuery + pointsresultsQuery + komresultsQuery + youthresultsQuery;
+                                sqlDB.query(totalQuery, (err, selectClassResult) => {
+                                    if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+                                    
+                                    callback(err,selectClassResult)
+                                })
+                                
                             }
                         }, function (err, asyncresults) {
                             if (err) throw err;
@@ -164,6 +281,8 @@ module.exports = function (app) {
                                 'kopmanGewoon': asyncresults.kopmanGewoon,
                                 'kopmanBudget': asyncresults.kopmanBudget,
                                 starttime: asyncresults.startTime.starttime,
+                                prevClassificationsGewoon: asyncresults.prevClassificationsGewoon,
+                                prevClassificationsBudget: asyncresults.prevClassificationsBudget
                             })
                         });
                     } else {

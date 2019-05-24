@@ -200,7 +200,7 @@ class Table extends Component {
                 </table>
         }
         return (
-            <div>
+            <div style={{display: "block"}}>
                 {scrollButtons}
                 {tables}
             </div>

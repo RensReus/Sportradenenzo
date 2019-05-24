@@ -1,0 +1,8 @@
+
+Select count(rider_participation_id) AS "Uitvallers", username, budgetparticipation AS budget FROM rider_participation
+INNER JOIN team_selection_rider USING(rider_participation_id)
+INNER JOIN account_participation USING(account_participation_id)
+INNER JOIN account USING(account_id)
+WHERE rider_participation.race_id = 5 AND dnf AND NOT username  = 'tester'
+GROUP BY username, budget
+ORDER BY budget, "Uitvallers" DESC

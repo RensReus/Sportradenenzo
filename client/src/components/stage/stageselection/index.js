@@ -1,47 +1,28 @@
 import React, { Component } from 'react';
 
-class Selectionbutton extends Component{
-    selectRider=()=> {
-        if(this.props.selected==='unselected'){
-            this.props.selectRider(this.props.riderID);
-        }
-    }
-    render(){
-        return(
-            <button className={this.props.selected} onClick={() => this.selectRider(this.props.riderID)}>{this.props.selected}</button>
-        )
-    }
-}
-
 class SelecTableRow extends Component{
-    removeRider=()=> {
-        this.props.removeRider(this.props.riderID);
-    }
     setKopman=()=> {
         this.props.setKopman(this.props.riderID);
     }
     render(){
-        let removeButton
+        let addRemoveButton
         let setKopmanButton
         if(this.props.selected==='selected'){
+            addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID,'remove')}>-</button>
             if(this.props.kopman===this.props.riderID){
-                setKopmanButton = <button onClick={() => this.setKopman(this.props.riderID)}>IS DE KOPMAN</button>
-                removeButton = <button onClick={() => this.removeRider(this.props.riderID)}>Remove rider</button>
+                setKopmanButton = <button className="selectbutton" onClick={() => this.setKopman(this.props.riderID)}>✓</button>
             }else{
-                setKopmanButton = <button onClick={() => this.setKopman(this.props.riderID)}>Maak kopman</button>
-                removeButton = <button onClick={() => this.removeRider(this.props.riderID)}>Remove rider</button>
+                setKopmanButton = <button className="selectbutton" onClick={() => this.setKopman(this.props.riderID)}></button>
             }
-        }else{
-            removeButton = ''
-            setKopmanButton = ''
+        }else if(this.props.selected==='unselected'){
+            addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID,'add')}>+</button>
         }
         return(
             <tr >
-                <td>{setKopmanButton}</td>
+                <td className="selectbutton">{setKopmanButton}</td>
                 <td className={this.props.selected}>{this.props.name}</td>
                 <td className={this.props.selected}>{this.props.team}</td>
-                <td><Selectionbutton selected={this.props.selected} selectRider={this.props.selectRider} riderID={this.props.riderID}/></td>
-                <td>{removeButton}</td>
+                <td className="selectbutton">{addRemoveButton}</td>
             </tr>
         )
     }
@@ -66,12 +47,12 @@ class SelecTable extends Component {
                 selected = 'selected'
             }
             if((selectionLength>=9 && selected!=='selected') || dnf){
-                rows.push(<SelecTableRow name={lastname} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider}/>)
+                rows.push(<SelecTableRow name={lastname} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider}/>)
             }else{
                 if(selected === 'selected'){
-                    rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider} removeRider={this.props.removeRider} setKopman={this.props.setKopman}/>)
+                    rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} setKopman={this.props.setKopman}/>)
                 }else{
-                    rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} selectRider={this.props.selectRider}/>)
+                    rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider}/>)
                 }
             }
         })
@@ -80,8 +61,10 @@ class SelecTable extends Component {
                 <caption>{selectionLength}/9</caption>
                 <thead>
                     <tr>
+                        <th>Kopman</th>
                         <th>Name</th>
                         <th>Team</th>
+                        <th>   </th>
                     </tr>
                 </thead>
                 <tbody>
