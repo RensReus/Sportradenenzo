@@ -34,10 +34,10 @@ class StageResults extends Component{
         buttons.push(<button style={{display: klassementen[1].length ? 'block' : 'none', float: "left"}} className={"klassementButton " + this.state.scrollShow[1]} key="Algemeen" onClick={this.showResult.bind(this,1)}>Algemeen</button>)
         buttons.push(<button style={{display: klassementen[2].length ? 'block' : 'none', float: "left"}} className={"klassementButton " + this.state.scrollShow[2]} key="Punten" onClick={this.showResult.bind(this,2)}>Punten</button>)
         buttons.push(<button style={{display: klassementen[3].length ? 'block' : 'none', float: "left"}} className={"klassementButton " + this.state.scrollShow[3]} key="Berg" onClick={this.showResult.bind(this,3)}>Berg</button>)
-        buttons.push(<button style={{display: klassementen[4].length ? 'block' : 'none'}} className={"klassementButton " + this.state.scrollShow[4]} key="Jong" onClick={this.showResult.bind(this,4)}>Jong</button>)
+        buttons.push(<button style={{display: klassementen[4].length ? 'block' : 'none', float: "left"}} className={"klassementButton " + this.state.scrollShow[4]} key="Jong" onClick={this.showResult.bind(this,4)}>Jong</button>)
         return(
             <div>
-                <div>
+                <div style={{display: 'block'}}>
                     {buttons}
                 </div>
                 <div style={{display: this.state.scrollShow[0]}}>

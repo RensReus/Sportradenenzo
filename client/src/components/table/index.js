@@ -131,10 +131,10 @@ class Table extends Component {
         var coltype = this.state.coltype;
         var desc = this.state.desc;
         if (coltype[sortKey] && desc[sortKey]) {// number & desc
-            data.sort((a, b) => parseFloat(a[sortKey]) < parseFloat(b[sortKey]))
+            data.sort((b, a) => parseFloat(a[sortKey]) - parseFloat(b[sortKey]))
         }
         if (coltype[sortKey] && !desc[sortKey]) {// number & asc
-            data.sort((b, a) => parseFloat(a[sortKey]) < parseFloat(b[sortKey]))
+            data.sort((a, b) => parseFloat(a[sortKey]) - parseFloat(b[sortKey]))
         }
         if (!coltype[sortKey] && desc[sortKey]) {// string & desc
             data.sort((b, a) => a[sortKey].localeCompare(b[sortKey]))
@@ -200,7 +200,7 @@ class Table extends Component {
                 </table>
         }
         return (
-            <div style={{display: "block"}}>
+            <div style={{clear: 'left'}}>
                 {scrollButtons}
                 {tables}
             </div>
