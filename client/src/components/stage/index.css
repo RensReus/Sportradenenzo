@@ -60,13 +60,20 @@ div.stage {
 .klassementButton{
     background-color: gray;
     font-size: 16px;
+    width: 20%
 }
 
 .klassementButton:hover{
     background-color: lightgray;
     cursor: pointer;
 }
+
 button.block{
+    background: rgb(61, 61, 61);
+    color: white;
+}
+
+button.table{
     background: rgb(61, 61, 61);
     color: white;
 }
@@ -83,19 +90,15 @@ td.selectbutton{
     padding-left: 0px;
     padding-right: 0px;
 }
-td.remove{
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-    text-align: center;
-    font-size: 10px
+
+.classificationsContainer{
+    min-width: 600px;
 }
-td.add{
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-    text-align: center;
-    font-size: 15px
+
+table.classification{
+    width: 100%;
+}
+
+div.classification{
+    width: 100%;
 }

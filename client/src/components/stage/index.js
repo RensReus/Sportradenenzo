@@ -30,30 +30,30 @@ class StageResults extends Component{
                 klassementen.push([])
             }
         }
-        buttons.push(<button style={{display: klassementen[0].length ? 'block' : 'none', float: "left"}} className={"klassementButton " + this.state.scrollShow[0]} key="Etappe" onClick={this.showResult.bind(this,0)}>Etappe</button>)
-        buttons.push(<button style={{display: klassementen[1].length ? 'block' : 'none', float: "left"}} className={"klassementButton " + this.state.scrollShow[1]} key="Algemeen" onClick={this.showResult.bind(this,1)}>Algemeen</button>)
-        buttons.push(<button style={{display: klassementen[2].length ? 'block' : 'none', float: "left"}} className={"klassementButton " + this.state.scrollShow[2]} key="Punten" onClick={this.showResult.bind(this,2)}>Punten</button>)
-        buttons.push(<button style={{display: klassementen[3].length ? 'block' : 'none', float: "left"}} className={"klassementButton " + this.state.scrollShow[3]} key="Berg" onClick={this.showResult.bind(this,3)}>Berg</button>)
-        buttons.push(<button style={{display: klassementen[4].length ? 'block' : 'none', float: "left"}} className={"klassementButton " + this.state.scrollShow[4]} key="Jong" onClick={this.showResult.bind(this,4)}>Jong</button>)
+        buttons.push(<button style={{display: klassementen[0].length ? 'block' : 'none'}} className={"klassementButton " + this.state.scrollShow[0]} key="Etappe" onClick={this.showResult.bind(this,0)}>Etappe</button>)
+        buttons.push(<button style={{display: klassementen[1].length ? 'block' : 'none'}} className={"klassementButton " + this.state.scrollShow[1]} key="Algemeen" onClick={this.showResult.bind(this,1)}>Algemeen</button>)
+        buttons.push(<button style={{display: klassementen[2].length ? 'block' : 'none'}} className={"klassementButton " + this.state.scrollShow[2]} key="Punten" onClick={this.showResult.bind(this,2)}>Punten</button>)
+        buttons.push(<button style={{display: klassementen[3].length ? 'block' : 'none'}} className={"klassementButton " + this.state.scrollShow[3]} key="Berg" onClick={this.showResult.bind(this,3)}>Berg</button>)
+        buttons.push(<button style={{display: klassementen[4].length ? 'block' : 'none'}} className={"klassementButton " + this.state.scrollShow[4]} key="Jong" onClick={this.showResult.bind(this,4)}>Jong</button>)
         return(
-            <div>
-                <div style={{display: 'block'}}>
+            <div className= "classificationsContainer">
+                <div style={{display: 'flex'}}>
                     {buttons}
                 </div>
-                <div style={{display: this.state.scrollShow[0]}}>
-                    <Table data={klassementen[0]} title={"Etappe"} maxRows={20}/>
+                <div className="classification" style={{display: this.state.scrollShow[0]}}>
+                    <Table data={klassementen[0]} title={"Etappe"} maxRows={20} classNames="classification" />
                 </div>
-                <div style={{display: this.state.scrollShow[1]}}>
-                    <Table data={klassementen[1]} title={"Algemeen Klassement"} maxRows={20}/>
+                <div className="classification" style={{display: this.state.scrollShow[1]}}>
+                    <Table data={klassementen[1]} title={"Algemeen Klassement"} maxRows={20} classNames="classification"/>
                 </div>
-                <div style={{display: this.state.scrollShow[2]}}>
-                    <Table data={klassementen[2]} title={"Punten Klassement"} maxRows={20}/>
+                <div className="classification" style={{display: this.state.scrollShow[2]}}>
+                    <Table data={klassementen[2]} title={"Punten Klassement"} maxRows={20} classNames="classification"/>
                 </div>
-                <div style={{display: this.state.scrollShow[3]}}>
-                    <Table data={klassementen[3]} title={"Berg Klassement"} maxRows={20}/>
+                <div className="classification" style={{display: this.state.scrollShow[3]}}>
+                    <Table data={klassementen[3]} title={"Berg Klassement"} maxRows={20} classNames="classification"/>
                 </div>
-                <div style={{display: this.state.scrollShow[4]}}>
-                    <Table data={klassementen[4]} title={"Jongeren Klassement"} maxRows={20}/>
+                <div className="classification" style={{display: this.state.scrollShow[4]}}>
+                    <Table data={klassementen[4]} title={"Jongeren Klassement"} maxRows={20} classNames="classification"/>
                 </div>
             </div>
 

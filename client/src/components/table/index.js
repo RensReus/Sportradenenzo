@@ -90,7 +90,7 @@ class Table extends Component {
         if(this.props.maxRows < this.props.data.length){ //if more rows than allows spread over multiple tabs
             var scrollCount = Math.ceil(this.props.data.length/this.props.maxRows);
             for(var i = 0; i < scrollCount; i++){
-                this.state.scrollShow[i]= !i ? 'block' : 'none'
+                this.state.scrollShow[i]= !i ? 'table' : 'none'
             }
         }
         if (this.props.coltype != null) {
@@ -114,7 +114,7 @@ class Table extends Component {
             if(this.props.maxRows < this.props.data.length){ //if more rows than allows spread over multiple tabs
                 var scrollCount = Math.ceil(this.props.data.length/this.props.maxRows);
                 for(var i = 0; i < scrollCount; i++){
-                    this.state.scrollShow[i]= !i ? 'block' : 'none'
+                    this.state.scrollShow[i]= !i ? 'table' : 'none'
                 }
             }
             if (this.props.coltype != null) {
@@ -152,7 +152,7 @@ class Table extends Component {
 
     scrollClick(i,step){
         var scrollShow = this.state.scrollShow;
-        var curr = scrollShow.indexOf('block');
+        var curr = scrollShow.indexOf('table');
         if(i<0){// i<0 betekent prev of next
             if(curr + step >= 0 && curr + step < scrollShow.length){ // not out of bounds
                 i = curr + step;
@@ -161,7 +161,7 @@ class Table extends Component {
             }
         }
         scrollShow[curr] = 'none';
-        scrollShow[i] = 'block';
+        scrollShow[i] = 'table';
         this.setState({scrollShow: scrollShow});
     }
 
@@ -177,7 +177,8 @@ class Table extends Component {
             buttons.push(<button className="scrollButton" key="prev" onClick={this.scrollClick.bind(this,-1,-1)}>prev</button>)
             
             for(var i = 0; i < scrollCount; i++){//build tabs
-                buttons.push(<button className="scrollButton" key={i} onClick={this.scrollClick.bind(this,i,0)} >{i+1}</button>)
+                var classNames = "scrollButton " + this.state.scrollShow[i];
+                buttons.push(<button className={classNames} key={i} onClick={this.scrollClick.bind(this,i,0)} >{i+1}</button>)
                 var begin = 20*i;
                 var end = Math.min(20*(i+1),this.state.data.length)
                 tables.push( <table key={i} className={this.state.classNames} style={{display: this.state.scrollShow[i] }}>
@@ -193,14 +194,14 @@ class Table extends Component {
                                 {buttons}
                             </div>
         }else{
-           tables = <table className={this.state.classNames} style={{display: 'block'}}>
+           tables = <table className={this.state.classNames} style={{display: 'table'}}>
                     <caption>{this.state.title}</caption>
                     <Headers data={this.state.data} colNames={this.state.colNames} coltype={this.state.coltype} onSort={this.onSort} />
                     <Rows data={this.state.data} />
                 </table>
         }
         return (
-            <div style={{clear: 'left'}}>
+            <div className="tableContainer">
                 {scrollButtons}
                 {tables}
             </div>
