@@ -175,8 +175,9 @@ module.exports = {
                 var ridersDNF = new Array();
                 var ridersGC = new Array();
                 var ridersPoints = new Array();
-                var ridersYoc = new Array();
+                var ridersYouth = new Array();
                 var ridersKom = new Array();
+                var ridersAll = new Array();
                 //process the full results and store in riders* arrays
                 var index = 0;
 
@@ -196,6 +197,9 @@ module.exports = {
                             var teamName = $(this).children().eq(teamCol).children().eq(0).text();
                             var timeCol = columns.indexOf('Time');
                             var pntCol = columns.indexOf('Pnt');
+                            if(!getIndex(ridersAll, 'pcsid', id)+1){
+                                ridersAll.push({pcsid: id, team: teamName})
+                            }
                             switch (classification) {
                                 
                                 case 'Stage'://Dag uitslag
@@ -226,7 +230,7 @@ module.exports = {
                                 case 'Youth'://Jongeren Klassement
                                     var result = $(this).children().eq(timeCol).children().eq(0).text();
                                     var rider = { pcsid: id, team: teamName, result: result };
-                                    ridersYoc.push(rider);
+                                    ridersYouth.push(rider);
                                     break;
 
                                 case 'KOM'://Berg Klassement
@@ -279,7 +283,7 @@ module.exports = {
                     var akComp = (ridersGC.length + ridersDNF.length) == GCprevlength;
                     var sprintComp = ridersPoints.length;
                     var bergComp = ridersKom.length;
-                    var jongComp = ridersYoc.length; //+ jongDNF.length == ;
+                    var jongComp = ridersYouth.length; //+ jongDNF.length == ;
                     if (et == 1) { jongComp = true; bergComp = true; }
                     console.log(ridersGC.length , ridersDNF.length,GCprevlength)
                     if (akComp && sprintComp && bergComp && jongComp && ridersGC.length === ridersDay.length) {
@@ -305,15 +309,19 @@ module.exports = {
                                 stageresult, gcresult, pointsresult, komresult, yocresult) 
                                 VALUES`
 
-                for (var i =0;i<ridersDay.length;i++) {// for each rider get the variables for the results_points table
-                    var pcsid = ridersDay[i].pcsid;
-                    var teamRider = ridersDay[i].team;
+                for (var i =0;i<ridersAll.length;i++) {// for each rider get the variables for the results_points table
+                    var pcsid = ridersAll[i].pcsid;
+                    var teamRider = ridersAll[i].team;
                     var teamscore = 0;
 
                     //STAGE
-                    var stagepos = parseInt(i) + 1;
-                    var stagescore = getPunten('Stage', stagepos);
-                    var stageresult = ridersDay[i].result;
+                    var stagepos = getIndex(ridersDay, 'pcsid', pcsid) + 1;
+                    var stagescore = 0;
+                    var stageresult = "";
+                    if (stagepos) {
+                        stagescore = getPunten('Stage', stagepos);
+                        stageresult = ridersDay[stagepos - 1].result;
+                    }
                     if (teamRider === teamWinners['Stage'] && stagepos !== 1 && !TTstages.includes(et)) teamscore += 10;
 
                     //GC
@@ -348,14 +356,14 @@ module.exports = {
                     if (teamRider === teamWinners['KOM'] && kompos !== 1) teamscore += 3;
 
                     //YOC
-                    var yocpos = getIndex(ridersYoc, 'pcsid', pcsid) + 1;
+                    var yocpos = getIndex(ridersYouth, 'pcsid', pcsid) + 1;
                     var yocscore = 0;
                     var yocresult = "";
                     if (yocpos) {
                         yocscore = getPunten('Youth', yocpos);
-                        yocresult = ridersYoc[yocpos - 1].result;
+                        yocresult = ridersYouth[yocpos - 1].result;
                     }
-                    if (teamRider === teamWinners['yoc'] && yocpos !== 1) teamscore += 2;
+                    if (teamRider === teamWinners['Youth'] && yocpos !== 1) teamscore += 2;
 
                     //TOTAL
                     var totalscore = stagescore + gcscore + pointsscore + komscore + yocscore + teamscore;

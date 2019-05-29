@@ -125,7 +125,6 @@ class Stage extends Component {
     updateData(stage) {
         const race = this.state.race
         const year = this.state.year
-        var start = new Date();
         document.title = "Etappe " + stage;
 
         axios.post('/api/getstage', { race, year, stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
@@ -287,7 +286,7 @@ class Stage extends Component {
         } else if (mode === 'selection') {
             var stageProfile = '';
             if(this.state.stage >8 && this.state.stage < 22){//TODO netter, voor etappe 8 geen profielen gedownload
-                var stageProfile = <img src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')}  alt="profile" width="700"/>
+                stageProfile = <img src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')}  alt="profile" width="700"/>
             }
             var starttime = new Date(this.state.starttime);
             starttimeString = " Starttijd: " + starttime.getHours() + ":" + starttime.getMinutes();

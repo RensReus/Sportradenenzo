@@ -87,16 +87,18 @@ class Table extends Component {
             classNames: this.props.classNames,
             maxRows: this.props.maxRows,
         })
+        var scrollShow = this.state.scrollShow;
         if(this.props.maxRows < this.props.data.length){ //if more rows than allows spread over multiple tabs
             var scrollCount = Math.ceil(this.props.data.length/this.props.maxRows);
             for(var i = 0; i < scrollCount; i++){
-                this.state.scrollShow[i]= !i ? 'table' : 'none'
+                scrollShow[i]= !i ? 'table' : 'none'
             }
         }
         if (this.props.coltype != null) {
             this.setState({
                 coltype: JSON.parse(JSON.stringify(this.props.coltype)),// de double JSON is omdat deze anders verwijzen naar hetzelfde object dit is een soort copy
-                desc: JSON.parse(JSON.stringify(this.props.coltype))// string default sort asc, numbers sort default desc
+                desc: JSON.parse(JSON.stringify(this.props.coltype)),// string default sort asc, numbers sort default desc
+                scrollShow,
             })
         }
     }
@@ -111,17 +113,19 @@ class Table extends Component {
                 classNames: this.props.classNames,
                 maxRows: this.props.maxRows,
             })
-            if(this.props.maxRows < this.props.data.length){ //if more rows than allows spread over multiple tabs
+        var scrollShow = this.state.scrollShow;
+        if(this.props.maxRows < this.props.data.length){ //if more rows than allows spread over multiple tabs
                 var scrollCount = Math.ceil(this.props.data.length/this.props.maxRows);
                 for(var i = 0; i < scrollCount; i++){
-                    this.state.scrollShow[i]= !i ? 'table' : 'none'
+                    scrollShow[i]= !i ? 'table' : 'none'
                 }
             }
             if (this.props.coltype != null) {
                 this.setState({
                     coltype: JSON.parse(JSON.stringify(this.props.coltype)),// de double JSON is omdat deze anders verwijzen naar hetzelfde object dit is een soort copy
-                    desc: JSON.parse(JSON.stringify(this.props.coltype))// string default sort asc, numbers sort default desc
-                })
+                    desc: JSON.parse(JSON.stringify(this.props.coltype)),// string default sort asc, numbers sort default desc
+                    scrollShow,
+            })
             }
         }
     }

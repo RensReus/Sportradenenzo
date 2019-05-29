@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './index.css';
 import axios from 'axios';
-import { equal } from 'assert';
 
 class Outputtable extends Component {
     constructor(props) {
@@ -161,7 +160,7 @@ class Admin extends Component {
         }
         console.log(varObject)
         var query = this.state.value;
-        var i = 0;
+        i = 0;
         while (query.indexOf('$')+1) {
             i++;
             console.log("while loop", query)
@@ -170,7 +169,7 @@ class Admin extends Component {
             console.log('start',start,'end',end)
             var toreplace = query.substring(start, end);
             console.log("toreplace",toreplace)
-            var varName = toreplace.substring(2, toreplace.length - 1)
+            varName = toreplace.substring(2, toreplace.length - 1)
             query = query.replace(toreplace, varObject[varName])
             if(i>200) break;
         }
