@@ -1,15 +1,3 @@
-div.navbar{
-    display: flex;
-    margin: 0;
-    background-color: #444;
-    height: 5vh;
-    width: 100vw;
-    z-index: 999;
-    position: absolute;
-    box-shadow: 0px 5px 5px 0px rgba(136,136,136,0.3);
-}
-
-
  /* Dropdown Button */
  .item {
     background-color: grey;
@@ -17,7 +5,7 @@ div.navbar{
     font-size: 16px;
     border: 5px;
     margin: 0 1px;
-    line-height: 5vh;/* hele nare hack graag verwijderen*/
+    padding: 10px 10px;
     text-decoration: black
   }
 

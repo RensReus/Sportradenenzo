@@ -48,6 +48,7 @@ th, td {
     padding-right: 5px;
     text-align: center;
     font-size: 15px;
+    border: 1px black solid;
 }
 
 .scrollButton {
@@ -68,10 +69,6 @@ th, td {
   }
 
   .tableContainer{
-      width: 100%;
-  }
-
-  caption{
       width: 100%;
   }
 

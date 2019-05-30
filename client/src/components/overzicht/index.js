@@ -25,6 +25,7 @@ class overzicht extends Component {
       case "missedpointsall": this.renderMissedPointsAll(); break;
       case "team": this.renderTeam(); break;
       case "teamall": this.renderTeamAll(); break;
+      case "etappewinsten": this.renderEtappeWinsten(); break;
       default: this.renderAll(); break;
     }
   }
@@ -38,6 +39,7 @@ class overzicht extends Component {
       case "missedpointsall": this.renderMissedPointsAll(); break;
       case "team": this.renderTeam(); break;
       case "teamall": this.renderTeamAll(); break;
+      case "etappewinsten": this.renderEtappeWinsten(); break;
       default: this.renderAll(); break;
     }
     })
@@ -136,8 +138,26 @@ class overzicht extends Component {
       })
   }
 
+  renderEtappeWinsten(){//werkt nog niet vorm van table klopt niet
+    document.title = "Etappe Winsten Overzicht";
+      axios.post('/api/getstagevictories', { race_id: 5, poule_id: 0, token: localStorage.getItem('authToken'),budgetparticipation: this.state.budget})
+      .then((res) => {
+        if (res) {
+          var extraTables = [];
+          extraTables.push(<div className="tableDiv" ><Table data={res.data.rankTable} title={"Etappe Uitslagen"}/></div>)
+          extraTables.push(<div className="tableDiv" ><Table data={res.data.countTable} title={"Hoe vaak welke positie"}/></div>)
+          console.log(res.data)
+          this.setState({
+            extraTables: extraTables,
+            switchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+          })
+        }
+      })
+  }
+
 
   render() {
+    console.log(this.state)
     return (
       <div className="overzichtContainer">
         {this.state.switchButton}

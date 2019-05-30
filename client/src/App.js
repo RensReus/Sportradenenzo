@@ -17,7 +17,7 @@ import Overzicht from './components/overzicht';
 import Charts from './components/charts';
 import Rider from './components/rider';
 import ManualUpdate from './components/manualupdate'
-import FinalStandings from './components/eindstand';
+import Rulesandpoints from './components/rulesandpoints';
 
 const jwtDecode = require('jwt-decode');
 
@@ -88,10 +88,10 @@ class App extends Component {
             <AdminRoute path="/manualupdate" component={ManualUpdate} history={this.props.history} />
             
             <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
+            <Route path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
             <Route path="/overzicht/:selection" component={Overzicht} history={this.props.history} />
             <Route path="/rider/:rider_participation_id" component={Rider} history={this.props.history} />
             <Route path="/charts/:chartname" component={Charts} history={this.props.history} />
-            <Route path="/finalstandings" component={FinalStandings} history={this.props.history} />
             {/* <Redirect to='/'/>
           </Switch> */}
         </div>

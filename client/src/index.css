@@ -48,7 +48,12 @@ div.pageContainer{
   background-color: rgba(230,230,240,0.68);
   margin-left: 10vw;
   margin-right: 10vw;
-  padding-top: 5vh;
+}
+
+div.navbar{
+  background-color: #444;
+  z-index: 999;
+  box-shadow: 0px 5px 5px 0px rgba(136,136,136,0.3);
 }
 
 img.loadingGif{
