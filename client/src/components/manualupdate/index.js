@@ -11,6 +11,7 @@ class manualupdate extends Component {
         this.getResultsKlassiek = this.getResultsKlassiek.bind(this);
         this.getStartlist = this.getStartlist.bind(this);
         this.getResults = this.getResults.bind(this);
+        this.copyTeamSelections = this.copyTeamSelections.bind(this);
 
         this.changeGSKText = this.changeGSKText.bind(this);
         this.changeGRKText = this.changeGRKText.bind(this);
@@ -81,7 +82,7 @@ class manualupdate extends Component {
     }
 
     getStartlist() {
-        axios.post('/api/getstartlist', { raceName: this.state.raceName, year: 2019, token: localStorage.getItem('authToken')})
+        axios.post('/api/getstartlist', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken')})
         .then((res) => {
             this.setState({ grStage: res.data })            
         })
@@ -135,6 +136,13 @@ class manualupdate extends Component {
         this.setState({ raceName: event.target.value });
     }
 
+    copyTeamSelections(){
+        axios.post('/api/copyTeamSelections', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken')})
+        .then((res) => {
+            this.setState({ grStage: res.data })            
+        })
+    }
+
     render() {
         return (
             <div className="mainContainer">
@@ -186,6 +194,11 @@ class manualupdate extends Component {
                         <input className={"inputfield " + this.state.grStatus} id="gr" ref="gr" placeholder="Stage #" value={this.state.grStage} onChange={this.changeGRText} />
                         <button>Submit</button>
                     </form>
+
+                    <div className="row">
+                        <button onClick={this.copyTeamSelections}>Copy Teamselections for final points</button>
+                    </div>
+
                 </div>
 
             </div>

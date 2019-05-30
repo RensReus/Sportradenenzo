@@ -121,7 +121,7 @@ module.exports = function (app) {
 
     app.post('/api/getstage', function (req, res) {
         jwt.verify(req.body.token, getSecret(), function (err, user) {
-            if (err || isNaN(req.body.stage) || req.body.stage<1 || req.body.stage>21) {
+            if (err || isNaN(req.body.stage) || req.body.stage<1 || req.body.stage>22) {
                 res.send({ 'mode': '404' })
                 throw err;
             } else {
@@ -131,9 +131,9 @@ module.exports = function (app) {
 
                 sqlDB.query(query, (err, results) => {
                     if (err) {console.log("WRONG QUERY:",query); throw err;}
-                    if (now < results.rows[0].starttime) {
+                    if (now < results.rows[0].starttime && req.body.stage != 22) {// if finished or stage '22' (finalstandings)
                         async.auto({
-                            userSelectionGewoon: function (callback) {
+                            userSelectionGewoon: function (callback) { 
                                 SQLread.getTeamSelection(user.account_id, false, req.body.race, req.body.year, callback)
                             },
                             userSelectionBudget: function (callback) {

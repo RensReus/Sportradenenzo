@@ -13,6 +13,14 @@ class StageResults extends Component{
             scrollShow: ['block','none','none','none','none'],
         }
     }
+
+    componentDidMount(){
+        if(this.props.stage === 22){
+            this.setState({
+                scrollShow: ['none','block','none','none','none'],
+            })
+        }
+    }
     showResult(i){
         var scrollShow = this.state.scrollShow;
         var curr = scrollShow.indexOf('block');
@@ -106,19 +114,18 @@ class Stage extends Component {
             })
             this.updateData(currentstage - 1)
         }else{
-            this.props.history.push('/teamselection')
+            this.props.history.push('/teamselection')// TODO disable after stage 1 start
         }
     }
     nextStage() {
-        if(!this.state.lastStage){
+        const currentstage = parseInt(this.state.stage)
+        if(currentstage<22){
             const currentstage = parseInt(this.state.stage)
             this.props.history.push('/stage/' + (currentstage + 1).toString())
             this.setState({
                 stage: currentstage + 1
             })
             this.updateData(currentstage + 1)
-        }else{
-            this.props.history.push('/finalstandings')
         }
     }
 
@@ -301,7 +308,7 @@ class Stage extends Component {
 
             resTable = <Table data={userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={userScores}/>
-            stResTable = <StageResults data={stageresults}/>
+            stResTable = <StageResults data={stageresults} stage = {this.state.stage}/>
         }
         return (
             <div className="stageContainer">

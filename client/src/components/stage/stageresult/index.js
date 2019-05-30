@@ -20,11 +20,13 @@ class PouleTable extends Component {
     render() {
         const rows = [];
         const userScores = this.props.userScores
+        var i = 0;
         userScores.forEach(user => {
             var riders = []
             if (user.riders) riders = user.riders;
             rows.push(
                 <PouleTableRow
+                    key = {i++}
                     username={user.username}
                     riderCount={user.riderCount}
                     riders={riders}

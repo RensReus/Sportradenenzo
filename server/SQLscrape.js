@@ -6,7 +6,7 @@ const sqlDB = require('./db/sqlDB');
 const fs = require('fs');
 
 module.exports = {
-        getStartlist: function (raceName, year, callback) {
+    getStartlist: function (raceName, year, callback) {
         var raceString = "";
         var prijzenfile = "";
         switch (raceName) {
@@ -256,7 +256,6 @@ module.exports = {
                     sqlDB.query(dnfquery, (err, dnfres) => {
                         if (err) {console.log("WRONG QUERY:",dnfquery); throw err;}
                         else {
-                            console.log()
                             console.log("Riders DNF updated", dnfres.rowCount )
                         }
                     });
@@ -285,7 +284,6 @@ module.exports = {
                     var bergComp = ridersKom.length;
                     var jongComp = ridersYouth.length; //+ jongDNF.length == ;
                     if (et == 1) { jongComp = true; bergComp = true; }
-                    console.log(ridersGC.length , ridersDNF.length,GCprevlength)
                     if (akComp && sprintComp && bergComp && jongComp && ridersGC.length === ridersDay.length) {
                         uitslagCompleet = true;
                     }
@@ -301,8 +299,8 @@ module.exports = {
 
 
                 // process scores for each finished rider and send to db
-                var GTfinished = false;
-                if (et === 21) GTfinished = true; // laatste etappe
+                var finalStandings = false;
+                if (et === 22) finalStandings = true; // laatste etappe
                 var resultsQuery = `INSERT INTO results_points(stage_id, rider_participation_id, 
                                 stagepos, gcpos, pointspos, kompos, yocpos, 
                                 stagescore, gcscore, pointsscore, komscore, yocscore, teamscore, totalscore, 
@@ -316,23 +314,36 @@ module.exports = {
 
                     //STAGE
                     var stagepos = getIndex(ridersDay, 'pcsid', pcsid) + 1;
+                    if(finalStandings) stagepos = 0; 
                     var stagescore = 0;
                     var stageresult = "";
                     if (stagepos) {
-                        stagescore = getPunten('Stage', stagepos);
+                        stagescore = getPunten('Stage', stagepos, finalStandings);
                         stageresult = ridersDay[stagepos - 1].result;
                     }
-                    if (teamRider === teamWinners['Stage'] && stagepos !== 1 && !TTstages.includes(et)) teamscore += 10;
+                    if (teamRider === teamWinners['Stage'] && stagepos !== 1 && !TTstages.includes(et)){
+                        if(finalStandings){
+                            teamscore += 0;
+                        }else{
+                            teamscore += 10;  
+                        }
+                    } 
 
                     //GC
                     var gcpos = getIndex(ridersGC, 'pcsid', pcsid) + 1;
                     var gcscore = 0;
                     var gcresult = "";
                     if (gcpos) {
-                        gcscore = getPunten('GC', gcpos);
+                        gcscore = getPunten('GC', gcpos, finalStandings);
                         gcresult = ridersGC[gcpos - 1].result;
                     }
-                    if (teamRider === teamWinners['GC'] && gcpos !== 1) teamscore += 8;
+                    if (teamRider === teamWinners['GC'] && gcpos !== 1){
+                        if(finalStandings){
+                            teamscore += 24;
+                        }else{
+                            teamscore += 8;  
+                        }
+                    } 
 
                     //POINTS
                     var pointspos = getIndex(ridersPoints, 'pcsid', pcsid) + 1;
@@ -340,30 +351,48 @@ module.exports = {
                     var pointsresult = "";
 
                     if (pointspos) {
-                        pointsscore = getPunten('Points', pointspos);
+                        pointsscore = getPunten('Points', pointspos, finalStandings);
                         pointsresult = ridersPoints[pointspos - 1].result;
                     }
-                    if (teamRider === teamWinners['Points'] && pointspos !== 1) teamscore += 6;
+                    if (teamRider === teamWinners['Points'] && pointspos !== 1){
+                        if(finalStandings){
+                            teamscore += 18;
+                        }else{
+                            teamscore += 6;  
+                        }
+                    } 
 
                     //KOM
                     var kompos = getIndex(ridersKom, 'pcsid', pcsid) + 1;
                     var komscore = 0;
                     var komresult = 0;
                     if (kompos) {
-                        komscore = getPunten('KOM', kompos);
+                        komscore = getPunten('KOM', kompos, finalStandings);
                         komresult = ridersKom[kompos - 1].result;
                     }
-                    if (teamRider === teamWinners['KOM'] && kompos !== 1) teamscore += 3;
+                    if (teamRider === teamWinners['KOM'] && kompos !== 1){
+                        if(finalStandings){
+                            teamscore += 9;
+                        }else{
+                            teamscore += 3;  
+                        }
+                    } 
 
                     //YOC
                     var yocpos = getIndex(ridersYouth, 'pcsid', pcsid) + 1;
                     var yocscore = 0;
                     var yocresult = "";
                     if (yocpos) {
-                        yocscore = getPunten('Youth', yocpos);
+                        yocscore = getPunten('Youth', yocpos, finalStandings);
                         yocresult = ridersYouth[yocpos - 1].result;
                     }
-                    if (teamRider === teamWinners['Youth'] && yocpos !== 1) teamscore += 2;
+                    if (teamRider === teamWinners['Youth'] && yocpos !== 1){
+                        if(finalStandings){
+                            teamscore += 6;
+                        }else{
+                            teamscore += 2;  
+                        }
+                    } 
 
                     //TOTAL
                     var totalscore = stagescore + gcscore + pointsscore + komscore + yocscore + teamscore;
@@ -380,16 +409,34 @@ module.exports = {
                 resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO NOTHING';
                 deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
                 totalQuery = deleteQuery + resultsQuery;
-                if(ridersDay.length){// don't send if no results
-                    sqlDB.query(totalQuery,(err,res)=>{
-                        if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
-                        else {
-                            console.log("Processed results stage ",et,"Riders ",res[1].rowCount)
-                            functies.calculateUserScores(raceName,year,et,callback)
-                        }
-                    })
+                if (et !== 21){
+                    if(ridersDay.length){// don't send if no results
+                        sqlDB.query(totalQuery,(err,res)=>{
+                            if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+                            else {
+                                console.log("Processed results stage ",et,"Riders ",res[1].rowCount)
+                                functies.calculateUserScores(raceName,year,et,callback)
+                            }
+                        })
+                    }else{
+                        functies.calculateUserScores(raceName,year,et,callback)                    
+                    }
                 }else{
-                    functies.calculateUserScores(raceName,year,et,callback)                    
+                    if(ridersDay.length){// don't send if no results
+                        sqlDB.query(totalQuery,(err,res)=>{
+                            if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+                            else {
+                                console.log("Processed results stage ",et,"Riders ",res[1].rowCount)
+                                functies.calculateUserScores(raceName,year,et,function(err,response){
+                                    if(err) throw err;
+                                    getResult(raceName,year,22,callback)//calculate eindklassement punten
+                                })  
+                            }
+                        })
+                    }else{
+                        functies.calculateUserScores(raceName,year,et,callback)                    
+                    }
+                                      
                 }
             }
         });
@@ -492,7 +539,10 @@ getIndex = function (array, attr, value) {
     return -1;
 }
 
-getPunten = function (kl, pos) {
+getPunten = function (kl, pos, finalStandings) {
+    if(finalStandings){
+        return getEindPunten(kl,pos);
+    }
     pos -= 1;
     var dag = [50, 44, 40, 36, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2];
     var ak = [10, 8, 6, 4, 2];
