@@ -94,7 +94,7 @@ class manualupdate extends Component {
         var stage = Number(this.state.grStage);
         if (Number.isInteger(stage)) {
             stage = parseInt(stage);
-            if (stage > 0 && stage < 22) {
+            if (stage > 0 && stage < 23) {
                 console.log("stage:", stage);
                 axios.post('/api/getresults', { raceName: this.state.raceName, year: this.state.year, stage: stage, token: localStorage.getItem('authToken') })
                     .then((res) => {

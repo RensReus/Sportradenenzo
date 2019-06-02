@@ -137,8 +137,12 @@ module.exports = {
                 raceString = "vuelta-a-espana";
                 break;
         }
+        var etLink = et;
+        if(et === 22){
+            etLink = 21;
+        }
         request({
-            url: `https://www.procyclingstats.com/race/${raceString}/${year}/stage-${et}`,
+            url: `https://www.procyclingstats.com/race/${raceString}/${year}/stage-${etLink}`,
             headers: { "Connection": "keep-alive" }
         }, function (error, response, html) {
             if (error) console.log(error);
@@ -409,7 +413,7 @@ module.exports = {
                 resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO NOTHING';
                 deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
                 totalQuery = deleteQuery + resultsQuery;
-                if (et !== 21){
+                if (et > 0){
                     if(ridersDay.length){// don't send if no results
                         sqlDB.query(totalQuery,(err,res)=>{
                             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
@@ -541,7 +545,8 @@ getIndex = function (array, attr, value) {
 
 getPunten = function (kl, pos, finalStandings) {
     if(finalStandings){
-        return getEindPunten(kl,pos);
+        var score = getEindPunten(kl,pos);
+        return score;
     }
     pos -= 1;
     var dag = [50, 44, 40, 36, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2];
@@ -577,16 +582,16 @@ getEindPunten = function (kl, pos) {
     var berg = [60, 40, 30, 20, 10];
     if (pos < 0) return 0;
     switch (kl) {
-        case 'gc'://ak
+        case 'GC'://ak
             if (pos < ak.length) return ak[pos];
             return 0;
-        case 'points'://punt
+        case 'Points'://punt
             if (pos < punt.length) return punt[pos];
             return 0;
-        case 'youth'://jong
+        case 'Youth'://jong
             if (pos < jong.length) return jong[pos];
             return 0;
-        case 'kom'://berg
+        case 'KOM'://berg
             if (pos < berg.length) return berg[pos];
             return 0;
     }

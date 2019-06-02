@@ -8,7 +8,7 @@ var raceWeight = [1.25, 1, 1.25, 2, 1.5, 1.5, 1.25, 2, 1, 2, 1.5, 1.5, 2, 1.25];
 
 
 
-getStartlist = function (year, racenr, callback) {
+getStartlistKlassieker = function (year, racenr, callback) {
     var race_id = 4;
     var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} AND stagenr = ${racenr})`;
     var raceString = raceNames[racenr-1];
@@ -88,7 +88,7 @@ getStartlist = function (year, racenr, callback) {
 
 
 // ga niet verder dan dit
-getResult = function (year, et, callback) {
+getResultKlassieker = function (year, et, callback) {
     var raceString = raceNames[et - 1];
     var race_id = 4;
     request({
@@ -196,5 +196,5 @@ getTeamPuntenKlas = function (pos, teamRider, teamWinners) {
     return teamPoints;
 }
 
-module.exports.getStartlist = getStartlist;
-module.exports.getResult = getResult;
+module.exports.getStartlist = getStartlistKlassieker;
+module.exports.getResult = getResultKlassieker;
