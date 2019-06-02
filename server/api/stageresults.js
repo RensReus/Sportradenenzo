@@ -325,7 +325,7 @@ module.exports = function (app) {
                                 LEFT JOIN stage_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND stagepos > 0 
                                 GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
-                                ORDER BY " " ASC; `;
+                                ORDER BY " " ASC;\n `;
 
                         var GCresultsGewoonQuery = `SELECT gcpos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", gcresult AS "Time", ${rowClassNameGewoon}
                                 FROM results_points
@@ -334,7 +334,7 @@ module.exports = function (app) {
                                 LEFT JOIN stage_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND gcpos > 0 
                                 GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
-                                ORDER BY " " ASC; `;
+                                ORDER BY " " ASC;\n `;
 
                         var pointsresultsGewoonQuery = `SELECT pointspos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", pointsresult AS "Punten", ${rowClassNameGewoon}
                                 FROM results_points
@@ -343,7 +343,7 @@ module.exports = function (app) {
                                 LEFT JOIN stage_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND pointspos > 0 
                                 GROUP BY " ", "Name", "Team", "Punten", stage_selection_rider.rider_participation_id
-                                ORDER BY " " ASC; `;
+                                ORDER BY " " ASC;\n `;
 
                         var komresultsGewoonQuery = `SELECT kompos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", komresult AS "Punten", ${rowClassNameGewoon}
                                 FROM results_points
@@ -352,7 +352,7 @@ module.exports = function (app) {
                                 LEFT JOIN stage_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND kompos > 0 
                                 GROUP BY " ", "Name", "Team", "Punten", stage_selection_rider.rider_participation_id
-                                ORDER BY " " ASC; `;
+                                ORDER BY " " ASC;\n `;
 
                         var youthresultsGewoonQuery = `SELECT yocpos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", yocresult AS "Time", ${rowClassNameGewoon}
                                 FROM results_points
@@ -361,7 +361,7 @@ module.exports = function (app) {
                                 LEFT JOIN stage_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND yocpos > 0 
                                 GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
-                                ORDER BY " " ASC; `;
+                                ORDER BY " " ASC;\n `;
 
                         var resultsGewoonQuery = stageresultsGewoonQuery + GCresultsGewoonQuery + pointsresultsGewoonQuery + komresultsGewoonQuery + youthresultsGewoonQuery;
                         
@@ -410,7 +410,7 @@ module.exports = function (app) {
                                 LEFT JOIN stage_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND stagepos > 0 
                                 GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
-                                ORDER BY " " ASC; `;
+                                ORDER BY " " ASC;\n `;
                 
                         var GCresultsBudgetQuery = `SELECT gcpos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", gcresult AS "Time", ${rowClassNameBudget}
                                 FROM results_points
@@ -419,7 +419,7 @@ module.exports = function (app) {
                                 LEFT JOIN stage_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND gcpos > 0 
                                 GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
-                                ORDER BY " " ASC; `;
+                                ORDER BY " " ASC;\n `;
 
                         var pointsresultsBudgetQuery = `SELECT pointspos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", pointsresult AS "Punten", ${rowClassNameBudget}
                                 FROM results_points
@@ -428,7 +428,7 @@ module.exports = function (app) {
                                 LEFT JOIN stage_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND pointspos > 0 
                                 GROUP BY " ", "Name", "Team", "Punten", stage_selection_rider.rider_participation_id
-                                ORDER BY " " ASC; `;
+                                ORDER BY " " ASC;\n `;
 
                         var komresultsBudgetQuery = `SELECT kompos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", komresult AS "Punten", ${rowClassNameBudget}
                                 FROM results_points
@@ -437,7 +437,7 @@ module.exports = function (app) {
                                 LEFT JOIN stage_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND kompos > 0 
                                 GROUP BY " ", "Name", "Team", "Punten", stage_selection_rider.rider_participation_id
-                                ORDER BY " " ASC; `;
+                                ORDER BY " " ASC;\n `;
 
                         var youthresultsBudgetQuery = `SELECT yocpos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", yocresult AS "Time", ${rowClassNameBudget}
                                 FROM results_points
@@ -446,7 +446,7 @@ module.exports = function (app) {
                                 LEFT JOIN stage_selection_rider USING(rider_participation_id)
                                 WHERE stage_id=${stage_id} AND yocpos > 0 
                                 GROUP BY " ", "Name", "Team", "Time", stage_selection_rider.rider_participation_id
-                                ORDER BY " " ASC; `;
+                                ORDER BY " " ASC;\n `;
 
                         var selectionsQueryBudget = `SELECT username, ARRAY_AGG(json_build_object('Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score',CASE WHEN kopman THEN totalscore + 0.5*stagescore ELSE totalscore END,'rowClassName',"rowClassName")) AS riders FROM
                                 (SELECT username,CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, kopman_id = stage_selection_rider.rider_participation_id as kopman, ${rowClassNameBudget}  FROM  stage_selection_rider
@@ -468,6 +468,7 @@ module.exports = function (app) {
                         var userScoresColtype = { stagescore: 1, totalscore: 1 };
                         sqlDB.query(totalQuery, (err, uitslagresults) => {
                             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+
                             var userscoresGewoon = uitslagresults[1].rows;
                             var userscoresBudget = uitslagresults[9].rows;
                             var selectiesGewoon = uitslagresults[7].rows;
@@ -502,7 +503,7 @@ module.exports = function (app) {
                                 teamresultGewoon.push(totalteamGewoon);
                             }
                             var stageresultsGewoon = [];
-                            if(uitslagresults[2].rowCount){
+                            if(uitslagresults[2].rowCount || req.body.stage == 22){
                                 stageresultsGewoon.push(uitslagresults[2].rows);
                                 stageresultsGewoon.push(uitslagresults[3].rows);
                                 stageresultsGewoon.push(uitslagresults[4].rows);
@@ -524,7 +525,7 @@ module.exports = function (app) {
                                 teamresultBudget.push(totalteamBudget);
                             }
                             var stageresultsBudget = [];
-                            if(uitslagresults[10].rowCount){
+                            if(uitslagresults[10].rowCount || req.body.stage == 22){
                                 stageresultsBudget.push(uitslagresults[10].rows);
                                 stageresultsBudget.push(uitslagresults[11].rows);
                                 stageresultsBudget.push(uitslagresults[12].rows);
