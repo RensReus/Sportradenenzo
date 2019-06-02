@@ -359,7 +359,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
           sqlDB.query(nextStageQuery,function(err,nextStageResults){
             if (err) {console.log("WRONG QUERY:",nextStageQuery); throw err;}
             else{
-              if(nextStageResults.rows.length){
+              if(stage.stagenr < 21){
                 var d = nextStageResults.rows[0].starttime;
                 resultsRule = `${d.getSeconds()+5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
                 scrapeResults.cancel();// cancel updates until they are restarted by copyOpstelling
