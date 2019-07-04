@@ -76,7 +76,7 @@ class Stage extends Component {
         super(props);
         this.state = {
             mode: 'loading',
-            race: 'giro',
+            race: 'tour',
             year: '2019',
             budget: false,
             stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link

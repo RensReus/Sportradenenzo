@@ -321,7 +321,7 @@ function stageNumKlassieker(){
 }
 
 var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to run every minute to initialize at the start.
-  var race_id = 5;//TODO niet hardcoded
+  var race_id = 6;//TODO niet hardcoded
   console.log("scrape run at: " + new Date().toTimeString());
   var stageQuery = `SELECT * FROM STAGE
                     WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}

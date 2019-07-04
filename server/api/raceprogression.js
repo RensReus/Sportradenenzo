@@ -8,7 +8,7 @@ module.exports = function (app) {
     })
 
     app.post('/api/currentstagenum', function (req, res) {
-        var race_id = 5; //TODO remove hardcoding
+        var race_id = 6; //TODO remove hardcoding
         var stageQuery = `SELECT * FROM STAGE
                     WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
                     ORDER BY stagenr desc

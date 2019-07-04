@@ -11,7 +11,7 @@ class Teamselection extends Component{
             allRiders: [],
             userSelectionGewoon: [], 
             userSelectionBudget: [], 
-            race: 'giro', 
+            race: 'tour', 
             year: '2019', 
             budgetGewoon: 0,
             budgetBudget: 0,

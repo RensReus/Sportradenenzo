@@ -9,7 +9,7 @@ class FinalStandings extends Component{
         super(props);
         this.state = {
             mode: '',
-            race: 'giro',
+            race: 'tour',
             year: '2019',
             userTeamResult: [],
             userScores: [],

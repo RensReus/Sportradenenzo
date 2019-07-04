@@ -128,7 +128,7 @@ module.exports = function (app) {
                 var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = '${req.body.year}')`;
                 var now = new Date();
                 var query = `SELECT starttime FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
-
+                console.log(query)
                 sqlDB.query(query, (err, results) => {
                     if (err) {console.log("WRONG QUERY:",query); throw err;}
                     if (now < results.rows[0].starttime && req.body.stage != 22) {// if finished or stage '22' (finalstandings)
