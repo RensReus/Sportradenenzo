@@ -152,7 +152,7 @@ module.exports = function (app) {
                                 SQLread.getKopman(user.account_id, true, req.body.race, req.body.year, req.body.stage, callback)
                             },
                             startTime: function (callback) {
-                                SQLread.getStageStarttime(5, req.body.stage, callback)// TODO Fix hardcoded race_id
+                                SQLread.getStageStarttime(6, req.body.stage, callback)// TODO Fix hardcoded race_id
                             },
                             prevClassificationsGewoon: function(callback){
                                 var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;

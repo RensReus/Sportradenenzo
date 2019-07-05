@@ -77,7 +77,7 @@ class Stage extends Component {
         this.state = {
             mode: 'loading',
             race: 'tour',
-            year: '2019',
+            year: 2019,
             budget: false,
             stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
             stageSelectionGewoon: [],
@@ -136,6 +136,7 @@ class Stage extends Component {
 
         axios.post('/api/getstage', { race, year, stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
             .then((res) => {
+                console.log(res.data)
                 if (res.data.mode === '404') {
                     this.setState({
                         mode: '404'
