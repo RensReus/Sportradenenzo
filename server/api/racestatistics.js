@@ -21,7 +21,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var race_id = req.body.race_id;
+                var race_id = race_id_global;
                 var poule_id = req.body.poule_id;
                 var subquery = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore DESC) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
@@ -90,7 +90,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var race_id = req.body.race_id;
+                var race_id = race_id_global;
                 var query = `SELECT  concat(firstname, ' ', lastname) AS "Name", team AS "Team ", price AS "Price", SUM(stagescore) AS "Etappe",
             SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong", 
             SUM(teamscore) AS "Team", SUM(totalscore) AS "Total", ROUND(SUM(totalscore)*1e6/price,0) AS "Points per Million" FROM rider_participation  
@@ -119,7 +119,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var race_id = req.body.race_id;
+                var race_id = race_id_global;
                 var query = `SELECT  concat(firstname, ' ', lastname) AS "Name", team AS "Team ",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Etappe",  
             SUM(gcscore)/GREATEST(count(DISTINCT username),1) AS "AK", SUM(pointsscore)/GREATEST(count(DISTINCT username),1) AS "Punten", SUM(komscore)/GREATEST(count(DISTINCT username),1) AS "Berg", SUM(yocscore)/GREATEST(count(DISTINCT username),1) AS "Jong", SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Team", SUM(totalscore)/GREATEST(count(DISTINCT username),1) AS "Total", 
             ROUND(SUM(totalscore)/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "Points per Million",  
@@ -208,7 +208,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                async.auto({
+                async.auto({ //TODO remove hardcoded users
                     bierfietsen: function(callback){
                         missedPoints(1,req.body.race_id,req.body.budgetparticipation,callback)
                     },
@@ -276,7 +276,9 @@ module.exports = function (app) {
                 if (forRenners === 8) {
                     outputArray.push({ Behaald: "Zeg tegen Rens", Optimaal: "dat er iets", Gemist: "speciaals gebeurt is" })
                 } else {
-
+                    if(i === 21){
+                        outputArray.push({Etappe: i + 1, Behaald: actualPoints[i], Optimaal: actualPoints[i], Gemist: 0})
+                    }
                     outputArray.push({ Etappe: i + 1, Behaald: actualPoints[i], Optimaal: optimalPoints, Gemist: optimalPoints - actualPoints[i] })
                     optimalTotal += optimalPoints;
                     actualTotal += actualPoints[i];

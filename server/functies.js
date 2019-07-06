@@ -321,7 +321,7 @@ function stageNumKlassieker(){
 }
 
 var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to run every minute to initialize at the start.
-  var race_id = 6;//TODO niet hardcoded
+  var race_id = race_id_global;
   console.log("scrape run at: " + new Date().toTimeString());
   var stageQuery = `SELECT * FROM STAGE
                     WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
@@ -382,7 +382,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
 var copyOpstelling = schedule.scheduleJob('15 10 10 * *', function () {
   console.log("copyopstelling run at: " + new Date().toTimeString());
     console.log("restart scrapeResult",scrapeResults.reschedule('15 * * * *')); //ieder uur
-  var race_id = 5; //TODO remove hardcoded
+  var race_id = race_id_global;
   var stage_id = `(SELECT stage_id FROM stage
                     WHERE starttime < NOW() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
                     ORDER BY stagenr DESC

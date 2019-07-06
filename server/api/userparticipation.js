@@ -21,7 +21,7 @@ module.exports = function (app) {
             res.redirect('/')
         }else{
             var account_id = req.user.account_id;
-            var race_id = req.body.race_id;
+            var race_id = race_id_global;
             query = `INSERT INTO account_participation (account_id, race_id, budgetParticipation) 
             VALUES($1, $2, FALSE),($1, $2, TRUE)
             ON CONFLICT (account_id, race_id, budgetParticipation) DO NOTHING`

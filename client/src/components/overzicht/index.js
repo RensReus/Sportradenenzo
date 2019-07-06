@@ -47,7 +47,7 @@ class overzicht extends Component {
 
   renderAll() {
     document.title = "Alle Renners Overzicht";
-    axios.post('/api/getriderpointsall', {token: localStorage.getItem('authToken'), race_id: 5})
+    axios.post('/api/getriderpointsall', {token: localStorage.getItem('authToken'), race_id: 6})
       .then((res) => {
         if (res) {
           this.setState({
@@ -61,7 +61,7 @@ class overzicht extends Component {
 
   renderSelected() {
     document.title = "Gekozen Renners Overzicht";
-    axios.post('/api/getriderpointsselected', {token: localStorage.getItem('authToken'), race_id: 5, poule_id: 0, budgetparticipation:this.state.budget})
+    axios.post('/api/getriderpointsselected', {token: localStorage.getItem('authToken'), race_id: 6, poule_id: 0, budgetparticipation:this.state.budget})
       .then((res) => {
         if (res) {
           this.setState({
@@ -76,7 +76,7 @@ class overzicht extends Component {
 
   renderMissedPoints() {
     document.title = "Gemiste Punten";
-    axios.post('/api/missedpoints', {token: localStorage.getItem('authToken'), race_id: 5, budgetparticipation:this.state.budget})
+    axios.post('/api/missedpoints', {token: localStorage.getItem('authToken'), race_id: 6, budgetparticipation:this.state.budget})
       .then((res) => {
         if (res) {
           this.setState({
@@ -90,7 +90,7 @@ class overzicht extends Component {
 
   renderMissedPointsAll() {
     document.title = "Gemiste Punten Iedereen";
-    axios.post('/api/missedpointsall', {token: localStorage.getItem('authToken'), race_id: 5, budgetparticipation:this.state.budget})
+    axios.post('/api/missedpointsall', {token: localStorage.getItem('authToken'), race_id: 6, budgetparticipation:this.state.budget})
       .then((res) => {
         if (res) {
           var extraTables = []
@@ -107,7 +107,7 @@ class overzicht extends Component {
 
   renderTeam(){
     document.title = "Team Overzicht";
-    axios.post('/api/teamoverzicht', {token: localStorage.getItem('authToken'), race_id: 5, budgetparticipation:this.state.budget})
+    axios.post('/api/teamoverzicht', {token: localStorage.getItem('authToken'), race_id: 6, budgetparticipation:this.state.budget})
       .then((res) => {
         if (res) {
           this.setState({
@@ -122,7 +122,7 @@ class overzicht extends Component {
 
   renderTeamAll() {
     document.title = "Team Overzicht Iedereen";
-    axios.post('/api/teamoverzichtall', {token: localStorage.getItem('authToken'), race_id: 5, budgetparticipation:this.state.budget})
+    axios.post('/api/teamoverzichtall', {token: localStorage.getItem('authToken'), race_id: 6, budgetparticipation:this.state.budget})
       .then((res) => {
         if (res) {
           console.log(res.data)
@@ -140,7 +140,7 @@ class overzicht extends Component {
 
   renderEtappeWinsten(){//werkt nog niet vorm van table klopt niet
     document.title = "Etappe Winsten Overzicht";
-      axios.post('/api/getstagevictories', { race_id: 5, poule_id: 0, token: localStorage.getItem('authToken'),budgetparticipation: this.state.budget})
+      axios.post('/api/getstagevictories', { race_id: 6, poule_id: 0, token: localStorage.getItem('authToken'),budgetparticipation: this.state.budget})
       .then((res) => {
         if (res) {
           var extraTables = [];

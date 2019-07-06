@@ -9,6 +9,8 @@ app.use(cors({
   credentials: true
 }))
 
+race_id_global = 6;
+
 //==Passport==
 const passport = require('passport');
 app.use(morgan('dev'));
