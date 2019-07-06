@@ -191,7 +191,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                missedPoints(user.account_id,req.body.race_id,req.body.budgetparticipation,function(err,outputArray){
+                missedPoints(user.account_id,race_id_global,req.body.budgetparticipation,function(err,outputArray){
                     if(err) throw err;
                     res.send({
                         tableData: outputArray,
@@ -210,16 +210,16 @@ module.exports = function (app) {
             } else {
                 async.auto({ //TODO remove hardcoded users
                     bierfietsen: function(callback){
-                        missedPoints(1,req.body.race_id,req.body.budgetparticipation,callback)
+                        missedPoints(1,race_id_global,req.body.budgetparticipation,callback)
                     },
                     rens: function(callback){
-                        missedPoints(2,req.body.race_id,req.body.budgetparticipation,callback)
+                        missedPoints(2,race_id_global,req.body.budgetparticipation,callback)
                     },
                     sam: function(callback){
-                        missedPoints(4,req.body.race_id,req.body.budgetparticipation,callback)
+                        missedPoints(4,race_id_global,req.body.budgetparticipation,callback)
                     },
                     yannick: function(callback){
-                        missedPoints(5,req.body.race_id,req.body.budgetparticipation,callback)
+                        missedPoints(5,race_id_global,req.body.budgetparticipation,callback)
                     }
                 }, function (err,results){
                     if(err) throw err;
@@ -296,7 +296,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                teamoverzicht(user.account_id,req.body.race_id,req.body.budgetparticipation,function(err,results){
+                teamoverzicht(user.account_id,race_id_global,req.body.budgetparticipation,function(err,results){
                     if(err) throw err;
                     res.send({
                         tableData: results.tableData,
@@ -316,16 +316,16 @@ module.exports = function (app) {
             } else {
                 async.auto({
                     bierfietsen: function(callback){
-                        teamoverzicht(1,req.body.race_id,req.body.budgetparticipation,callback)
+                        teamoverzicht(1,race_id_global,req.body.budgetparticipation,callback)
                     },
                     rens: function(callback){
-                        teamoverzicht(2,req.body.race_id,req.body.budgetparticipation,callback)
+                        teamoverzicht(2,race_id_global,req.body.budgetparticipation,callback)
                     },
                     sam: function(callback){
-                        teamoverzicht(4,req.body.race_id,req.body.budgetparticipation,callback)
+                        teamoverzicht(4,race_id_global,req.body.budgetparticipation,callback)
                     },
                     yannick: function(callback){
-                        teamoverzicht(5,req.body.race_id,req.body.budgetparticipation,callback)
+                        teamoverzicht(5,race_id_global,req.body.budgetparticipation,callback)
                     }
                 }, function (err,results){
                     if(err) throw err;
@@ -380,7 +380,7 @@ module.exports = function (app) {
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${req.body.race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester'
+            WHERE stage.race_id = ${race_id_global} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester'
             ORDER BY username, stagenr`
                 sqlDB.query(query, (err, results) => {
                     if (err) { console.log("WRONG QUERY:", query); throw err; }
@@ -440,7 +440,7 @@ module.exports = function (app) {
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${req.body.race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished AND NOT username = 'tester'
+            WHERE stage.race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished AND NOT username = 'tester'
             ORDER BY username, stagenr`
                 sqlDB.query(query, (err, results) => {
                     if (err) { console.log("WRONG QUERY:", query); throw err; }
