@@ -124,7 +124,7 @@ module.exports = {
     },
 
     getResult: function (raceName, year, et, callback) {
-        var TTstages = [1, 9, 21];
+        var TTstages = [13];
         var raceString = "";
         switch (raceName) {
             case "giro":
