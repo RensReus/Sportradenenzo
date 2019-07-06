@@ -3,6 +3,21 @@ Select count(rider_participation_id) AS "Uitvallers", username, budgetparticipat
 INNER JOIN team_selection_rider USING(rider_participation_id)
 INNER JOIN account_participation USING(account_participation_id)
 INNER JOIN account USING(account_id)
-WHERE rider_participation.race_id = 5 AND dnf AND NOT username  = 'tester'
+WHERE rider_participation.race_id = 6 AND dnf AND NOT username  = 'tester'
 GROUP BY username, budget
 ORDER BY budget, "Uitvallers" DESC
+
+
+uniek
+
+select sum("Usercount") from (
+SELECT  concat(firstname, ' ', lastname) AS "Name", rider_participation.rider_participation_id, team AS "Team ",price AS "Price",  
+            count(DISTINCT username) AS "Usercount", array_agg(DISTINCT username) AS "Users" FROM rider_participation
+            INNER JOIN rider USING(rider_id)
+            LEFT JOIN team_selection_rider on rider_participation.rider_participation_id = team_selection_rider.rider_participation_id
+            LEFT JOIN account_participation USING(account_participation_id)
+            LEFT JOIN account USING (account_id)
+            WHERE rider_participation.race_id = 6 AND rider_participation.rider_participation_id in (select rider_participation_id from team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = true
+            GROUP BY "Name", "Team ", "Price", rider_participation.rider_participation_id
+order by "Usercount" desc, "Users") as a
+where rider_participation_id in (select rider_participation_id from team_selection_rider where account_participation_id = 71)

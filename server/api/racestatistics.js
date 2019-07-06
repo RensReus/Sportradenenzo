@@ -484,7 +484,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = 5 AND budgetparticipation = ${req.body.budgetparticipation})`
+                var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation})`
                 var query = `SELECT totalscore, lastname, stagenr FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
             INNER JOIN rider USING (rider_id)
@@ -532,7 +532,7 @@ module.exports = function (app) {
                 throw err;
             } else {
                 var currentStageNum = functies.stageNumKlassieker();//TODO change to Grote ronde
-                var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = 5 AND budgetparticipation = ${req.body.budgetparticipation})`
+                var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation})`
                 var query = `SELECT totalscore, lastname, stagenr FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
             INNER JOIN rider USING (rider_id)
