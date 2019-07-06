@@ -342,7 +342,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
                   console.log("Stage %s finished",stage.stagenr)
                 }
               });
-              SQLscrape.getResult('giro',2019,stage.stagenr,function(err,response){//TODO niet hardcoded
+              SQLscrape.getResult('tour',2019,stage.stagenr,function(err,response){//TODO niet hardcoded
                 if(err) throw err;
                 else console.log(response, "stage", stage.stagenr);
               })
@@ -350,7 +350,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
             scrapeResults.reschedule(newResultsRule);  //update new schedule
           })
         }else if(!stage.complete){//get results if not complete
-          SQLscrape.getResult('giro',2019,stage.stagenr,function(err,response){//TODO niet hardcoded 
+          SQLscrape.getResult('tour',2019,stage.stagenr,function(err,response){//TODO niet hardcoded 
             if(err) throw err;
             else console.log(response, "stage", stage.stagenr);
           })
