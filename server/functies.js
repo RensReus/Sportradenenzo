@@ -382,11 +382,8 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
 var copyOpstelling = schedule.scheduleJob('15 10 10 * *', function () {
   console.log("copyopstelling run at: " + new Date().toTimeString());
     console.log("restart scrapeResult",scrapeResults.reschedule('15 * * * *')); //ieder uur
-<<<<<<< HEAD
   var race_id = race_id_global;
-=======
-  var race_id = 6; //TODO remove hardcoded
->>>>>>> 1a1121414242fe660310d159434abdec1585775f
+
   var stage_id = `(SELECT stage_id FROM stage
                     WHERE starttime < NOW() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
                     ORDER BY stagenr DESC
