@@ -292,7 +292,7 @@ class Stage extends Component {
             stResTable = ''
         } else if (mode === 'selection') {
             var stageProfile = '';
-            if(this.state.stage >8 && this.state.stage < 22){//TODO netter, voor etappe 8 geen profielen gedownload
+            if(this.state.stage >2 && this.state.stage < 22){//TODO netter, voor etappe 8 geen profielen gedownload
                 stageProfile = <img src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')}  alt="profile" width="700"/>
             }
             var starttime = new Date(this.state.starttime);
