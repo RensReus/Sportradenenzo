@@ -73,8 +73,9 @@ calculateUserScores = function(name,year,stage,callback){
     sqlDB.query(participantsQuery,function(err,res){
         if(err) throw err;
         var totalQuery = '';
-
+        var TTTstage = 2;//TODO hardcoded
         for (i in res.rows){// voor iedere gewone user
+
             for(var j = stage; j < 23; j++){// to show correct totalscores for later stages
                 var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
                 var account_participation_id = res.rows[i].account_participation_id;
@@ -84,9 +85,13 @@ calculateUserScores = function(name,year,stage,callback){
                                 INNER JOIN results_points USING (rider_participation_id)
                                 WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}),0) `;
                 if(res.rows[i].budgetparticipation){// andere stage score voor budget
+                    var divide2 = "";
+                    if(j == TTTstage){
+                        divide2 = "/2";
+                    }
                     stagescore = `COALESCE((SELECT SUM(results_points.totalscore - results_points.teamscore) FROM stage_selection_rider 
                     INNER JOIN results_points USING (rider_participation_id)
-                    WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}),0) ` ;
+                    WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}),0)${divide2} ` ;
                 }
                 var kopmanScore = ` + (COALESCE ((SELECT 0.5 * stagescore FROM results_points
                                     WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${stage_selection_id}) AND stage_id = ${stage_id}),0))`

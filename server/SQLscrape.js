@@ -124,7 +124,7 @@ module.exports = {
     },
 
     getResult: function (raceName, year, et, callback) {
-        var TTstages = [13];
+        var TTstages = [2,13]; //ook TTT hier in zodat er geen teampunten voor de dagwinst zijn
         var TTTstages = [2];
         var raceString = "";
         switch (raceName) {
@@ -157,7 +157,9 @@ module.exports = {
                 if (!cases.length || cases[0] !== 'Stage') {
                     cases[0] = 'Stage';
                 }
-
+                if(TTTstages.includes(et)){
+                    cases.shift()
+                }
                 // store the team and id of the leader of each classification and stage winner for teampoints
                 var index = 0;
                 $(".basic").each(function (i, element) {
@@ -186,7 +188,8 @@ module.exports = {
                 //process the full results and store in riders* arrays
                 var index = 0;
 
-                $(".basic").each(function (i, element) {
+                if(!TTTstages.includes(et)){
+                    $(".basic").each(function (i, element) {
                     var end = $(this).children().eq(1).children().first().children().length;
                     if (end && cases[index] !== 'Teams' && $(this).parent().attr("data-id")!=='bonifications' && $(this).parent().attr("data-id")!=='today') {
                         var classification = cases[index];
@@ -248,7 +251,8 @@ module.exports = {
 
                     }
                 });
-                if(TTTstages.includes(et)){
+            }
+            if(TTTstages.includes(et)){
                 var TTTresult = new Array();
                 $(".resTTTh").first().parent(function(){
                     $(this).children('.tttRidersCont').each(function(){
@@ -257,14 +261,15 @@ module.exports = {
                 })
                 $(".basic").each(function (kl, element) {//gaat alle klassementen af (dag,ak,sprint,jongeren,berg,team) en slaat op in arrays
                     var end = $(this).children().eq(1).children().first().children().length;
-                    if (end && cases[kl+1] != 'teams') {
-                        var classification = cases[kl+1];
+                    if (end && cases[kl] != 'Teams' && kl < cases.length) {
+                        var classification = cases[kl];
                         var columns = new Array();
                         $(this).children().first().children().first().children().each(function (index, element) {
                             columns.push($(this).text());
                         })
                         var renCol = columns.indexOf("Rider");
                         var teamCol = columns.indexOf("Team");
+
                         $(this).children().eq(1).children().each(function (index, element) {//voor iedere renner in de uitslag
                             var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
                             var teamName = $(this).children().eq(teamCol).children().eq(0).text();
@@ -372,7 +377,7 @@ module.exports = {
 
                     //STAGE
                     if(TTTstages.includes(et)){
-                        var stagepos = TTTresult.indexOf(renner.team); // positie in de uitslag
+                        var stagepos = TTTresult.indexOf(teamRider); // positie in de uitslag
                     }else{
                         var stagepos = getIndex(ridersDay, 'pcsid', pcsid) + 1;
                     }
@@ -383,8 +388,8 @@ module.exports = {
                         stagescore = getPunten('Stage', stagepos, finalStandings);
                         stageresult = ridersDay[stagepos - 1].result;
                     }else{
-                        var stagepos = TTTresult.indexOf(renner.team); // positie in de uitslag
-                        var stagescore = getTTTPunten(dagpos); // dagpunten worden berekend
+                        var stagepos = TTTresult.indexOf(teamRider); // positie in de uitslag
+                        var stagescore = getTTTPunten(stagepos); // dagpunten worden berekend
                     }
                     if (teamRider === teamWinners['Stage'] && stagepos !== 1 && !TTstages.includes(et)){
                         if(finalStandings){
@@ -475,7 +480,7 @@ module.exports = {
                 deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
                 totalQuery = deleteQuery + resultsQuery;
                 if (et > 0){
-                    if(ridersDay.length){// don't send if no results
+                    if(ridersAll.length){// don't send if no results
                         sqlDB.query(totalQuery,(err,res)=>{
                             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                             else {
@@ -487,7 +492,7 @@ module.exports = {
                         functies.calculateUserScores(raceName,year,et,callback)                    
                     }
                 }else{
-                    if(ridersDay.length){// don't send if no results
+                    if(ridersAll.length){// don't send if no results
                         sqlDB.query(totalQuery,(err,res)=>{
                             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                             else {
