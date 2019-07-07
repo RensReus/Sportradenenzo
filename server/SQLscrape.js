@@ -125,6 +125,7 @@ module.exports = {
 
     getResult: function (raceName, year, et, callback) {
         var TTstages = [13];
+        var TTTstages = [2];
         var raceString = "";
         switch (raceName) {
             case "giro":
@@ -247,7 +248,60 @@ module.exports = {
 
                     }
                 });
+                if(TTTstages.includes(et)){
+                var TTTresult = new Array();
+                $(".resTTTh").first().parent(function(){
+                    $(this).children('.tttRidersCont').each(function(){
+                        TTTresult.push($(this).children().eq(0).children().eq(1).children().eq(1).text());
+                    })
+                })
+                $(".basic").each(function (kl, element) {//gaat alle klassementen af (dag,ak,sprint,jongeren,berg,team) en slaat op in arrays
+                    var end = $(this).children().eq(1).children().first().children().length;
+                    if (end && cases[kl+1] != 'teams') {
+                        var classification = cases[kl+1];
+                        var columns = new Array();
+                        $(this).children().first().children().first().children().each(function (index, element) {
+                            columns.push($(this).text());
+                        })
+                        var renCol = columns.indexOf("Rider");
+                        var teamCol = columns.indexOf("Team");
+                        $(this).children().eq(1).children().each(function (index, element) {//voor iedere renner in de uitslag
+                            var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
+                            var teamName = $(this).children().eq(teamCol).children().eq(0).text();
+                            var timeCol = columns.indexOf('Time');
+                            var pntCol = columns.indexOf('Pnt');
+                            if(!getIndex(ridersAll, 'pcsid', id)+1){
+                                ridersAll.push({pcsid: id, team: teamName})
+                            }
+                            switch (classification) {
+                                case 'GC'://Algemeen Klassement
+                                    var result = $(this).children().eq(timeCol).children().eq(0).text();
+                                    var rider = { pcsid: id, team: teamName, result: result };
+                                    ridersGC.push(rider);
+                                    break;
 
+                                case 'Points'://Sprinter Klassement
+                                    var result = $(this).children().eq(pntCol).text();
+                                    var rider = { pcsid: id, team: teamName, result: result };
+                                    ridersPoints.push(rider);
+                                    break;
+
+                                case 'Youth'://Jongeren Klassement
+                                    var result = $(this).children().eq(timeCol).children().eq(0).text();
+                                    var rider = { pcsid: id, team: teamName, result: result };
+                                    ridersYouth.push(rider);
+                                    break;
+
+                                case 'KOM'://Berg Klassement
+                                    var result = $(this).children().eq(pntCol).text();
+                                    var rider = { pcsid: id, team: teamName, result: result };
+                                    ridersKom.push(rider);
+                                    break;
+                            }
+                        })
+                    }
+                })
+                }
                 // change DNF to true for ridersDNF
                 var race_id = `(SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})`;
                 var dnfquery = `UPDATE rider_participation SET dnf = TRUE 
@@ -317,13 +371,20 @@ module.exports = {
                     var teamscore = 0;
 
                     //STAGE
-                    var stagepos = getIndex(ridersDay, 'pcsid', pcsid) + 1;
+                    if(TTTstages.includes(et)){
+                        var stagepos = TTTresult.indexOf(renner.team); // positie in de uitslag
+                    }else{
+                        var stagepos = getIndex(ridersDay, 'pcsid', pcsid) + 1;
+                    }
                     if(finalStandings) stagepos = 0; 
                     var stagescore = 0;
                     var stageresult = "";
-                    if (stagepos) {
+                    if (stagepos && !TTTstages.includes(et)) {
                         stagescore = getPunten('Stage', stagepos, finalStandings);
                         stageresult = ridersDay[stagepos - 1].result;
+                    }else{
+                        var stagepos = TTTresult.indexOf(renner.team); // positie in de uitslag
+                        var stagescore = getTTTPunten(dagpos); // dagpunten worden berekend
                     }
                     if (teamRider === teamWinners['Stage'] && stagepos !== 1 && !TTstages.includes(et)){
                         if(finalStandings){
