@@ -11,7 +11,8 @@ class manualupdate extends Component {
         this.getResultsKlassiek = this.getResultsKlassiek.bind(this);
         this.getStartlist = this.getStartlist.bind(this);
         this.getResults = this.getResults.bind(this);
-        this.copyTeamSelections = this.copyTeamSelections.bind(this);
+        this.copyTeamSelectionsFinalStage = this.copyTeamSelectionsFinalStage.bind(this);
+        this.copyTeamIfSelectionEmpty = this.copyTeamIfSelectionEmpty.bind(this);
 
         this.changeGSKText = this.changeGSKText.bind(this);
         this.changeGRKText = this.changeGRKText.bind(this);
@@ -136,8 +137,15 @@ class manualupdate extends Component {
         this.setState({ raceName: event.target.value });
     }
 
-    copyTeamSelections(){
-        axios.post('/api/copyTeamSelections', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken')})
+    copyTeamSelectionsFinalStage(){
+        axios.post('/api/copyTeamSelectionsFinalStage', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken')})
+        .then((res) => {
+            this.setState({ grStage: res.data })            
+        })
+    }
+
+    copyTeamIfSelectionEmpty(){
+        axios.post('/api/copyTeamIfSelectionEmpty', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken')})
         .then((res) => {
             this.setState({ grStage: res.data })            
         })
@@ -196,7 +204,11 @@ class manualupdate extends Component {
                     </form>
 
                     <div className="row">
-                        <button onClick={this.copyTeamSelections}>Copy Teamselections for final points</button>
+                        <button onClick={this.copyTeamIfSelectionEmpty}>Opstelling vergeten Copy.</button>
+                    </div>
+
+                    <div className="row">
+                        <button onClick={this.copyTeamSelectionsFinalStage}>Copy Teamselections for final points</button>
                     </div>
 
                 </div>

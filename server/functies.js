@@ -368,9 +368,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
                 var d = nextStageResults.rows[0].starttime;
                 resultsRule = `${d.getSeconds()+5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
                 scrapeResults.cancel();// cancel updates until they are restarted by copyOpstelling
-                copyOpstelling.reschedule(resultsRule);  //update new schedule
               }else{// laatste etappe compleet geen scrapes meer nodig
-                  copyOpstelling.cancel();
                   scrapeResults.cancel();
               }
             }
@@ -383,51 +381,6 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
     }
   })
 });
-
-var copyOpstelling = schedule.scheduleJob('15 10 10 * *', function () {
-  console.log("copyopstelling run at: " + new Date().toTimeString());
-    console.log("restart scrapeResult",scrapeResults.reschedule('15 * * * *')); //ieder uur
-  var race_id = race_id_global;
-
-  var stage_id = `(SELECT stage_id FROM stage
-                    WHERE starttime < NOW() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
-                    ORDER BY stagenr DESC
-                    LIMIT 1)`;
-  var currentStagenr = `(SELECT stagenr FROM stage
-                WHERE starttime < NOW() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
-                ORDER BY stagenr DESC
-                LIMIT 1)`;
-
-  var prevStage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${currentStagenr} - 1)`;
-  var accountsWithoutSelectionQuery = `SELECT account_participation_id, stage_selection_id FROM stage_selection
-                                      LEFT JOIN stage_selection_rider USING (stage_selection_id)
-                                      WHERE stage_id = ${stage_id} 
-                                      GROUP BY account_participation_id, stage_selection_id
-                                      HAVING COUNT(rider_participation_id) = 0`;
-  sqlDB.query(accountsWithoutSelectionQuery,function(err,res){
-    if (err) {console.log("WRONG QUERY:",accountsWithoutSelectionQuery); throw err;}
-    var totalQuery = '';
-    for(var i in res.rows){//for each account_participation with an empty stage_selection for the stage that just started
-        var prevStage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE stage_id = ${prevStage_id} AND account_participation_id = ${res.rows[i].account_participation_id})`;
-        //SELECT all riders from previous stage selection and insert into current stage
-        var insertPrevSelection = `INSERT INTO stage_selection_rider(stage_selection_id, rider_participation_id)
-        SELECT ${res.rows[i].stage_selection_id}, rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${prevStage_selection_id};\n`;
-        var prevKopman_id = `(SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${prevStage_selection_id})`;
-        var insertPrevKopman = `UPDATE stage_selection SET kopman_id = ${prevKopman_id} WHERE stage_selection_id = ${res.rows[i].stage_selection_id};\n`;
-      totalQuery += insertPrevSelection + insertPrevKopman;
-    }
-
-    if(res.rows.length){
-      sqlDB.query(totalQuery,function(err,results){
-        if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
-        console.log("Copied selections",res.rowCount);
-      })
-    }
-  })
-
-});
-
-
 
 
 module.exports.calculateUserScores = calculateUserScores;
