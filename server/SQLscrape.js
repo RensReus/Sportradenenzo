@@ -388,8 +388,10 @@ module.exports = {
                         stagescore = getPunten('Stage', stagepos, finalStandings);
                         stageresult = ridersDay[stagepos - 1].result;
                     }else{
-                        var stagepos = TTTresult.indexOf(teamRider); // positie in de uitslag
-                        var stagescore = getTTTPunten(stagepos); // dagpunten worden berekend
+                        if(stagepos){
+                            var stagepos = TTTresult.indexOf(teamRider); // positie in de uitslag
+                            var stagescore = getTTTPunten(stagepos); // dagpunten worden berekend
+                        }
                     }
                     if (teamRider === teamWinners['Stage'] && stagepos !== 1 && !TTstages.includes(et)){
                         if(finalStandings){
