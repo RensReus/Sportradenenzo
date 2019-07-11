@@ -296,7 +296,7 @@ class Stage extends Component {
                 stageProfile = <img src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')}  alt="profile" width="700"/>
             }
             var starttime = new Date(this.state.starttime);
-            starttimeString = " Starttijd: " + starttime.getHours() + ":" + starttime.getMinutes();
+            starttimeString = " Starttijd: " + starttime.getHours() + ":" + starttime.getMinutes() + " Dag: " + starttime.getDay();
             selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider=> rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman}/>
             prevClassificationsDiv = <div className="prevClassifications" style={{float:"left"}}>
             <div style={{display: prevClassifications[0].rows.length ? 'block' : 'none', float:"left"}} className="GC"><Table data={prevClassifications[0].rows} title="AK"/></div>
