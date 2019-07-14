@@ -16,11 +16,11 @@ class Navbar extends Component {
         let charts;
         let stats;
         if (this.props.isLoggedIn) {
-            buttonSignProfile = <button className='item' onClick={() => this.redirect('/profile')}>Profile</button>;
+            buttonSignProfile = <a className='item' href="/profile">Profile</a>;
             buttonLog = <button className='item' onClick={() => this.logout()}>Logout</button>;
-            currStage = <button className='item' onClick={() => this.redirect('/')}>Current stage</button>;
+            currStage = <a className='item' href="/">Current stage</a>;
             charts = <div className="dropdown">
-                <button className="item dropbtn">Charts</button>
+                <a className="item dropbtn">Charts</a>
                 <div className="dropdown-content">
                     <a className='item' href="/charts/userscores">Relatief Scoreverloop</a>
                     <a className='item' href="/charts/userrank">Ranking</a>
@@ -29,7 +29,7 @@ class Navbar extends Component {
                 </div>
             </div>;
             stats = <div className="dropdown">
-                <button className="item dropbtn">Statistieken</button>
+                <a className="item dropbtn">Statistieken</a>
                 <div className="dropdown-content">
                     <a className='item' href="/etappewinsten">Uitslagen per etappe</a>
                     <a className='item' href="/overzicht/missedpoints">Gemiste punten</a>
@@ -42,8 +42,8 @@ class Navbar extends Component {
                 </div>
             </div>;
         } else {
-            buttonSignProfile = <button className='item' onClick={() => this.redirect('/signup')}>Sign up</button>;
-            buttonLog = <button className='item' onClick={() => this.redirect('/login')}>Sign in</button>;
+            buttonSignProfile = <a className='item' href="/signup">Sign up</a>;
+            buttonLog = <a className='item' href="/login">Sign in</a>;
             currStage = '';
             charts = '';
             stats = '';
@@ -57,10 +57,10 @@ class Navbar extends Component {
                 {stats}
 
                 {this.props.isAdmin &&
-                    <button className='item' onClick={() => this.redirect('/admin')}>Admin</button>
+                    <a className='item' href="/admin" onClick={() => this.redirect('/admin')}>Admin</a>
                 }
                 {this.props.isAdmin &&
-                    <button className='item' onClick={() => this.redirect('/manualupdate')}>Manual Update</button>
+                    <a className='item' href="/manualupdate" onClick={() => this.redirect('/manualupdate')}>Manual Update</a>
                 }
                 {buttonLog}
             </div>

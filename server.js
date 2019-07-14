@@ -5,11 +5,15 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors') //Zorgt voor authentication tussen proxy en server (snap het niet helemaal maar het werkt)
 const app = express();
+const functies = require('./server/functies');
 app.use(cors({
   credentials: true
 }))
 
 race_id_global = 6;
+currentstage_global = 0;
+functies.setCurrentStage()
+
 
 //==Passport==
 const passport = require('passport');

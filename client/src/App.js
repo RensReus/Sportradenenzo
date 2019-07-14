@@ -24,6 +24,7 @@ const jwtDecode = require('jwt-decode');
 class App extends Component {
   constructor(props) {
     super(props);
+    console.log(props)
     this.state = ({
       loading: true,
       isLoggedIn: false,
@@ -61,8 +62,8 @@ class App extends Component {
       axios.post('/api/currentstagenum')
         .then(res =>{
           var newRedir = '/teamselection';     
-          if(res.data.stage.stagenr !== '0'){
-            newRedir = '/stage/' + res.data.stage.stagenr;
+          if(res.data.stage !== '0'){
+            newRedir = '/stage/' + res.data.stage;
           }
 
           this.setState({redirect: newRedir})

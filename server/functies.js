@@ -382,6 +382,21 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
   })
 });
 
+function setCurrentStage(){
+    var race_id = race_id_global;
+        var stageQuery = `SELECT * FROM STAGE
+                    WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
+                    ORDER BY stagenr desc
+                    LIMIT 1`;
+        sqlDB.query(stageQuery, function (err, results) {
+            if (results.rows.length) {// if some results, so at least after start of stage 1
+                var stage = results.rows[0];
+                if(stage.complete) stage.stagenr++;
+                currentstage_global = stage.stagenr;
+            }
+        })
+}
+
 
 module.exports.calculateUserScores = calculateUserScores;
 module.exports.transferUsers = transferUsers;
@@ -391,3 +406,4 @@ module.exports.returnEtappeWinnaars = returnEtappeWinnaars;
 module.exports.calculateUserScoresKlassieker = calculateUserScoresKlassieker;
 module.exports.stageNumKlassieker = stageNumKlassieker;
 module.exports.attrIndex = attrIndex;
+module.exports.setCurrentStage = setCurrentStage;
