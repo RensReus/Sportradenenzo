@@ -268,7 +268,7 @@ module.exports = function (app) {
                 if (pos > 8) forRenners = 8;
 
                 for (var j = 0; j < forRenners; j++) {
-                    if (totalscore[j] == undefined) continue;
+                    if (totalscores[j] == undefined) continue;
                     optimalPoints += totalscores[j].score;
                     if (totalscores[j].id === bestId) {
                         optimalPoints += stagescores[0].score * .5;
