@@ -7,8 +7,11 @@ module.exports = function (app) {
 
     })
 
-    app.post('/api/currentstagenum', function (req, res) {
-        res.send({stage:currentstage_global});
-
+    app.post('/api/currentstageredir', function (req, res) {
+        var newRedir = '/teamselection';     
+          if(currentstage_global !== 0){
+            newRedir = '/stage/' + currentstage_global;
+          }
+        res.send({redirect: newRedir});
     })
 }
