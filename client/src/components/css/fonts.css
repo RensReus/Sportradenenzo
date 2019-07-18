@@ -1,0 +1,23 @@
+.h1 {
+    font-size: 150%;
+}
+
+.h2 {
+    font-size: 125%;
+}
+
+.h3 {
+    font-size: 110%;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.gray {
+    color: gray;
+}
+
+.black {
+    color: black;
+}

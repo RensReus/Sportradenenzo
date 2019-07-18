@@ -93,7 +93,7 @@ class Home extends Component{
                             <input className="form-control" name="password" ref="password" type="password" placeholder="Password"/>
                         </div>
                         <div className="formButtonContainer">
-                            <button className="loginButton">{buttontext}</button>
+                            <button className="buttonStandard blue">{buttontext}</button>
                         </div>
                     </form>
                     <div className="errordiv">{this.state.error}</div>

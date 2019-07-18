@@ -1,0 +1,104 @@
+button.buttonStandard {
+  border-radius: 6px;
+  border-style: none;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  min-height: 5vh;
+}
+
+button.buttonStandard.blue{
+  background-color: var(--main-color);
+  color: white;
+}
+
+button.buttonStandard.blue:hover{
+  background-color: var(--main-color-light);
+  -webkit-transition: .4s;
+  transition: .4s;
+  cursor: pointer;
+}
+
+button.buttonStandard.blue2{
+  border: 2px solid;
+  background: none;
+  color: var(--main-color);
+}
+
+button.buttonStandard.blue2:hover{
+  background-color: #ddd;
+  -webkit-transition: .4s;
+  transition: .4s;
+  cursor: pointer;
+}
+
+/*Icons inside buttons*/
+button > img{
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+/*Sliders*/
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--background-color-dark);
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 23px;
+  width: 24px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked+.slider {
+  background-color: var(--main-color);
+}
+
+input:focus+.slider {
+  box-shadow: 0 0 1px var(--main-color);
+}
+
+input:checked+.slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+
+.slider.round {
+  border-radius: 30px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}

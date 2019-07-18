@@ -19,6 +19,11 @@ import Rider from './components/rider';
 import ManualUpdate from './components/manualupdate'
 import Rulesandpoints from './components/rulesandpoints';
 
+//Import de standaard css stukken
+import './components/css/buttons.css'
+import './components/css/fonts.css'
+import './components/css/tables.css'
+
 const jwtDecode = require('jwt-decode');
 
 class App extends Component {

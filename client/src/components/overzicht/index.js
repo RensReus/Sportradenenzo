@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './index.css';
 import axios from 'axios';
-import Table from '../table'
+import Table from '../shared/table'
 
 class overzicht extends Component {
   constructor(props) {

@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 import './index.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from "@fortawesome/free-solid-svg-icons"; //User icon voor profielpagina
+import { faUserShield } from "@fortawesome/free-solid-svg-icons"; //Admin icon
+import { faAngleDown } from "@fortawesome/free-solid-svg-icons"; //Pijltje voor de dropdown
+import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons"; //Logout icon
 
 class Navbar extends Component {
     redirect = (url) => {
@@ -13,32 +18,34 @@ class Navbar extends Component {
         let buttonLog;
         let buttonSignProfile;
         let currStage;
+        let raceOverview;
         let charts;
         let stats;
         if (this.props.isLoggedIn) {
-            buttonSignProfile = <a className='item' href="/profile">Profile</a>;
+            buttonSignProfile = <button className='item' onClick={() => this.redirect('/profile')}><span className="h3 bold"><FontAwesomeIcon icon={faUser}/> Profile</span></button>;
             buttonLog = <button className='item' onClick={() => this.logout()}>Logout</button>;
-            currStage = <a className='item' href="/">Current stage</a>;
+            currStage = <button className='item' onClick={() => this.redirect('/')}><span>Current stage</span></button>;
+            raceOverview = <button className='item' ><span>Race overview</span></button>;
             charts = <div className="dropdown">
-                <a className="item dropbtn">Charts</a>
+                <button className="item dropbtn"><span className="h3 bold">Charts <FontAwesomeIcon icon={faAngleDown}/></span></button>
                 <div className="dropdown-content">
-                    <a className='item' href="/charts/userscores">Relatief Scoreverloop</a>
-                    <a className='item' href="/charts/userrank">Ranking</a>
-                    <a className='item' href="/charts/riderpercentage">Puntenaandeel Renner per Etappe</a>
-                    <a className='item' href="/charts/riderpercentagetotal">Puntenaandeel Renner totaal</a>
+                    <a className='item' onClick={() => this.redirect('/charts/userscores')}>Relatief Scoreverloop</a>
+                    <a className='item' onClick={() => this.redirect('/charts/userrank')}>Ranking</a>
+                    <a className='item' onClick={() => this.redirect('/charts/riderpercentage')}>Puntenaandeel Renner per Etappe</a>
+                    <a className='item' onClick={() => this.redirect('/charts/riderpercentagetotal')}>Puntenaandeel Renner totaal</a>
                 </div>
             </div>;
             stats = <div className="dropdown">
-                <a className="item dropbtn">Statistieken</a>
+                <button className="item dropbtn"><span className="h3 bold">Statistieken <FontAwesomeIcon icon={faAngleDown}/></span></button>
                 <div className="dropdown-content">
-                    <a className='item' href="/etappewinsten">Uitslagen per etappe</a>
-                    <a className='item' href="/overzicht/missedpoints">Gemiste punten</a>
-                    <a className='item' href="/overzicht/missedpointsall">Gemiste punten iedereen</a>
-                    <a className='item' href="/overzicht/team">Team overzicht</a>
-                    <a className='item' href="/overzicht/teamall">Team overzicht iedereen</a>
-                    <a className='item' href="/overzicht/all">Alle renners</a>
-                    <a className='item' href="/overzicht/selected">Geselecteerde renners</a>
-                    <a className='item' href="/rulesandpoints">Regels en Punten uitleg</a>
+                    <a className='item' onClick={() => this.redirect('/etappewinsten')}>Uitslagen per etappe</a>
+                    <a className='item' onClick={() => this.redirect('/overzicht/missedpointsall')}>Gemiste punten iedereen</a>
+                    <a className='item' onClick={() => this.redirect('/overzicht/team')}>Team overzicht</a>
+                    <a className='item' onClick={() => this.redirect('/overzicht/teamall')}>Team overzicht iedereen</a>
+                    <a className='item' onClick={() => this.redirect('/overzicht/all')}>Alle renners</a>
+                    <a className='item' onClick={() => this.redirect('/overzicht/selected')}>Geselecteerde renners</a>
+                    <a className='item' onClick={() => this.redirect('/rulesandpoints')}>Regels en Punten uitleg</a>
+                    <a className='item' onClick={() => this.redirect('/overzicht/missedpoints')}>Gemiste punten</a>
                 </div>
             </div>;
         } else {
@@ -50,17 +57,18 @@ class Navbar extends Component {
         }
         return (
             <div className="navbar">
+                <span className="logo h1">Sport raden enzo</span>
                 {buttonSignProfile}
                 {currStage}
-
+                {raceOverview}
                 {charts}
                 {stats}
 
                 {this.props.isAdmin &&
-                    <a className='item' href="/admin" onClick={() => this.redirect('/admin')}>Admin</a>
+                    <button className='item' onClick={() => this.redirect('/admin')}><span className="h3 bold"><FontAwesomeIcon icon={faUserShield}/> Admin</span></button>
                 }
                 {this.props.isAdmin &&
-                    <a className='item' href="/manualupdate" onClick={() => this.redirect('/manualupdate')}>Manual Update</a>
+                    <button className='item' onClick={() => this.redirect('/manualupdate')}>Manual Update</button>
                 }
                 {buttonLog}
             </div>

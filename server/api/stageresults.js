@@ -160,8 +160,8 @@ module.exports = function (app) {
                                     WHERE account_id=${user.account_id} AND race_id=${race_id} AND NOT budgetparticipation)`;
                                 var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
 
-                                var inSelection = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'inselection' ELSE '' END`
-                                var inteam = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'inteam' ELSE '' END`
+                                var inSelection = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'bold black' ELSE '' END`
+                                var inteam = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'bold gray' ELSE '' END`
                                 var rowClassName = `CONCAT(${inSelection},' ', ${inteam}) AS "rowClassName"`;
                                 var stage_idPrev = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage-1})`;
                                 var GCresultsQuery = `SELECT gcpos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", gcresult AS "Time", ${rowClassName}
@@ -218,8 +218,8 @@ module.exports = function (app) {
                                     WHERE account_id=${user.account_id} AND race_id=${race_id} AND budgetparticipation)`;
                                 var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
 
-                                var inSelection = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'inselection' ELSE '' END`
-                                var inteam = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'inteam' ELSE '' END`
+                                var inSelection = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'bold black' ELSE '' END`
+                                var inteam = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'bold gray' ELSE '' END`
                                 var rowClassName = `CONCAT(${inSelection},' ', ${inteam}) AS "rowClassName"`;
                                 var stage_idPrev = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage-1})`;
                                 var GCresultsQuery = `SELECT gcpos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", gcresult AS "Time", ${rowClassName}
@@ -314,8 +314,8 @@ module.exports = function (app) {
                                             WHERE stage_id=${stage_id} AND NOT budgetparticipation
                                             ORDER BY totalscore DESC; `;   
 
-                        var inSelectionGewoon = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_idGewoon}) THEN 'inselection' ELSE '' END`
-                        var inteamGewoon = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_idGewoon}) THEN 'inteam' ELSE '' END`
+                        var inSelectionGewoon = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_idGewoon}) THEN 'bold black' ELSE '' END`
+                        var inteamGewoon = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_idGewoon}) THEN 'bold gray' ELSE '' END`
                         var rowClassNameGewoon = `CONCAT(${inSelectionGewoon},' ', ${inteamGewoon}) AS "rowClassName"`;
 
                         var stageresultsGewoonQuery = `SELECT stagepos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", stageresult AS "Time", ${rowClassNameGewoon}
@@ -399,8 +399,8 @@ module.exports = function (app) {
                                             WHERE stage_id=${stage_id} AND budgetparticipation
                                             ORDER BY totalscore DESC; `;   
                                             
-                        var inSelectionBudget = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_idBudget}) THEN 'inselection' ELSE '' END`
-                        var inteamBudget = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_idBudget}) THEN 'inteam' ELSE '' END`
+                        var inSelectionBudget = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_idBudget}) THEN 'bold black' ELSE '' END`
+                        var inteamBudget = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_idBudget}) THEN 'bold gray' ELSE '' END`
                         var rowClassNameBudget = `CONCAT(${inSelectionBudget},' ', ${inteamBudget}) AS "rowClassName"`;
 
                         var stageresultsBudgetQuery = `SELECT stagepos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", stageresult AS "Time", ${rowClassNameBudget}
@@ -598,7 +598,7 @@ module.exports = function (app) {
 
             // CONCAT('<a href="/rider/', rider_participation_id,'">',firstname, ' ', lastname,'</a>') voor later
 
-            var stageresultsQuery = `SELECT stagepos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", stageresult AS "Time", CASE SUM(CASE account_participation_id WHEN ${account_participation_id} THEN 1 END) WHEN 1 THEN 'inteam' ELSE '' END AS "rowClassName"
+            var stageresultsQuery = `SELECT stagepos AS " ", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team", stageresult AS "Time", CASE SUM(CASE account_participation_id WHEN ${account_participation_id} THEN 1 END) WHEN 1 THEN 'bold gray' ELSE '' END AS "rowClassName"
                                 FROM results_points
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 INNER JOIN rider USING(rider_id)
@@ -610,7 +610,7 @@ module.exports = function (app) {
             var selectionsQuery = `SELECT username, COALESCE(COUNT(rider_participation_id),0) as count, ARRAY_AGG(json_build_object(
                                 'Name', CONCAT(firstname, ' ', lastname), 
                                 'totalscore', totalscore ,
-                                'inteam', CASE WHEN rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'inteam' ELSE ' ' END 
+                                'bold gray', CASE WHEN rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'bold gray' ELSE ' ' END 
                                 )) as riders FROM  results_points
                                 INNER JOIN team_selection_rider USING(rider_participation_id)
                                 INNER JOIN account_participation USING(account_participation_id)

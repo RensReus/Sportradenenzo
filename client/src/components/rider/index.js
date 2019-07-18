@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Table from '../table'
+import Table from '../shared/table'
 
 class Rider extends Component {
   constructor(props) {

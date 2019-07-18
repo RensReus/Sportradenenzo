@@ -6,14 +6,14 @@ div.homepageContainer{
 }
 
 div.formsAndMore{
-    background-color: rgba(230,225,220,0.98);
+    background-color: var(--background-color);
     padding: 10px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
     border-top-style: solid;
     border-top-width: 1vh;
-    border-top-color: rgb(70, 130, 190);
+    border-top-color: var(--main-color);
     margin-top: -1vh;
     box-shadow: 0px 10px 10px 0px rgba(47, 47, 47, 0.6);
     height: 50vh;
@@ -65,17 +65,6 @@ div.inputContainer{
 div.formButtonContainer{
     margin-left: 1vw;
     padding-top: 1vh;
-}
-
-button.loginButton{
-    border-radius: 6px;
-    border-style: none;
-    background-color: rgb(70, 130, 190);
-    font-weight: bold;
-    font-size: 12px;
-    height: 35px;
-    width: 9vw;
-    color: white;
 }
 
 div.errordiv{

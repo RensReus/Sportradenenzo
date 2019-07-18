@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import './index.css';
-
-
 
 class Headers extends Component {
     render() {

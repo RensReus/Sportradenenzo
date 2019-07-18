@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './index.css';
-import Table from '../table'
+import Table from '../shared/table'
 
 class PouleTableRow extends Component {
     render() {

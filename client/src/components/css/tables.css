@@ -1,6 +1,6 @@
+/*Default table css, overruled by more specified table classes*/
 table {
-    border: 1px solid black;
-    table-layout: auto;
+    border: none;
 }
 
 tr:nth-child(odd) {
@@ -11,16 +11,17 @@ tr:nth-child(even) {
 }
 
 th{
-    background: rgb(70, 70, 70);
+    background: var(--background-color-dark);
     color: white
 }
 
 caption{
-    background: rgb(46, 46, 46);
+    background: var(--background-color-darker);
     color: white;
     font-size: 25px;
     text-align: center;
 }
+
 th.sortable{
     cursor: pointer;
     -webkit-touch-callout: none;
@@ -31,16 +32,6 @@ th.sortable{
     user-select: none;
 }
 
-tr.inteam{
-    font-weight: bold;
-    color: gray;
-}
-
-tr.inselection{
-    font-weight: bold;
-    color: black;
-}
-
 th, td {
     padding-top: 5px;
     padding-bottom: 5px;
@@ -49,6 +40,10 @@ th, td {
     text-align: center;
     font-size: 15px;
     border: 1px black solid;
+}
+
+table.table1 {
+
 }
 
 .scrollButton {

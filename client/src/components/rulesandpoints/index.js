@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Table from '../table'
+import Table from '../shared/table'
 class Rulesandpoints extends Component {
   render() {
       var dagPunten = [
