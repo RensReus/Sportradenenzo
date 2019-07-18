@@ -64,14 +64,10 @@ class App extends Component {
       }
     }
     if(this.state.redirect === '/'){
-      axios.post('/api/currentstagenum')
+      axios.post('/api/currentstageredir')
         .then(res =>{
-          var newRedir = '/teamselection';     
-          if(res.data.stage !== '0'){
-            newRedir = '/stage/' + res.data.stage;
-          }
-
-          this.setState({redirect: newRedir})
+          console.log(res.data)
+          this.setState({redirect: res.data.redirect})
         })
     }
     
