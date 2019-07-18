@@ -28,8 +28,8 @@ const jwtDecode = require('jwt-decode');
 
 class App extends Component {
   constructor(props) {
-    super(props);
     console.log(props)
+    super(props);
     this.state = ({
       loading: true,
       isLoggedIn: false,

@@ -122,14 +122,9 @@ module.exports = function (app) {
       if(decoded.admin){
         var race_id = race_id_global;
 
+        var currentStagenr = currentstage_global;
         var stage_id = `(SELECT stage_id FROM stage
-                          WHERE starttime < NOW() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
-                          ORDER BY stagenr DESC
-                          LIMIT 1)`;
-        var currentStagenr = `(SELECT stagenr FROM stage
-                      WHERE starttime < NOW() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
-                      ORDER BY stagenr DESC
-                      LIMIT 1)`;
+                          WHERE stagenr = ${currentStagenr} AND race_id = ${race_id})`;
       
         var prevStage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${currentStagenr} - 1)`;
         var accountsWithoutSelectionQuery = `SELECT account_participation_id, stage_selection_id FROM stage_selection

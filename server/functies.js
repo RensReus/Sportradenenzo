@@ -367,7 +367,9 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
               if(stage.stagenr < 21){
                 var d = nextStageResults.rows[0].starttime;
                 resultsRule = `${d.getSeconds()+5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
-                scrapeResults.cancel();// cancel updates until they are restarted by copyOpstelling
+                scrapeResults.reschedule(resultsRule);
+                setCurrentStage();
+
               }else{// laatste etappe compleet geen scrapes meer nodig
                   scrapeResults.cancel();
               }
