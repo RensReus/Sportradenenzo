@@ -11,6 +11,13 @@
   user-select: none;
 }
 
+@media screen and ( max-width: 767px) {
+  .navbar {
+    height: 10vh;
+    overflow: scroll;
+  }
+}
+
 /* LOGO */
 
 .navbar .logo {

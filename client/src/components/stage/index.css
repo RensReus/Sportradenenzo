@@ -139,7 +139,7 @@ div.classification {
     div.stageContainer {
         display: grid;
         grid-template-columns: 100%;
-        grid-template-rows: 20vh 170vh 60vh 60vh;
+        grid-template-rows: 20vh auto auto auto;
         grid-gap: 1em;
         padding: 1vh;
         background-color: var(--background-color);
@@ -173,7 +173,7 @@ div.classification {
     }
     div.stage {
         grid-column: 1;
-        grid-row: 2 / 3;
+        grid-row: 3 / 4;
     }
 }
 
