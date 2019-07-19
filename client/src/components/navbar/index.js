@@ -24,7 +24,7 @@ class Navbar extends Component {
         let stats;
         if (this.props.isLoggedIn) {
             buttonSignProfile = <Link className='item' to='/profile'><span className="h3 bold"><FontAwesomeIcon icon={faUser}/> Profile</span></Link>;
-            buttonLog = <Link className='item' to='/logout'>Logout</Link>;
+            buttonLog = <button className='item' onClick={() => this.logout()}>Logout</button>;
             currStage = <Link className='item' to='/'><span>Current stage</span></Link>;
             raceOverview = <button className='item' ><span>Race overview</span></button>;
             charts = <div className="dropdown">
