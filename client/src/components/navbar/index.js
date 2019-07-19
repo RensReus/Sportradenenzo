@@ -27,7 +27,7 @@ class Navbar extends Component {
             currStage = <a className='item' href='/'><span>Current stage</span></a>;
             raceOverview = <button className='item' ><span>Race overview</span></button>;
             charts = <div className="dropdown">
-                <button className="item dropbtn"><span className="h3 bold">Charts <FontAwesomeIcon icon={faAngleDown}/></span></button>
+                <a className="item dropbtn"><span className="h3 bold">Charts <FontAwesomeIcon icon={faAngleDown}/></span></a>
                 <div className="dropdown-content">
                     <a className='item' href='/charts/userscores'>Relatief Scoreverloop</a>
                     <a className='item' href='/charts/userrank'>Ranking</a>
@@ -36,7 +36,7 @@ class Navbar extends Component {
                 </div>
             </div>;
             stats = <div className="dropdown">
-                <button className="item dropbtn"><span className="h3 bold">Statistieken <FontAwesomeIcon icon={faAngleDown}/></span></button>
+                <a className="item dropbtn"><span className="h3 bold">Statistieken <FontAwesomeIcon icon={faAngleDown}/></span></a>
                 <div className="dropdown-content">
                     <a className='item' href='/etappewinsten'>Uitslagen per etappe</a>
                     <a className='item' href='/overzicht/missedpointsall'>Gemiste punten iedereen</a>
