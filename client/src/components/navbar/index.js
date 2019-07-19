@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import './index.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from "@fortawesome/free-solid-svg-icons"; //User icon voor profielpagina
@@ -22,35 +23,35 @@ class Navbar extends Component {
         let charts;
         let stats;
         if (this.props.isLoggedIn) {
-            buttonSignProfile = <a className='item' href='/profile'><span className="h3 bold"><FontAwesomeIcon icon={faUser}/> Profile</span></a>;
-            buttonLog = <a className='item' href='/logout'>Logout</a>;
-            currStage = <a className='item' href='/'><span>Current stage</span></a>;
+            buttonSignProfile = <Link className='item' to='/profile'><span className="h3 bold"><FontAwesomeIcon icon={faUser}/> Profile</span></Link>;
+            buttonLog = <Link className='item' to='/logout'>Logout</Link>;
+            currStage = <Link className='item' to='/'><span>Current stage</span></Link>;
             raceOverview = <button className='item' ><span>Race overview</span></button>;
             charts = <div className="dropdown">
                 <a className="item dropbtn"><span className="h3 bold">Charts <FontAwesomeIcon icon={faAngleDown}/></span></a>
                 <div className="dropdown-content">
-                    <a className='item' href='/charts/userscores'>Relatief Scoreverloop</a>
-                    <a className='item' href='/charts/userrank'>Ranking</a>
-                    <a className='item' href='/charts/riderpercentage'>Puntenaandeel Renner per Etappe</a>
-                    <a className='item' href='/charts/riderpercentagetotal'>Puntenaandeel Renner totaal</a>
+                    <Link className='item' to='/charts/userscores'>Relatief Scoreverloop</Link>
+                    <Link className='item' to='/charts/userrank'>Ranking</Link>
+                    <Link className='item' to='/charts/riderpercentage'>Puntenaandeel Renner per Etappe</Link>
+                    <Link className='item' to='/charts/riderpercentagetotal'>Puntenaandeel Renner totaal</Link>
                 </div>
             </div>;
             stats = <div className="dropdown">
                 <a className="item dropbtn"><span className="h3 bold">Statistieken <FontAwesomeIcon icon={faAngleDown}/></span></a>
                 <div className="dropdown-content">
-                    <a className='item' href='/etappewinsten'>Uitslagen per etappe</a>
-                    <a className='item' href='/overzicht/missedpointsall'>Gemiste punten iedereen</a>
-                    <a className='item' href='/overzicht/team'>Team overzicht</a>
-                    <a className='item' href='/overzicht/teamall'>Team overzicht iedereen</a>
-                    <a className='item' href='/overzicht/all'>Alle renners</a>
-                    <a className='item' href='/overzicht/selected'>Geselecteerde renners</a>
-                    <a className='item' href='/rulesandpoints'>Regels en Punten uitleg</a>
-                    <a className='item' href='/overzicht/missedpoints'>Gemiste punten</a>
+                    <Link className='item' to='/etappewinsten'>Uitslagen per etappe</Link>
+                    <Link className='item' to='/overzicht/missedpointsall'>Gemiste punten iedereen</Link>
+                    <Link className='item' to='/overzicht/team'>Team overzicht</Link>
+                    <Link className='item' to='/overzicht/teamall'>Team overzicht iedereen</Link>
+                    <Link className='item' to='/overzicht/all'>Alle renners</Link>
+                    <Link className='item' to='/overzicht/selected'>Geselecteerde renners</Link>
+                    <Link className='item' to='/rulesandpoints'>Regels en Punten uitleg</Link>
+                    <Link className='item' to='/overzicht/missedpoints'>Gemiste punten</Link>
                 </div>
             </div>;
         } else {
-            buttonSignProfile = <a className='item' href="/signup">Sign up</a>;
-            buttonLog = <a className='item' href="/login">Sign in</a>;
+            buttonSignProfile = <Link className='item' to="/signup">Sign up</Link>;
+            buttonLog = <Link className='item' to="/login">Sign in</Link>;
             currStage = '';
             charts = '';
             stats = '';
@@ -65,10 +66,10 @@ class Navbar extends Component {
                 {stats}
 
                 {this.props.isAdmin &&
-                    <a className='item' href='/admin'><span className="h3 bold"><FontAwesomeIcon icon={faUserShield}/> Admin</span></a>
+                    <Link className='item' to='/admin'><span className="h3 bold"><FontAwesomeIcon icon={faUserShield}/> Admin</span></Link>
                 }
                 {this.props.isAdmin &&
-                    <bautton className='item' href='/manualupdate'>Manual Update</bautton>
+                    <Link className='item' to='/manualupdate'>Manual Update</Link>
                 }
                 {buttonLog}
             </div>
