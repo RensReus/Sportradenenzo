@@ -73,6 +73,13 @@ body {
   font-size: 1.4rem;
   text-decoration: none;
 }
+  
+div.pageContainer {
+  height: 95vh;
+  overflow: auto;
+  background-color: var(--background-color-transparent);
+  margin: 0;
+}
 
 @media only screen and (min-width: 768px) {
   .content:before {
@@ -98,15 +105,16 @@ body {
     right: 0;
     z-index: 0;
   }
+
+  div.pageContainer {
+    height: 95vh;
+    overflow: auto;
+    background-color: var(--background-color-transparent);
+    margin-left: 10vw;
+    margin-right: 10vw;
+  }
 }
 
-div.pageContainer {
-  height: 95vh;
-  overflow: auto;
-  background-color: var(--background-color-transparent);
-  margin-left: 10vw;
-  margin-right: 10vw;
-}
 
 img.loadingGif {
   height: 20%;

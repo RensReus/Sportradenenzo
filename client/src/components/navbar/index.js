@@ -6,6 +6,7 @@ import { faUser } from "@fortawesome/free-solid-svg-icons"; //User icon voor pro
 import { faUserShield } from "@fortawesome/free-solid-svg-icons"; //Admin icon
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons"; //Pijltje voor de dropdown
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons"; //Logout icon
+import { faBars } from "@fortawesome/free-solid-svg-icons"; //Bars voor mobiel navbar menu
 
 class Navbar extends Component {
     redirect = (url) => {
