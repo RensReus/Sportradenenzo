@@ -35,7 +35,6 @@ table {
 
 caption, th, td {
   text-align: left;
-  font-weight: normal;
 }
 
 blockquote:before, blockquote:after, q:before, q:after {
