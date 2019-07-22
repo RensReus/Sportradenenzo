@@ -18,6 +18,7 @@ module.exports = function (app) {
                 sqlDB.query(sqlQuery,
                     (err, sqlres) => {
                         if (err) {
+                            console.log(sqlQuery);
                             console.log("ERROR");
                             console.log(err);
                             res.send({ 'data': err });

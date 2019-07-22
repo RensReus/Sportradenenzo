@@ -44,7 +44,9 @@ class Outputtable extends Component {
             }
             commandType = response.command;
             output = response.rows;
-            if (error) { output = [] }
+            console.log("Tab",tabNR)
+            console.log(output)
+            if (error) { output = []}
             const header = []
             var row = []
             const rows = []
@@ -148,35 +150,27 @@ class Admin extends Component {
         e.preventDefault();
         var varObject = {};
         var variables = this.refs.extraVars.value.split("var ");
-        console.log(variables)
         for (var i in variables){
             if(variables[i].length){
                 var equalsPos = variables[i].indexOf('=');
                 var varName = variables[i].substring(0,equalsPos - 1);
                 var varContent = variables[i].substring(equalsPos +3 , variables[i].lastIndexOf('`'))
-                console.log(varName, " = ", varContent)
                 varObject[varName] = varContent;
             }
         }
-        console.log(varObject)
         var query = this.state.value;
         i = 0;
         while (query.indexOf('$')+1) {
             i++;
-            console.log("while loop", query)
             var start = query.indexOf('$');
             var end = query.indexOf('}') + 1;
-            console.log('start',start,'end',end)
             var toreplace = query.substring(start, end);
-            console.log("toreplace",toreplace)
             varName = toreplace.substring(2, toreplace.length - 1)
             query = query.replace(toreplace, varObject[varName])
             if(i>200) break;
         }
-        console.log(query)
         axios.post('/api/admin', { token: localStorage.getItem('authToken'), query })
             .then((res) => {
-                console.log(res.data.data)
                 this.setState({ output: res.data.data, submitted: true })
             })
     }
@@ -201,7 +195,6 @@ class Admin extends Component {
     }
 
     render() {
-
         return (
             <div className="adminpageContainer">
                 <div>
@@ -210,9 +203,6 @@ class Admin extends Component {
                         <textarea className="queryInputBox" rows="20" cols="140" value={this.state.value} onChange={this.handleChange} onKeyDown={this.keyPress} ref={(input) => { this.input = input; }} />
                         <input type="submit" value="submit" />
                     </form>
-                    <button onClick={this.testButton} value='SELECT * FROM account' className="queryButton">Get all accounts</button>
-                    <button onClick={this.testButton} value="SELECT race_id FROM race WHERE name = '' AND year = ''" className="queryButton">Get race ID</button>
-
                     <Outputtable output={this.state.output} />
 
                 </div>

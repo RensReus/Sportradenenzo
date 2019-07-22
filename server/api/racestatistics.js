@@ -368,6 +368,45 @@ module.exports = function (app) {
         })
     }
 
+    app.post('/api/getadditionalstats', function (req, res) {
+        jwt.verify(req.body.token, getSecret(), function (err, user) {
+            if (err) {
+                res.redirect('/')
+                throw err;
+            } else {
+                var selectedRidersQuery = `SELECT COUNT(DISTINCT rider_participation) as "Renners", stagenr as "Etappe" from stage_selection_rider
+                INNER JOIN stage_selection USING(stage_selection_id)
+                INNER JOIN rider_participation USING(rider_participation_id)
+                INNER JOIN account_participation USING (account_participation_id)
+                INNER JOIN stage USING(stage_id)
+                WHERE stage.race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation}
+                GROUP BY stagenr; `;
+
+                var uitgevallenQuery = `SELECT username, COUNT(rider_participation_id) AS "Uitvallers" FROM rider_participation
+                INNER JOIN team_selection_rider USING(rider_participation_id)
+                INNER JOIN account_participation USING(account_participation_id)
+                INNER JOIN account USING(account_id)
+                WHERE rider_participation.race_id = 6 AND dnf AND budgetparticipation = ${req.body.budgetparticipation}
+                GROUP BY username
+                ORDER BY "Uitvallers" DESC; `
+
+                var totalQuery = selectedRidersQuery + uitgevallenQuery;
+                var titles = ['Verschillende Gekozen Renners','Uitgevallen Renners']
+
+                sqlDB.query(totalQuery,(err,results)=>{
+                    if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+                    var tables = [];
+                    for(var i in results){
+                        tables.push({title: titles[i], tableData: results[i].rows})
+                    }
+                    res.send({
+                        tables
+                    })
+                })
+            }
+        })
+    })
+
 
     //CHARTS
     //CHARTS misschien nieuwe file
@@ -580,5 +619,7 @@ module.exports = function (app) {
             }
         })
     })
+
+
 
 }

@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from "@fortawesome/free-solid-svg-icons"; //User icon voor profielpagina
 import { faUserShield } from "@fortawesome/free-solid-svg-icons"; //Admin icon
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons"; //Pijltje voor de dropdown
-import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons"; //Logout icon
-import { faBars } from "@fortawesome/free-solid-svg-icons"; //Bars voor mobiel navbar menu
+// import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons"; //Logout icon
+// import { faBars } from "@fortawesome/free-solid-svg-icons"; //Bars voor mobiel navbar menu
 
 class Navbar extends Component {
     redirect = (url) => {
@@ -29,7 +29,7 @@ class Navbar extends Component {
             currStage = <Link className='item' to='/'><span>Current stage</span></Link>;
             raceOverview = <button className='item' ><span>Race overview</span></button>;
             charts = <div className="dropdown">
-                <a className="item dropbtn"><span className="h3 bold">Charts <FontAwesomeIcon icon={faAngleDown}/></span></a>
+                <a className="item dropbtn"><span className="h3">Charts <FontAwesomeIcon icon={faAngleDown}/></span></a>
                 <div className="dropdown-content">
                     <Link className='item' to='/charts/userscores'>Relatief Scoreverloop</Link>
                     <Link className='item' to='/charts/userrank'>Ranking</Link>
@@ -38,7 +38,7 @@ class Navbar extends Component {
                 </div>
             </div>;
             stats = <div className="dropdown">
-                <a className="item dropbtn"><span className="h3 bold">Statistieken <FontAwesomeIcon icon={faAngleDown}/></span></a>
+                <a className="item dropbtn"><span className="h3">Statistieken <FontAwesomeIcon icon={faAngleDown}/></span></a>
                 <div className="dropdown-content">
                     <Link className='item' to='/etappewinsten'>Uitslagen per etappe</Link>
                     <Link className='item' to='/overzicht/missedpointsall'>Gemiste punten iedereen</Link>
@@ -48,6 +48,7 @@ class Navbar extends Component {
                     <Link className='item' to='/overzicht/selected'>Geselecteerde renners</Link>
                     <Link className='item' to='/rulesandpoints'>Regels en Punten uitleg</Link>
                     <Link className='item' to='/overzicht/missedpoints'>Gemiste punten</Link>
+                    <Link className='item' to='/overzicht/overigestats'>Overige Statistieken</Link>
                 </div>
             </div>;
         } else {

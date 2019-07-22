@@ -99,6 +99,8 @@ class Stage extends Component {
             starttime: '',
             prevClassificationsGewoon: [],
             prevClassificationsBudget: [],
+            allSelectionsGewoon: [],
+            allSelectionsBudget: [],
         }
         this.selectRider = this.selectRider.bind(this)
         this.removeRider = this.removeRider.bind(this)
@@ -167,6 +169,8 @@ class Stage extends Component {
                         userScoresColtype: res.userScoresColtype,
                         stageresultsGewoon: res.data.stageresultsGewoon,
                         stageresultsBudget: res.data.stageresultsBudget,
+                        allSelectionsGewoon: res.data.allSelectionsGewoon,
+                        allSelectionsBudget: res.data.allSelectionsBudget,
                         prevText: res.data.prevText,
                         nextText: res.data.nextText,
                         lastStage: res.data.lastStage,
@@ -175,6 +179,7 @@ class Stage extends Component {
                 }
             })
     }
+
     budgetSwitch() {
         if (this.state.budget) {
             this.setState({ budget: false })
@@ -260,7 +265,13 @@ class Stage extends Component {
         let stageresults
         let prevClassifications
         let prevClassificationsDiv
-
+        let allSelections
+        let allSelectionsPopup
+        // both
+        var stageProfile = '';
+        if (this.state.stage > 2 && this.state.stage < 22) {//TODO netter, check if file exists
+            stageProfile = <img src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')} alt="profile" />
+        }
         //selection
         if (this.state.budget) {
             stageSelection = this.state.stageSelectionBudget
@@ -279,10 +290,12 @@ class Stage extends Component {
             userTeamResult = this.state.userTeamResultBudget
             userScores = this.state.userScoresBudget
             stageresults = this.state.stageresultsBudget
+            allSelections = this.state.allSelectionsBudget
         } else {
             userTeamResult = this.state.userTeamResultGewoon
             userScores = this.state.userScoresGewoon
             stageresults = this.state.stageresultsGewoon
+            allSelections = this.state.allSelectionsGewoon
         }
         if (mode === 'loading') {
             loadingGif = <img className="loadingGif" src="/images/bicycleWheel.gif" alt="bicycleWheel.gif"></img>
@@ -293,10 +306,6 @@ class Stage extends Component {
             pTable = ''
             stResTable = ''
         } else if (mode === 'selection') {
-            var stageProfile = '';
-            if (this.state.stage > 2 && this.state.stage < 22) {//TODO netter, voor etappe 8 geen profielen gedownload
-                stageProfile = <img src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')} alt="profile" />
-            }
             var stageProfileKnopIcon = <FontAwesomeIcon icon={faMountain} />
             var starttime = new Date(this.state.starttime);
             var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -309,10 +318,18 @@ class Stage extends Component {
                 <div style={{ display: prevClassifications[3].rows.length ? 'block' : 'none', float: "left" }} className="Youth"><Table data={prevClassifications[3].rows} title="Jong" /></div>
             </div>
         } else if (mode === 'results') {
-
             resTable = <Table data={userTeamResult} title={"Selectie"} />
             pTable = <PouleTable userScores={userScores} />
             stResTable = <StageResults data={stageresults} stage={this.state.stage} />
+            var allSelectionsPopupContent = [];
+            for(var i in allSelections){
+                allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].data} title={allSelections[i].title} coltype={allSelections[i].coltype}/></div>)
+            }
+            allSelectionsPopup = <ModalButton
+                            cssClassButton="buttonStandard blue2"
+                            content="Alle opstellingen "
+                            modalContent={allSelectionsPopupContent}
+                        />
         }
         return (
             <div className="stageContainer">
@@ -349,6 +366,7 @@ class Stage extends Component {
                 {loadingGif}
                 {message}
                 <div className="res">{resTable}{pTable}</div>
+                {allSelectionsPopup}
                 <div className="poule"></div>
                 <div className="stage">{stResTable}</div>
                 {prevClassificationsDiv}
