@@ -91,13 +91,13 @@ module.exports = function (app) {
                 throw err;
             } else {
                 var race_id = race_id_global;
-                var query = `SELECT  concat(firstname, ' ', lastname) AS "Name", team AS "Team ", price AS "Price", SUM(stagescore) AS "Etappe",
+                var query = `SELECT  CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", concat(firstname, ' ', lastname) AS "Name", team AS "Team ", price AS "Price", SUM(stagescore) AS "Etappe",
             SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong", 
             SUM(teamscore) AS "Team", SUM(totalscore) AS "Total", ROUND(SUM(totalscore)*1e6/price,0) AS "Points per Million" FROM rider_participation  
             INNER JOIN results_points USING (rider_participation_id)
             INNER JOIN rider USING(rider_id)
             WHERE rider_participation.race_id = ${race_id}
-            GROUP BY "Name", "Team ", "Price"
+            GROUP BY "Name", "Name_link", "Team ", "Price"
             ORDER BY "Total" DESC`
                 //0 for string 1 for number
                 var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Points per Million": 1 };
@@ -120,7 +120,7 @@ module.exports = function (app) {
                 throw err;
             } else {
                 var race_id = race_id_global;
-                var query = `SELECT  concat(firstname, ' ', lastname) AS "Name", team AS "Team ",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Etappe",  
+                var query = `SELECT  CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", concat(firstname, ' ', lastname) AS "Name", team AS "Team ",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Etappe",  
             SUM(gcscore)/GREATEST(count(DISTINCT username),1) AS "AK", SUM(pointsscore)/GREATEST(count(DISTINCT username),1) AS "Punten", SUM(komscore)/GREATEST(count(DISTINCT username),1) AS "Berg", SUM(yocscore)/GREATEST(count(DISTINCT username),1) AS "Jong", SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Team", SUM(totalscore)/GREATEST(count(DISTINCT username),1) AS "Total", 
             ROUND(SUM(totalscore)/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "Points per Million",  
             count(DISTINCT username) AS "Usercount", string_agg(DISTINCT username, ', ') AS "Users" FROM results_points
@@ -130,7 +130,7 @@ module.exports = function (app) {
             LEFT JOIN account_participation USING(account_participation_id)
             LEFT JOIN account USING (account_id)
             WHERE rider_participation.race_id = ${race_id} AND rider_participation.rider_participation_id in (select rider_participation_id from team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
-            GROUP BY "Name", "Team ", "Price"
+            GROUP BY "Name", "Name_link", "Team ", "Price"
             ORDER BY "Points per Million" DESC`
                 //0 for string 1 for number
                 var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Points per Million": 1, "Usercount": 1 };
@@ -152,34 +152,45 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var query = `SELECT stagenr, stagepos, stagescore, teamscore, totalscore FROM results_points
-            INNER JOIN rider_participation USING(rider_participation_id)
-            INNER JOIN rider USING(rider_id)
+                var posQuery = `SELECT stagenr AS "Etappe", stagepos AS "Dag", gcpos AS "Ak", pointspos AS "Punten", kompos AS "Berg", yocpos AS "Jong" FROM results_points
             INNER JOIN stage USING(stage_id)
             WHERE rider_participation_id = ${req.body.rider_participation_id}
-            ORDER BY stagenr; 
-            SELECT name, year, firstname, lastname FROM rider_participation
+            ORDER BY "Etappe"; `
+            var pointsQuery = `SELECT stagenr AS "Etappe", stagescore AS "Dag", gcscore AS "Ak", pointsscore AS "Punten", komscore AS "Berg", yocscore AS "Jong", teamscore AS "Team", totalscore AS "Totaal" FROM results_points
+            INNER JOIN stage USING(stage_id)
+            WHERE rider_participation_id = ${req.body.rider_participation_id}
+
+            UNION all
+            SELECT 100 AS "Etappe", SUM(stagescore) AS "Dag", SUM(gcscore) AS "Ak", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong", SUM(teamscore) AS "Team", SUM(totalscore) AS "Totaal" FROM results_points
+            INNER JOIN stage USING(stage_id)
+            WHERE rider_participation_id = ${req.body.rider_participation_id}
+            GROUP BY "Etappe"
+            ORDER BY "Etappe"; `
+            var nameQuery = `SELECT name, year, CONCAT(firstname, ' ', lastname) AS ridername FROM rider_participation
             INNER JOIN race USING(race_id)
             INNER JOIN rider USING(rider_id)
-            WHERE rider_participation_id = ${req.body.rider_participation_id};
-            SELECT 0 AS stagenr,  0 AS stagepos, SUM(stagescore) AS Stagescore, sum(teamscore) AS Teamscore, SUM(totalscore) AS Totalscore FROM results_points
-            WHERE rider_participation_id = ${req.body.rider_participation_id}`
-                //0 for string 1 for number
-                var coltype = {};
-                sqlDB.query(query, (err, results) => {
-                    if (err) { console.log("WRONG QUERY:", query); throw err; }
-                    var total = results[2].rows[0];
-                    total.stagenr = "Total";
-                    total.stagepos = "";
-                    results[0].rows.push(total)
-                    var headerinfo = results[1].rows[0];
-                    var title = headerinfo.firstname + " " + headerinfo.lastname + " - " + headerinfo.name + " " + headerinfo.year;
-                    res.send({
-                        tableData: results[0].rows,
-                        coltype: coltype,
-                        title: title
-                    })
+            WHERE rider_participation_id = ${req.body.rider_participation_id}; `
+            
+            var totalQuery = posQuery + pointsQuery + nameQuery;
+            sqlDB.query(totalQuery, (err, results) => {
+                if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+                var pointsData = results[1].rows;
+                pointsData[pointsData.length-1]["Etappe"]="Totaal"
+                var posData = results[0].rows;
+                for(var i in posData){
+                    for (var j in posData[i]){
+                        if (posData[i][j]===0){
+                            posData[i][j] = '-'
+                        }
+                    }
+                }
+                var riderName = results[2].rows[0].ridername;
+                res.send({
+                    posData,
+                    pointsData,
+                    riderName,
                 })
+            })
             }
         })
     })
@@ -354,11 +365,11 @@ module.exports = function (app) {
             totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 - teamscore ELSE totalscore - teamscore END`
             teamscore = '';
         }
-        var query = `SELECT CONCAT(firstname, ' ', lastname) as "Name", SUM(${stagescore}) AS "Stage", SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong" ${teamscore}, SUM(${totalscore}) "Total", COUNT(rider_participation_id) "Selected", ROUND(SUM(${totalscore})/COUNT(rider_participation_id),0) AS "Per Etappe"  from rider
+        var query = `SELECT CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", CONCAT(firstname, ' ', lastname) as "Name", SUM(${stagescore}) AS "Stage", SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong" ${teamscore}, SUM(${totalscore}) "Total", COUNT(rider_participation_id) "Selected", ROUND(SUM(${totalscore})/COUNT(rider_participation_id),0) AS "Per Etappe"  from rider
                     INNER JOIN rider_participation USING(rider_id)
                     RIGHT JOIN ${selected_riders_stages} USING (rider_participation_id)
                     INNER JOIN results_points USING(stage_id,rider_participation_id)
-                    GROUP BY "Name"
+                    GROUP BY "Name", "Name_link"
                     ORDER BY "Total" DESC`
         var coltype = { "Name": 0, "Stage": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Selected": 1, "Per Etappe": 1 };
 

@@ -42,10 +42,6 @@ th, td {
     border: 1px black solid;
 }
 
-table.table1 {
-
-}
-
 .scrollButton {
     background-color: grey;
     color: black;
@@ -75,4 +71,13 @@ table.table1 {
   }
   tr {
     width: 100%;
-}
+  }
+
+  .tableLink {
+    text-decoration: none;
+    color:inherit;
+  }
+
+  .tableLink:hover {
+    text-decoration: underline;
+  }

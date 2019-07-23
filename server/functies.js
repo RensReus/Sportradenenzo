@@ -325,7 +325,7 @@ function stageNumKlassieker(){
     return parseInt(dates.length) + 1 // return eindklassement           
 }
 
-var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to run every minute to initialize at the start.
+var scrapeResults = schedule.scheduleJob("* * 10 * *", function () {//default to run every minute to initialize at the start.
   var race_id = race_id_global;
   console.log("scrape run at: " + new Date().toTimeString());
   var stageQuery = `SELECT * FROM STAGE

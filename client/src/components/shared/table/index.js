@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class Headers extends Component {
     render() {
@@ -9,8 +10,7 @@ class Headers extends Component {
         if (data.length > 0) {
             const properties = Object.keys(data[0])
             properties.forEach(function (property) {
-                if (property !== "rowClassName") {
-
+                if (property !== "rowClassName" && !property.endsWith("_link")) {
                     var headerText = property;
                     if (colNames != null && colNames[property] != null) {
                         headerText = colNames[property];
@@ -40,9 +40,19 @@ class Rows extends Component {
         var row = [];
         for (var i = 0; i < data.length; i++) {
             var className = "";
+            var link = "";
             for (var property in data[i]) {
+                if(property.endsWith("_link")){//if link store for next column
+                    link = data[i][property];
+                    continue;
+                }
+                var tdContent = data[i][property];
+                if(link !== ""){//if stored link use to build this column
+                    tdContent = <Link className = "tableLink" to={link}>{tdContent}</Link>
+                    link = "";//reset link
+                }
                 if (property !== "rowClassName") {
-                    row.push(<td key={i + property} >{data[i][property]}</td>);
+                    row.push(<td key={i + property} >{tdContent}</td>);
                 } else {
                     className = data[i][property];
                 }

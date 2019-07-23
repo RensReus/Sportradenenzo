@@ -6,23 +6,25 @@ class Rider extends Component {
   constructor(props) {
     super(props);
     this.state = ({
-      data: [],
+      posData: [],
+      pointsData: [],
       coltype: [],
-      tableName: ''
+      tableName: '',
+      riderName: ''
     });
   }
 
 
-  componentWillMount() {
-    console.log(this.props)
-    axios.post('/api/getriderresults', { rider_participation_id: this.props.match.params.rider_participation_id })
+  componentDidMount() {
+    axios.post('/api/getriderresults', { rider_participation_id: this.props.match.params.rider_participation_id, token: localStorage.getItem('authToken')})
       .then((res) => {
         if (res) {
-          document.title = res.data.title;
+          console.log("Data",res.data)
+          document.title = res.data.riderName;
           this.setState({
-            data: res.data.tableData,
-            coltype: res.data.coltype,
-            tableName: res.data.title
+            posData: res.data.posData,
+            pointsData: res.data.pointsData,
+            riderName: res.data.riderName,
           })
         }
       })
@@ -31,7 +33,9 @@ class Rider extends Component {
   render() {
     return (
       <div className="overzichtContainer">
-        <Table data={this.state.data} coltype={this.state.coltype} title={this.state.tableName} />
+        <div>{this.state.riderName}</div>
+        <div className='tableDiv'><Table data={this.state.posData} title={"Uitslagen"} /></div>
+        <div className='tableDiv'><Table data={this.state.pointsData} title={"Punten"} /></div>
       </div>
 
     )
