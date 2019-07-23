@@ -374,7 +374,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var selectedRidersQuery = `SELECT COUNT(DISTINCT rider_participation) as "Renners", stagenr as "Etappe" from stage_selection_rider
+                var selectedRidersQuery = `SELECT stagenr as "Etappe", COUNT(DISTINCT rider_participation) as "Renners" from stage_selection_rider
                 INNER JOIN stage_selection USING(stage_selection_id)
                 INNER JOIN rider_participation USING(rider_participation_id)
                 INNER JOIN account_participation USING (account_participation_id)
@@ -382,15 +382,15 @@ module.exports = function (app) {
                 WHERE stage.race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation}
                 GROUP BY stagenr; `;
 
-                var uitgevallenQuery = `SELECT username, COUNT(rider_participation_id) AS "Uitvallers" FROM rider_participation
+                var uitgevallenQuery = `SELECT username AS "User", COUNT(rider_participation_id) AS "Uitvallers" FROM rider_participation
                 INNER JOIN team_selection_rider USING(rider_participation_id)
                 INNER JOIN account_participation USING(account_participation_id)
                 INNER JOIN account USING(account_id)
                 WHERE rider_participation.race_id = 6 AND dnf AND budgetparticipation = ${req.body.budgetparticipation}
-                GROUP BY username
+                GROUP BY "User"
                 ORDER BY "Uitvallers" DESC; `
 
-                var uniekheidsQuery = `SELECT SUM("Usercount"), username FROM (
+                var uniekheidsQuery = `SELECT SUM("Usercount") AS "Uniekheid", username AS "User" FROM (
                     SELECT  CONCAT(firstname, ' ', lastname) AS "Name", rider_participation.rider_participation_id, team AS "Team ",price AS "Price",  
                                 COUNT(DISTINCT username) AS "Usercount", ARRAY_AGG(DISTINCT username) AS "Users" FROM rider_participation
                                 INNER JOIN rider USING(rider_id)
@@ -404,10 +404,11 @@ module.exports = function (app) {
                     INNER JOIN account_participation USING(account_participation_id)
                     INNER JOIN account USING(account_id)
                     WHERE budgetparticipation = ${req.body.budgetparticipation}
-                    GROUP BY username`
+                    GROUP BY "User"
+                    ORDER BY "Uniekheid"; `
 
                 var totalQuery = selectedRidersQuery + uitgevallenQuery + uniekheidsQuery;
-                var titles = ['Verschillende Gekozen Renners','Uitgevallen Renners', `Minst unieke team`]
+                var titles = ['Verschillende Gekozen Renners','Uitgevallen Renners', `Uniekste team`]
 
                 sqlDB.query(totalQuery,(err,results)=>{
                     if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }

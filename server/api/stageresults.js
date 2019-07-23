@@ -307,11 +307,11 @@ module.exports = function (app) {
                                 WHERE stage_selection_id = ${stage_selection_idGewoon}
                                 ORDER BY "Total" DESC, "Stage" DESC; `;
 
-                        var userscoresGewoonQuery = `SELECT username, stagescore, totalscore FROM stage_selection
+                        var userscoresGewoonQuery = `SELECT username AS "User", stagescore AS "Stage", totalscore AS "Total" FROM stage_selection
                                             INNER JOIN account_participation USING(account_participation_id)
                                             INNER JOIN account USING(account_id)
                                             WHERE stage_id=${stage_id} AND NOT budgetparticipation
-                                            ORDER BY totalscore DESC; `;   
+                                            ORDER BY "Total" DESC; `;   
 
                         var inSelectionGewoon = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_idGewoon}) THEN 'bold black' ELSE '' END`
                         var inteamGewoon = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_idGewoon}) THEN 'bold gray' ELSE '' END`
@@ -392,11 +392,11 @@ module.exports = function (app) {
                                 WHERE stage_selection_id = ${stage_selection_idBudget}
                                 ORDER BY "Total" DESC, "Stage" DESC; `;
 
-                        var userscoresBudgetQuery = `SELECT username, stagescore, totalscore FROM stage_selection
+                        var userscoresBudgetQuery = `SELECT username AS "User", stagescore AS "Stage", totalscore AS "Total" FROM stage_selection
                                             INNER JOIN account_participation USING(account_participation_id)
                                             INNER JOIN account USING(account_id)
                                             WHERE stage_id=${stage_id} AND budgetparticipation
-                                            ORDER BY totalscore DESC; `;   
+                                            ORDER BY "Total" DESC; `;   
                                             
                         var inSelectionBudget = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_idBudget}) THEN 'bold black' ELSE '' END`
                         var inteamBudget = `CASE WHEN stage_selection_rider.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_idBudget}) THEN 'bold gray' ELSE '' END`
@@ -464,7 +464,7 @@ module.exports = function (app) {
                         var gewoonQuery = teamresultGewoonQuery + userscoresGewoonQuery + resultsGewoonQuery + selectionsQueryGewoon;
                         var budgetQuery = teamresultBudgetQuery + userscoresBudgetQuery + resultsBudgetQuery + selectionsQueryBudget;
                         var totalQuery = gewoonQuery + budgetQuery;
-                        var userScoresColtype = { stagescore: 1, totalscore: 1 };
+                        var userScoresColtype = { "Stage": 1, "Total": 1 };
                         sqlDB.query(totalQuery, (err, uitslagresults) => {
                             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
 
@@ -472,20 +472,6 @@ module.exports = function (app) {
                             var userscoresBudget = uitslagresults[9].rows;
                             var selectiesGewoon = uitslagresults[7].rows;
                             var selectiesBudget = uitslagresults[15].rows;
-                            for (var i in userscoresGewoon) { // VOOR DE selecties popup
-                                for (var j in selectiesGewoon) {
-                                    if (userscoresGewoon[i].username == selectiesGewoon[j].username) {
-                                        userscoresGewoon[i]['riders'] = selectiesGewoon[j].riders.sort(function (a, b) { return b.totalscore - a.totalscore });
-                                    }
-                                }
-                            }
-                            for (var i in userscoresBudget) { // VOOR DE selecties popup
-                                for (var j in selectiesBudget) {
-                                    if (userscoresBudget[i].username == selectiesBudget[j].username) {
-                                        userscoresBudget[i]['riders'] = selectiesBudget[j].riders.sort(function (a, b) { return b.totalscore - a.totalscore });
-                                    }
-                                }
-                            }
 
                             var allSelectionsGewoon = selectionsPopUp(selectiesGewoon);
 

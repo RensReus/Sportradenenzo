@@ -160,13 +160,14 @@ class Stage extends Component {
                         prevClassificationsBudget: res.data.prevClassificationsBudget,
                     })
                 } else if (res.data.mode === 'results') {
+                    console.log()
                     this.setState({
                         mode: 'results',
                         userTeamResultGewoon: res.data.teamresultGewoon,
                         userTeamResultBudget: res.data.teamresultBudget,
                         userScoresGewoon: res.data.userscoresGewoon,
                         userScoresBudget: res.data.userscoresBudget,
-                        userScoresColtype: res.userScoresColtype,
+                        userScoresColtype: res.data.userScoresColtype,
                         stageresultsGewoon: res.data.stageresultsGewoon,
                         stageresultsBudget: res.data.stageresultsBudget,
                         allSelectionsGewoon: res.data.allSelectionsGewoon,
@@ -319,7 +320,8 @@ class Stage extends Component {
             </div>
         } else if (mode === 'results') {
             resTable = <Table data={userTeamResult} title={"Selectie"} />
-            pTable = <PouleTable userScores={userScores} />
+            console.log(this.state.userScoresColtype)
+            pTable = <Table data={userScores} title={"Poule Stand"} coltype= {this.state.userScoresColtype}/>
             stResTable = <StageResults data={stageresults} stage={this.state.stage} />
             var allSelectionsPopupContent = [];
             for(var i in allSelections){
