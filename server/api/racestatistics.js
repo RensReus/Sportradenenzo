@@ -390,8 +390,24 @@ module.exports = function (app) {
                 GROUP BY username
                 ORDER BY "Uitvallers" DESC; `
 
-                var totalQuery = selectedRidersQuery + uitgevallenQuery;
-                var titles = ['Verschillende Gekozen Renners','Uitgevallen Renners']
+                var uniekheidsQuery = `SELECT SUM("Usercount"), username FROM (
+                    SELECT  CONCAT(firstname, ' ', lastname) AS "Name", rider_participation.rider_participation_id, team AS "Team ",price AS "Price",  
+                                COUNT(DISTINCT username) AS "Usercount", ARRAY_AGG(DISTINCT username) AS "Users" FROM rider_participation
+                                INNER JOIN rider USING(rider_id)
+                                LEFT JOIN team_selection_rider USING(rider_participation_id)
+                                LEFT JOIN account_participation USING(account_participation_id)
+                                LEFT JOIN account USING (account_id)
+                                WHERE rider_participation.race_id = 6 AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
+                                GROUP BY "Name", "Team ", "Price", rider_participation.rider_participation_id
+                    ORDER BY "Usercount" desc, "Users") as a
+                    INNER JOIN team_selection_rider USING(rider_participation_id)
+                    INNER JOIN account_participation USING(account_participation_id)
+                    INNER JOIN account USING(account_id)
+                    WHERE budgetparticipation = ${req.body.budgetparticipation}
+                    GROUP BY username`
+
+                var totalQuery = selectedRidersQuery + uitgevallenQuery + uniekheidsQuery;
+                var titles = ['Verschillende Gekozen Renners','Uitgevallen Renners', `Minst unieke team`]
 
                 sqlDB.query(totalQuery,(err,results)=>{
                     if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }

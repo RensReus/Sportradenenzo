@@ -41,7 +41,7 @@
   border: 5px;
   margin: 0.5vh 1px;
   padding: 10px 10px;
-  text-decoration: black
+  text-decoration: black;
 }
 
 .item:hover {
@@ -58,11 +58,9 @@
   display: inline-block;
 }
 
-/* Dropdown Content (Hidden by Default) */
-
 .dropdown-content {
   background-color: var(--background-color-dark);
-  display: none;
+  display: block;
   padding-top: 0.5vh;
   position: absolute;
   margin-top: 0vh;
@@ -75,14 +73,5 @@
 /* Links inside the dropdown */
 
 .dropdown-content a {
-  color: black;
-  padding: 10px 10px;
-  text-decoration: none;
-  display: block;
-}
-
-/* Show the dropdown menu on hover */
-
-.dropdown:hover .dropdown-content {
   display: block;
 }

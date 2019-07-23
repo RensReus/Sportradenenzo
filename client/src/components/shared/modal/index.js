@@ -25,10 +25,12 @@ class ModalButton extends Component {
 
     showModal = () => {
         this.setState({ visible: true });
+        document.addEventListener("keydown",this.hideModal)
     }
 
     hideModal = () => {
         this.setState({ visible: false });
+        document.removeEventListener("keydown",this.hideModal)
     }
 
     render() {
