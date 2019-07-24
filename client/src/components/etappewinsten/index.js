@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './index.css';
 import axios from 'axios';
+import BudgetSwitchButton from '../shared/budgetSwitchButton';
 
 class Table extends Component {
   render() {
@@ -76,7 +77,7 @@ class etappewinsten extends Component {
   render() {
     return (
       <div className="etappewinstenContainer">
-        <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+        <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
         <Table data={this.state.rankTable} title="Etappe Uitslagen" />
         <Table data={this.state.countTable} title="Hoe vaak welke positie" />
       </div>

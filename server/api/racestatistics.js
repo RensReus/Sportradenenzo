@@ -379,6 +379,65 @@ module.exports = function (app) {
         })
     }
 
+    app.post('/api/teamoverzichtallsimple', function (req, res) {
+        jwt.verify(req.body.token, getSecret(), function (err, user) {
+            if (err) {
+                res.redirect('/')
+                throw err;
+            } else {
+                async.auto({
+                    bierfietsen: function(callback){
+                        teamoverzichtSimple(1,race_id_global,req.body.budgetparticipation,callback)
+                    },
+                    rens: function(callback){
+                        teamoverzichtSimple(2,race_id_global,req.body.budgetparticipation,callback)
+                    },
+                    sam: function(callback){
+                        teamoverzichtSimple(4,race_id_global,req.body.budgetparticipation,callback)
+                    },
+                    yannick: function(callback){
+                        teamoverzichtSimple(5,race_id_global,req.body.budgetparticipation,callback)
+                    }
+                }, function (err,results){
+                    if(err) throw err;
+                    var users = []
+                    users.push({riders: results.bierfietsen.tableData, username: "Bierfietsen", coltype: results.bierfietsen.coltype});
+                    users.push({riders: results.rens.tableData, username: "Rens", coltype: results.bierfietsen.coltype});
+                    users.push({riders: results.sam.tableData, username: "Sam", coltype: results.bierfietsen.coltype});
+                    users.push({riders: results.yannick.tableData, username: "Yannick", coltype: results.bierfietsen.coltype});
+                    var simpleSelections = functies.selectionsPopUp(users);
+                    res.send({simpleSelections})
+            })   
+            }
+        })
+    })
+
+    teamoverzichtSimple = function (account_id, race_id, budgetparticipation, callback){
+        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetparticipation = ${budgetparticipation})`
+        var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
+            INNER JOIN stage_selection USING(stage_selection_id)
+            WHERE account_participation_id = ${account_participation_id}
+            ORDER BY stage_id) a`
+        var totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 ELSE totalscore END`
+        if(budgetparticipation){
+            totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 - teamscore ELSE totalscore - teamscore END`
+            teamscore = '';
+        }
+        var query = `SELECT CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name",  SUM(${totalscore}) AS "Score" from rider
+                    INNER JOIN rider_participation USING(rider_id)
+                    RIGHT JOIN ${selected_riders_stages} USING (rider_participation_id)
+                    INNER JOIN results_points USING(stage_id,rider_participation_id)
+                    GROUP BY "Name", "Name_link"
+                    ORDER BY "Score" DESC`
+        var coltype = { "Name": 0, "Score": 1};
+
+        sqlDB.query(query,(err,results) => {
+            if (err) { console.log("WRONG QUERY:", query); throw err; }
+            callback(err,{tableData:results.rows, coltype})
+        })
+    }
+
+
     app.post('/api/getadditionalstats', function (req, res) {
         jwt.verify(req.body.token, getSecret(), function (err, user) {
             if (err) {

@@ -3,6 +3,7 @@ import Riderselectiontable from './riderselectiontable'
 import Userselectiontable from './userselectiontable'
 import axios from 'axios';
 import './index.css';
+import BudgetSwitchButton from '../shared/budgetSwitchButton';
 
 class Teamselection extends Component{
     constructor(props){
@@ -44,17 +45,21 @@ class Teamselection extends Component{
         const race = this.state.race
         const year = this.state.year
         document.title = "Team Keuze " + race;
-
-        axios.post('/api/getridersandteam',{race, year, token: localStorage.getItem('authToken')}) //to: teamselection.js
-        .then((res)=>{
-            this.setState({
-                allRiders: res.data.allRiders,
-                userSelectionGewoon: res.data.userSelectionGewoon,
-                budgetGewoon: res.data.budgetGewoon,
-                userSelectionBudget: res.data.userSelectionBudget,
-                budgetBudget: res.data.budgetBudget
+        console.log("redir",this.props.redirect)
+        if(this.props.redirect === '/teamselection'){
+            axios.post('/api/getridersandteam',{race, year, token: localStorage.getItem('authToken')}) //to: teamselection.js
+            .then((res)=>{
+                this.setState({
+                    allRiders: res.data.allRiders,
+                    userSelectionGewoon: res.data.userSelectionGewoon,
+                    budgetGewoon: res.data.budgetGewoon,
+                    userSelectionBudget: res.data.userSelectionBudget,
+                    budgetBudget: res.data.budgetBudget
+                })
             })
-        })
+        }else{
+            this.redirect(this.props.redirect)
+        }
     }
 
     updatePage(data,showBudget){
@@ -78,6 +83,7 @@ class Teamselection extends Component{
     }
 
     redirect = (url) => {
+        console.log("redirfucnt")
         this.props.history.push(url);
     }
 
@@ -90,7 +96,7 @@ class Teamselection extends Component{
         return(
             <div className="container">
                 
-                <button className="budgetSwitch" onClick={this.budgetSwitch.bind(this)}>Swicht naar {!this.state.showBudget ? 'Budget':'Gewoon'} </button>
+                <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
                 <div className="ridertablecontainer" style={{display: this.state.showBudget ? 'none' : 'block'}}>
                     <div className="teamindicator">
                         Gewone Team Selectie

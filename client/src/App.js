@@ -85,7 +85,7 @@ class App extends Component {
             )} />
             <PrivateRoute path="/profile" component={Profile} history={this.props.history} />
             <PrivateRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} />
-            <Route path="/teamselection" component={Teamselection} history={this.props.history} />
+            <Route path="/teamselection" component={Teamselection} history={this.props.history} redirect = {this.state.redirect}/>
             <AdminRoute path="/admin" component={Admin} history={this.props.history} />
             <AdminRoute path="/manualupdate" component={ManualUpdate} history={this.props.history} />
             

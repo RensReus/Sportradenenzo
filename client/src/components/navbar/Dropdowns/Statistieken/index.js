@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons"; //Pijltje voor de dropdown
+import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons"; //Pijltjes voor de dropdown
 
 
 
@@ -36,7 +36,7 @@ class StatistiekenDropdown extends Component {
     render() {
       return (
         <div className="dropdown">
-          <a className="item"  onClick={this.showMenu}><span className="h3">Statistieken <FontAwesomeIcon icon={faAngleDown}/></span></a>
+          <a className="item"  onClick={this.showMenu}><span className="h3">Statistieken <FontAwesomeIcon icon={this.state.showMenu ? (faAngleUp):(faAngleDown)}/></span></a>
           {
             this.state.showMenu
               ? (
@@ -45,6 +45,7 @@ class StatistiekenDropdown extends Component {
                     <Link className='item' to='/overzicht/missedpointsall'>Gemiste punten iedereen</Link>
                     <Link className='item' to='/overzicht/team'>Team overzicht</Link>
                     <Link className='item' to='/overzicht/teamall'>Team overzicht iedereen</Link>
+                    <Link className='item' to='/overzicht/teamallsimple'>Team overzicht iedereen Simpel</Link>
                     <Link className='item' to='/overzicht/all'>Alle renners</Link>
                     <Link className='item' to='/overzicht/selected'>Geselecteerde renners</Link>
                     <Link className='item' to='/rulesandpoints'>Regels en Punten uitleg</Link>

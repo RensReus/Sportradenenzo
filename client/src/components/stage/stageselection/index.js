@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUserMinus, faUserPlus, faCheckCircle as solFaCheckCircle, faCheck} from "@fortawesome/free-solid-svg-icons"; // add/remove riders
+import { faCheckCircle as regFaCheckCircle} from "@fortawesome/free-regular-svg-icons"; // add/remove riders
 
 class SelecTableRow extends Component {
     setKopman = () => {
@@ -8,14 +11,14 @@ class SelecTableRow extends Component {
         let addRemoveButton
         let setKopmanButton
         if (this.props.selected === 'selected') {
-            addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID, 'remove')}>-</button>
+            addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID, 'remove')}><FontAwesomeIcon icon={faUserMinus}/></button>
             if (this.props.kopman === this.props.riderID) {
-                setKopmanButton = <button className="selectbutton" onClick={() => this.setKopman(this.props.riderID)}>✓</button>
+                setKopmanButton = <button className="selectbutton" onClick={() => this.setKopman(this.props.riderID)}><FontAwesomeIcon icon={solFaCheckCircle}/></button>
             } else {
-                setKopmanButton = <button className="selectbutton" onClick={() => this.setKopman(this.props.riderID)}></button>
+                setKopmanButton = <button className="selectbutton" onClick={() => this.setKopman(this.props.riderID)}><FontAwesomeIcon icon={regFaCheckCircle}/></button>
             }
         } else if (this.props.selected === 'unselected') {
-            addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID, 'add')}>+</button>
+            addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID, 'add')}><FontAwesomeIcon icon={faUserPlus}/></button>
         }
         return (
             <tr >

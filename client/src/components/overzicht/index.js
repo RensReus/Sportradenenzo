@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './index.css';
 import axios from 'axios';
 import Table from '../shared/table'
+import BudgetSwitchButton from '../shared/budgetSwitchButton';
 
 class overzicht extends Component {
   constructor(props) {
@@ -26,6 +27,7 @@ class overzicht extends Component {
       case "missedpointsall": this.renderMissedPointsAll(); break;
       case "team": this.renderTeam(); break;
       case "teamall": this.renderTeamAll(); break;
+      case "teamallsimple": this.renderTeamAllSimple(); break;
       case "etappewinsten": this.renderEtappeWinsten(); break;
       case "overigestats": this.renderOverigeStats(); break;
       default: this.renderAll(); break;
@@ -42,6 +44,7 @@ class overzicht extends Component {
         case "missedpointsall": this.renderMissedPointsAll(); break;
         case "team": this.renderTeam(); break;
         case "teamall": this.renderTeamAll(); break;
+        case "teamallsimple": this.renderTeamAllSimple(); break;
         case "etappewinsten": this.renderEtappeWinsten(); break;
         case "overigestats": this.renderOverigeStats(); break;
         default: this.renderAll(); break;
@@ -58,6 +61,7 @@ class overzicht extends Component {
         case "missedpointsall": this.renderMissedPointsAll(); break;
         case "team": this.renderTeam(); break;
         case "teamall": this.renderTeamAll(); break;
+        case "teamallsimple": this.renderTeamAllSimple(); break;
         case "etappewinsten": this.renderEtappeWinsten(); break;
         case "overigestats": this.renderOverigeStats(); break;
         default: this.renderAll(); break;
@@ -88,7 +92,7 @@ class overzicht extends Component {
             data: res.data.tableData,
             coltype: res.data.coltype,
             tableName: res.data.title,
-            budgetSwitchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
           })
         }
       })
@@ -102,7 +106,7 @@ class overzicht extends Component {
           this.setState({
             data: res.data.tableData,
             tableName: res.data.title,
-            budgetSwitchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
           })
         }
       })
@@ -119,7 +123,7 @@ class overzicht extends Component {
           }
           this.setState({
             extraTables: extraTables,
-            budgetSwitchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
           })
         }
       })
@@ -134,7 +138,7 @@ class overzicht extends Component {
             data: res.data.tableData,
             tableName: res.data.title,
             coltype: res.data.coltype,
-            budgetSwitchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
           })
         }
       })
@@ -151,7 +155,25 @@ class overzicht extends Component {
           }
           this.setState({
             extraTables: extraTables,
-            budgetSwitchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+          })
+        }
+      })
+  }
+
+  renderTeamAllSimple() {
+    document.title = "Team Overzicht Iedereen";
+    axios.post('/api/teamoverzichtallsimple', { token: localStorage.getItem('authToken'), race_id: 6, budgetparticipation: this.state.budget })
+      .then((res) => {
+        if (res) {
+          var extraTables = []
+          for (var i in res.data.simpleSelections) {
+            console.log(res.data.simpleSelections[i].data)
+            extraTables.push(<div className="tableDiv" ><Table data={res.data.simpleSelections[i].data} title={res.data.simpleSelections[i].title} coltype={res.data.simpleSelections[i].coltype} /></div>)
+          }
+          this.setState({
+            extraTables: extraTables,
+            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
           })
         }
       })
@@ -167,7 +189,7 @@ class overzicht extends Component {
           extraTables.push(<div className="tableDiv" ><Table data={res.data.countTable} title={"Hoe vaak welke positie"} /></div>)
           this.setState({
             extraTables: extraTables,
-            budgetSwitchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
           })
         }
       })
@@ -183,7 +205,7 @@ class overzicht extends Component {
         }
         this.setState({
           extraTables: extraTables,
-          budgetSwitchButton: <button onClick={this.budgetSwitch}>Switch naar {!this.state.budget ? ' Budget' : ' Gewoon'}</button>
+          budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
         })
       }
     })

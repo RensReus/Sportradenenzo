@@ -4,11 +4,9 @@ import './index.css';
 import ModalButton from '../shared/modal'
 import Table from '../shared/table'
 import SelecTable from './stageselection'
-import PouleTable from './stageresult'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleLeft } from "@fortawesome/free-solid-svg-icons"; //Pijltje voor de dropdown
-import { faAngleRight } from "@fortawesome/free-solid-svg-icons"; //Pijltje voor de dropdown
-import { faMountain } from "@fortawesome/free-solid-svg-icons"; //Berg voor de stageprofielknop
+import { faAngleLeft,faAngleRight,faMountain, faUserMinus, faUserPlus } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
+import BudgetSwitchButton from '../shared/budgetSwitchButton';
 
 class StageResults extends Component {
     constructor(props) {
@@ -268,11 +266,13 @@ class Stage extends Component {
         let prevClassificationsDiv
         let allSelections
         let allSelectionsPopup
-        // both
+        // always
         var stageProfile = '';
         if (this.state.stage > 2 && this.state.stage < 22) {//TODO netter, check if file exists
             stageProfile = <img src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')} alt="profile" />
         }
+        var stageProfileKnopIcon = <FontAwesomeIcon icon={faMountain} />
+        var budgetSwitchButton = <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
         //selection
         if (this.state.budget) {
             stageSelection = this.state.stageSelectionBudget
@@ -307,7 +307,6 @@ class Stage extends Component {
             pTable = ''
             stResTable = ''
         } else if (mode === 'selection') {
-            var stageProfileKnopIcon = <FontAwesomeIcon icon={faMountain} />
             var starttime = new Date(this.state.starttime);
             var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
             starttimeString = dayArray[starttime.getDay()] + " " + starttime.getHours() + ":" + starttime.getMinutes();
@@ -348,14 +347,7 @@ class Stage extends Component {
                     <div className='stagestarttime h2 bold'>
                         {starttimeString}
                     </div>
-                    <div className='budgettext h1'>
-                        <span className={this.state.budget ? 'bold gray' : 'bold black'}>Gewoon </span>
-                        <label className="switch">
-                            <input type="checkbox" onClick={this.budgetSwitch}></input>
-                            <span className="slider round"></span>
-                        </label>
-                        <span className={this.state.budget ? 'bold black' : 'bold gray'}> Budget</span>
-                    </div>
+                    {budgetSwitchButton}
                         <ModalButton
                             cssClassButton="buttonStandard blue2"
                             content="Profile "
