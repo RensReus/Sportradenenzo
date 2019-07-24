@@ -89,7 +89,6 @@ class Stage extends Component {
         const year = this.state.year
         axios.post('/api/getstageresultsclassics', { race: race, year: year, stageNumber: stage }) //to: stageresults.js
             .then((res) => {
-                console.log(res.data)
                 if (res.data.mode === '404') {
                     this.setState({
                         mode: '404'

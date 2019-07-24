@@ -198,13 +198,10 @@ optimaleScoresUser = function (teamselectie, etappes, callback) {
         if (err) throw err;
         var punten = new Array();
         for (var i = 0; i < etappes; i++) {
-            // console.log("renners: " + renners.length);
             punten[i]=0;
             var totaalpunten = renners.map((renner, index) => ({index : index, punten : renner.punten.totaal[i]}));
-            // console.log("totaal: " + totaalpunten.length);
             
             var dagpunten = renners.map((renner, index) => ({index : index, punten : renner.punten.dag[i]}));
-            // console.log("dag: " + dagpunten.length);
             totaalpunten.sort(sortNumber);
             dagpunten.sort(sortNumber);
             //als de beste dag resultaten met kopmanpunten niet binnen de 9 beste renners dan
@@ -325,9 +322,8 @@ function stageNumKlassieker(){
     return parseInt(dates.length) + 1 // return eindklassement           
 }
 
-var scrapeResults = schedule.scheduleJob("* * 10 * *", function () {//default to run every minute to initialize at the start.
+var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to run every minute to initialize at the start.
   var race_id = race_id_global;
-  console.log("scrape run at: " + new Date().toTimeString());
   var stageQuery = `SELECT * FROM STAGE
                     WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
                     ORDER BY stagenr DESC
@@ -343,13 +339,11 @@ var scrapeResults = schedule.scheduleJob("* * 10 * *", function () {//default to
               var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
               sqlDB.query(updateStageQuery,function(err,results){
                 if (err) {console.log("WRONG QUERY:",updateStageQuery); throw err;}
-                else{
-                  console.log("Stage %s finished",stage.stagenr)
-                }
+                else console.log("Stage %s finished",stage.stagenr)
               });
               SQLscrape.getResult('tour',2019,stage.stagenr,function(err,response){//TODO niet hardcoded
                 if(err) throw err;
-                else console.log(response, "stage", stage.stagenr);
+                else console.log(response, "stage", stage.stagenr,"\n");
               })
             }
             scrapeResults.reschedule(newResultsRule);  //update new schedule
@@ -357,7 +351,7 @@ var scrapeResults = schedule.scheduleJob("* * 10 * *", function () {//default to
         }else if(!stage.complete){//get results if not complete
           SQLscrape.getResult('tour',2019,stage.stagenr,function(err,response){//TODO niet hardcoded 
             if(err) throw err;
-            else console.log(response, "stage", stage.stagenr);
+            else console.log(response, "stage", stage.stagenr,"\n");
           })
         }else{// if finished and complete set schedule to run again at start of next stage
           var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage.stagenr + 1}`;

@@ -9,7 +9,6 @@ module.exports = function (app) {
         sqlDB.query(query, (err,results) => {
             if (err) {console.log("WRONG QUERY:",query); throw err;}            
               else{
-                  console.log(results)
                 res.send(results)
             }
         });

@@ -74,12 +74,10 @@ getStartlistKlassieker = function (year, racenr, callback) {
                 sqlDB.query(totalQuery, (err, res) => {
                     if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}                                
                     else {
-                        console.log(res);
+                        console.log("Startlist Query Results:",res);
                     }
                     error = err;
                 });
-                
-                console.log("just before callback");
                 callback(error,"res");
             }
         })
@@ -100,7 +98,6 @@ getResultKlassieker = function (year, et, callback) {
             var $ = cheerio.load(html);
             var teamWinners = ["", "", ""];
             // store the team and id of the leader of each classification and stage winner for teampoints
-            // console.log($(".basic").first().children().first().children().children())
             $(".basic").each(function (index, element) {
                 var columns = new Array();
                 $(this).children().first().children().first().children().each(function (index, element) {
@@ -164,7 +161,6 @@ getResultKlassieker = function (year, et, callback) {
             }
             if(ridersDay.length !== 0){
                 resultsquery = resultsquery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO UPDATE SET stagepos = EXCLUDED.stagepos, stagescore = EXCLUDED.stagescore, stageresult = EXCLUDED.stageresult, teamscore = EXCLUDED.teamscore, totalscore = EXCLUDED.totalscore';
-                // console.log(resultsquery)
                 sqlDB.query(resultsquery, (err, res) =>{
                     if (err) {console.log("WRONG QUERY:",resultsquery); throw err;} 
                     else{
@@ -188,11 +184,9 @@ getPuntenKlas = function (pos) {
 
 getTeamPuntenKlas = function (pos, teamRider, teamWinners) {
     var teamPoints = 0;
-    // console.log(pos, teamRider, teamWinners[0])
     if (pos != 1 && teamRider == teamWinners[0]) teamPoints += 20;
     if (pos != 2 && teamRider == teamWinners[1]) teamPoints += 12;
     if (pos != 3 && teamRider == teamWinners[2]) teamPoints += 4;
-    // console.log(teamPoints)
     return teamPoints;
 }
 

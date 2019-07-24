@@ -100,7 +100,7 @@ module.exports = function (app) {
 
                 sqlDB.query(totalQuery, function (err, results) {
                     var start = Date.now()
-                    if (err) { console.log("query: ", totalQuery); throw err };
+                    if (err) { console.log("WRONG QUERY: ", totalQuery); throw err };
                     if (!req.body.budgetParticipation) {
                         budget = results[2].rows[0].budget;
                     }
@@ -260,7 +260,6 @@ module.exports = function (app) {
                         IDs.push(results.userSelection[i].rider_participation_id)
                         budget = budget - results.userSelection[i].price
                     }
-                    console.log(results)
                     res.send({ userSelection: results.userSelection, budget: budget }) //{allRiders,userSelection}
                 });
             }

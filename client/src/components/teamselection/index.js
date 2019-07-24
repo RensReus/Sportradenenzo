@@ -45,7 +45,6 @@ class Teamselection extends Component{
         const race = this.state.race
         const year = this.state.year
         document.title = "Team Keuze " + race;
-        console.log("redir",this.props.redirect)
         if(this.props.redirect === '/teamselection'){
             axios.post('/api/getridersandteam',{race, year, token: localStorage.getItem('authToken')}) //to: teamselection.js
             .then((res)=>{
@@ -83,7 +82,6 @@ class Teamselection extends Component{
     }
 
     redirect = (url) => {
-        console.log("redirfucnt")
         this.props.history.push(url);
     }
 

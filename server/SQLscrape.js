@@ -61,11 +61,11 @@ module.exports = {
                                 } else {
                                 }
                             }
-                            if (prijs < 6) {
+                            if (prijs < 7) {
                                 prijs = prijs * 1000000;
                             }
                             if (prijs === 66666666)
-                                console.log(pcsid);
+                                console.log("To add: ",pcsid);
 
                             // if name contains '
                             var apind = voornaam.indexOf("'");
@@ -107,12 +107,9 @@ module.exports = {
                     DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team, price = EXCLUDED.price;\n `;
 
                     var totalQuery = deleteStageSelectionQuery + deleteKopmanQuery + deleteTeamSelectionQuery + deleteStartlistQuery + riderQuery + participationQuery;
-                    console.log(totalQuery)
                     sqlDB.query(totalQuery, (err, res) => {
                         if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                         else {
-
-                            console.log(res);
                             callback(err,"");
                         }
                     });
@@ -318,30 +315,22 @@ module.exports = {
                 if(ridersDNF.length){ //only submit if > 0
                     sqlDB.query(dnfquery, (err, dnfres) => {
                         if (err) {console.log("WRONG QUERY:",dnfquery); throw err;}
-                        else {
-                            console.log("Riders DNF updated", dnfres.rowCount )
-                        }
                     });
                 }
                 var stage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et} AND race_id = ${race_id})`;
 
                 var uitslagCompleet = false;
                 var GCprevlength = 176;
-                // var youngPrev = [];
                 var prevstage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et-1} AND race_id = ${race_id})`
-                var prevQuery = `SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT gcpos = 0 `
+                var prevQuery = `SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT gcpos = 0;
+                                SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT yocpos = 0     `
                 sqlDB.query(prevQuery,function(err,prevRes){
                     if (err) {console.log("WRONG QUERY:",prevQuery); throw err;}
                     if(et != 1){
-                        GCprevlength = prevRes.rows[0].count;
-                        // youngprevlength = prevRes.rows[0].youngCount;
+                        GCprevlength = prevRes[0].rows[0].count;
+                        // youngprevlength = prevRes[1].rows[0].youngCount;
                     }
-                    // var jongDNF = 0;
-                    // for (i in ridersDNF) {
-                    //     if (youngPrev.map(jongeren => jongeren._id).includes(ridersDNF[i]))
-                    //         jongDNF++;
-                    // }
-                    
+
                     var akComp = (ridersGC.length + ridersDNF.length) == GCprevlength;
                     var sprintComp = ridersPoints.length;
                     var bergComp = ridersKom.length;
@@ -486,7 +475,7 @@ module.exports = {
                         sqlDB.query(totalQuery,(err,res)=>{
                             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                             else {
-                                console.log("Processed results stage ",et,"Riders ",res[1].rowCount)
+                                console.log("Processed results stage",et,"Riders:",res[1].rowCount,"DNF:",ridersDNF.length)
                                 functies.calculateUserScores(raceName,year,et,callback)
                             }
                         })
@@ -498,7 +487,7 @@ module.exports = {
                         sqlDB.query(totalQuery,(err,res)=>{
                             if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
                             else {
-                                console.log("Processed results stage ",et,"Riders ",res[1].rowCount)
+                                console.log("Processed results stage",et,"Riders:",res[1].rowCount,"DNF:",ridersDNF.length)
                                 functies.calculateUserScores(raceName,year,et,function(err,response){
                                     if(err) throw err;
                                     getResult(raceName,year,22,callback)//calculate eindklassement punten

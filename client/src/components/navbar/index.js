@@ -4,13 +4,7 @@ import './index.css';
 import StatsDropdown from './Dropdowns/Statistieken'
 import ChartsDropdown from './Dropdowns/Charts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from "@fortawesome/free-solid-svg-icons"; //User icon voor profielpagina
-import { faUserShield } from "@fortawesome/free-solid-svg-icons"; //Admin icon
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons"; //Pijltje voor de dropdown
-// import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons"; //Logout icon
-// import { faBars } from "@fortawesome/free-solid-svg-icons"; //Bars voor mobiel navbar menu
-
-
+import { faUser, faUserShield } from "@fortawesome/free-solid-svg-icons"; //User icon voor profielpagina //Admin icon
 
 class Navbar extends Component {
     redirect = (url) => {

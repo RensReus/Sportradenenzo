@@ -86,7 +86,7 @@ class Home extends Component{
                 <div className="formsAndMore">
                     <form action="" onSubmit={submit}>
                         <div className="inputContainer">
-                            <input className="form-control" name="email" ref="email" type="email" placeholder="Email Address" ref={(input) => { this.input = input; }}/>
+                            <input className="form-control" name="email" type="email" placeholder="Email Address" ref={(input) => { this.input = input; }}/>
                         </div>
                         {usernamefield}
                         <div className="inputContainer">

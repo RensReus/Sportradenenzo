@@ -36,7 +36,6 @@ class FinalStandings extends Component{
         this.props.history.push(this.state.lastStageLink)        
     }
     render(){
-        console.log(this.state)
         return(
             <div className="standardContainer">
             <div id="titlebuttons">

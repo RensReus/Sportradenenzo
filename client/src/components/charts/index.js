@@ -273,7 +273,6 @@ class charts extends Component {
 	}
 
 	changeTheme(event) {
-		console.log(event.target.value)
 		this.setState({ theme: event.target.value });
 	}
 

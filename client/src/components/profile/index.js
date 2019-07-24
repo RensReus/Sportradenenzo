@@ -31,7 +31,6 @@ class Profile extends Component{
     addParticipation(race_id){
         axios.post('/api/addparticipation',{race_id : race_id})
         .then((res)=>{
-            console.log(res);
         })
     }
     
@@ -45,7 +44,7 @@ class Profile extends Component{
                 <div style={{display: this.state.upcomingParticipation ? 'none' : 'block'}}>
                     Mee doen aan Giro.
                     Budget en gewoon in 1 account;
-                    <button onClick={() => {this.addParticipation(5)}} >Click me {";)"}</button>
+                    <button disabled onClick={() => {this.addParticipation(5)}} >Click me {";)"}</button>
                 </div>
             </div>
         )

@@ -118,7 +118,6 @@ class Teamselection extends Component {
             .then((res) => {
                 if (res) {
                     var userSelection = this.state.userSelection
-                    console.log(rider)
                     userSelection.unshift({
                         firstname: rider.firstName,
                         lastname: rider.lastName,
@@ -126,7 +125,6 @@ class Teamselection extends Component {
                         team: rider.team,
                         rider_participation_id: res.riderID
                     })
-                    console.log(userSelection)
                     this.setState({
                         userSelection: userSelection,
                         budget: (this.state.budget-price), 

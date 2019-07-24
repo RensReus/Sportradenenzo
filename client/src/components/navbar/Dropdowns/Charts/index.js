@@ -36,7 +36,7 @@ class StatistiekenDropdown extends Component {
     render() {
       return (
         <div className="dropdown">
-          <a className="item"  onClick={this.showMenu}><span className="h3">Charts <FontAwesomeIcon icon={this.state.showMenu ? (faAngleUp):(faAngleDown)}/></span></a>
+          <a className="item" href="/charts/overview" onClick={this.showMenu}><span className="h3">Charts <FontAwesomeIcon icon={this.state.showMenu ? (faAngleUp):(faAngleDown)}/></span></a>
           {
             this.state.showMenu
               ? (

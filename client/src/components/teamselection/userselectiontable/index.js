@@ -27,11 +27,8 @@ class UserRiderrow extends Component{
 }
 class Userselectiontable extends Component{
     render(){
-        const rows = [];
-        this.props.selection.map(({firstname,lastname,team,price,rider_participation_id})=>{
-            rows.push(
-                <UserRiderrow firstname={firstname} lastname={lastname} team={team} price={price} key={rider_participation_id} riderID={rider_participation_id} budgetParticipation={this.props.budgetParticipation} removeRider={this.props.removeRider}/>
-            )
+        const rows = this.props.selection.map(({firstname,lastname,team,price,rider_participation_id})=>{
+            return <UserRiderrow firstname={firstname} lastname={lastname} team={team} price={price} key={rider_participation_id} riderID={rider_participation_id} budgetParticipation={this.props.budgetParticipation} removeRider={this.props.removeRider}/>;
         });
         return(
             <table>

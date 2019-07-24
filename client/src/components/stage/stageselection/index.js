@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserMinus, faUserPlus, faCheckCircle as solFaCheckCircle, faCheck} from "@fortawesome/free-solid-svg-icons"; // add/remove riders
+import { faUserMinus, faUserPlus, faCheckCircle as solFaCheckCircle} from "@fortawesome/free-solid-svg-icons"; // add/remove riders
 import { faCheckCircle as regFaCheckCircle} from "@fortawesome/free-regular-svg-icons"; // add/remove riders
 
 class SelecTableRow extends Component {
@@ -33,7 +33,6 @@ class SelecTableRow extends Component {
 
 class SelecTable extends Component {
     render() {
-        const rows = [];
         const selectionIDs = this.props.selectionIDs;
         const selectionLength = selectionIDs.length;
         const userTeamSorted = this.props.userTeam.sort(function (a, b) {//put selected on top
@@ -43,19 +42,19 @@ class SelecTable extends Component {
             if (aSelected) return -1;
             return 1;
         })
-
-        userTeamSorted.map(({ lastname, team, rider_participation_id, dnf }) => {
+        
+        const rows = userTeamSorted.map(({ lastname, team, rider_participation_id, dnf }) => {
             var selected = 'unselected';
             if (selectionIDs.includes(rider_participation_id)) {
                 selected = 'selected'
             }
             if ((selectionLength >= 9 && selected !== 'selected') || dnf) {
-                rows.push(<SelecTableRow name={lastname} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />)
+                return <SelecTableRow name={lastname} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />
             } else {
                 if (selected === 'selected') {
-                    rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} setKopman={this.props.setKopman} />)
+                    return <SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} setKopman={this.props.setKopman} />
                 } else {
-                    rows.push(<SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />)
+                    return <SelecTableRow name={lastname} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />
                 }
             }
         })

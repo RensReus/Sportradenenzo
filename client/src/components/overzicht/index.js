@@ -168,7 +168,6 @@ class overzicht extends Component {
         if (res) {
           var extraTables = []
           for (var i in res.data.simpleSelections) {
-            console.log(res.data.simpleSelections[i].data)
             extraTables.push(<div className="tableDiv" ><Table data={res.data.simpleSelections[i].data} title={res.data.simpleSelections[i].title} coltype={res.data.simpleSelections[i].coltype} /></div>)
           }
           this.setState({

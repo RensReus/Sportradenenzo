@@ -28,7 +28,6 @@ const jwtDecode = require('jwt-decode');
 
 class App extends Component {
   constructor(props) {
-    console.log(props)
     super(props);
     this.state = ({
       loading: true,
@@ -40,6 +39,7 @@ class App extends Component {
 
   render() {
     //Kijken of de gebruiker is ingelogd en adminrechten heeft
+   
     if(localStorage.getItem('authToken')){
       var token = localStorage.getItem('authToken')
       var decoded = jwtDecode(token)
@@ -66,7 +66,6 @@ class App extends Component {
     if(this.state.redirect === '/'){
       axios.post('/api/currentstageredir')
         .then(res =>{
-          console.log(res.data)
           this.setState({redirect: res.data.redirect})
         })
     }

@@ -5,7 +5,7 @@ import ModalButton from '../shared/modal'
 import Table from '../shared/table'
 import SelecTable from './stageselection'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleLeft,faAngleRight,faMountain, faUserMinus, faUserPlus } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
+import { faAngleLeft,faAngleRight,faMountain} from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
 
 class StageResults extends Component {
@@ -158,7 +158,6 @@ class Stage extends Component {
                         prevClassificationsBudget: res.data.prevClassificationsBudget,
                     })
                 } else if (res.data.mode === 'results') {
-                    console.log()
                     this.setState({
                         mode: 'results',
                         userTeamResultGewoon: res.data.teamresultGewoon,
@@ -207,8 +206,6 @@ class Stage extends Component {
             this.selectRider(rider_participation_id);
         } else if (addRemove === 'remove') {
             this.removeRider(rider_participation_id);
-        } else {
-            console.log("addremove has invalid value");
         }
     }
 
@@ -319,7 +316,6 @@ class Stage extends Component {
             </div>
         } else if (mode === 'results') {
             resTable = <Table data={userTeamResult} title={"Selectie"} />
-            console.log(this.state.userScoresColtype)
             pTable = <Table data={userScores} title={"Poule Stand"} coltype= {this.state.userScoresColtype}/>
             stResTable = <StageResults data={stageresults} stage={this.state.stage} />
             var allSelectionsPopupContent = [];
