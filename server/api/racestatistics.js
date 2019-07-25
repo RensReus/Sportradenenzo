@@ -449,7 +449,7 @@ module.exports = function (app) {
                 INNER JOIN rider_participation USING(rider_participation_id)
                 INNER JOIN account_participation USING (account_participation_id)
                 INNER JOIN stage USING(stage_id)
-                WHERE stage.race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation}
+                WHERE stage.race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation} AND starttime < now() AT TIME ZONE 'Europe/Paris'
                 GROUP BY stagenr; `;
 
                 var uitgevallenQuery = `SELECT username AS "User", COUNT(rider_participation_id) AS "Uitvallers" FROM rider_participation

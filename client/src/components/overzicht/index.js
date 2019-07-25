@@ -36,7 +36,14 @@ class overzicht extends Component {
 
   componentDidUpdate() {
     if (this.props.match.params.selection !== this.state.currlink) {
-      this.setState({ currlink: this.props.match.params.selection })
+      this.setState({ currlink: this.props.match.params.selection,
+        data: [],
+        coltype: [],
+        tableName: '',
+        extraTables: '',
+        budget: false,
+        budgetSwitchButton: '',
+      })
       switch (this.props.match.params.selection) {
         case "all": this.renderAll(); break;
         case "selected": this.renderSelected(); break;
