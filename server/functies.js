@@ -350,11 +350,11 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
           })
         }else if(!stage.complete){//get results if not complete
           SQLscrape.getResult('tour',2019,stage.stagenr,function(err,response){//TODO niet hardcoded 
-            currentstage_global += 1;
             if(err) throw err;
             else console.log(response, "stage", stage.stagenr,"\n");
           })
         }else{// if finished and complete set schedule to run again at start of next stage
+          currentstage_global += 1;
           var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage.stagenr + 1}`;
           sqlDB.query(nextStageQuery,function(err,nextStageResults){
             if (err) {console.log("WRONG QUERY:",nextStageQuery); throw err;}
