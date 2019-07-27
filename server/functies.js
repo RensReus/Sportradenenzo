@@ -341,7 +341,6 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
                 if (err) {console.log("WRONG QUERY:",updateStageQuery); throw err;}
                 else console.log("Stage %s finished",stage.stagenr)
               });
-              currentstage_global += 1;
               SQLscrape.getResult('tour',2019,stage.stagenr,function(err,response){//TODO niet hardcoded
                 if(err) throw err;
                 else console.log(response, "stage", stage.stagenr,"\n");
@@ -351,6 +350,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
           })
         }else if(!stage.complete){//get results if not complete
           SQLscrape.getResult('tour',2019,stage.stagenr,function(err,response){//TODO niet hardcoded 
+            currentstage_global += 1;
             if(err) throw err;
             else console.log(response, "stage", stage.stagenr,"\n");
           })
