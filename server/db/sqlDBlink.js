@@ -1,1 +1,0 @@
-module.exports = 'postgres://cbccafynqctxog:4b089c115c1b82141aaadf58803e28b1efdc506eda0c420a7111ea68ef6d8898@ec2-23-21-121-220.compute-1.amazonaws.com:5432/dcnj1tb25jqg9f'

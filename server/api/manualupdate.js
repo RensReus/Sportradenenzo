@@ -102,7 +102,7 @@ module.exports = function (app) {
               var copyQuery = `INSERT INTO stage_selection_rider(stage_selection_id,rider_participation_id)
               SELECT ${stage_selection_id}, rider_participation_id FROM team_selection_rider
               INNER JOIN rider_participation USING (rider_participation_id)
-              WHERE account_participation_id = ${account_participation_id}
+              WHERE account_participation_id = ${account_participation_id} AND NOT dnf
               ON CONFLICT DO NOTHING; `
               copyTeamQuery += copyQuery;
           }
