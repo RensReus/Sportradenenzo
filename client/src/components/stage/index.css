@@ -81,14 +81,6 @@ div.prevClassifications>div>.tableContainer>table {
     z-index: 1;
 }
 
-.pouleUser:hover .selectionInfo {
-    display: block;
-}
-
-.pouleUser:hover {
-    cursor: pointer;
-}
-
 .klassementButton {
     background-color: gray;
     font-size: 16px;
@@ -212,11 +204,10 @@ div.classification {
         grid-column: 1;
         grid-row: 2;
     }
-    /*Resultaten van de poule*/
-    div.poule {
-        grid-column: 1;
-        grid-row: 2;
+    div.res > div {
+        padding-top: 20px
     }
+    /*Resultaten van de stage*/
     div.stage {
         grid-column: 2;
         grid-row: 2;

@@ -99,6 +99,8 @@ class Stage extends Component {
             prevClassificationsBudget: [],
             allSelectionsGewoon: [],
             allSelectionsBudget: [],
+            notSelectedGewoon: [],
+            notSelectedBudget: [],
         }
         this.selectRider = this.selectRider.bind(this)
         this.removeRider = this.removeRider.bind(this)
@@ -169,10 +171,8 @@ class Stage extends Component {
                         stageresultsBudget: res.data.stageresultsBudget,
                         allSelectionsGewoon: res.data.allSelectionsGewoon,
                         allSelectionsBudget: res.data.allSelectionsBudget,
-                        prevText: res.data.prevText,
-                        nextText: res.data.nextText,
-                        lastStage: res.data.lastStage,
-                        raceStarted: res.data.raceStarted
+                        notSelectedGewoon: res.data.notSelectedGewoon,
+                        notSelectedBudget: res.data.notSelectedBudget,
                     })
                 }
             })
@@ -263,6 +263,7 @@ class Stage extends Component {
         let prevClassificationsDiv
         let allSelections
         let allSelectionsPopup
+        let notSelected
         // always
         var stageProfile = '';
         if (this.state.stage > 2 && this.state.stage < 22) {//TODO netter, check if file exists
@@ -289,11 +290,13 @@ class Stage extends Component {
             userScores = this.state.userScoresBudget
             stageresults = this.state.stageresultsBudget
             allSelections = this.state.allSelectionsBudget
+            notSelected = this.state.notSelectedBudget
         } else {
             userTeamResult = this.state.userTeamResultGewoon
             userScores = this.state.userScoresGewoon
             stageresults = this.state.stageresultsGewoon
             allSelections = this.state.allSelectionsGewoon
+            notSelected = this.state.notSelectedGewoon
         }
         if (mode === 'loading') {
             loadingGif = <img className="loadingGif" src="/images/bicycleWheel.gif" alt="bicycleWheel.gif"></img>
@@ -319,8 +322,14 @@ class Stage extends Component {
             pTable = <Table data={userScores} title={"Poule Stand"} coltype= {this.state.userScoresColtype}/>
             stResTable = <StageResults data={stageresults} stage={this.state.stage} />
             var allSelectionsPopupContent = [];
+            var index = 0;
             for(var i in allSelections){
-                allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].data} title={allSelections[i].title} coltype={allSelections[i].coltype}/></div>)
+                var notSelectedTable = '';
+                if(i<notSelected.length && allSelections[i].title === notSelected[index].username){
+                    notSelectedTable = <Table data={notSelected[i].riders} title={"Niet Opgesteld"}/>    
+                    index++;                
+                }
+                allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].data} title={allSelections[i].title} coltype={allSelections[i].coltype}/>{notSelectedTable}</div>)
             }
             allSelectionsPopup = <ModalButton
                             cssClassButton="buttonStandard blue2"
@@ -357,7 +366,6 @@ class Stage extends Component {
                 {message}
                 <div className="res">{resTable}{pTable}</div>
                 {allSelectionsPopup}
-                <div className="poule"></div>
                 <div className="stage">{stResTable}</div>
                 {prevClassificationsDiv}
 

@@ -1,18 +1,25 @@
-//1 user nietopgestelde renners
-var stage_selection = `(SELECT rider_participation_id from stage_selection_rider 
+var allnotselected = `(
+SELECT rider_participation_id, account_participation_id FROM team_selection_rider
+INNER JOIN account_participation USING(account_participation_id )
+WHERE race_id = 6 AND budgetparticipation = false
+EXCEPT
+SELECT rider_participation_id, account_participation_id FROM stage_selection_rider 
 INNER JOIN stage_selection USING(stage_selection_id)
 INNER JOIN account_participation USING(account_participation_id)
-WHERE account_id = 2 and budgetparticipation= false and stage_id = 183)`
+WHERE stage_id = ${stage_id} AND budgetparticipation = false
+) a`
 var allselectedriders = `(SELECT rider_participation_id FROM stage_selection_rider 
 INNER JOIN stage_selection USING(stage_selection_id)
 INNER JOIN account_participation USING(account_participation_id)
-WHERE stage_id = 183 AND budgetparticipation = false
+WHERE stage_id = ${stage_id} AND budgetparticipation = false
 GROUP BY rider_participation_id)`
+var stage_id = `182`
 
-select rider_participation_id, lastname from team_selection_rider
+
+SELECT username, ARRAY_AGG(lastname) FROM ${allnotselected}
 INNER JOIN account_participation USING(account_participation_id)
+INNER JOIN account USING(account_id)
 INNER JOIN rider_participation USING(rider_participation_id)
 INNER JOIN rider USING(rider_id)
-where rider_participation_id not in ${stage_selection} AND account_participation.race_id = 6 AND budgetparticipation = false AND account_id = 2 AND rider_participation_id IN ${allselectedriders}
-
-
+WHERE rider_participation_id in ${allselectedriders}
+GROUP BY username

@@ -1,6 +1,7 @@
 /*Default table css, overruled by more specified table classes*/
 table {
     border: none;
+    width: 100%
 }
 
 tr:nth-child(odd) {
@@ -15,11 +16,14 @@ th{
     color: white
 }
 
-caption{
+table > caption{
     background: var(--background-color-darker);
     color: white;
     font-size: 25px;
+    padding-top: 1px;
+    padding-bottom: 1px;
     text-align: center;
+    width: 100%
 }
 
 th.sortable{
