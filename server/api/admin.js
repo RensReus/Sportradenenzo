@@ -11,6 +11,7 @@ function getSecret() {
 
 module.exports = function (app) {
     const sqlDB = require('../db/sqlDB')
+
     app.post('/api/admin', function (req, res) {
         var sqlQuery = req.body.query;
         jwt.verify(req.body.token, getSecret(), function (err, decoded) {
@@ -21,7 +22,8 @@ module.exports = function (app) {
                             console.log(sqlQuery);
                             console.log("ERROR");
                             console.log(err);
-                            res.send({ 'data': err });
+                            console.log(err.toString())
+                            res.send({ 'data': err , d2:err.toString()});
                         }
                         else {
                             console.log("Query: ");
@@ -34,4 +36,50 @@ module.exports = function (app) {
             }
         });
     });
+
+    app.post('/api/getdbinfo', function(req,res){
+        jwt.verify(req.body.token, getSecret(), function (err, decoded) {
+            if (!err && decoded.admin) {
+                var allTableSizesQuery = `SELECT relname "Table", n_live_tup AS "Rows", n_tup_ins AS "Inserts", n_tup_upd AS "Updates", n_tup_del AS "Deletions"
+                FROM pg_stat_user_tables 
+                ORDER BY "Rows" DESC; `;
+
+                var stage_selection_riderQuery = `SELECT COUNT(*) AS "Rows", name, year FROM stage_selection_rider
+                INNER JOIN stage_selection USING(stage_selection_id)
+                INNER JOIN stage USING(stage_id)
+                INNER JOIN race USING(race_id)
+                GROUP BY name, year; `;
+
+                var results_pointsQuery = `SELECT COUNT(*) AS "Rows", name, year FROM results_points
+                INNER JOIN stage USING(stage_id)
+                INNER JOIN race USING(race_id)
+                GROUP BY name, year; `;
+
+                var rider_participationQuery = `SELECT COUNT(*) AS "Rows", name, year FROM rider_participation
+                INNER JOIN race USING(race_id)
+                GROUP BY name, year; `;
+
+                var team_selection_riderQuery = `SELECT COUNT(*) AS "Rows", name, year FROM team_selection_rider
+                INNER JOIN account_participation USING(account_participation_id)
+                INNER JOIN race USING(race_id)
+                GROUP BY name, year; `;
+
+                var stage_selectionQuery = `SELECT COUNT(*) AS "Rows", name, year FROM stage_selection
+                INNER JOIN stage USING(stage_id)
+                INNER JOIN race USING(race_id)
+                GROUP BY name, year; `;
+                var titles = ["All Table Sizes", "stage_selection_rider", "results_points", "rider_participation", "team_selection_rider", "stage_selection"]
+                var totalQuery = allTableSizesQuery + stage_selection_riderQuery + results_pointsQuery + rider_participationQuery + team_selection_riderQuery + stage_selectionQuery;
+                sqlDB.query(totalQuery,
+                    (err, sqlres) => {
+                        if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}          
+                        else {
+                            res.send({ tables: sqlres, titles });
+                        }
+                    })
+
+
+            }
+        })
+    })
 }

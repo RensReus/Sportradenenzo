@@ -16,7 +16,6 @@ import Etappewinsten from './components/etappewinsten';
 import Overzicht from './components/overzicht';
 import Charts from './components/charts';
 import Rider from './components/rider';
-import ManualUpdate from './components/manualupdate'
 import Rulesandpoints from './components/rulesandpoints';
 
 //Import de standaard css stukken
@@ -86,8 +85,7 @@ class App extends Component {
             <PrivateRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} />
             <Route path="/teamselection" component={Teamselection} history={this.props.history} redirect = {this.state.redirect}/>
             <AdminRoute path="/admin" component={Admin} history={this.props.history} />
-            <AdminRoute path="/manualupdate" component={ManualUpdate} history={this.props.history} />
-            
+           
             <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
             <Route path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
             <Route path="/overzicht/:selection" component={Overzicht} history={this.props.history} />

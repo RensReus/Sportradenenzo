@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './index.css';
 import axios from 'axios';
-
+import ManualUpdate from './manualupdate'
+import Table from '../shared/table'
 class Outputtable extends Component {
     constructor(props) {
         super(props);
@@ -140,11 +141,15 @@ class Admin extends Component {
             value: '',
             submitted: false,
             varRows: [],
+            showTab: ['block','none','none'],
+            DBinfoTables: []
         });
         this.submitQuery = this.submitQuery.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.testButton = this.testButton.bind(this);
         this.keyPress = this.keyPress.bind(this);
+        this.showTab = this.showTab.bind(this);
+        this.getDBinfo = this.getDBinfo.bind(this);
     }
     submitQuery = (e) => {
         e.preventDefault();
@@ -187,7 +192,29 @@ class Admin extends Component {
         }
     }
 
+    showTab(i) {
+        if(i === 1){
+            this.getDBinfo()
+        }
+        var showTab = this.state.showTab;
+        var curr = showTab.indexOf('block');
+        showTab[curr] = 'none';
+        showTab[i] = 'block';
+        this.setState({ showTab: showTab });
+    }
 
+    getDBinfo(){
+        axios.post('/api/getdbinfo', { token: localStorage.getItem('authToken')})
+            .then((res) => {
+                var DBinfoTables = []
+                for (var i in res.data.tables) {
+                    DBinfoTables.push(<div className="tableDiv" ><Table data={res.data.tables[i].rows} title={res.data.titles[i]} /></div>)
+                }
+                this.setState({
+                    DBinfoTables,
+                })
+            })
+    }
 
     componentDidMount() {
         this.input.focus();
@@ -195,16 +222,29 @@ class Admin extends Component {
     }
 
     render() {
+        var buttons = [];
+        buttons.push(<button className={"klassementButton " + this.state.showTab[0]} key="DBinterface" onClick={this.showTab.bind(this, 0)}>DB interface</button>)
+        buttons.push(<button className={"klassementButton " + this.state.showTab[1]} key="DBinfo" onClick={this.showTab.bind(this, 1)}>DB Info</button>)
+        buttons.push(<button className={"klassementButton " + this.state.showTab[2]} key="manualupdate" onClick={this.showTab.bind(this, 2)}>Manual Update</button>)
+
         return (
             <div className="adminpageContainer">
-                <div>
+                <div style={{ display: 'flex' }}>
+                    {buttons}
+                </div>
+                <div style={{ display: this.state.showTab[0] }}>
                     <form action="" onSubmit={this.submitQuery} id="queryform">
                     <div><textarea ref="extraVars" className="queryInputBox" rows="5" cols="140" onKeyDown={this.keyPress}></textarea></div>
                         <textarea className="queryInputBox" rows="20" cols="140" value={this.state.value} onChange={this.handleChange} onKeyDown={this.keyPress} ref={(input) => { this.input = input; }} />
                         <input type="submit" value="submit" />
                     </form>
                     <Outputtable output={this.state.output} />
-
+                </div>
+                <div style={{ display: this.state.showTab[1]}}>
+                    {this.state.DBinfoTables}
+                </div>
+                <div style={{ display: this.state.showTab[2]}}>
+                    <ManualUpdate />
                 </div>
             </div>
         )

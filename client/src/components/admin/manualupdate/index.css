@@ -5,7 +5,7 @@ div.mainContainer {
     grid-template-rows: repeat(3,1fr)    
 }
 
-div.iets{
+div.raceType{
     display:grid;
     grid-template-rows: repeat(3,40px);
     grid-template-columns: repeat(5,1fr)

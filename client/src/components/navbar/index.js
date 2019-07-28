@@ -40,9 +40,6 @@ class Navbar extends Component {
                 {this.props.isAdmin &&
                     <Link className='item' to='/admin'><span className="h3 bold"><FontAwesomeIcon icon={faUserShield}/> Admin</span></Link>
                 }
-                {this.props.isAdmin &&
-                    <Link className='item' to='/manualupdate'>Manual Update</Link>
-                }
                 {buttonLog}
             </div>
         )

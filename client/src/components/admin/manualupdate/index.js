@@ -154,7 +154,7 @@ class manualupdate extends Component {
     render() {
         return (
             <div className="mainContainer">
-                <div className="iets">
+                <div className="raceType">
                     <div className="title">Klassieker</div>
                     <div className="row">
 
@@ -177,7 +177,7 @@ class manualupdate extends Component {
                         <button>Submit</button>
                     </form>
                 </div>
-                <div className="iets">
+                <div className="raceType">
                     <div className="title">Grote Ronde</div>
                     <div className="grMainRow">
                         <div>year</div>

@@ -1,7 +1,6 @@
 div.adminpageContainer{
     width: 100%;
-    height: 95vh;
-    margin-top: 5vh;
+    margin-bottom: 1vh;
     background: #45484d; /* Old browsers */
     background: -moz-linear-gradient(top, #45484d 0%, #000000 100%); /* FF3.6-15 */
     background: -webkit-linear-gradient(top, #45484d 0%,#000000 100%); /* Chrome10-25,Safari5.1-6 */
