@@ -4,6 +4,6 @@
 .vscode
 node_modules
 server/db/SQL tables.txt
-server/db/sqlDBlink
+server/db/sqlDBlink.js
 client/src/examples
-server/jwtsecret
+server/jwtsecret.js
