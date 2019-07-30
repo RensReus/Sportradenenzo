@@ -354,7 +354,9 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
             else console.log(response, "stage", stage.stagenr,"\n");
           })
         }else{// if finished and complete set schedule to run again at start of next stage
-          currentstage_global += 1;
+          if(currentstage_global<22){
+              currentstage_global += 1;
+          }
           var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage.stagenr + 1}`;
           sqlDB.query(nextStageQuery,function(err,nextStageResults){
             if (err) {console.log("WRONG QUERY:",nextStageQuery); throw err;}
@@ -386,9 +388,10 @@ function setCurrentStage(){
                     ORDER BY stagenr desc
                     LIMIT 1`;
         sqlDB.query(stageQuery, function (err, results) {
+            if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
             if (results.rows.length) {// if some results, so at least after start of stage 1
                 var stage = results.rows[0];
-                if(stage.complete) stage.stagenr++;
+                if(stage.complete && stage.stagenr!==22) stage.stagenr++;
                 currentstage_global = stage.stagenr;
             }
         })

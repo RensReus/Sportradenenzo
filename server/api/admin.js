@@ -13,9 +13,9 @@ module.exports = function (app) {
     const sqlDB = require('../db/sqlDB')
 
     app.post('/api/admin', function (req, res) {
-        var sqlQuery = req.body.query;
         jwt.verify(req.body.token, getSecret(), function (err, decoded) {
             if (!err && decoded.admin) {
+                var sqlQuery = req.body.query;
                 sqlDB.query(sqlQuery,
                     (err, sqlres) => {
                         if (err) {

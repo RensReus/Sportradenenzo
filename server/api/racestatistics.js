@@ -290,8 +290,9 @@ module.exports = function (app) {
                 } else {
                     if(i === 21){
                         outputArray.push({Etappe: i + 1, Behaald: actualPoints[i], Optimaal: actualPoints[i], Gemist: 0})
+                    }else{
+                        outputArray.push({ Etappe: i + 1, Behaald: actualPoints[i], Optimaal: optimalPoints, Gemist: optimalPoints - actualPoints[i] })
                     }
-                    outputArray.push({ Etappe: i + 1, Behaald: actualPoints[i], Optimaal: optimalPoints, Gemist: optimalPoints - actualPoints[i] })
                     optimalTotal += optimalPoints;
                     actualTotal += actualPoints[i];
                     missedTotal += optimalPoints - actualPoints[i];

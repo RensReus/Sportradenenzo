@@ -122,7 +122,7 @@ module.exports = function (app) {
     app.post('/api/getstage', function (req, res) {
         jwt.verify(req.body.token, getSecret(), function (err, user) {
             if (err || isNaN(req.body.stage) || req.body.stage<1 || req.body.stage>22) {
-                res.send({ 'mode': '404' })
+                res.redirect('/')
                 throw err;
             } else {
                 var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = '${req.body.year}')`;
@@ -311,7 +311,7 @@ module.exports = function (app) {
                                     WHERE stage_selection_id = ${stage_selection_id}
                                     ORDER BY "Total" DESC, "Stage" DESC; `;
 
-                            var userscoresQuery = `SELECT RANK() OVER(ORDER by totalscore DESC) AS " ", username AS "User", stagescore AS "Stage", totalscore AS "Total" FROM stage_selection
+                            var userscoresQuery = `SELECT RANK() OVER(ORDER by totalscore DESC) AS " ", CONCAT('/profile/',account_id) AS "User_link", username AS "User", stagescore AS "Stage", totalscore AS "Total" FROM stage_selection
                                                 INNER JOIN account_participation USING(account_participation_id)
                                                 INNER JOIN account USING(account_id)
                                                 WHERE stage_id=${stage_id} AND budgetparticipation = ${budgetParticipation}

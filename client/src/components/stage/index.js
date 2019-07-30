@@ -136,6 +136,9 @@ class Stage extends Component {
     }
 
     updateData(stage) {
+        if(stage>22 || stage<1){
+            this.props.history.push('/');
+        }
         const race = this.state.race
         const year = this.state.year
         document.title = "Etappe " + stage;

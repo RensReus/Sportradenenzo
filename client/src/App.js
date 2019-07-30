@@ -7,8 +7,8 @@ import { PrivateRoute, AdminRoute } from './PrivateRoute'
 
 import Navbar from './components/navbar';
 
+import LogInSignUp from './components/LogInSignUp';
 import Home from './components/home';
-import Profile from './components/profile';
 import Stage from './components/stage'
 import Teamselection from './components/teamselection';
 import Admin from './components/admin';
@@ -17,6 +17,7 @@ import Overzicht from './components/overzicht';
 import Charts from './components/charts';
 import Rider from './components/rider';
 import Rulesandpoints from './components/rulesandpoints';
+import Profile from './components/profile'
 
 //Import de standaard css stukken
 import './components/css/buttons.css'
@@ -68,7 +69,6 @@ class App extends Component {
           this.setState({redirect: res.data.redirect})
         })
     }
-    
     return (
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
@@ -79,18 +79,19 @@ class App extends Component {
         
         {/* <Switch> */}
             <Route exact path="/" render={() => (
-              this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<Home history={this.props.history} />)
+              this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} />)
             )} />
-            <PrivateRoute path="/profile" component={Profile} history={this.props.history} />
+            <PrivateRoute path="/home" component={Home} history={this.props.history} />
             <PrivateRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} />
-            <Route path="/teamselection" component={Teamselection} history={this.props.history} redirect = {this.state.redirect}/>
+            <PrivateRoute path="/teamselection" component={Teamselection} history={this.props.history} redirect = {this.state.redirect}/>
             <AdminRoute path="/admin" component={Admin} history={this.props.history} />
            
-            <Route path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
-            <Route path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
-            <Route path="/overzicht/:selection" component={Overzicht} history={this.props.history} />
-            <Route path="/rider/:rider_participation_id" component={Rider} history={this.props.history} />
-            <Route path="/charts/:chartname" component={Charts} history={this.props.history} />
+            <PrivateRoute path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
+            <PrivateRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
+            <PrivateRoute path="/overzicht/:selection" component={Overzicht} history={this.props.history} />
+            <PrivateRoute path="/profile/:account_id" component={Profile} history={this.props.history} />
+            <PrivateRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} />
+            <PrivateRoute path="/charts/:chartname" component={Charts} history={this.props.history} />
             {/* <Redirect to='/'/>
           </Switch> */}
         </div>

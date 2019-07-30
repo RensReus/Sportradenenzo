@@ -21,15 +21,15 @@
 /* LOGO */
 
 .navbar .logo {
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 5px;
+  padding-right: 5px;
   color: var(--main-color);
 }
 
 .navbar .logo:hover {
-  padding-left: 20px;
-  padding-right: 30px;
   color: var(--main-color-light);
+  transition: 0.3s;
+  cursor: pointer;
 }
 
 /* Dropdown Button */

@@ -52,24 +52,6 @@ module.exports = function (app) {
                         IDsBudget.push(results.userSelectionBudget[i].rider_participation_id)
                         budgetBudget -= results.userSelectionBudget[i].price
                     }
-                    // var allRidersGewoon = results.allRiders.map(({name,team,price,rider_participation_id}) => {
-                    //     var allRidersGewoon = {};                    
-                    //     if(IDsGewoon.includes(rider_participation_id)){
-                    //         allRidersGewoon = {name, team, price, rider_participation_id, selected: 'selected'}
-                    //     }else{
-                    //         allRidersGewoon = {name, team, price, rider_participation_id, selected: 'unselected'}
-                    //     }
-                    //     return allRidersGewoon
-                    // });
-                    // var allRidersBudget = results.allRiders.map(({name,team,price,rider_participation_id}) => {
-                    //     var allRidersBudget = {};                    
-                    //     if(IDsBudget.includes(rider_participation_id)){
-                    //         allRidersBudget = {name, team, price, rider_participation_id, selected: 'selected'}
-                    //     }else{
-                    //         allRidersBudget = {name, team, price, rider_participation_id, selected: 'unselected'}
-                    //     }
-                    //     return allRidersBudget
-                    // });
                     res.send({ allRiders: results.allRiders, userSelectionGewoon: results.userSelectionGewoon, userSelectionBudget: results.userSelectionBudget, budgetGewoon, budgetBudget })
                 });
             }

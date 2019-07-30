@@ -4,7 +4,7 @@ import './index.css';
 import StatsDropdown from './Dropdowns/Statistieken'
 import ChartsDropdown from './Dropdowns/Charts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faUserShield } from "@fortawesome/free-solid-svg-icons"; //User icon voor profielpagina //Admin icon
+import { faUserShield } from "@fortawesome/free-solid-svg-icons"; //User icon voor profielpagina //Admin icon
 
 class Navbar extends Component {
     redirect = (url) => {
@@ -16,23 +16,22 @@ class Navbar extends Component {
     }
     render() {
         let buttonLog;
-        let buttonSignProfile;
+        let buttonSignUp;
         let currStage;
         let raceOverview;
         if (this.props.isLoggedIn) {
-            buttonSignProfile = <Link className='item' to='/profile'><span className="h3 bold"><FontAwesomeIcon icon={faUser}/> Profile</span></Link>;
             buttonLog = <button className='item' onClick={() => this.logout()}>Logout</button>;
             currStage = <Link className='item' to='/'><span>Current stage</span></Link>;
             raceOverview = <button className='item' ><span>Race overview</span></button>;
         } else {
-            buttonSignProfile = <Link className='item' to="/signup">Sign up</Link>;
+            buttonSignUp = <Link className='item' to="/signup">Sign up</Link>;
             buttonLog = <Link className='item' to="/login">Sign in</Link>;
             currStage = '';
         }
         return (
             <div className="navbar">
-                <span className="logo h1">Sport raden enzo</span>
-                {buttonSignProfile}
+                <Link className='item' to='/home'><span className="logo h1">Sport raden enzo</span></Link>
+                {buttonSignUp}
                 {currStage}
                 {raceOverview}
                 <ChartsDropdown className="dropdown"/>

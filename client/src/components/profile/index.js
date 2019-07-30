@@ -1,50 +1,34 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-//import './index.css';
-import underConstruction from '../../under_construction.gif'
-
-class ActiveRacesTable extends Component{
-    render(){
-        return(
-            <div>LOL</div>
-        )
-    }
-}
 
 class Profile extends Component{
     constructor(props) {
         super(props);
         this.state = ({
-            upcomingRace_id: 5,
-            upcomingParticipation: false          
+            tourpos: "",
         });
       }
 
     componentWillMount(){
-        document.title = "Profiel";
-        axios.post('/api/getracepartcipation',{race_id : this.state.upcomingRace_id})
+        axios.post('/api/getprofiledata',{account_id: this.props.match.params.account_id,token: localStorage.getItem('authToken')})
         .then((res)=>{
-            this.setState({upcomingParticipation: res.data.rowCount>0})
-        })
-    }
+            if(res.data.userNotFound){
 
-    addParticipation(race_id){
-        axios.post('/api/addparticipation',{race_id : race_id})
-        .then((res)=>{
+            }else{//render user profile
+                document.title = res.data.username;
+                this.setState({
+                    tourpos: res.data.tourpos,
+                    username: res.data.username,
+                })
+            }
         })
     }
     
     render(){
         return(
             <div className="standardContainer">
-                <div className="activeRaces">
-                    <ActiveRacesTable/>
-                </div>
-                <img src={underConstruction}  alt="still building" />
-                <div style={{display: this.state.upcomingParticipation ? 'none' : 'block'}}>
-                    Mee doen aan Giro.
-                    Budget en gewoon in 1 account;
-                    <button disabled onClick={() => {this.addParticipation(5)}} >Click me {";)"}</button>
+                <div className='h1'style={{display: this.state.upcomingParticipation ? 'none' : 'block'}}>
+                    {this.state.username} was {this.state.tourpos}e in de Tour 2019
                 </div>
             </div>
         )
