@@ -203,6 +203,7 @@ class Admin extends Component {
             var startindex = Math.max(this.state.value.lastIndexOf(' ',cursorPos-1),this.state.value.lastIndexOf('\t',cursorPos-1),this.state.value.lastIndexOf('\n',cursorPos-1));
             console.log(startindex)
             var currWord = this.state.value.substring(startindex+1,cursorPos);
+            console.log(currWord)
             if(currWord.length > 0){// minstens 1 char
                 var sug = this.state.autoCompleteSuggestions;
                 var currentSuggestions = sug.filter(function(word){
@@ -225,7 +226,7 @@ class Admin extends Component {
                 this.setState({
                     currentSuggestions,
                     selectedSuggestion: 0,
-                    autoCompleteActive: !deletion,
+                    autoCompleteActive: !deletion && currentSuggestions.length,
                 })
             }
         })
@@ -261,9 +262,9 @@ class Admin extends Component {
     }
 
     insertSuggestion(i){
-        var currpos = this.state.cursorPos;
-        var startindex = this.state.value.lastIndexOf(' ',currpos-1);
-        var newValue = this.state.value.substring(0,startindex+1) + this.state.currentSuggestions[i] + this.state.value.substring(currpos)
+        var cursorPos = this.state.cursorPos;
+        var startindex = Math.max(this.state.value.lastIndexOf(' ',cursorPos-1),this.state.value.lastIndexOf('\t',cursorPos-1),this.state.value.lastIndexOf('\n',cursorPos-1));
+        var newValue = this.state.value.substring(0,startindex+1) + this.state.currentSuggestions[i] + this.state.value.substring(cursorPos)
         this.setState({
             value: newValue,
             currentSuggestions: [],
@@ -316,6 +317,7 @@ class Admin extends Component {
 
     handleClick(e){
         this.insertSuggestion(e.target.title)
+        this.input.focus();
     }
 
     render() {
