@@ -73,3 +73,22 @@ table.outputTable{
     width: 1000px;
     font-size: 16px;
   }
+  
+  #sugPopUp{
+    color: white;
+    background: black;
+    padding: 1px;
+    position: absolute;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .selectedSuggestion{
+    background: darkblue;
+  }
+
+  .suggestion:hover{
+    background: gray;
+    cursor: pointer;  
+  }
