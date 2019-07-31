@@ -200,10 +200,20 @@ class Admin extends Component {
             var caret = getCaretCoordinates(document.activeElement, document.activeElement.selectionEnd);
             var cursorPos = document.activeElement.selectionStart;
             this.setState({popUpTop: caret.top + caret.height, popUpLeft:caret.left, cursorPos})
-            var startindex = Math.max(this.state.value.lastIndexOf(' ',cursorPos-1),this.state.value.lastIndexOf('\t',cursorPos-1),this.state.value.lastIndexOf('\n',cursorPos-1));
-            console.log(startindex)
+            var startindex = -1;
+            for(var i = cursorPos-1; i >-1;i--){
+                if([' ','\n','\t','(', ')','"','{','}'].includes(this.state.value.charAt(i))){
+                    startindex = i;
+                    break;
+                }
+            }
+            var lastTyped = this.state.value[cursorPos-1];
+            if(!deletion){
+                if(['(','{'].includes(lastTyped)){
+                    this.insertClosing(cursorPos,lastTyped);
+                }
+            }
             var currWord = this.state.value.substring(startindex+1,cursorPos);
-            console.log(currWord)
             if(currWord.length > 0){// minstens 1 char
                 var sug = this.state.autoCompleteSuggestions;
                 var currentSuggestions = sug.filter(function(word){
@@ -235,41 +245,69 @@ class Admin extends Component {
     keyPress(e) {
         if ((e.keyCode === 10 || e.keyCode === 13) && e.ctrlKey) { //ctrl + enter
             this.submitQuery(e);
+            this.setState({autoCompleteActive:false})
+        }else{
+            //disable autosuggest popup keys
+            var disableKeyCodes = [37,39,27,32,8];//left, right, esc, space, backspace
+            var i = this.state.selectedSuggestion;
+            var len = this.state.currentSuggestions.length;
+            if(this.state.autoCompleteActive){//popupzichtbaar
+                if (e.keyCode === 9 || e.keyCode === 10 || e.keyCode === 13){ 
+                    e.preventDefault();
+                    this.insertSuggestion(i)
+                }
+                if (e.keyCode === 38){//up
+                    e.preventDefault();
+                    this.setState({selectedSuggestion:(i-1+len)%len})
+                }
+                if (e.keyCode === 40){//down
+                    e.preventDefault();
+                    this.setState({selectedSuggestion:(i+1)%len})
+                }
+                if (disableKeyCodes.includes(e.keyCode)){
+                    this.setState({autoCompleteActive:false})
+                }
+            }
+            var cursorPos = document.activeElement.selectionStart;
+            this.setState({cursorPos})
         }
-        //disable autosuggest popup keys
-        var disableKeyCodes = [37,39,27,32,8];//left, right, esc, space, backspace
-        var i = this.state.selectedSuggestion;
-        var len = this.state.currentSuggestions.length;
-        if(this.state.autoCompleteActive){//popupzichtbaar
-            if (e.keyCode === 9 || e.keyCode === 10 || e.keyCode === 13){ 
-                e.preventDefault();
-                this.insertSuggestion(i)
-            }
-            if (e.keyCode === 38){//up
-                e.preventDefault();
-                this.setState({selectedSuggestion:(i-1+len)%len})
-            }
-            if (e.keyCode === 40){//down
-                e.preventDefault();
-                this.setState({selectedSuggestion:(i+1)%len})
-            }
-            if (disableKeyCodes.includes(e.keyCode)){
-                this.setState({autoCompleteActive:false})
-            }
-        }
-        var cursorPos = document.activeElement.selectionStart;
-        this.setState({cursorPos})
     }
 
-    insertSuggestion(i){
+    insertSuggestion(selection){
         var cursorPos = this.state.cursorPos;
-        var startindex = Math.max(this.state.value.lastIndexOf(' ',cursorPos-1),this.state.value.lastIndexOf('\t',cursorPos-1),this.state.value.lastIndexOf('\n',cursorPos-1));
-        var newValue = this.state.value.substring(0,startindex+1) + this.state.currentSuggestions[i] + this.state.value.substring(cursorPos)
+        var startindex = -1;
+        for(var i = cursorPos-1; i >-1;i--){
+            if([' ','\n','\t','(', ')','"','{','}'].includes(this.state.value.charAt(i))){
+                startindex = i;
+                break;
+            }
+        }
+        var toInsert = this.state.currentSuggestions[selection];
+        var newValue = this.state.value.substring(0,startindex+1) + toInsert + this.state.value.substring(cursorPos)
+        this.setSuggestions();
         this.setState({
             value: newValue,
             currentSuggestions: [],
             selectedSuggestion: 0,
             autoCompleteActive: false,
+        },()=>{
+            document.activeElement.setSelectionRange(startindex+toInsert.length+1,startindex+toInsert.length+1)
+        })
+    }
+
+    insertClosing(cursorPos,bracket){
+        var toInsert = '';
+        switch(bracket){
+            case '{': toInsert= '}' 
+            break;
+            case '(': toInsert= ')' 
+            break;
+        }
+        var newValue = this.state.value.substring(0,cursorPos) + toInsert + this.state.value.substring(cursorPos)
+        this.setState({
+            value: newValue,
+        },()=>{
+            document.activeElement.setSelectionRange(cursorPos,cursorPos)
         })
     }
 
@@ -309,9 +347,11 @@ class Admin extends Component {
         //Table IDs
         suggestions = suggestions.concat(['account_id','race_id','stage_id','account_participation_id','rider_id','rider_participation_id','stage_selection_id'])
         // SQL COMMANDS
-        var list = `ADD, ADD CONSTRAINT, ALTER, ALTER COLUMN, ALTER TABLE, ALL, AND, ANY, AS, ASC, BACKUP DATABASE, BETWEEN, CASE, CHECK, COLUMN, CONSTRAINT, CREATE, CREATE DATABASE, CREATE INDEX, CREATE OR REPLACE VIEW, CREATE TABLE, CREATE PROCEDURE, CREATE UNIQUE INDEX, CREATE VIEW, DATABASE, DEFAULT, DELETE, DESC, DISTINCT, DROP, DROP COLUMN, DROP CONSTRAINT, DROP DATABASE, DROP DEFAULT, DROP INDEX, DROP TABLE, DROP VIEW, EXEC, EXISTS, FOREIGN KEY, FROM, FULL OUTER JOIN, GROUP BY, HAVING, IN, INDEX, INNER JOIN, INSERT INTO, INSERT INTO SELECT, IS NULL, IS NOT NULL, JOIN, LEFT JOIN, LIKE, LIMIT, NOT, NOT NULL, OR, ORDER BY, OUTER JOIN, PRIMARY KEY, PROCEDURE, RIGHT JOIN, ROWNUM, SELECT, SELECT DISTINCT, SELECT INTO, SELECT TOP, SET, TABLE, TOP, TRUNCATE TABLE, UNION, UNION ALL, UNIQUE, UPDATE, VALUES, VIEW, WHERE`
+        var list = `AND, ANY, AVG, BETWEEN, COUNT, CASE, DISTINCT, DESC, DELETE, FROM, GROUP BY, HAVING, INNER JOIN, INSERT INTO, IS NULL, JOIN, LIMIT, MAX, MIN, NOT, SELECT, SUM, USING, UNION, UPDATE, VALUES, WHERE, AS, ADD, ADD CONSTRAINT, ALTER, ALTER COLUMN, ALTER TABLE, ALL, ASC, BACKUP DATABASE, CHECK, COLUMN, CONSTRAINT, CREATE, CREATE DATABASE, CREATE INDEX, CREATE OR REPLACE VIEW, CREATE TABLE, CREATE PROCEDURE, CREATE UNIQUE INDEX, CREATE VIEW, DATABASE, DEFAULT, DROP, DROP COLUMN, DROP CONSTRAINT, DROP DATABASE, DROP DEFAULT, DROP INDEX, DROP TABLE, DROP VIEW, EXEC, EXISTS, FOREIGN KEY, FULL OUTER JOIN, IN, INDEX, INSERT INTO SELECT, IS NOT NULL, LEFT JOIN, LIKE, NOT NULL, OR, ORDER BY, OUTER JOIN, PRIMARY KEY, PROCEDURE, RIGHT JOIN, ROWNUM, SELECT DISTINCT, SELECT INTO, SELECT TOP, SET, TABLE, TOP, TRUNCATE TABLE, UNION ALL, UNIQUE, VIEW`;
         suggestions = suggestions.concat(list.split(', ')) 
-        suggestions.sort()
+        //Table Rownames
+        suggestions = suggestions.concat(['finished', 'username', 'email', 'admin', 'budgetparticipation', 'price', 'dnf', 'team', 'stagescore', 'totalscore', 'kopman_id', 'stagepos', 'gcpos', 'pointspos', 'kompos', 'yocpos', 'stagescore', 'gcscore', 'pointsscore', 'komscore', 'yocscore', 'teamscore', 'stageresult', 'gcresult', 'pointsresult', 'komresult', 'yocresult']) 
+
         this.setState({autoCompleteSuggestions: suggestions})
     }
 
