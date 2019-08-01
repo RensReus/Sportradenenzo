@@ -50,17 +50,19 @@ module.exports = function (app) {
                 throw err;
             } else {
                 var account_id = req.body.account_id;
-                var last_stage_id = `(SELECT stage_id FROM stage WHERE race_id = 6 and stagenr = 22)`
                 var accountQuery = `SELECT * FROM account
                 WHERE account_id = ${account_id};\n `
                 var participationsQuery = `SELECT * FROM account_participation
                 WHERE account_id = ${account_id};\n `
-                var tourposQuery = `SELECT rank FROM (
-                    SELECT RANK() OVER(ORDER by totalscore DESC), account_id FROM stage_selection
-                    INNER JOIN account_participation USING(account_participation_id)             
-                    WHERE stage_id=${last_stage_id} AND budgetparticipation = false ) a
-                    WHERE account_id = ${account_id};\n `
-                var totalQuery = accountQuery + participationsQuery + tourposQuery;
+                var rankQuery = `(SELECT account_id, race_id, rank() over (PARTITION BY race_id ORDER BY finalscore DESC) FROM account_participation
+                    INNER JOIN account USING (account_id)
+                    WHERE budgetparticipation = false) sub`;
+                var racePointsQuery = `SELECT name, year, finalscore, rank FROM account_participation
+                INNER JOIN race USING(race_id)
+                INNER JOIN ${rankQuery} USING(race_id,account_id)
+                WHERE account_id = ${account_id} AND budgetparticipation = false
+                ORDER BY year,name`
+                var totalQuery = accountQuery + participationsQuery + racePointsQuery;
                 sqlDB.query(totalQuery, (err,results) => {
                     if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}            
                       else{
@@ -68,8 +70,12 @@ module.exports = function (app) {
                             res.send({userNotFound:true})
                         }else{
                             var username = results[0].rows[0].username;
-                            var tourpos = results[2].rows[0].rank;
-                            res.send({userNotFound:false,username,tourpos})
+                            var scores = results[2].rows;
+                            res.send({
+                                userNotFound:false,
+                                username,
+                                scores
+                            })
                         }
                     }
                 });

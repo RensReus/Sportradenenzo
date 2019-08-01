@@ -92,6 +92,10 @@ class charts extends Component {
 	}
 
 	componentDidMount() {
+		this.initialRender();
+	}
+
+	initialRender(){
 		switch (this.state.chartname) {
 			case "userscores":
 				this.userscores();
@@ -113,10 +117,14 @@ class charts extends Component {
 				document.title = "Chart: Renners Punten Aandeel/Absoluut";
 				this.setState({ chartType: "stackedArea" })
 				break;
+			case "scorespread":
+				this.scorespread()
+				document.title = "Chart: Score Spreiding";
+				this.setState({ chartType: "column" })
+				break;
 			default:
 				this.userscores();
 		}
-
 	}
 
 	userscores() {
@@ -267,6 +275,33 @@ class charts extends Component {
 		this.setState({ options: options })
 	}
 
+	scorespread() {
+		axios.post('/api/chartscorespread', { race_id: 6, budgetparticipation: false, excludeFinal: true, token: localStorage.getItem('authToken'), budgetparticipation:false })
+			.then((res) => {
+				if (res) {
+					this.setState({ data: res.data })
+					this.buildscorespread()
+					console.log(res.data)
+				}
+			})
+	}
+
+	buildscorespread() {
+		var data = this.state.data;
+		var options = {
+			title: {
+				text: "Scores"
+			},
+			height: 800,
+			axisY: {
+				title: "Points"
+			},
+			data: data
+		}
+
+		this.setState({ options: options })
+	}
+
 	handleChange(event) {
 		this.setState({ chartType: event.target.value });
 		this.buildRiderpercentagetotal(event.target.value)
@@ -283,6 +318,7 @@ class charts extends Component {
 		}
 		var options = this.state.options;
 		options.theme = this.state.theme;
+		console.log(options)
 		return (
 			<div className="overzichtContainer">
 				{typeSelector}

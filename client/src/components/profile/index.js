@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import Table from '../shared/table'
 
 class Profile extends Component{
     constructor(props) {
         super(props);
         this.state = ({
-            tourpos: "",
+            scores: [],
+            username: ''
         });
       }
 
@@ -17,7 +19,7 @@ class Profile extends Component{
             }else{//render user profile
                 document.title = res.data.username;
                 this.setState({
-                    tourpos: res.data.tourpos,
+                    scores: res.data.scores,
                     username: res.data.username,
                 })
             }
@@ -25,11 +27,15 @@ class Profile extends Component{
     }
     
     render(){
+        console.log(this.state.scores)
+        var scoresTable = <div style={{width: '50%'}}><Table data={this.state.scores} title={this.state.username} coltype={{name:0,year:1,finalscore:1,rank:1}}/></div>
         return(
             <div className="standardContainer">
                 <div className='h1'style={{display: this.state.upcomingParticipation ? 'none' : 'block'}}>
-                    {this.state.username} was {this.state.tourpos}e in de Tour 2019
+                    {scoresTable}
+                    
                 </div>
+                <div>En dan hier een sexy profiel foto of zo met duckface oid</div>
             </div>
         )
     }

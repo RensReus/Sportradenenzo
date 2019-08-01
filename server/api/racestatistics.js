@@ -708,6 +708,50 @@ module.exports = function (app) {
         })
     })
 
+    app.post('/api/chartscorespread', function (req, res) {
+        jwt.verify(req.body.token, getSecret(), function (err, user) {
+            if (err) {
+                res.redirect('/')
+                throw err;
+            } else {
+                var excludeFinalStr = ''
+                if(req.body.excludeFinal) excludeFinalStr = `AND NOT stagenr = 22`
+                var budgetparticipation = req.body.budgetparticipation;
 
+                var barQuery = `SELECT username as label, stagescore as y, stagenr FROM stage_selection
+                    INNER JOIN account_participation USING(account_participation_id)
+                    INNER JOIN account USING(account_id)
+                    INNER JOIN stage USING(stage_id)
+                    WHERE stage.race_id = ${req.body.race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
+                    ORDER BY stagescore DESC;\n`
+
+                var avgQuery = `SELECT ROUND(AVG(stagescore),2), stagenr FROM stage_selection
+                INNER JOIN stage USING(stage_id)
+                INNER JOIN account_participation USING(account_participation_id)
+                WHERE stage.race_id = ${req.body.race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
+                GROUP BY stagenr
+                ORDER BY stagenr;\n`
+
+                var totalQuery = barQuery + avgQuery;
+                sqlDB.query(totalQuery, (err, results) => {
+                    if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+                    var data = [{
+                        type: "column",
+                        showInLegend: true, 
+                        dataPoints: []
+                    }]
+                    var colors = {Bierfietsen:'red', Rens:'blue', Sam:'green',Yannick:'yellow'}
+                    for (var i in results[0].rows){
+                        var row = results[0].rows[i];
+                        row.color = colors[row.label];
+                        // console.log(results[1].rows)
+                        // row.x = results[1].rows[row.stagenr-1].round;
+                        data[0].dataPoints.push(row);
+                    }
+                    res.send(data);
+                })
+            }
+        })
+    })
 
 }

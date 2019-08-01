@@ -202,7 +202,7 @@ class Admin extends Component {
             this.setState({popUpTop: caret.top + caret.height, popUpLeft:caret.left, cursorPos})
             var startindex = -1;
             for(var i = cursorPos-1; i >-1;i--){
-                if([' ','\n','\t','(', ')','"','{','}'].includes(this.state.value.charAt(i))){
+                if([' ','\n','\t','(', ')','"','{','}','.',','].includes(this.state.value.charAt(i))){
                     startindex = i;
                     break;
                 }
@@ -231,7 +231,7 @@ class Admin extends Component {
                         if(aEq && !bEq) return -1;
                         if(!aEq && bEq) return 1;
                     }
-                    return 0;
+                    return a.length - b.length;
                 })
                 this.setState({
                     currentSuggestions,
@@ -277,7 +277,7 @@ class Admin extends Component {
         var cursorPos = this.state.cursorPos;
         var startindex = -1;
         for(var i = cursorPos-1; i >-1;i--){
-            if([' ','\n','\t','(', ')','"','{','}'].includes(this.state.value.charAt(i))){
+            if([' ','\n','\t','(', ')','"','{','}','.',','].includes(this.state.value.charAt(i))){
                 startindex = i;
                 break;
             }
@@ -350,7 +350,7 @@ class Admin extends Component {
         var list = `AND, ANY, AVG, BETWEEN, COUNT, CASE, DISTINCT, DESC, DELETE, FROM, GROUP BY, HAVING, INNER JOIN, INSERT INTO, IS NULL, JOIN, LIMIT, MAX, MIN, NOT, SELECT, SUM, USING, UNION, UPDATE, VALUES, WHERE, AS, ADD, ADD CONSTRAINT, ALTER, ALTER COLUMN, ALTER TABLE, ALL, ASC, BACKUP DATABASE, CHECK, COLUMN, CONSTRAINT, CREATE, CREATE DATABASE, CREATE INDEX, CREATE OR REPLACE VIEW, CREATE TABLE, CREATE PROCEDURE, CREATE UNIQUE INDEX, CREATE VIEW, DATABASE, DEFAULT, DROP, DROP COLUMN, DROP CONSTRAINT, DROP DATABASE, DROP DEFAULT, DROP INDEX, DROP TABLE, DROP VIEW, EXEC, EXISTS, FOREIGN KEY, FULL OUTER JOIN, IN, INDEX, INSERT INTO SELECT, IS NOT NULL, LEFT JOIN, LIKE, NOT NULL, OR, ORDER BY, OUTER JOIN, PRIMARY KEY, PROCEDURE, RIGHT JOIN, ROWNUM, SELECT DISTINCT, SELECT INTO, SELECT TOP, SET, TABLE, TOP, TRUNCATE TABLE, UNION ALL, UNIQUE, VIEW`;
         suggestions = suggestions.concat(list.split(', ')) 
         //Table Rownames
-        suggestions = suggestions.concat(['finished', 'username', 'email', 'admin', 'budgetparticipation', 'price', 'dnf', 'team', 'stagescore', 'totalscore', 'kopman_id', 'stagepos', 'gcpos', 'pointspos', 'kompos', 'yocpos', 'stagescore', 'gcscore', 'pointsscore', 'komscore', 'yocscore', 'teamscore', 'stageresult', 'gcresult', 'pointsresult', 'komresult', 'yocresult']) 
+        suggestions = suggestions.concat(['budgetparticipation','finished','finalscore','stagenr','starttime','complete', 'username', 'email', 'admin', 'budgetparticipation', 'price', 'dnf', 'team', 'stagescore', 'totalscore', 'kopman_id', 'stagepos', 'gcpos', 'pointspos', 'kompos', 'yocpos', 'stagescore', 'gcscore', 'pointsscore', 'komscore', 'yocscore', 'teamscore', 'stageresult', 'gcresult', 'pointsresult', 'komresult', 'yocresult']) 
 
         this.setState({autoCompleteSuggestions: suggestions})
     }

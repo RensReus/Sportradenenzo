@@ -45,6 +45,7 @@ class StatistiekenDropdown extends Component {
                     <Link className='item' to='/charts/userrank'>Ranking</Link>
                     <Link className='item' to='/charts/riderpercentage'>Puntenaandeel Renner per Etappe</Link>
                     <Link className='item' to='/charts/riderpercentagetotal'>Puntenaandeel Renner totaal</Link>
+                    <Link className='item' to='/charts/scorespread'>Score verdeling</Link>
                 </div>
               )
               : (
