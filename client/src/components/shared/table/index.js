@@ -86,6 +86,16 @@ class Table extends Component {
         this.scrollClick = this.scrollClick.bind(this);
     }
     componentDidMount(){
+        this.initialSetState();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props !== prevProps) { // compares properties before and after update
+            this.initialSetState();
+        }
+    }
+
+    initialSetState(){
         this.setState({
             data: this.props.data,
             title: this.props.title,
@@ -108,34 +118,7 @@ class Table extends Component {
                 scrollShow,
             })
         }
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props !== prevProps) { // compares properties before and after update
-            this.setState({
-                data: this.props.data,
-                title: this.props.title,
-                colNames: this.props.colNames,
-                displayCol: this.props.displayCol,
-                classNames: this.props.classNames,
-                maxRows: this.props.maxRows,
-            })
-        var scrollShow = this.state.scrollShow;
-        if(this.props.maxRows < this.props.data.length){ //if more rows than allows spread over multiple tabs
-                var scrollCount = Math.ceil(this.props.data.length/this.props.maxRows);
-                for(var i = 0; i < scrollCount; i++){
-                    scrollShow[i]= !i ? 'table' : 'none'
-                }
-            }
-            if (this.props.coltype != null) {
-                this.setState({
-                    coltype: JSON.parse(JSON.stringify(this.props.coltype)),// de double JSON is omdat deze anders verwijzen naar hetzelfde object dit is een soort copy
-                    desc: JSON.parse(JSON.stringify(this.props.coltype)),// string default sort asc, numbers sort default desc
-                    scrollShow,
-            })
-            }
-        }
-    }
+    }    
 
     onSort(sortKey) {
         var data = this.state.data;

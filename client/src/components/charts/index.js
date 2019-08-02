@@ -123,7 +123,7 @@ class charts extends Component {
 				this.setState({ chartType: "column" })
 				break;
 			default:
-				this.userscores();
+				this.newChart();
 		}
 	}
 
@@ -276,7 +276,7 @@ class charts extends Component {
 	}
 
 	scorespread() {
-		axios.post('/api/chartscorespread', { race_id: 6, budgetparticipation: false, excludeFinal: true, token: localStorage.getItem('authToken'), budgetparticipation:false })
+		axios.post('/api/chartscorespread', { race_id: 6, budgetparticipation: false, excludeFinal: true, token: localStorage.getItem('authToken')})
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -287,6 +287,35 @@ class charts extends Component {
 	}
 
 	buildscorespread() {
+		var data = this.state.data;
+		var options = {
+			title: {
+				text: "Scores"
+			},
+			height: 800,
+			axisY: {
+				title: "Points"
+			},
+			data: data
+		}
+
+		this.setState({ options: options })
+	}
+
+	newChart(){
+		axios.post('/api/newchart', {budgetparticipation: false, token: localStorage.getItem('authToken')})
+			.then((res) => {
+				if (res) {
+					this.setState({ data: res.data })
+					console.log(res.data)
+					this.buildNewChart()
+
+				}
+			})
+	}
+
+	buildNewChart(){
+		console.log("buidl", this.state.data)
 		var data = this.state.data;
 		var options = {
 			title: {

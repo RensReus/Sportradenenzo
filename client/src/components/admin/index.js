@@ -3,7 +3,6 @@ import './index.css';
 import axios from 'axios';
 import ManualUpdate from './manualupdate'
 import Table from '../shared/table'
-import { equal } from 'assert';
 var getCaretCoordinates = require('textarea-caret');
 
 class Outputtable extends Component {
@@ -143,7 +142,6 @@ class Admin extends Component {
             output: [],
             value: '',
             shownValue: '',
-            submitted: false,
             varRows: [],
             showTab: ['block','none','none'],
             DBinfoTables: [],
@@ -154,6 +152,7 @@ class Admin extends Component {
             popUpTop: 0,
             popUpLeft: 0,
             cursorPos: 0,
+            errorData: [],
         });
         this.submitQuery = this.submitQuery.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -188,7 +187,13 @@ class Admin extends Component {
         }
         axios.post('/api/admin', { token: localStorage.getItem('authToken'), query })
             .then((res) => {
-                this.setState({ output: res.data.data, submitted: true })
+                if(res.data.errorBool){
+                    var errorRow = {' ':'error',"  ":res.data.error}
+                    var hintRow = {' ':'hint',"  ":res.data.hint}
+                    var errorData = [errorRow,hintRow];
+                    this.setState({errorData: errorData})
+                }
+                this.setState({ output: res.data.data})
             })
     }
     handleChange(e) {
@@ -302,6 +307,8 @@ class Admin extends Component {
             break;
             case '(': toInsert= ')' 
             break;
+            default:
+            break;
         }
         var newValue = this.state.value.substring(0,cursorPos) + toInsert + this.state.value.substring(cursorPos)
         this.setState({
@@ -350,7 +357,9 @@ class Admin extends Component {
         var list = `AND, ANY, AVG, BETWEEN, COUNT, CASE, DISTINCT, DESC, DELETE, FROM, GROUP BY, HAVING, INNER JOIN, INSERT INTO, IS NULL, JOIN, LIMIT, MAX, MIN, NOT, SELECT, SUM, USING, UNION, UPDATE, VALUES, WHERE, AS, ADD, ADD CONSTRAINT, ALTER, ALTER COLUMN, ALTER TABLE, ALL, ASC, BACKUP DATABASE, CHECK, COLUMN, CONSTRAINT, CREATE, CREATE DATABASE, CREATE INDEX, CREATE OR REPLACE VIEW, CREATE TABLE, CREATE PROCEDURE, CREATE UNIQUE INDEX, CREATE VIEW, DATABASE, DEFAULT, DROP, DROP COLUMN, DROP CONSTRAINT, DROP DATABASE, DROP DEFAULT, DROP INDEX, DROP TABLE, DROP VIEW, EXEC, EXISTS, FOREIGN KEY, FULL OUTER JOIN, IN, INDEX, INSERT INTO SELECT, IS NOT NULL, LEFT JOIN, LIKE, NOT NULL, OR, ORDER BY, OUTER JOIN, PRIMARY KEY, PROCEDURE, RIGHT JOIN, ROWNUM, SELECT DISTINCT, SELECT INTO, SELECT TOP, SET, TABLE, TOP, TRUNCATE TABLE, UNION ALL, UNIQUE, VIEW`;
         suggestions = suggestions.concat(list.split(', ')) 
         //Table Rownames
-        suggestions = suggestions.concat(['budgetparticipation','finished','finalscore','stagenr','starttime','complete', 'username', 'email', 'admin', 'budgetparticipation', 'price', 'dnf', 'team', 'stagescore', 'totalscore', 'kopman_id', 'stagepos', 'gcpos', 'pointspos', 'kompos', 'yocpos', 'stagescore', 'gcscore', 'pointsscore', 'komscore', 'yocscore', 'teamscore', 'stageresult', 'gcresult', 'pointsresult', 'komresult', 'yocresult']) 
+        suggestions = suggestions.concat(['budgetparticipation','finished','finalscore','stagenr','starttime','complete', 'username', 'email', 'admin', 'budgetparticipation', 'price', 'dnf', 'team', 'stagescore', 'totalscore', 'kopman_id', 'stagepos', 'gcpos', 'pointspos', 'kompos', 'yocpos', 'stagescore', 'gcscore', 'pointsscore', 'komscore', 'yocscore', 'teamscore', 'stageresult', 'gcresult', 'pointsresult', 'komresult', 'yocresult'])
+        // Extra
+        suggestions = suggestions.concat(['false','true']) 
 
         this.setState({autoCompleteSuggestions: suggestions})
     }
@@ -368,7 +377,7 @@ class Admin extends Component {
         var popupDivs = []
         var popUpStyle = {top: this.state.popUpTop, left:this.state.popUpLeft,display: this.state.autoCompleteActive ? 'block' : 'none'}
         for(var i in this.state.currentSuggestions){
-            if(i == this.state.selectedSuggestion){
+            if(i === this.state.selectedSuggestion.toString()){
                 popupDivs.push(<div key={i} className="suggestion selectedSuggestion" title={i} onClick={(e) => {this.handleClick(e)}}>{this.state.currentSuggestions[i]}</div>)
             }else{
                 popupDivs.push(<div key={i} className="suggestion " title={i} onClick={(e) => {this.handleClick(e)}}>{this.state.currentSuggestions[i]}</div>)
@@ -391,6 +400,7 @@ class Admin extends Component {
                             </div>
                         <input type="submit" value="submit" />
                     </form>
+                    <Table data={this.state.errorData}/>
                     <Outputtable output={this.state.output} />
                 </div>
                 <div style={{ display: this.state.showTab[1]}}>

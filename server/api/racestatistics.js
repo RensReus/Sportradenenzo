@@ -754,4 +754,48 @@ module.exports = function (app) {
         })
     })
 
+    app.post('/api/newchart', function (req, res) {
+        jwt.verify(req.body.token, getSecret(), function (err, user) {
+            if (err) {
+                res.redirect('/')
+                throw err;
+            } else {
+                var budgetparticipation = req.body.budgetparticipation;
+
+                var barQuery = `SELECT username as label, finalscore as y, race_id FROM account_participation
+                    INNER JOIN account USING(account_id)
+                    WHERE budgetparticipation = ${budgetparticipation} AND NOT race_id = 4
+                    ORDER BY finalscore DESC;\n`
+
+                var avgQuery = `SELECT ROUND(AVG(finalscore),2), race_id FROM account_participation
+                WHERE budgetparticipation = ${budgetparticipation} AND NOT race_id = 4
+                GROUP BY race_id
+                ORDER BY race_id;\n`
+
+                var totalQuery = barQuery + avgQuery;
+                sqlDB.query(totalQuery, (err, results) => {
+                    if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+                    var data = [{
+                        type: "scatter",
+                        showInLegend: true, 
+                        dataPoints: []
+                    }]
+                    var colors = {Bierfietsen:'red', Rens:'blue', Sam:'green',Yannick:'yellow'}
+                    for (var i in results[0].rows){
+                        var row = results[0].rows[i];
+                        row.color = colors[row.label];
+                        if(row.race_id<4){
+                            row.x = parseFloat(results[1].rows[row.race_id-1].round);
+                        }else{
+                            row.x = parseFloat(results[1].rows[row.race_id-2].round);
+                        }
+                        data[0].dataPoints.push(row);
+                    }
+                    console.log(data[0].dataPoints)
+                    res.send(data);
+                })
+            }
+        })
+    })
+
 }
