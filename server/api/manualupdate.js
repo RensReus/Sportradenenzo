@@ -156,6 +156,38 @@ module.exports = function (app) {
     })
   });
 
+  app.get('/export', function (req, res) {
+    console.log("export")
+
+    User.find({'teamselectie.userrenners': {$size: 20}}, function (err, users) {
+      if (err) throw err;
+      console.log("export",users.length)
+
+      users.forEach(function (user, index) {//get all users
+        // user.profieldata.totaalscore = 0;
+        // user.profieldata.poulescore = new Array(22).fill(0);
+        console.log("$user " + user.local.username);
+        user.teamselectie.userrenners.forEach(function (rider) {
+          console.log('$rider ' + rider._id);
+        })
+        console.log('$opstellingen')
+        user.opstellingen.forEach(function (Opstelling) {
+          console.log("$opstelling")
+          console.log("$kopman" + Opstelling.kopman);
+          Opstelling.opstelling._id.forEach(function (rider) {
+            console.log("$rider " + rider);
+          })
+        })
+        // user.teamselectie.userrenners = new Array(0).fill({ '_id': String, 'naam': String, 'team': String, 'prijs': Number }); //haal de renner weg
+        // user.opstellingen =  new Array(21).fill({'kopman':String,'opstelling':{'_id':new Array(0),'naam':new Array(0)}}); //Opstellingen resetten
+        // user.teamselectie.geld = 47000000;
+        // user.markModified('userrenners, opstellingen, geld')
+        // user.save(function (err) {
+        //   if (err) throw err;
+        // });
+      })
+    })
+  });
 
 
 }

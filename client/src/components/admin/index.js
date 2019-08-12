@@ -187,13 +187,15 @@ class Admin extends Component {
         }
         axios.post('/api/admin', { token: localStorage.getItem('authToken'), query })
             .then((res) => {
+                var errorData = '';
                 if(res.data.errorBool){
                     var errorRow = {' ':'error',"  ":res.data.error}
                     var hintRow = {' ':'hint',"  ":res.data.hint}
-                    var errorData = [errorRow,hintRow];
-                    this.setState({errorData: errorData})
+                    errorData = [errorRow,hintRow];
+                    this.setState({errorData})
                 }
-                this.setState({ output: res.data.data})
+                this.setState({ errorData,
+                output: res.data.data})
             })
     }
     handleChange(e) {
