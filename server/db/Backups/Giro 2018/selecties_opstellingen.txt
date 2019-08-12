@@ -21,7 +21,7 @@ $rider boy-van-poppel
 $rider alessandro-de-marchi
 $opstellingen
 $opstelling
-$kopmanchristopher-froome
+$kopman christopher-froome
 $rider christopher-froome
 $rider tom-dumoulin
 $rider thibaut-pinot
@@ -32,7 +32,7 @@ $rider sam-oomen
 $rider mads-pedersen
 $rider luis-leon-sanchez
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider elia-viviani
 $rider sam-bennett
 $rider rudiger-selig
@@ -43,7 +43,7 @@ $rider tom-dumoulin
 $rider sam-oomen
 $rider tim-wellens
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider elia-viviani
 $rider mads-pedersen
 $rider boy-van-poppel
@@ -54,7 +54,7 @@ $rider jurgen-roelandts
 $rider rudiger-selig
 $rider alessandro-de-marchi
 $opstelling
-$kopmansimon-yates
+$kopman simon-yates
 $rider sergio-luis-henao
 $rider tim-wellens
 $rider simon-yates
@@ -65,7 +65,7 @@ $rider luis-leon-sanchez
 $rider elia-viviani
 $rider miguel-angel-lopez
 $opstelling
-$kopmantim-wellens
+$kopman tim-wellens
 $rider tim-wellens
 $rider davide-formolo
 $rider domenico-pozzovivo
@@ -76,7 +76,7 @@ $rider simon-yates
 $rider thibaut-pinot
 $rider elia-viviani
 $opstelling
-$kopmanmiguel-angel-lopez
+$kopman miguel-angel-lopez
 $rider tom-dumoulin
 $rider miguel-angel-lopez
 $rider thibaut-pinot
@@ -87,7 +87,7 @@ $rider davide-formolo
 $rider christopher-froome
 $rider sam-oomen
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider elia-viviani
 $rider mads-pedersen
 $rider simon-yates
@@ -98,7 +98,7 @@ $rider thibaut-pinot
 $rider domenico-pozzovivo
 $rider jurgen-roelandts
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider tom-dumoulin
 $rider christopher-froome
 $rider thibaut-pinot
@@ -109,7 +109,7 @@ $rider johan-esteban-chaves
 $rider davide-formolo
 $rider tim-wellens
 $opstelling
-$kopmansimon-yates
+$kopman simon-yates
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -120,7 +120,7 @@ $rider domenico-pozzovivo
 $rider davide-formolo
 $rider sam-oomen
 $opstelling
-$kopmantim-wellens
+$kopman tim-wellens
 $rider simon-yates
 $rider johan-esteban-chaves
 $rider elia-viviani
@@ -131,7 +131,7 @@ $rider gianluca-brambilla
 $rider mads-pedersen
 $rider alessandro-de-marchi
 $opstelling
-$kopmansimon-yates
+$kopman simon-yates
 $rider davide-formolo
 $rider domenico-pozzovivo
 $rider johan-esteban-chaves
@@ -142,7 +142,7 @@ $rider tim-wellens
 $rider tom-dumoulin
 $rider christopher-froome
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider tom-dumoulin
 $rider thibaut-pinot
 $rider simon-yates
@@ -153,7 +153,7 @@ $rider johan-esteban-chaves
 $rider domenico-pozzovivo
 $rider jurgen-roelandts
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider mads-pedersen
 $rider jurgen-roelandts
 $rider sam-bennett
@@ -164,7 +164,7 @@ $rider tom-dumoulin
 $rider johan-esteban-chaves
 $rider domenico-pozzovivo
 $opstelling
-$kopmansimon-yates
+$kopman simon-yates
 $rider simon-yates
 $rider thibaut-pinot
 $rider tom-dumoulin
@@ -175,7 +175,7 @@ $rider domenico-pozzovivo
 $rider christopher-froome
 $rider sam-oomen
 $opstelling
-$kopmansimon-yates
+$kopman simon-yates
 $rider tom-dumoulin
 $rider simon-yates
 $rider johan-esteban-chaves
@@ -186,7 +186,7 @@ $rider gianluca-brambilla
 $rider domenico-pozzovivo
 $rider davide-formolo
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider tom-dumoulin
 $rider christopher-froome
 $rider thibaut-pinot
@@ -197,7 +197,7 @@ $rider mads-pedersen
 $rider miguel-angel-lopez
 $rider elia-viviani
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider sam-bennett
 $rider elia-viviani
 $rider simon-yates
@@ -208,7 +208,7 @@ $rider jurgen-roelandts
 $rider mads-pedersen
 $rider christopher-froome
 $opstelling
-$kopmansimon-yates
+$kopman simon-yates
 $rider simon-yates
 $rider christopher-froome
 $rider tom-dumoulin
@@ -219,7 +219,7 @@ $rider domenico-pozzovivo
 $rider davide-formolo
 $rider sam-oomen
 $opstelling
-$kopmanmiguel-angel-lopez
+$kopman miguel-angel-lopez
 $rider thibaut-pinot
 $rider tom-dumoulin
 $rider christopher-froome
@@ -230,7 +230,7 @@ $rider domenico-pozzovivo
 $rider sam-oomen
 $rider luis-leon-sanchez
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider tom-dumoulin
 $rider christopher-froome
 $rider thibaut-pinot
@@ -241,7 +241,7 @@ $rider davide-formolo
 $rider sergio-luis-henao
 $rider gianluca-brambilla
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -274,7 +274,7 @@ $rider mads-pedersen
 $rider alessandro-de-marchi
 $opstellingen
 $opstelling
-$kopmanrohan-dennis
+$kopman rohan-dennis
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -285,7 +285,7 @@ $rider tim-wellens
 $rider danny-van-poppel
 $rider sam-bennett
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider elia-viviani
 $rider danny-van-poppel
 $rider sam-bennett
@@ -296,7 +296,7 @@ $rider andrea-guardini
 $rider clement-venturini
 $rider tom-dumoulin
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider elia-viviani
 $rider danny-van-poppel
 $rider sam-bennett
@@ -307,7 +307,7 @@ $rider clement-venturini
 $rider mads-pedersen
 $rider tom-dumoulin
 $opstelling
-$kopmanmichael-woods
+$kopman michael-woods
 $rider thibaut-pinot
 $rider miguel-angel-lopez
 $rider michael-woods
@@ -318,7 +318,7 @@ $rider george-bennett
 $rider sam-oomen
 $rider rohan-dennis
 $opstelling
-$kopmanmichael-woods
+$kopman michael-woods
 $rider tom-dumoulin
 $rider christopher-froome
 $rider thibaut-pinot
@@ -329,7 +329,7 @@ $rider rohan-dennis
 $rider sam-bennett
 $rider george-bennett
 $opstelling
-$kopmanmiguel-angel-lopez
+$kopman miguel-angel-lopez
 $rider tom-dumoulin
 $rider christopher-froome
 $rider thibaut-pinot
@@ -340,7 +340,7 @@ $rider davide-formolo
 $rider rohan-dennis
 $rider sam-oomen
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider danny-van-poppel
 $rider elia-viviani
 $rider sam-bennett
@@ -351,7 +351,7 @@ $rider richard-carapaz
 $rider tom-dumoulin
 $rider tim-wellens
 $opstelling
-$kopmanthibaut-pinot
+$kopman thibaut-pinot
 $rider richard-carapaz
 $rider tom-dumoulin
 $rider christopher-froome
@@ -362,7 +362,7 @@ $rider michael-woods
 $rider davide-formolo
 $rider elia-viviani
 $opstelling
-$kopmanthibaut-pinot
+$kopman thibaut-pinot
 $rider richard-carapaz
 $rider tom-dumoulin
 $rider christopher-froome
@@ -373,7 +373,7 @@ $rider michael-woods
 $rider davide-formolo
 $rider elia-viviani
 $opstelling
-$kopmanjarlinson-pantano
+$kopman jarlinson-pantano
 $rider jarlinson-pantano
 $rider alessandro-de-marchi
 $rider mads-pedersen
@@ -384,7 +384,7 @@ $rider sam-bennett
 $rider thibaut-pinot
 $rider jens-debusschere
 $opstelling
-$kopmantim-wellens
+$kopman tim-wellens
 $rider elia-viviani
 $rider tim-wellens
 $rider michael-woods
@@ -395,7 +395,7 @@ $rider george-bennett
 $rider thibaut-pinot
 $rider miguel-angel-lopez
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider danny-van-poppel
 $rider elia-viviani
 $rider sam-bennett
@@ -406,7 +406,7 @@ $rider richard-carapaz
 $rider thibaut-pinot
 $rider tom-dumoulin
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider danny-van-poppel
 $rider elia-viviani
 $rider sam-bennett
@@ -417,7 +417,7 @@ $rider richard-carapaz
 $rider thibaut-pinot
 $rider tom-dumoulin
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider richard-carapaz
 $rider thibaut-pinot
 $rider tom-dumoulin
@@ -428,7 +428,7 @@ $rider george-bennett
 $rider davide-formolo
 $rider jarlinson-pantano
 $opstelling
-$kopmanjarlinson-pantano
+$kopman jarlinson-pantano
 $rider jarlinson-pantano
 $rider davide-formolo
 $rider michael-woods
@@ -439,7 +439,7 @@ $rider christopher-froome
 $rider thibaut-pinot
 $rider sam-oomen
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider christopher-froome
 $rider tom-dumoulin
 $rider rohan-dennis
@@ -450,7 +450,7 @@ $rider miguel-angel-lopez
 $rider elia-viviani
 $rider sam-bennett
 $opstelling
-$kopmansam-bennett
+$kopman sam-bennett
 $rider mads-pedersen
 $rider sam-bennett
 $rider elia-viviani
@@ -461,7 +461,7 @@ $rider clement-venturini
 $rider miguel-angel-lopez
 $rider christopher-froome
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider miguel-angel-lopez
 $rider richard-carapaz
 $rider davide-formolo
@@ -472,7 +472,7 @@ $rider thibaut-pinot
 $rider tom-dumoulin
 $rider christopher-froome
 $opstelling
-$kopmanmiguel-angel-lopez
+$kopman miguel-angel-lopez
 $rider miguel-angel-lopez
 $rider richard-carapaz
 $rider davide-formolo
@@ -483,7 +483,7 @@ $rider tom-dumoulin
 $rider christopher-froome
 $rider jarlinson-pantano
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider tom-dumoulin
 $rider christopher-froome
 $rider thibaut-pinot
@@ -494,7 +494,7 @@ $rider richard-carapaz
 $rider elia-viviani
 $rider jarlinson-pantano
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider mads-pedersen
 $rider clement-venturini
 $rider jens-debusschere
@@ -527,7 +527,7 @@ $rider alessandro-de-marchi
 $rider hugh-carthy
 $opstellingen
 $opstelling
-$kopmanjos-van-emden
+$kopman jos-van-emden
 $rider jos-van-emden
 $rider victor-campenaerts
 $rider alex-dowsett
@@ -538,7 +538,7 @@ $rider sam-oomen
 $rider jose-goncalves
 $rider christopher-juul-jensen
 $opstelling
-$kopmanboy-van-poppel
+$kopman boy-van-poppel
 $rider jos-van-emden
 $rider sam-oomen
 $rider anthony-roux
@@ -549,7 +549,7 @@ $rider boy-van-poppel
 $rider alessandro-de-marchi
 $rider giulio-ciccone
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider alessandro-de-marchi
 $rider niklas-eg
 $rider anthony-roux
@@ -560,7 +560,7 @@ $rider mads-wurtz-schmidt
 $rider mads-pedersen
 $rider sam-oomen
 $opstelling
-$kopmangianluca-brambilla
+$kopman gianluca-brambilla
 $rider alessandro-de-marchi
 $rider christopher-juul-jensen
 $rider mads-pedersen
@@ -571,7 +571,7 @@ $rider gianluca-brambilla
 $rider sam-oomen
 $rider giulio-ciccone
 $opstelling
-$kopmanjose-goncalves
+$kopman jose-goncalves
 $rider mads-wurtz-schmidt
 $rider valerio-conti
 $rider mads-pedersen
@@ -582,7 +582,7 @@ $rider alessandro-de-marchi
 $rider giulio-ciccone
 $rider hugh-carthy
 $opstelling
-$kopmangiulio-ciccone
+$kopman giulio-ciccone
 $rider mads-wurtz-schmidt
 $rider valerio-conti
 $rider mads-pedersen
@@ -593,7 +593,7 @@ $rider alessandro-de-marchi
 $rider giulio-ciccone
 $rider hugh-carthy
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider sam-oomen
 $rider jose-goncalves
 $rider paolo-simion
@@ -604,7 +604,7 @@ $rider christopher-juul-jensen
 $rider alex-dowsett
 $rider mads-wurtz-schmidt
 $opstelling
-$kopmangiulio-ciccone
+$kopman giulio-ciccone
 $rider jose-goncalves
 $rider gianluca-brambilla
 $rider sam-oomen
@@ -615,7 +615,7 @@ $rider alessandro-de-marchi
 $rider valerio-conti
 $rider mads-wurtz-schmidt
 $opstelling
-$kopmansam-oomen
+$kopman sam-oomen
 $rider jose-goncalves
 $rider gianluca-brambilla
 $rider sam-oomen
@@ -626,7 +626,7 @@ $rider alessandro-de-marchi
 $rider valerio-conti
 $rider mads-wurtz-schmidt
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider jose-goncalves
 $rider gianluca-brambilla
 $rider alessandro-de-marchi
@@ -637,7 +637,7 @@ $rider niklas-eg
 $rider hugh-carthy
 $rider sam-oomen
 $opstelling
-$kopmanjose-goncalves
+$kopman jose-goncalves
 $rider jose-goncalves
 $rider gianluca-brambilla
 $rider alessandro-de-marchi
@@ -648,7 +648,7 @@ $rider sam-oomen
 $rider giulio-ciccone
 $rider mads-wurtz-schmidt
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider sam-oomen
 $rider gianluca-brambilla
 $rider hugh-carthy
@@ -659,7 +659,7 @@ $rider anthony-roux
 $rider mads-pedersen
 $rider niklas-eg
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider sam-oomen
 $rider paolo-simion
 $rider mads-wurtz-schmidt
@@ -670,7 +670,7 @@ $rider mads-pedersen
 $rider giulio-ciccone
 $rider alessandro-de-marchi
 $opstelling
-$kopmangiulio-ciccone
+$kopman giulio-ciccone
 $rider giulio-ciccone
 $rider sam-oomen
 $rider gianluca-brambilla
@@ -681,7 +681,7 @@ $rider alessandro-de-marchi
 $rider mads-pedersen
 $rider adam-hansen
 $opstelling
-$kopmangianluca-brambilla
+$kopman gianluca-brambilla
 $rider giulio-ciccone
 $rider sam-oomen
 $rider gianluca-brambilla
@@ -692,7 +692,7 @@ $rider alessandro-de-marchi
 $rider mads-pedersen
 $rider adam-hansen
 $opstelling
-$kopmanvictor-campenaerts
+$kopman victor-campenaerts
 $rider victor-campenaerts
 $rider alex-dowsett
 $rider jos-van-emden
@@ -703,7 +703,7 @@ $rider giulio-ciccone
 $rider sam-oomen
 $rider christopher-juul-jensen
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider boy-van-poppel
 $rider paolo-simion
 $rider mads-pedersen
@@ -714,7 +714,7 @@ $rider gianluca-brambilla
 $rider alessandro-de-marchi
 $rider alex-dowsett
 $opstelling
-$kopmansam-oomen
+$kopman sam-oomen
 $rider sam-oomen
 $rider gianluca-brambilla
 $rider jose-goncalves
@@ -725,7 +725,7 @@ $rider alessandro-de-marchi
 $rider giulio-ciccone
 $rider anthony-roux
 $opstelling
-$kopmansam-oomen
+$kopman sam-oomen
 $rider sam-oomen
 $rider gianluca-brambilla
 $rider jose-goncalves
@@ -736,7 +736,7 @@ $rider alessandro-de-marchi
 $rider giulio-ciccone
 $rider anthony-roux
 $opstelling
-$kopmansam-oomen
+$kopman sam-oomen
 $rider sam-oomen
 $rider gianluca-brambilla
 $rider jose-goncalves
@@ -747,7 +747,7 @@ $rider alessandro-de-marchi
 $rider giulio-ciccone
 $rider anthony-roux
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider giulio-ciccone
 $rider mads-pedersen
 $rider jose-goncalves
@@ -780,7 +780,7 @@ $rider sam-oomen
 $rider maximilian-schachmann
 $opstellingen
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider christopher-froome
 $rider tom-dumoulin
 $rider vasil-kiryienka
@@ -791,7 +791,7 @@ $rider sergio-luis-henao
 $rider tim-wellens
 $rider miguel-angel-lopez
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider tom-dumoulin
 $rider sam-oomen
 $rider maximilian-schachmann
@@ -802,7 +802,7 @@ $rider rudiger-selig
 $rider zdenek-stybar
 $rider jens-debusschere
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider tom-dumoulin
 $rider elia-viviani
 $rider niccolo-bonifazio
@@ -813,7 +813,7 @@ $rider maximilian-schachmann
 $rider jens-debusschere
 $rider davide-formolo
 $opstelling
-$kopmantim-wellens
+$kopman tim-wellens
 $rider tom-dumoulin
 $rider thibaut-pinot
 $rider domenico-pozzovivo
@@ -824,7 +824,7 @@ $rider maximilian-schachmann
 $rider zdenek-stybar
 $rider miguel-angel-lopez
 $opstelling
-$kopmantim-wellens
+$kopman tim-wellens
 $rider tom-dumoulin
 $rider thibaut-pinot
 $rider domenico-pozzovivo
@@ -835,7 +835,7 @@ $rider roman-kreuziger-1
 $rider zdenek-stybar
 $rider maximilian-schachmann
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider tom-dumoulin
 $rider christopher-froome
 $rider thibaut-pinot
@@ -846,7 +846,7 @@ $rider wout-poels
 $rider maximilian-schachmann
 $rider davide-formolo
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider tom-dumoulin
 $rider maximilian-schachmann
 $rider zdenek-stybar
@@ -857,7 +857,7 @@ $rider jens-debusschere
 $rider roman-kreuziger-1
 $rider thibaut-pinot
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -868,7 +868,7 @@ $rider sergio-luis-henao
 $rider roman-kreuziger-1
 $rider sam-oomen
 $opstelling
-$kopmanthibaut-pinot
+$kopman thibaut-pinot
 $rider tom-dumoulin
 $rider christopher-froome
 $rider thibaut-pinot
@@ -879,7 +879,7 @@ $rider roman-kreuziger-1
 $rider sam-oomen
 $rider davide-formolo
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider maximilian-schachmann
 $rider elia-viviani
 $rider zdenek-stybar
@@ -890,7 +890,7 @@ $rider tim-wellens
 $rider thibaut-pinot
 $rider niccolo-bonifazio
 $opstelling
-$kopmantim-wellens
+$kopman tim-wellens
 $rider tim-wellens
 $rider thibaut-pinot
 $rider davide-formolo
@@ -901,7 +901,7 @@ $rider george-bennett
 $rider miguel-angel-lopez
 $rider maximilian-schachmann
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider tom-dumoulin
 $rider thibaut-pinot
 $rider elia-viviani
@@ -912,7 +912,7 @@ $rider maximilian-schachmann
 $rider zdenek-stybar
 $rider roman-kreuziger-1
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider maximilian-schachmann
 $rider zdenek-stybar
 $rider roman-kreuziger-1
@@ -923,7 +923,7 @@ $rider niccolo-bonifazio
 $rider jens-debusschere
 $rider domenico-pozzovivo
 $opstelling
-$kopmanthibaut-pinot
+$kopman thibaut-pinot
 $rider tom-dumoulin
 $rider miguel-angel-lopez
 $rider thibaut-pinot
@@ -934,7 +934,7 @@ $rider christopher-froome
 $rider wout-poels
 $rider roman-kreuziger-1
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider tom-dumoulin
 $rider miguel-angel-lopez
 $rider thibaut-pinot
@@ -945,7 +945,7 @@ $rider christopher-froome
 $rider wout-poels
 $rider roman-kreuziger-1
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider tom-dumoulin
 $rider christopher-froome
 $rider wout-poels
@@ -956,7 +956,7 @@ $rider thibaut-pinot
 $rider roman-kreuziger-1
 $rider miguel-angel-lopez
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider domenico-pozzovivo
 $rider maximilian-schachmann
 $rider niccolo-bonifazio
@@ -967,7 +967,7 @@ $rider zdenek-stybar
 $rider jens-debusschere
 $rider miguel-angel-lopez
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -978,7 +978,7 @@ $rider george-bennett
 $rider roman-kreuziger-1
 $rider davide-formolo
 $opstelling
-$kopmanmiguel-angel-lopez
+$kopman miguel-angel-lopez
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -989,7 +989,7 @@ $rider george-bennett
 $rider roman-kreuziger-1
 $rider davide-formolo
 $opstelling
-$kopmanmiguel-angel-lopez
+$kopman miguel-angel-lopez
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1000,7 +1000,7 @@ $rider domenico-pozzovivo
 $rider davide-formolo
 $rider sam-oomen
 $opstelling
-$kopmanelia-viviani
+$kopman elia-viviani
 $rider niccolo-bonifazio
 $rider christopher-froome
 $rider maximilian-schachmann
@@ -1033,7 +1033,7 @@ $rider alessandro-de-marchi
 $rider rafael-valls
 $opstellingen
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1044,7 +1044,7 @@ $rider ruben-plaza
 $rider fabio-aru
 $rider aleksey-lutsenko
 $opstelling
-$kopmansacha-modolo
+$kopman sacha-modolo
 $rider danny-van-poppel
 $rider niccolo-bonifazio
 $rider sam-bennett
@@ -1055,7 +1055,7 @@ $rider christopher-froome
 $rider ryan-gibbons
 $rider sam-oomen
 $opstelling
-$kopmansacha-modolo
+$kopman sacha-modolo
 $rider sacha-modolo
 $rider sam-bennett
 $rider niccolo-bonifazio
@@ -1066,7 +1066,7 @@ $rider alessandro-de-marchi
 $rider aleksey-lutsenko
 $rider jack-haig
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider tom-dumoulin
 $rider miguel-angel-lopez
 $rider wout-poels
@@ -1077,7 +1077,7 @@ $rider alessandro-de-marchi
 $rider aleksey-lutsenko
 $rider sam-oomen
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider tom-dumoulin
 $rider christopher-froome
 $rider fabio-aru
@@ -1088,7 +1088,7 @@ $rider jack-haig
 $rider alessandro-de-marchi
 $rider domenico-pozzovivo
 $opstelling
-$kopmanmiguel-angel-lopez
+$kopman miguel-angel-lopez
 $rider tom-dumoulin
 $rider miguel-angel-lopez
 $rider wout-poels
@@ -1099,7 +1099,7 @@ $rider sam-oomen
 $rider jack-haig
 $rider domenico-pozzovivo
 $opstelling
-$kopmansacha-modolo
+$kopman sacha-modolo
 $rider sam-bennett
 $rider sacha-modolo
 $rider niccolo-bonifazio
@@ -1110,7 +1110,7 @@ $rider jack-haig
 $rider tom-dumoulin
 $rider domenico-pozzovivo
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1121,7 +1121,7 @@ $rider jack-haig
 $rider sam-oomen
 $rider mikel-nieve
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1132,7 +1132,7 @@ $rider mikel-nieve
 $rider jack-haig
 $rider sam-oomen
 $opstelling
-$kopmansacha-modolo
+$kopman sacha-modolo
 $rider sacha-modolo
 $rider sam-bennett
 $rider niccolo-bonifazio
@@ -1143,7 +1143,7 @@ $rider mikel-nieve
 $rider domenico-pozzovivo
 $rider tom-dumoulin
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1154,7 +1154,7 @@ $rider aleksey-lutsenko
 $rider jack-haig
 $rider sam-oomen
 $opstelling
-$kopmansam-bennett
+$kopman sam-bennett
 $rider tom-dumoulin
 $rider domenico-pozzovivo
 $rider sam-bennett
@@ -1165,7 +1165,7 @@ $rider ryan-gibbons
 $rider jack-haig
 $rider mikel-nieve
 $opstelling
-$kopmansam-bennett
+$kopman sam-bennett
 $rider tom-dumoulin
 $rider sacha-modolo
 $rider domenico-pozzovivo
@@ -1176,7 +1176,7 @@ $rider ryan-gibbons
 $rider jack-haig
 $rider mikel-nieve
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider domenico-pozzovivo
 $rider tom-dumoulin
 $rider christopher-froome
@@ -1187,7 +1187,7 @@ $rider jack-haig
 $rider mikel-nieve
 $rider sam-oomen
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1198,7 +1198,7 @@ $rider mikel-nieve
 $rider jack-haig
 $rider john-darwin-atapuma
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1209,7 +1209,7 @@ $rider ruben-plaza
 $rider domenico-pozzovivo
 $rider sam-bennett
 $opstelling
-$kopmansam-bennett
+$kopman sam-bennett
 $rider niccolo-bonifazio
 $rider danny-van-poppel
 $rider sam-bennett
@@ -1220,7 +1220,7 @@ $rider aleksey-lutsenko
 $rider alessandro-de-marchi
 $rider tom-dumoulin
 $opstelling
-$kopmandomenico-pozzovivo
+$kopman domenico-pozzovivo
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1231,7 +1231,7 @@ $rider jack-haig
 $rider sam-oomen
 $rider john-darwin-atapuma
 $opstelling
-$kopmantom-dumoulin
+$kopman tom-dumoulin
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1242,7 +1242,7 @@ $rider mikel-nieve
 $rider sam-oomen
 $rider jack-haig
 $opstelling
-$kopmanchristopher-froome
+$kopman christopher-froome
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1253,7 +1253,7 @@ $rider john-darwin-atapuma
 $rider jack-haig
 $rider sam-bennett
 $opstelling
-$kopmansam-bennett
+$kopman sam-bennett
 $rider danny-van-poppel
 $rider sam-bennett
 $rider niccolo-bonifazio
@@ -1286,7 +1286,7 @@ $rider koen-bouwman
 $rider adam-hansen
 $opstellingen
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider jos-van-emden
 $rider boy-van-poppel
 $rider mads-pedersen
@@ -1297,7 +1297,7 @@ $rider hugh-carthy
 $rider jeremy-roy
 $rider giulio-ciccone
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider paolo-simion
 $rider liam-bertazzo
 $rider fran-ventoso
@@ -1308,7 +1308,7 @@ $rider alessandro-de-marchi
 $rider patrick-konrad
 $rider jeremy-roy
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider mads-pedersen
 $rider fran-ventoso
 $rider boy-van-poppel
@@ -1319,7 +1319,7 @@ $rider jeremy-roy
 $rider liam-bertazzo
 $rider patrick-konrad
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider jan-hirt
 $rider richard-carapaz
 $rider sam-oomen
@@ -1330,7 +1330,7 @@ $rider rafael-valls
 $rider giulio-ciccone
 $rider mads-pedersen
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider jan-hirt
 $rider richard-carapaz
 $rider sam-oomen
@@ -1341,7 +1341,7 @@ $rider rafael-valls
 $rider giulio-ciccone
 $rider mads-pedersen
 $opstelling
-$kopmansam-oomen
+$kopman sam-oomen
 $rider jan-hirt
 $rider richard-carapaz
 $rider sam-oomen
@@ -1352,7 +1352,7 @@ $rider rafael-valls
 $rider giulio-ciccone
 $rider mads-pedersen
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider richard-carapaz
 $rider sam-oomen
 $rider paolo-simion
@@ -1363,7 +1363,7 @@ $rider alessandro-de-marchi
 $rider liam-bertazzo
 $rider fran-ventoso
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider alessandro-de-marchi
 $rider giulio-ciccone
 $rider sam-oomen
@@ -1374,7 +1374,7 @@ $rider jan-hirt
 $rider patrick-konrad
 $rider rafael-valls
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider alessandro-de-marchi
 $rider giulio-ciccone
 $rider sam-oomen
@@ -1385,7 +1385,7 @@ $rider jan-hirt
 $rider patrick-konrad
 $rider rafael-valls
 $opstelling
-$kopmanalessandro-de-marchi
+$kopman alessandro-de-marchi
 $rider alessandro-de-marchi
 $rider richard-carapaz
 $rider niklas-eg
@@ -1396,7 +1396,7 @@ $rider mads-pedersen
 $rider koen-bouwman
 $rider adam-hansen
 $opstelling
-$kopmanpatrick-konrad
+$kopman patrick-konrad
 $rider sam-oomen
 $rider jan-hirt
 $rider richard-carapaz
@@ -1407,7 +1407,7 @@ $rider mads-pedersen
 $rider giulio-ciccone
 $rider fran-ventoso
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider richard-carapaz
 $rider sam-oomen
 $rider patrick-konrad
@@ -1418,7 +1418,7 @@ $rider paolo-simion
 $rider fran-ventoso
 $rider hugh-carthy
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider richard-carapaz
 $rider patrick-konrad
 $rider paolo-simion
@@ -1429,7 +1429,7 @@ $rider fran-ventoso
 $rider mads-pedersen
 $rider adam-hansen
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider sam-oomen
 $rider jan-hirt
 $rider richard-carapaz
@@ -1440,7 +1440,7 @@ $rider giulio-ciccone
 $rider koen-bouwman
 $rider hubert-dupont
 $opstelling
-$kopmangiulio-ciccone
+$kopman giulio-ciccone
 $rider sam-oomen
 $rider jan-hirt
 $rider richard-carapaz
@@ -1451,7 +1451,7 @@ $rider giulio-ciccone
 $rider koen-bouwman
 $rider igor-anton
 $opstelling
-$kopmanjos-van-emden
+$kopman jos-van-emden
 $rider sam-oomen
 $rider richard-carapaz
 $rider jos-van-emden
@@ -1462,7 +1462,7 @@ $rider alessandro-de-marchi
 $rider mads-pedersen
 $rider giulio-ciccone
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider giulio-ciccone
 $rider mads-pedersen
 $rider alessandro-de-marchi
@@ -1473,7 +1473,7 @@ $rider boy-van-poppel
 $rider koen-bouwman
 $rider patrick-konrad
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider sam-oomen
 $rider jan-hirt
 $rider richard-carapaz
@@ -1484,7 +1484,7 @@ $rider giulio-ciccone
 $rider koen-bouwman
 $rider hubert-dupont
 $opstelling
-$kopmangiulio-ciccone
+$kopman giulio-ciccone
 $rider sam-oomen
 $rider jan-hirt
 $rider richard-carapaz
@@ -1495,7 +1495,7 @@ $rider koen-bouwman
 $rider hubert-dupont
 $rider hugh-carthy
 $opstelling
-$kopmangiulio-ciccone
+$kopman giulio-ciccone
 $rider sam-oomen
 $rider jan-hirt
 $rider richard-carapaz
@@ -1506,7 +1506,7 @@ $rider hubert-dupont
 $rider giulio-ciccone
 $rider koen-bouwman
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider giulio-ciccone
 $rider alessandro-de-marchi
 $rider patrick-konrad
@@ -1539,7 +1539,7 @@ $rider mikael-cherel
 $rider koen-bouwman
 $opstellingen
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider sam-oomen
 $rider mads-pedersen
 $rider manuele-boaro
@@ -1550,7 +1550,7 @@ $rider alessandro-de-marchi
 $rider koen-bouwman
 $rider richard-carapaz
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider mads-pedersen
 $rider boy-van-poppel
 $rider paolo-simion
@@ -1561,7 +1561,7 @@ $rider giulio-ciccone
 $rider koen-bouwman
 $rider bert-jan-lindeman
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider koen-bouwman
 $rider paolo-simion
 $rider gianluca-brambilla
@@ -1572,7 +1572,7 @@ $rider boy-van-poppel
 $rider alessandro-de-marchi
 $rider giulio-ciccone
 $opstelling
-$kopmangianluca-brambilla
+$kopman gianluca-brambilla
 $rider sam-oomen
 $rider richard-carapaz
 $rider gianluca-brambilla
@@ -1583,7 +1583,7 @@ $rider jose-goncalves
 $rider giulio-ciccone
 $rider mikael-cherel
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider richard-carapaz
 $rider sebastien-reichenbach
 $rider alexandre-geniez
@@ -1594,7 +1594,7 @@ $rider gianluca-brambilla
 $rider sam-oomen
 $rider hubert-dupont
 $opstelling
-$kopmangiulio-ciccone
+$kopman giulio-ciccone
 $rider sam-oomen
 $rider richard-carapaz
 $rider gianluca-brambilla
@@ -1605,7 +1605,7 @@ $rider giulio-ciccone
 $rider koen-bouwman
 $rider bert-jan-lindeman
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider sam-oomen
 $rider mads-pedersen
 $rider paolo-simion
@@ -1614,7 +1614,7 @@ $rider alessandro-de-marchi
 $rider richard-carapaz
 $rider jose-goncalves
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider richard-carapaz
 $rider giulio-ciccone
 $rider gianluca-brambilla
@@ -1625,7 +1625,7 @@ $rider eduardo-sepulveda
 $rider koen-bouwman
 $rider alessandro-de-marchi
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider sam-oomen
 $rider richard-carapaz
 $rider alexandre-geniez
@@ -1636,7 +1636,7 @@ $rider giulio-ciccone
 $rider koen-bouwman
 $rider hubert-dupont
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider richard-carapaz
 $rider mads-pedersen
 $rider bert-jan-lindeman
@@ -1647,7 +1647,7 @@ $rider koen-bouwman
 $rider sam-oomen
 $rider mikael-cherel
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider richard-carapaz
 $rider gianluca-brambilla
 $rider sam-oomen
@@ -1658,7 +1658,7 @@ $rider alessandro-de-marchi
 $rider alexandre-geniez
 $rider sebastien-reichenbach
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider mads-pedersen
 $rider sam-oomen
 $rider richard-carapaz
@@ -1669,7 +1669,7 @@ $rider jose-goncalves
 $rider alexandre-geniez
 $rider boy-van-poppel
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider richard-carapaz
 $rider alexandre-geniez
 $rider gianluca-brambilla
@@ -1680,7 +1680,7 @@ $rider paolo-simion
 $rider jose-goncalves
 $rider koen-bouwman
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider sam-oomen
 $rider richard-carapaz
 $rider alexandre-geniez
@@ -1691,7 +1691,7 @@ $rider gianluca-brambilla
 $rider hubert-dupont
 $rider eduardo-sepulveda
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider sam-oomen
 $rider richard-carapaz
 $rider sebastien-reichenbach
@@ -1702,7 +1702,7 @@ $rider gianluca-brambilla
 $rider igor-anton
 $rider koen-bouwman
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider jose-goncalves
 $rider mads-pedersen
 $rider sam-oomen
@@ -1713,7 +1713,7 @@ $rider manuele-boaro
 $rider eduardo-sepulveda
 $rider sebastien-reichenbach
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider richard-carapaz
 $rider giulio-ciccone
 $rider alexandre-geniez
@@ -1724,7 +1724,7 @@ $rider sam-oomen
 $rider boy-van-poppel
 $rider paolo-simion
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider sam-oomen
 $rider richard-carapaz
 $rider alexandre-geniez
@@ -1735,7 +1735,7 @@ $rider gianluca-brambilla
 $rider jose-goncalves
 $rider hubert-dupont
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider sam-oomen
 $rider richard-carapaz
 $rider alexandre-geniez
@@ -1746,7 +1746,7 @@ $rider jose-goncalves
 $rider koen-bouwman
 $rider mikael-cherel
 $opstelling
-$kopmanrichard-carapaz
+$kopman richard-carapaz
 $rider sam-oomen
 $rider richard-carapaz
 $rider alexandre-geniez
@@ -1757,7 +1757,7 @@ $rider giulio-ciccone
 $rider jose-goncalves
 $rider koen-bouwman
 $opstelling
-$kopmanpaolo-simion
+$kopman paolo-simion
 $rider richard-carapaz
 $rider mads-pedersen
 $rider giulio-ciccone
@@ -1790,7 +1790,7 @@ $rider sander-armee
 $rider fran-ventoso
 $opstellingen
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider aleksey-lutsenko
 $rider eduardo-sepulveda
 $rider mads-pedersen
@@ -1801,7 +1801,7 @@ $rider ruben-plaza
 $rider sander-armee
 $rider andrey-zeits
 $opstelling
-$kopmanfran-ventoso
+$kopman fran-ventoso
 $rider fran-ventoso
 $rider boy-van-poppel
 $rider sam-oomen
@@ -1812,7 +1812,7 @@ $rider bert-jan-lindeman
 $rider mads-pedersen
 $rider krists-neilands
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider mads-pedersen
 $rider boy-van-poppel
 $rider fran-ventoso
@@ -1823,7 +1823,7 @@ $rider aleksey-lutsenko
 $rider mads-wurtz-schmidt
 $rider christopher-juul-jensen
 $opstelling
-$kopmanaleksey-lutsenko
+$kopman aleksey-lutsenko
 $rider aleksey-lutsenko
 $rider jack-haig
 $rider bert-jan-lindeman
@@ -1834,7 +1834,7 @@ $rider alessandro-de-marchi
 $rider sander-armee
 $rider fran-ventoso
 $opstelling
-$kopmanaleksey-lutsenko
+$kopman aleksey-lutsenko
 $rider aleksey-lutsenko
 $rider jack-haig
 $rider bert-jan-lindeman
@@ -1845,7 +1845,7 @@ $rider alessandro-de-marchi
 $rider sander-armee
 $rider fran-ventoso
 $opstelling
-$kopmansam-oomen
+$kopman sam-oomen
 $rider sebastien-reichenbach
 $rider jan-hirt
 $rider sam-oomen
@@ -1856,7 +1856,7 @@ $rider victor-de-la-parte
 $rider ruben-plaza
 $rider andrey-zeits
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider boy-van-poppel
 $rider mads-pedersen
 $rider mads-wurtz-schmidt
@@ -1867,7 +1867,7 @@ $rider aleksey-lutsenko
 $rider sander-armee
 $rider adam-hansen
 $opstelling
-$kopmansam-oomen
+$kopman sam-oomen
 $rider sebastien-reichenbach
 $rider jan-hirt
 $rider sam-oomen
@@ -1878,7 +1878,7 @@ $rider igor-anton
 $rider ruben-plaza
 $rider andrey-zeits
 $opstelling
-$kopmansebastien-reichenbach
+$kopman sebastien-reichenbach
 $rider sebastien-reichenbach
 $rider jan-hirt
 $rider sam-oomen
@@ -1889,7 +1889,7 @@ $rider ruben-plaza
 $rider andrey-zeits
 $rider igor-anton
 $opstelling
-$kopmanaleksey-lutsenko
+$kopman aleksey-lutsenko
 $rider fran-ventoso
 $rider sander-armee
 $rider alessandro-de-marchi
@@ -1900,7 +1900,7 @@ $rider bert-jan-lindeman
 $rider aleksey-lutsenko
 $rider sam-oomen
 $opstelling
-$kopmanjack-haig
+$kopman jack-haig
 $rider aleksey-lutsenko
 $rider sam-oomen
 $rider jack-haig
@@ -1911,7 +1911,7 @@ $rider fran-ventoso
 $rider alessandro-de-marchi
 $rider krists-neilands
 $opstelling
-$kopmanjack-haig
+$kopman jack-haig
 $rider aleksey-lutsenko
 $rider sam-oomen
 $rider jack-haig
@@ -1922,7 +1922,7 @@ $rider fran-ventoso
 $rider alessandro-de-marchi
 $rider krists-neilands
 $opstelling
-$kopmanjack-haig
+$kopman jack-haig
 $rider aleksey-lutsenko
 $rider sam-oomen
 $rider jack-haig
@@ -1933,7 +1933,7 @@ $rider fran-ventoso
 $rider alessandro-de-marchi
 $rider krists-neilands
 $opstelling
-$kopmansam-oomen
+$kopman sam-oomen
 $rider sebastien-reichenbach
 $rider jan-hirt
 $rider sam-oomen
@@ -1944,7 +1944,7 @@ $rider igor-anton
 $rider victor-de-la-parte
 $rider ruben-plaza
 $opstelling
-$kopmansam-oomen
+$kopman sam-oomen
 $rider sam-oomen
 $rider jack-haig
 $rider bert-jan-lindeman
@@ -1955,7 +1955,7 @@ $rider alessandro-de-marchi
 $rider sander-armee
 $rider eduardo-sepulveda
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider eduardo-sepulveda
 $rider mads-pedersen
 $rider adam-hansen
@@ -1966,7 +1966,7 @@ $rider sam-oomen
 $rider andrey-zeits
 $rider boy-van-poppel
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider aleksey-lutsenko
 $rider mads-pedersen
 $rider boy-van-poppel
@@ -1977,7 +1977,7 @@ $rider alessandro-de-marchi
 $rider sander-armee
 $rider fran-ventoso
 $opstelling
-$kopmansebastien-reichenbach
+$kopman sebastien-reichenbach
 $rider sebastien-reichenbach
 $rider jan-hirt
 $rider sam-oomen
@@ -1988,7 +1988,7 @@ $rider igor-anton
 $rider victor-de-la-parte
 $rider ruben-plaza
 $opstelling
-$kopmansebastien-reichenbach
+$kopman sebastien-reichenbach
 $rider sebastien-reichenbach
 $rider jan-hirt
 $rider sam-oomen
@@ -1999,7 +1999,7 @@ $rider victor-de-la-parte
 $rider ruben-plaza
 $rider mads-pedersen
 $opstelling
-$kopmansebastien-reichenbach
+$kopman sebastien-reichenbach
 $rider sebastien-reichenbach
 $rider jan-hirt
 $rider sam-oomen
@@ -2010,7 +2010,7 @@ $rider ruben-plaza
 $rider victor-de-la-parte
 $rider andrey-zeits
 $opstelling
-$kopmanmads-pedersen
+$kopman mads-pedersen
 $rider sam-oomen
 $rider boy-van-poppel
 $rider mads-pedersen

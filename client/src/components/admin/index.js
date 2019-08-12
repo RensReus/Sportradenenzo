@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './index.css';
 import axios from 'axios';
 import ManualUpdate from './manualupdate'
+import Import_export from './import_export'
 import Table from '../shared/table'
 var getCaretCoordinates = require('textarea-caret');
 
@@ -143,7 +144,7 @@ class Admin extends Component {
             value: '',
             shownValue: '',
             varRows: [],
-            showTab: ['block','none','none'],
+            showTab: ['block','none','none','none'],
             DBinfoTables: [],
             autoCompleteSuggestions: [],
             autoCompleteActive: false,
@@ -356,10 +357,10 @@ class Admin extends Component {
         //Table IDs
         suggestions = suggestions.concat(['account_id','race_id','stage_id','account_participation_id','rider_id','rider_participation_id','stage_selection_id'])
         // SQL COMMANDS
-        var list = `AND, ANY, AVG, BETWEEN, COUNT, CASE, DISTINCT, DESC, DELETE, FROM, GROUP BY, HAVING, INNER JOIN, INSERT INTO, IS NULL, JOIN, LIMIT, MAX, MIN, NOT, SELECT, SUM, USING, UNION, UPDATE, VALUES, WHERE, AS, ADD, ADD CONSTRAINT, ALTER, ALTER COLUMN, ALTER TABLE, ALL, ASC, BACKUP DATABASE, CHECK, COLUMN, CONSTRAINT, CREATE, CREATE DATABASE, CREATE INDEX, CREATE OR REPLACE VIEW, CREATE TABLE, CREATE PROCEDURE, CREATE UNIQUE INDEX, CREATE VIEW, DATABASE, DEFAULT, DROP, DROP COLUMN, DROP CONSTRAINT, DROP DATABASE, DROP DEFAULT, DROP INDEX, DROP TABLE, DROP VIEW, EXEC, EXISTS, FOREIGN KEY, FULL OUTER JOIN, IN, INDEX, INSERT INTO SELECT, IS NOT NULL, LEFT JOIN, LIKE, NOT NULL, OR, ORDER BY, OUTER JOIN, PRIMARY KEY, PROCEDURE, RIGHT JOIN, ROWNUM, SELECT DISTINCT, SELECT INTO, SELECT TOP, SET, TABLE, TOP, TRUNCATE TABLE, UNION ALL, UNIQUE, VIEW`;
+        var list = `AND, ANY, AVG, ARRAY_AGG, BETWEEN, COUNT, CASE, DISTINCT, DESC, DELETE, FROM, GROUP BY, HAVING, INNER JOIN, INSERT INTO, IS NULL, JOIN, LIMIT, MAX, MIN, NOT, SELECT, SUM, USING, UNION, UPDATE, VALUES, WHERE, AS, ADD, ADD CONSTRAINT, ALTER, ALTER COLUMN, ALTER TABLE, ALL, ASC, BACKUP DATABASE, CHECK, COLUMN, CONSTRAINT, CREATE, CREATE DATABASE, CREATE INDEX, CREATE OR REPLACE VIEW, CREATE TABLE, CREATE PROCEDURE, CREATE UNIQUE INDEX, CREATE VIEW, DATABASE, DEFAULT, DROP, DROP COLUMN, DROP CONSTRAINT, DROP DATABASE, DROP DEFAULT, DROP INDEX, DROP TABLE, DROP VIEW, EXEC, EXISTS, FOREIGN KEY, FULL OUTER JOIN, IN, INDEX, INSERT INTO SELECT, IS NOT NULL, LEFT JOIN, LIKE, NOT NULL, OR, ORDER BY, OUTER JOIN, PRIMARY KEY, PROCEDURE, RIGHT JOIN, ROWNUM, SELECT DISTINCT, SELECT INTO, SELECT TOP, SET, TABLE, TOP, TRUNCATE TABLE, UNION ALL, UNIQUE, VIEW`;
         suggestions = suggestions.concat(list.split(', ')) 
         //Table Rownames
-        suggestions = suggestions.concat(['budgetparticipation','finished','finalscore','stagenr','starttime','complete', 'username', 'email', 'admin', 'budgetparticipation', 'price', 'dnf', 'team', 'stagescore', 'totalscore', 'kopman_id', 'stagepos', 'gcpos', 'pointspos', 'kompos', 'yocpos', 'stagescore', 'gcscore', 'pointsscore', 'komscore', 'yocscore', 'teamscore', 'stageresult', 'gcresult', 'pointsresult', 'komresult', 'yocresult'])
+        suggestions = suggestions.concat(['budgetparticipation','finished','finalscore','pcs_id','stagenr','starttime','complete', 'username', 'email', 'admin', 'price', 'dnf', 'team', 'stagescore', 'totalscore', 'kopman_id', 'stagepos', 'gcpos', 'pointspos', 'kompos', 'yocpos', 'stagescore', 'gcscore', 'pointsscore', 'komscore', 'yocscore', 'teamscore', 'stageresult', 'gcresult', 'pointsresult', 'komresult', 'yocresult'])
         // Extra
         suggestions = suggestions.concat(['false','true']) 
 
@@ -376,6 +377,7 @@ class Admin extends Component {
         buttons.push(<button className={"klassementButton " + this.state.showTab[0]} key="DBinterface" onClick={this.showTab.bind(this, 0)}>DB interface</button>)
         buttons.push(<button className={"klassementButton " + this.state.showTab[1]} key="DBinfo" onClick={this.showTab.bind(this, 1)}>DB Info</button>)
         buttons.push(<button className={"klassementButton " + this.state.showTab[2]} key="manualupdate" onClick={this.showTab.bind(this, 2)}>Manual Update</button>)
+        buttons.push(<button className={"klassementButton " + this.state.showTab[3]} key="imexport" onClick={this.showTab.bind(this, 3)}>Import/Export</button>)
         var popupDivs = []
         var popUpStyle = {top: this.state.popUpTop, left:this.state.popUpLeft,display: this.state.autoCompleteActive ? 'block' : 'none'}
         for(var i in this.state.currentSuggestions){
@@ -410,6 +412,9 @@ class Admin extends Component {
                 </div>
                 <div style={{ display: this.state.showTab[2]}}>
                     <ManualUpdate />
+                </div>
+                <div style={{ display: this.state.showTab[3]}}>
+                    <Import_export />
                 </div>
             </div> 
         )

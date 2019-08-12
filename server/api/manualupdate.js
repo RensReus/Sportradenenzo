@@ -3,6 +3,7 @@ const functies = require('../functies');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const sqlScrape = require('../SQLscrape');
+const race_backup = require('../db/Mongo/models/race_backup.js')
 
 function getSecret() {
     if (fs.existsSync('./server/jwtsecret.js')) {
@@ -155,6 +156,51 @@ module.exports = function (app) {
       }
     })
   });
+
+
+  app.post('/api/import', function (req, res) {
+    jwt.verify(req.body.token, getSecret(), function (err, decoded) {
+      if(err)
+        throw err;
+      if(decoded.admin){
+        //TODO implementation
+      }
+    })
+  });
+
+
+  app.post('/api/export', function (req, res) {
+    jwt.verify(req.body.token, getSecret(), function (err, decoded) {
+      if(err)
+        throw err;
+      if(decoded.admin){
+        var race_idQuery = `SELECT race_id FROM race
+          WHERE year = ${req.body.year} AND name = '${req.body.raceName}';\n`; 
+        var race_id = `(SELECT race_id FROM race
+        WHERE year = ${req.body.year} AND name = '${req.body.raceName}')`
+        var results_pointsQuery = `SELECT results_points.* FROM results_points
+        INNER JOIN stage USING(stage_id)
+        WHERE race_id = ${race_id};\n`
+        var stage_selection_riderQuery = `SELECT stage_selection_rider.* FROM stage_selection_rider
+        INNER JOIN stage_selection USING(stage_selection_id)
+        INNER JOIN stage USING(stage_id)
+        WHERE race_id = ${race_id};\n` 
+        var rider_participationQuery = `SELECT rider_participation.* FROM rider_participation
+        WHERE race_id = ${race_id};\n`
+        var totalQuery = race_idQuery + results_pointsQuery + stage_selection_riderQuery + rider_participationQuery;
+        sqlDB.query(totalQuery,function(err,results){
+          if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+          var raceToSave = new race_backup;
+          raceToSave.race_id = results[0].rows[0].race_id;
+          raceToSave.results_points = results[1].rows;
+          raceToSave.stage_selection_rider = results[2].rows;
+          raceToSave.rider_participation = results[3].rows;
+          raceToSave.save()
+          //TODO remove data from sql
+        })
+      }
+    });
+  })
 
   app.get('/export', function (req, res) {
     console.log("export")
