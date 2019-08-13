@@ -19,7 +19,7 @@ module.exports = function (app) {
       email : user.email,
       admin : user.admin
     }
-    return token = jwt.sign(payload, getSecret(), {expiresIn: 60*60*24*7})
+    return token = jwt.sign(payload, getSecret(), {expiresIn: 60*60*24*30})
   }
 
   //Register a new account
