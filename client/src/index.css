@@ -1,124 +1,178 @@
 /*CSS RESET*/
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  font-weight: inherit;
-  font-style: inherit;
-  font-size: 100%;
-  font-family: inherit;
-  vertical-align: baseline;
-}
-
-/* remember to define focus styles! */
-
-:focus {
-  outline: 0;
-}
-
-body {
-  line-height: 1;
-  color: black;
-  background: white;
-}
-
-ol, ul {
-  list-style: none;
-}
-
-/* tables still need 'cellspacing="0"' in the markup */
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-caption, th, td {
-  text-align: left;
-}
-
-blockquote:before, blockquote:after, q:before, q:after {
-  content: "";
-}
-
-blockquote, q {
-  quotes: "" "";
-}
-
-html {
-  /*Defineer de kleuren van de website*/
-  --background-color: rgba(200, 200, 219, 0.98);
-  --background-color-transparent: rgba(230, 230, 240, 0.68);
-  --background-color-dark: #444;
-  --background-color-darker: rgb(46, 46, 46);
-  --light-grey: ;
-  --main-color: rgb(70, 130, 190);
-  --main-color-light: rgb(90, 150, 210);
-  --secondary-color: rgba();
-  font-size: 50%;
-  /* 10px */
-}
-
-@media screen and ( min-width: 768px) {
-  html {
-    font-size: 62.5%;
-    /* 12.5px */
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
   }
-}
-
-body {
-  margin: 0;
-  font-family: arial;
-  font-size: 1.4rem;
-  text-decoration: none;
-}
   
-div.pageContainer {
-  height: 95vh;
-  overflow: auto;
-  background-color: var(--background-color-transparent);
-  margin: 0;
-}
-
-@media only screen and (min-width: 768px) {
-  .content:before {
+  /* remember to define focus styles! */
+  
+  :focus {
+    outline: 0;
+  }
+  
+  body {
+    line-height: 1;
+    color: black;
+    background: white;
+  }
+  
+  ol, ul {
+    list-style: none;
+  }
+  
+  /* tables still need 'cellspacing="0"' in the markup */
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  
+  caption, th, td {
+    text-align: left;
+  }
+  
+  blockquote:before, blockquote:after, q:before, q:after {
     content: "";
-    position: fixed;
-    left: 0;
-    right: 0;
-    z-index: -1;
-    background-image: url("/images/BramTankink.jpg");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 100vh;
-    -webkit-filter: blur(2px);
-    -moz-filter: blur(2px);
-    -o-filter: blur(2px);
-    -ms-filter: blur(2px);
-    filter: blur(2px);
   }
-  .content {
-    position: fixed;
-    left: 0;
-    right: 0;
-    z-index: 0;
+  
+  blockquote, q {
+    quotes: "" "";
   }
-
+  
+  /*Probeerscale voor breedte*/
+  /*4,8,12,16,24,32,48,64,96,128,192,256,384,512,640,768*/
+  
+  html {
+    /*Defineer de kleuren van de website*/
+    /*Grijstinten*/
+    --grey1: hsl(0, 0%, 10%);
+    --grey2: hsl(0, 0%, 20%);
+    --grey3: hsl(0, 0%, 30%);
+    --grey4: hsl(0, 0%, 40%);
+    --grey5: hsl(0, 0%, 50%);
+    --grey6: hsl(0, 0%, 60%);
+    --grey7: hsl(0, 0%, 70%);
+    --grey8: hsl(0, 0%, 80%);
+    --grey9: hsl(0, 0%, 90%);
+    /*Roodtinten/Vueltakleuren*/
+    --red1: hsl(0, 100%, 20%);
+    --red2: hsl(0, 100%, 32%);
+    --red3: hsl(0, 100%, 44%);
+    --red4: hsl(0, 100%, 56%);
+    --red5: hsl(0, 100%, 68%);
+    --red6: hsl(0, 100%, 80%);
+    --red7: hsl(0, 100%, 92%);
+    /*Groentinten*/
+    --green1: hsl(120, 100%, 20%);
+    --green2: hsl(120, 90%, 32%);
+    --green3: hsl(120, 80%, 44%);
+    --green4: hsl(120, 70%, 56%);
+    --green5: hsl(120, 70%, 68%);
+    --green6: hsl(120, 80%, 80%);
+    /*Blauwtinten*/
+    --blue1: hsl(220, 100%, 20%);
+    --blue2: hsl(220, 90%, 32%);
+    --blue3: hsl(220, 80%, 44%);
+    --blue4: hsl(220, 80%, 56%);
+    --blue5: hsl(220, 80%, 68%);
+    --blue6: hsl(220, 80%, 74%);
+    --blue7: hsl(220, 80%, 80%);
+    --blue8: hsl(220, 80%, 92%);
+    /*Rozetinten/Girokleuren*/
+    --pink1: hsl(300, 100%, 20%);
+    --pink2: hsl(300, 100%, 32%);
+    --pink3: hsl(300, 100%, 44%);
+    --pink4: hsl(300, 100%, 56%);
+    --pink5: hsl(300, 100%, 68%);
+    --pink6: hsl(300, 100%, 80%);
+    --pink7: hsl(300, 100%, 92%);
+    /*Geeltinten/Tourkleuren*/
+    --yellow1: hsl(55, 100%, 20%);
+    --yellow2: hsl(55, 100%, 32%);
+    --yellow3: hsl(55, 100%, 44%);
+    --yellow4: hsl(55, 100%, 56%);
+    --yellow5: hsl(55, 100%, 68%);
+    --yellow6: hsl(55, 100%, 80%);
+    --yellow7: hsl(55, 100%, 92%);
+    
+    --background-color: rgba(200, 200, 219, 0.98);
+    --background-color-transparent: rgba(230, 230, 240, 0.68);
+    --background-color-dark: #444;
+    --background-color-darker: rgb(46, 46, 46);
+    --light-grey: ;
+    --main-color: rgb(70, 130, 190);
+    --main-color-light: rgb(90, 150, 210);
+    --secondary-color: rgba();
+    font-size: 50%;
+    /* 10px */
+  }
+  
+  @media screen and ( min-width: 768px) {
+    html {
+      font-size: 62.5%;
+      /* 12.5px */
+    }
+  }
+  
+  body {
+    margin: 0;
+    font-family: arial;
+    font-size: 1.4rem;
+    text-decoration: none;
+  }
+    
   div.pageContainer {
     height: 95vh;
     overflow: auto;
     background-color: var(--background-color-transparent);
-    margin-left: 10vw;
-    margin-right: 10vw;
+    margin: 0;
   }
-}
-
-
-img.loadingGif {
-  height: 20%;
-  margin-left: 0%;
-  margin-top: 5%;
-  margin-bottom: 0;
-  padding: 0;
-}
+  
+  @media only screen and (min-width: 768px) {
+    .content:before {
+      content: "";
+      position: fixed;
+      left: 0;
+      right: 0;
+      z-index: -1;
+      background-image: url("/images/BramTankink.jpg");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      height: 100vh;
+      -webkit-filter: blur(2px);
+      -moz-filter: blur(2px);
+      -o-filter: blur(2px);
+      -ms-filter: blur(2px);
+      filter: blur(2px);
+    }
+    .content {
+      position: fixed;
+      left: 0;
+      right: 0;
+      z-index: 0;
+    }
+  
+    div.pageContainer {
+      height: 95vh;
+      overflow: auto;
+      background-color: var(--background-color-transparent);
+      margin-left: 10vw;
+      margin-right: 10vw;
+    }
+  }
+  
+  
+  img.loadingGif {
+    height: 20%;
+    margin-left: 0%;
+    margin-top: 5%;
+    margin-bottom: 0;
+    padding: 0;
+  }
