@@ -1,4 +1,4 @@
-$user Bierfietsen
+$account_participation 1
 $rider tom-dumoulin
 $rider christopher-froome
 $rider thibaut-pinot
@@ -251,7 +251,7 @@ $rider elia-viviani
 $rider sam-bennett
 $rider jurgen-roelandts
 $rider mads-pedersen
-$user Rens
+$account_participation 4
 $rider tom-dumoulin
 $rider christopher-froome
 $rider thibaut-pinot
@@ -504,7 +504,7 @@ $rider elia-viviani
 $rider christopher-froome
 $rider miguel-angel-lopez
 $rider tom-dumoulin
-$user BudgetBierfietsen
+$account_participation 116
 $rider sam-oomen
 $rider victor-campenaerts
 $rider gianluca-brambilla
@@ -757,7 +757,7 @@ $rider alex-dowsett
 $rider jos-van-emden
 $rider paolo-simion
 $rider adam-hansen
-$user Sam
+$account_participation 10
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1010,7 +1010,7 @@ $rider wout-poels
 $rider sergio-luis-henao
 $rider elia-viviani
 $rider miguel-angel-lopez
-$user Yannick
+$account_participation 13
 $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
@@ -1025,7 +1025,7 @@ $rider ryan-gibbons
 $rider vasil-kiryienka
 $rider mikel-nieve
 $rider sam-oomen
-$rider john-darwin-atapuma
+$rider darwin-atapuma
 $rider jack-haig
 $rider aleksey-lutsenko
 $rider ruben-plaza
@@ -1182,7 +1182,7 @@ $rider tom-dumoulin
 $rider christopher-froome
 $rider miguel-angel-lopez
 $rider fabio-aru
-$rider john-darwin-atapuma
+$rider darwin-atapuma
 $rider jack-haig
 $rider mikel-nieve
 $rider sam-oomen
@@ -1196,7 +1196,7 @@ $rider wout-poels
 $rider domenico-pozzovivo
 $rider mikel-nieve
 $rider jack-haig
-$rider john-darwin-atapuma
+$rider darwin-atapuma
 $opstelling
 $kopman tom-dumoulin
 $rider tom-dumoulin
@@ -1229,7 +1229,7 @@ $rider domenico-pozzovivo
 $rider mikel-nieve
 $rider jack-haig
 $rider sam-oomen
-$rider john-darwin-atapuma
+$rider darwin-atapuma
 $opstelling
 $kopman tom-dumoulin
 $rider tom-dumoulin
@@ -1249,7 +1249,7 @@ $rider miguel-angel-lopez
 $rider wout-poels
 $rider domenico-pozzovivo
 $rider sam-oomen
-$rider john-darwin-atapuma
+$rider darwin-atapuma
 $rider jack-haig
 $rider sam-bennett
 $opstelling
@@ -1263,7 +1263,7 @@ $rider christopher-froome
 $rider tom-dumoulin
 $rider miguel-angel-lopez
 $rider wout-poels
-$user rensBudget
+$account_participation 117
 $rider sam-oomen
 $rider jan-hirt
 $rider richard-carapaz
@@ -1516,7 +1516,7 @@ $rider boy-van-poppel
 $rider mads-pedersen
 $rider fran-ventoso
 $rider liam-bertazzo
-$user BudgetSam
+$account_participation 118
 $rider sam-oomen
 $rider richard-carapaz
 $rider alexandre-geniez
@@ -1767,7 +1767,7 @@ $rider alexandre-geniez
 $rider boy-van-poppel
 $rider sam-oomen
 $rider alessandro-de-marchi
-$user YannickBudget
+$account_participation 119
 $rider sebastien-reichenbach
 $rider jan-hirt
 $rider aleksey-lutsenko

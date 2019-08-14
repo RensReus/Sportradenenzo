@@ -1,4 +1,4 @@
-$user Bierfietsen
+$account_participation 128
 $rider simon-yates
 $rider peter-sagan
 $rider alejandro-valverde
@@ -251,7 +251,7 @@ $rider adam-yates
 $rider ryan-gibbons
 $rider tom-van-asbroeck
 $rider jon-aberasturi
-$user Rens
+$account_participation 129
 $rider simon-yates
 $rider peter-sagan
 $rider alejandro-valverde
@@ -502,7 +502,7 @@ $rider marc-sarreau
 $rider jon-aberasturi
 $rider alejandro-valverde
 $rider miguel-angel-lopez
-$user BudgetBierfietsen
+$account_participation 124
 $rider tiesj-benoot
 $rider laurens-de-plus
 $rider gianluca-brambilla
@@ -755,7 +755,7 @@ $rider tiesj-benoot
 $rider jesus-herrada-lopez
 $rider merhawi-kudus
 $rider jon-aberasturi
-$user Sam
+$account_participation 12
 $rider simon-yates
 $rider nairo-quintana
 $rider peter-sagan
@@ -1008,7 +1008,7 @@ $rider simone-consonni
 $rider tom-van-asbroeck
 $rider ivan-garcia-cortina
 $rider tosh-van-der-sande
-$user Yannick
+$account_participation 15
 $rider richie-porte
 $rider simon-yates
 $rider peter-sagan
@@ -1261,7 +1261,7 @@ $rider miguel-angel-lopez
 $rider thibaut-pinot
 $rider adam-yates
 $rider rafal-majka
-$user rensBudget
+$account_participation 125
 $rider tiesj-benoot
 $rider jon-aberasturi
 $rider sergio-pardilla
@@ -1513,7 +1513,7 @@ $rider stephen-cummings
 $rider jetse-bol
 $rider benjamin-thomas-2
 $rider merhawi-kudus
-$user BudgetSam
+$account_participation 126
 $rider thomas-de-gendt
 $rider jon-aberasturi
 $rider ivan-garcia-cortina
@@ -1766,7 +1766,7 @@ $rider jetse-bol
 $rider mikel-bizkarra
 $rider lars-boom
 $rider stephen-cummings
-$user YannickBudget
+$account_participation 127
 $rider omar-fraile
 $rider tiesj-benoot
 $rider gorka-izagirre

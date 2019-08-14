@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './index.css';
 import axios from 'axios';
 import ManualUpdate from './manualupdate'
-import Import_export from './import_export'
+import ImportExport from './importExport'
 import Table from '../shared/table'
 var getCaretCoordinates = require('textarea-caret');
 
@@ -359,8 +359,8 @@ class Admin extends Component {
         // SQL COMMANDS
         var list = `AND, ANY, AVG, ARRAY_AGG, BETWEEN, COUNT, CASE, DISTINCT, DESC, DELETE, FROM, GROUP BY, HAVING, INNER JOIN, INSERT INTO, IS NULL, JOIN, LIMIT, MAX, MIN, NOT, SELECT, SUM, USING, UNION, UPDATE, VALUES, WHERE, AS, ADD, ADD CONSTRAINT, ALTER, ALTER COLUMN, ALTER TABLE, ALL, ASC, BACKUP DATABASE, CHECK, COLUMN, CONSTRAINT, CREATE, CREATE DATABASE, CREATE INDEX, CREATE OR REPLACE VIEW, CREATE TABLE, CREATE PROCEDURE, CREATE UNIQUE INDEX, CREATE VIEW, DATABASE, DEFAULT, DROP, DROP COLUMN, DROP CONSTRAINT, DROP DATABASE, DROP DEFAULT, DROP INDEX, DROP TABLE, DROP VIEW, EXEC, EXISTS, FOREIGN KEY, FULL OUTER JOIN, IN, INDEX, INSERT INTO SELECT, IS NOT NULL, LEFT JOIN, LIKE, NOT NULL, OR, ORDER BY, OUTER JOIN, PRIMARY KEY, PROCEDURE, RIGHT JOIN, ROWNUM, SELECT DISTINCT, SELECT INTO, SELECT TOP, SET, TABLE, TOP, TRUNCATE TABLE, UNION ALL, UNIQUE, VIEW`;
         suggestions = suggestions.concat(list.split(', ')) 
-        //Table Rownames
-        suggestions = suggestions.concat(['budgetparticipation','finished','finalscore','pcs_id','stagenr','starttime','complete', 'username', 'email', 'admin', 'price', 'dnf', 'team', 'stagescore', 'totalscore', 'kopman_id', 'stagepos', 'gcpos', 'pointspos', 'kompos', 'yocpos', 'stagescore', 'gcscore', 'pointsscore', 'komscore', 'yocscore', 'teamscore', 'stageresult', 'gcresult', 'pointsresult', 'komresult', 'yocresult'])
+        //Table column names
+        suggestions = suggestions.concat(['budgetparticipation','finished','finalscore','pcs_id','stagenr','starttime','complete', 'username', 'email', 'admin', 'price', 'dnf', 'team', 'stagescore', 'totalscore', 'kopman_id', 'stagepos', 'gcpos', 'pointspos', 'kompos', 'yocpos', 'stagescore', 'gcscore', 'pointsscore', 'komscore', 'yocscore', 'teamscore', 'stageresult', 'gcresult', 'pointsresult', 'komresult', 'yocresult','firstname','lastname','initials','country'])
         // Extra
         suggestions = suggestions.concat(['false','true']) 
 
@@ -414,7 +414,7 @@ class Admin extends Component {
                     <ManualUpdate />
                 </div>
                 <div style={{ display: this.state.showTab[3]}}>
-                    <Import_export />
+                    <ImportExport />
                 </div>
             </div> 
         )

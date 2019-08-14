@@ -157,13 +157,62 @@ module.exports = function (app) {
     })
   });
 
-
   app.post('/api/import', function (req, res) {
     jwt.verify(req.body.token, getSecret(), function (err, decoded) {
       if(err)
         throw err;
       if(decoded.admin){
-        //TODO implementation
+        // import from textfile ongeveer
+        // var race_id = 1;
+        // // textfile import
+        // fs.readFile(`./server/db/Backups/${race_id}/selecties_opstellingen.txt`,'utf8',function(err,data){
+        //   if (err) {
+        //     throw err;
+        // }
+        // var arr = data.split('\n')
+        // var account_participation_id = 0;
+        // var i = 0;
+        // var stage_selection_riderQuery = `INSERT INTO stage_selection_rider(stage_selection_id,rider_participation_id)
+        // VALUES`
+        // console.log('import')
+        // var stage = 0;
+        // while(i<arr.length-1){
+        //   if(arr[i].startsWith('$account_participation')){
+        //     var spatie = arr[i].indexOf(' ');
+        //     account_participation_id = parseInt(arr[i].substring(spatie+1))
+        //     i++
+        //     while(arr[i].startsWith('$rider')){i++}
+        //   }
+        //   if(arr[i].startsWith('$opstellingen')){
+        //     i++;
+        //     stage = 0;
+        //   }
+        //   if(arr[i].startsWith('$opstelling')){
+        //     stage++;
+        //     i++
+        //     var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection 
+        //     INNER JOIN stage USING(stage_id)
+        //     WHERE stagenr = ${stage} AND race_id = ${race_id} AND account_participation_id = ${account_participation_id})`
+        //     if(arr[i].startsWith('$kopman')){i++}
+        //     while(arr[i].startsWith('$rider')){
+        //       spatie = arr[i].indexOf(' ');
+        //       var pcs_id = arr[i].substring(spatie+1)
+        //       var rider_participation_id = `(SELECT rider_participation_id FROM rider_participation INNER JOIN rider USING(rider_id) WHERE pcs_id = '${pcs_id}' AND race_id = ${race_id})`
+        //       stage_selection_riderQuery += `(${stage_selection_id},${rider_participation_id}),`
+        //       i++
+        //     }
+            
+        //   }
+        // }
+        // stage_selection_riderQuery = stage_selection_riderQuery.slice(0,-1) +  ` ON CONFLICT (stage_selection_id,rider_participation_id) 
+        // DO NOTHING;\n `;
+        // var totalQuery = stage_selection_riderQuery;
+        // sqlDB.query(totalQuery,function(err,results){
+        //   if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+        //   console.log("RESULTS",results)
+        // })
+    
+        // })
       }
     })
   });
