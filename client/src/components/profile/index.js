@@ -31,7 +31,7 @@ class Profile extends Component{
         var scoresTable = <div style={{width: '50%'}}><Table data={this.state.scores} title={this.state.username} coltype={{name:0,year:1,finalscore:1,rank:1}}/></div>
         return(
             <div className="standardContainer">
-                <div className='h1'style={{display: this.state.upcomingParticipation ? 'none' : 'block'}}>
+                <div className='h7'style={{display: this.state.upcomingParticipation ? 'none' : 'block'}}>
                     {scoresTable}
                     
                 </div>

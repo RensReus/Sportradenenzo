@@ -20,26 +20,29 @@ class Navbar extends Component {
         let currStage;
         let raceOverview;
         if (this.props.isLoggedIn) {
-            buttonLog = <button className='item' onClick={() => this.logout()}>Logout</button>;
-            currStage = <Link className='item' to='/'><span>Current stage</span></Link>;
-            raceOverview = <button className='item' ><span>Race overview</span></button>;
+            buttonLog = <button className='item h8' onClick={() => this.logout()}>Logout</button>;
+            currStage = <Link className='item' to='/'><span className="h8">Current stage</span></Link>;
+            raceOverview = <button className='item' ><span className="h8">Race overview</span></button>;
         } else {
-            buttonSignUp = <Link className='item' to="/signup">Sign up</Link>;
-            buttonLog = <Link className='item' to="/login">Sign in</Link>;
+            buttonSignUp = <Link className='item h8' to="/signup">Sign up</Link>;
+            buttonLog = <Link className='item h8' to="/login">Sign in</Link>;
             currStage = '';
         }
         return (
             <div className="navbar">
-                <Link className='item' to='/home'><span className="logo h1">Sport raden enzo</span></Link>
+                <Link className='item' to='/home'>
+                    <img className="logo" src="/images/logo.png" alt="logo_small"></img>
+                </Link>
                 {buttonSignUp}
                 {currStage}
                 {raceOverview}
                 <ChartsDropdown className="dropdown"/>
                 <StatsDropdown className="dropdown"/>
                 {this.props.isAdmin &&
-                    <Link className='item' to='/admin'><span className="h3 bold"><FontAwesomeIcon icon={faUserShield}/> Admin</span></Link>
+                    <Link className='item' to='/admin'><span className="h8 bold"><FontAwesomeIcon icon={faUserShield}/> Admin</span></Link>
                 }
                 {buttonLog}
+                <img className="racelogo" src="/images/vueltalogo_small.png" alt="vueltalogo_small"></img>
             </div>
         )
     }

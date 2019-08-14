@@ -1,13 +1,45 @@
 .h1 {
-    font-size: 150%;
+    font-size: 72px;
 }
 
 .h2 {
-    font-size: 125%;
+    font-size: 60px;
 }
 
 .h3 {
-    font-size: 110%;
+    font-size: 48px;
+}
+
+.h4 {
+    font-size: 36px;
+}
+
+.h5 {
+    font-size: 30px;
+}
+
+.h6 {
+    font-size: 24px;
+}
+
+.h7 {
+    font-size: 20px;
+}
+
+.h8 {
+    font-size: 18px;
+}
+
+.h9 {
+    font-size: 16px;
+}
+
+.h10 {
+    font-size: 14px;
+}
+
+.h11 {
+    font-size: 12px;
 }
 
 .bold {

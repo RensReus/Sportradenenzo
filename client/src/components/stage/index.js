@@ -303,9 +303,9 @@ class Stage extends Component {
         }
         if (mode === 'loading') {
             loadingGif = <img className="loadingGif" src="/images/bicycleWheel.gif" alt="bicycleWheel.gif"></img>
-            message = <h3>Fetching data..</h3>
+            message = <span className="h6">Fetching data..</span>
         } else if (mode === '404') {
-            message = <h3>404: Data not found</h3>
+            message = <span className="h6">404: Data not found</span>
             resTable = ''
             pTable = ''
             stResTable = ''
@@ -345,14 +345,14 @@ class Stage extends Component {
                 <div className="stageInfo">
                     <div className='stagetext'>
                         <div id="prevStageButton">
-                            <button className="buttonStandard blue2" onClick={this.previousStage}><span className="h2 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
+                            <button className="buttonStandard blue2" onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
                         </div>
-                        <span className="bold black h1">Stage: {this.state.stage}</span>
+                        <span className="bold black h7">Stage: {this.state.stage}</span>
                         <div id="nextStageButton">
-                            <button className="buttonStandard blue2" onClick={this.nextStage}><span className="h2 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
+                            <button className="buttonStandard blue2" onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
                         </div>
                     </div>
-                    <div className='stagestarttime h2 bold'>
+                    <div className='stagestarttime h7 bold'>
                         {starttimeString}
                     </div>
                     {budgetSwitchButton}

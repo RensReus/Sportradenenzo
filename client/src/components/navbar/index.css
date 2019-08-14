@@ -3,12 +3,12 @@
   border-top: solid var(--main-color) 4px;
   z-index: 999;
   box-shadow: 0px 5px 5px 0px rgba(136, 136, 136, 0.3);
-  height: 5vh;
-  min-height: 45px;
+  height: 48px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  overflow: hidden;
 }
 
 @media screen and ( max-width: 767px) {
@@ -21,9 +21,18 @@
 /* LOGO */
 
 .navbar .logo {
+  height: 36px;
   padding-left: 5px;
   padding-right: 5px;
   color: var(--main-color);
+  padding-top: 6px;
+}
+
+.navbar .racelogo {
+  height: 36px;
+  float: right;
+  padding-top: 6px;
+  padding-right: 10px;
 }
 
 .navbar .logo:hover {
@@ -37,9 +46,7 @@
 .navbar .item {
   background: none;
   color: gray;
-  font-size: 16px;
   border: 5px;
-  margin: 0.5vh 1px;
   padding: 10px 10px;
   text-decoration: black;
 }

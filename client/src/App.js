@@ -21,6 +21,7 @@ import Profile from './components/profile'
 
 //Import de standaard css stukken
 import './components/css/buttons.css'
+import './components/css/colours.css'
 import './components/css/fonts.css'
 import './components/css/tables.css'
 
