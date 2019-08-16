@@ -63,10 +63,13 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   }
     
   div.pageContainer {
-    height: 95vh;
+    box-sizing: border-box;
+    min-height: 100vh;
     overflow: auto;
     background-color: var(--background-color-transparent);
-    margin: 0;
+    margin: auto;
+    padding-top: 48px;
+    width: 75vw;
   }
   
   @media only screen and (min-width: 768px) {
@@ -88,18 +91,20 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
       filter: blur(2px);
     }
     .content {
-      position: fixed;
+      height: 100vh;
       left: 0;
       right: 0;
       z-index: 0;
     }
   
     div.pageContainer {
-      height: 95vh;
+      box-sizing: border-box;
+      min-height: 100vh;
       overflow: auto;
       background-color: var(--background-color-transparent);
       margin: auto;
-      width: 1024px;
+      padding-top: 48px;
+      width: 75vw;
     }
   }
   

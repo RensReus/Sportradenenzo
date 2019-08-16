@@ -77,8 +77,6 @@ class App extends Component {
         <div className="backgroundImage"></div>
         <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} history={this.props.history}/>
         <div className="pageContainer">
-        
-        {/* <Switch> */}
             <Route exact path="/" render={() => (
               this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} />)
             )} />
@@ -93,8 +91,6 @@ class App extends Component {
             <PrivateRoute path="/profile/:account_id" component={Profile} history={this.props.history} />
             <PrivateRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} />
             <PrivateRoute path="/charts/:chartname" component={Charts} history={this.props.history} />
-            {/* <Redirect to='/'/>
-          </Switch> */}
         </div>
       </div>
     );
