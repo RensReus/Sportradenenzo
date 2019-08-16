@@ -38,6 +38,14 @@ div.discription {
     grid-row: auto
 }
 
+div.outputStatus{
+    border-style: solid;
+    border-width: 2px;
+    width: 150px;
+    height: 15px;
+    background-color: white
+}
+
 input.inprogress {
     background-color: yellow;
 }

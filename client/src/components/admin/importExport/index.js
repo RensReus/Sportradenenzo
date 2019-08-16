@@ -13,21 +13,32 @@ class import_export extends Component {
         document.title = "Import/Export";
         this.state = {
             year: "2019",
-            raceName: "tour"
+            raceName: "tour",
+            serverReply: ''
         }
     }
 
     importData(){
+        this.setState({
+            serverReply: 'processing...'
+        })
         axios.post('/api/import', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken')})
         .then((res) => {
-            console.log("Import processed")
+            this.setState({
+                serverReply: res.data
+            })
         })
     }
 
     exportData(){
+        this.setState({
+            serverReply: 'processing...'
+        })
         axios.post('/api/export', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken')})
         .then((res) => {
-            console.log("export processed")
+            this.setState({
+                serverReply: res.data
+            })
         })
     }
     
@@ -62,8 +73,11 @@ class import_export extends Component {
                     </div>
 
                     <button onClick = {this.importData}>Import Data</button>
-                    <button onClick = {this.exportData}>Export/Delete Data</button>
+                    <button onClick = {this.exportData}>Export Data</button>
+                
                 </div>
+                    <div className='outputStatus'>{this.state.serverReply}</div>
+
 
             </div>
         )

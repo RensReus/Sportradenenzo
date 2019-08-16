@@ -162,57 +162,73 @@ module.exports = function (app) {
       if(err)
         throw err;
       if(decoded.admin){
-        // import from textfile ongeveer
-        // var race_id = 1;
-        // // textfile import
-        // fs.readFile(`./server/db/Backups/${race_id}/selecties_opstellingen.txt`,'utf8',function(err,data){
-        //   if (err) {
-        //     throw err;
-        // }
-        // var arr = data.split('\n')
-        // var account_participation_id = 0;
-        // var i = 0;
-        // var stage_selection_riderQuery = `INSERT INTO stage_selection_rider(stage_selection_id,rider_participation_id)
-        // VALUES`
-        // console.log('import')
-        // var stage = 0;
-        // while(i<arr.length-1){
-        //   if(arr[i].startsWith('$account_participation')){
-        //     var spatie = arr[i].indexOf(' ');
-        //     account_participation_id = parseInt(arr[i].substring(spatie+1))
-        //     i++
-        //     while(arr[i].startsWith('$rider')){i++}
-        //   }
-        //   if(arr[i].startsWith('$opstellingen')){
-        //     i++;
-        //     stage = 0;
-        //   }
-        //   if(arr[i].startsWith('$opstelling')){
-        //     stage++;
-        //     i++
-        //     var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection 
-        //     INNER JOIN stage USING(stage_id)
-        //     WHERE stagenr = ${stage} AND race_id = ${race_id} AND account_participation_id = ${account_participation_id})`
-        //     if(arr[i].startsWith('$kopman')){i++}
-        //     while(arr[i].startsWith('$rider')){
-        //       spatie = arr[i].indexOf(' ');
-        //       var pcs_id = arr[i].substring(spatie+1)
-        //       var rider_participation_id = `(SELECT rider_participation_id FROM rider_participation INNER JOIN rider USING(rider_id) WHERE pcs_id = '${pcs_id}' AND race_id = ${race_id})`
-        //       stage_selection_riderQuery += `(${stage_selection_id},${rider_participation_id}),`
-        //       i++
-        //     }
+        var race_idQuery = `SELECT race_id FROM race
+          WHERE year = ${req.body.year} AND name = '${req.body.raceName}';\n`; 
+          sqlDB.query(race_idQuery,function(err,results){
+            if (err) {console.log("WRONG QUERY:",race_idQuery); throw err;}
+            var race_id = results.rows[0].race_id;
             
-        //   }
-        // }
-        // stage_selection_riderQuery = stage_selection_riderQuery.slice(0,-1) +  ` ON CONFLICT (stage_selection_id,rider_participation_id) 
-        // DO NOTHING;\n `;
-        // var totalQuery = stage_selection_riderQuery;
-        // sqlDB.query(totalQuery,function(err,results){
-        //   if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
-        //   console.log("RESULTS",results)
-        // })
-    
-        // })
+            race_backup.findById(race_id,function(err,race){
+              //result_points
+              var results_pointsQuery = ''
+              if(race.results_points.length) results_pointsQuery = 'INSERT INTO results_points VALUES'
+              for(var i in race.results_points){
+                if (i!=0) results_pointsQuery += ',';
+                results_pointsQuery += '(';
+                for(var prop in race.results_points[i]){
+                  if(typeof race.results_points[i][prop] === 'string'){
+                    results_pointsQuery += `'${race.results_points[i][prop]}',`
+
+                  }else{
+                    results_pointsQuery += race.results_points[i][prop] + ','
+                  }
+                }
+                results_pointsQuery = results_pointsQuery.slice(0,-1) + ')'
+              }
+              if(race.results_points.length) results_pointsQuery += 'ON CONFLICT(stage_id,rider_participation_id) DO NOTHING;\n'
+              //stage_selection_rider
+              var stage_selection_riderQuery = ''
+              if(race.stage_selection_rider.length) stage_selection_riderQuery = 'INSERT INTO stage_selection_rider VALUES'
+              for(var i in race.stage_selection_rider){
+                if (i!=0) stage_selection_riderQuery += ',';
+                stage_selection_riderQuery += '(';
+                for(var prop in race.stage_selection_rider[i]){
+                  if(typeof race.stage_selection_rider[i][prop] === 'string'){
+                    stage_selection_riderQuery += `'${race.stage_selection_rider[i][prop]}',`
+
+                  }else{
+                    stage_selection_riderQuery += race.stage_selection_rider[i][prop] + ','
+                  }
+                }
+                stage_selection_riderQuery = stage_selection_riderQuery.slice(0,-1) + ')'
+              }
+              if(race.stage_selection_rider.length) stage_selection_riderQuery += 'ON CONFLICT(stage_selection_id,rider_participation_id) DO NOTHING;\n'
+              //rider_participation
+              var rider_participationQuery = ''
+              if(race.rider_participation.length) rider_participationQuery = 'INSERT INTO rider_participation VALUES'
+              for(var i in race.rider_participation){
+                if (i!=0){rider_participationQuery += ','};
+                rider_participationQuery += '(';
+                for(var prop in race.rider_participation[i]){
+                  if(typeof race.rider_participation[i][prop] === 'string'){
+                    rider_participationQuery += `'${race.rider_participation[i][prop]}',`
+
+                  }else{
+                    rider_participationQuery += race.rider_participation[i][prop] + ','
+                  }
+                }
+                rider_participationQuery = rider_participationQuery.slice(0,-1) + ')'
+              }
+              if(race.rider_participation.length) rider_participationQuery += ' ON CONFLICT(race_id,rider_id) DO NOTHING;\n'
+              var totalQuery = rider_participationQuery + results_pointsQuery + stage_selection_riderQuery;
+              sqlDB.query(totalQuery,function(err,results2){
+                if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+                console.log("IMPORTED ",req.body.raceName,req.body.year)
+                console.log(results2)
+                res.send('Import Succesful')
+              })
+            })
+          })
       }
     })
   });
@@ -240,49 +256,18 @@ module.exports = function (app) {
         sqlDB.query(totalQuery,function(err,results){
           if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
           var raceToSave = new race_backup;
-          raceToSave.race_id = results[0].rows[0].race_id;
+          raceToSave._id = results[0].rows[0].race_id;
           raceToSave.results_points = results[1].rows;
           raceToSave.stage_selection_rider = results[2].rows;
           raceToSave.rider_participation = results[3].rows;
           raceToSave.save()
+          console.log(req.body.raceName,req.body.year,'Backed Up')
           //TODO remove data from sql
+          res.send('Export Succesful')
+
+          // console.log(req.body.raceName,req.body.year,'Removed From SQL')
         })
       }
     });
   })
-
-  app.get('/export', function (req, res) {
-    console.log("export")
-
-    User.find({'teamselectie.userrenners': {$size: 20}}, function (err, users) {
-      if (err) throw err;
-      console.log("export",users.length)
-
-      users.forEach(function (user, index) {//get all users
-        // user.profieldata.totaalscore = 0;
-        // user.profieldata.poulescore = new Array(22).fill(0);
-        console.log("$user " + user.local.username);
-        user.teamselectie.userrenners.forEach(function (rider) {
-          console.log('$rider ' + rider._id);
-        })
-        console.log('$opstellingen')
-        user.opstellingen.forEach(function (Opstelling) {
-          console.log("$opstelling")
-          console.log("$kopman" + Opstelling.kopman);
-          Opstelling.opstelling._id.forEach(function (rider) {
-            console.log("$rider " + rider);
-          })
-        })
-        // user.teamselectie.userrenners = new Array(0).fill({ '_id': String, 'naam': String, 'team': String, 'prijs': Number }); //haal de renner weg
-        // user.opstellingen =  new Array(21).fill({'kopman':String,'opstelling':{'_id':new Array(0),'naam':new Array(0)}}); //Opstellingen resetten
-        // user.teamselectie.geld = 47000000;
-        // user.markModified('userrenners, opstellingen, geld')
-        // user.save(function (err) {
-        //   if (err) throw err;
-        // });
-      })
-    })
-  });
-
-
 }

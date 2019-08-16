@@ -1,9 +1,0 @@
-rider_participation iig van de klassiekers 676 afgelopen jaar 
-
-stage_selection_rider 1650 per race
-misschien ook team selections 160 per race (hoeft dus wss niet)
-(stage_selection) (176 per race)
-
-results_points ~3700 per race
-kan ook van dmv scrape opgehaald worden maar kan een stuk sneller opgehaald worden als 
-het in een mongo backup zit

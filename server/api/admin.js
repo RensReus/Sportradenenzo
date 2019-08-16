@@ -74,6 +74,14 @@ module.exports = function (app) {
                     (err, sqlres) => {
                         if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}          
                         else {
+                            var sum = {'Tables':'Totaal','Rows':0,'Inserts':0,'Updates':0,'Deletions':0}
+                            sqlres[0].rows.forEach(function(row){
+                                sum.Rows += parseInt(row.Rows);
+                                sum.Inserts += parseInt(row.Inserts);
+                                sum.Updates += parseInt(row.Updates);
+                                sum.Deletions += parseInt(row.Deletions);
+                            })
+                            sqlres[0].rows.push(sum)
                             res.send({ tables: sqlres, titles });
                         }
                     })

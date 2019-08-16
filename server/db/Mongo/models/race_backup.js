@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 
 var raceSchema = mongoose.Schema({
-    race_id     : Number,
+    _id     : Number,
     results_points  : Array, //stage_id	rider_participation_id	stagepos	gcpos	pointspos	kompos	yocpos	stagescore	gcscore	pointsscore	komscore	yocscore	teamscore	totalscore	stageresult	gcresult	pointsresult	komresult	yocresult
     stage_selection_rider: Array, //stage_selection_id	rider_participation_id
     rider_participation : Array //rider_participation_id(PRIMARY)	race_id	rider_id	price	dnf	team
