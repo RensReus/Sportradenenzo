@@ -93,11 +93,10 @@ class manualupdate extends Component {
         e.preventDefault();
         this.setState({grStage: "In Progress",grstatus: "inprogress" })
         var stage = Number(this.state.grStage);
-        if (Number.isInteger(stage)) {
+        if ( this.state.grStage === 'all' || Number.isInteger(stage)) {
             stage = parseInt(stage);
-            if (stage > 0 && stage < 23) {
-                console.log("stage:", stage);
-                axios.post('/api/getresults', { raceName: this.state.raceName, year: this.state.year, stage: stage, token: localStorage.getItem('authToken') })
+            if ( this.state.grStage === 'all' || (stage > 0 && stage < 23)) {
+                axios.post('/api/getresults', { raceName: this.state.raceName, year: this.state.year, stage:  this.state.grStage, token: localStorage.getItem('authToken') })
                     .then((res) => {
                         this.setState({ grStage: res.data })
                     })

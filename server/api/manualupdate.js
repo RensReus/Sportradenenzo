@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const sqlScrape = require('../SQLscrape');
 const race_backup = require('../db/Mongo/models/race_backup.js')
+const async = require('async');
 
 function getSecret() {
     if (fs.existsSync('./server/jwtsecret.js')) {
@@ -74,12 +75,26 @@ module.exports = function (app) {
       if(decoded.admin){
         var year = parseInt(req.body.year);
         var raceName = req.body.raceName;
-        var stage = parseInt(req.body.stage);
-        sqlScrape.getResult(raceName,year,stage,function(err,arg){ 
-          if(err) res.send("error");
-          console.log("Got results %s year %s stage %s",raceName, year, stage)
-          res.send("completed")
-        })
+        console.log(req.body.stage)
+        if(req.body.stage === 'all'){
+          var stages = Array.apply(null, {length: 22}).map(Number.call, Number);
+          async.eachSeries(stages,function(stage,callback){
+            sqlScrape.getResult(raceName,year,stage + 1,function(err,arg){ 
+              if(err) res.send("error");
+              console.log("Got results %s year %s stage %s",raceName, year, stage + 1)
+              callback(null, !err)
+            }, function(err, result) {
+              res.send("completed")
+          })
+          })
+        }else{
+          var stage = parseInt(req.body.stage);
+          sqlScrape.getResult(raceName,year,stage,function(err,arg){ 
+            if(err) res.send("error");
+            console.log("Got results %s year %s stage %s",raceName, year, stage)
+            res.send("completed")
+          })
+        }
       }
     })
   });

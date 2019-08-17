@@ -121,8 +121,9 @@ module.exports = {
     },
 
     getResult: function (raceName, year, et, callback) {
-        var TTstages = [2,13]; //ook TTT hier in zodat er geen teampunten voor de dagwinst zijn
-        var TTTstages = [2];
+        //TODO set TT(T) stages based on race/year
+        var TTstages = [1,10]; //ook TTT hier in zodat er geen teampunten voor de dagwinst zijn
+        var TTTstages = [1];
         var raceString = "";
         switch (raceName) {
             case "giro":
