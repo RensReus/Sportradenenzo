@@ -125,11 +125,15 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var race_id = race_id_global;
+                var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = ${req.body.year})`;
                 var now = new Date();
                 var query = `SELECT starttime FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
                 sqlDB.query(query, (err, results) => {
                     if (err) {console.log("WRONG QUERY:",query); throw err;}
+                    console.log(results)
+                    if(!results.rows.length){
+                        res.send({mode:'404'})
+                    }else{
                     if (now < results.rows[0].starttime && req.body.stage != 22) {// if finished or stage '22' (finalstandings)
                         async.auto({
                             userSelectionGewoon: function (callback) { 
@@ -490,6 +494,7 @@ module.exports = function (app) {
                             })
                         })
                     }
+                }
                 })
             }
         })

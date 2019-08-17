@@ -198,18 +198,21 @@ module.exports = {
                         })
                         var renCol = columns.indexOf("Rider");
                         var teamCol = columns.indexOf("Team");
+                        var stagepos = 1;
                         $(this).children().eq(1).children().each(function (index, element) {//voor iedere renner in de uitslag
                             var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
                             var teamName = $(this).children().eq(teamCol).children().eq(0).text();
                             var timeCol = columns.indexOf('Time');
                             var pntCol = columns.indexOf('Pnt');
-                            if(!getIndex(ridersAll, 'pcsid', id)+1){
+                            if(getIndex(ridersAll, 'pcsid', id)===-1){
                                 ridersAll.push({pcsid: id, team: teamName})
                             }
                             switch (classification) {
                                 
                                 case 'Stage'://Dag uitslag
                                     var pos = $(this).children().first().text();
+                                    if (pos === 'DF'){pos = stagepos}
+                                    stagepos++;
                                     pos = parseInt(pos);
                                     if (isNaN(pos)) pos = 0; //als DNF enzo
                                     var result = $(this).children().eq(timeCol).children().eq(0).text();

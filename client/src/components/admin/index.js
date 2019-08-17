@@ -163,6 +163,21 @@ class Admin extends Component {
         this.getDBinfo = this.getDBinfo.bind(this);
         this.setSuggestions = this.setSuggestions.bind(this);
     }
+
+    componentDidMount() {
+        this.input.focus();
+        document.title = "Admin";
+        this.setSuggestions();
+        switch(this.props.match.params.subpage){
+            case "sqlinterface": this.showTab(0); break;
+            case "dbinfo": this.showTab(1); break;
+            case "manualupdate": this.showTab(2); break;
+            case "importexport": this.showTab(3); break;
+            default: this.showTab(0);
+        }
+    }
+
+
     submitQuery = (e) => {
         e.preventDefault();
         var varObject = {};
@@ -322,8 +337,12 @@ class Admin extends Component {
     }
 
     showTab(i) {
-        if(i === 1){
-            this.getDBinfo()
+        switch(i){
+            case 0: this.props.history.push('/admin-sqlinterface'); break;
+            case 1: this.props.history.push('/admin-dbinfo'); this.getDBinfo(); break;
+            case 2: this.props.history.push('/admin-manualupdate'); break;
+            case 3: this.props.history.push('/admin-importexport'); break;
+            default: this.props.history.push('/admin-sqlinterface'); break;
         }
         var showTab = this.state.showTab;
         var curr = showTab.indexOf('block');
@@ -337,7 +356,7 @@ class Admin extends Component {
             .then((res) => {
                 var DBinfoTables = []
                 for (var i in res.data.tables) {
-                    DBinfoTables.push(<div className="tableDiv" ><Table data={res.data.tables[i].rows} title={res.data.titles[i]} /></div>)
+                    DBinfoTables.push(<div className="tableDiv" key={res.data.titles[i]} ><Table data={res.data.tables[i].rows} title={res.data.titles[i]} /></div>)
                 }
                 this.setState({
                     DBinfoTables,
@@ -345,13 +364,7 @@ class Admin extends Component {
             })
     }
 
-    componentDidMount() {
-        this.input.focus();
-        document.title = "Admin";
-        this.setSuggestions();
-    }
-
-    setSuggestions(){
+        setSuggestions(){
         //Table names
         var suggestions = ['account','race','stage','account_participation','rider','rider_participation', 'team_selection_rider','stage_selection','stage_selection_rider','results_points']
         //Table IDs

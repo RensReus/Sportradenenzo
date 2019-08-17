@@ -57,11 +57,12 @@ module.exports = function (app) {
                 var rankQuery = `(SELECT account_id, race_id, rank() over (PARTITION BY race_id ORDER BY finalscore DESC) FROM account_participation
                     INNER JOIN account USING (account_id)
                     WHERE budgetparticipation = false) sub`;
-                var racePointsQuery = `SELECT name, year, finalscore, rank FROM account_participation
+                var racePointsQuery = `SELECT  CONCAT('/',name,'-',year,'/stage/22') AS "Race_link", CONCAT(INITCAP(name),' ',year) AS race, finalscore, rank FROM 
+                (SELECT * FROM account_participation
                 INNER JOIN race USING(race_id)
                 INNER JOIN ${rankQuery} USING(race_id,account_id)
                 WHERE account_id = ${account_id} AND budgetparticipation = false
-                ORDER BY year,name`
+                ORDER BY year, name) a`
                 var totalQuery = accountQuery + participationsQuery + racePointsQuery;
                 sqlDB.query(totalQuery, (err,results) => {
                     if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}            

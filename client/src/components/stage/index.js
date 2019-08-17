@@ -101,6 +101,7 @@ class Stage extends Component {
             allSelectionsBudget: [],
             notSelectedGewoon: [],
             notSelectedBudget: [],
+            oldracelink: '',
         }
         this.selectRider = this.selectRider.bind(this)
         this.removeRider = this.removeRider.bind(this)
@@ -111,10 +112,26 @@ class Stage extends Component {
         this.updateData = this.updateData.bind(this);
         this.addRemoveRider = this.addRemoveRider.bind(this);
     }
+
+    componentDidMount() {
+        if(this.props.match.params.racename && this.props.match.params.year){
+            this.setState({
+                race: this.props.match.params.racename,
+                year: this.props.match.params.year,
+                oldracelink: '/' + this.props.match.params.racename + '-' + this.props.match.params.year,
+            }, () => {
+                this.updateData(this.state.stage)
+            })
+        }else{
+            this.updateData(this.state.stage)
+        }
+    }
+
     previousStage() {
         const currentstage = parseInt(this.state.stage)
         if (currentstage > 1) {
-            this.props.history.push('/stage/' + (currentstage - 1).toString())
+            console.log(this.state.oldracelink)
+            this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
             this.setState({
                 stage: currentstage - 1
             })
@@ -126,8 +143,9 @@ class Stage extends Component {
     nextStage() {
         const currentstage = parseInt(this.state.stage)
         if (currentstage < 22) {
+            console.log(this.state.oldracelink)
             const currentstage = parseInt(this.state.stage)
-            this.props.history.push('/stage/' + (currentstage + 1).toString())
+            this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage + 1).toString())
             this.setState({
                 stage: currentstage + 1
             })
@@ -242,10 +260,7 @@ class Stage extends Component {
             })
     }
 
-    componentDidMount() {
-        this.updateData(this.state.stage)
-    }
-
+    
     render() {
         const mode = this.state.mode
         let loadingGif

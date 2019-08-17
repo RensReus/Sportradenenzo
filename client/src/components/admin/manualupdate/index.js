@@ -37,7 +37,7 @@ class manualupdate extends Component {
     //button click handlers
     getStartlistKlassiek(e) {
         e.preventDefault();
-        this.setState({gskStage: "In Progress",gskStatus: "inprogress" })
+        this.setState({ gskStage: "In Progress", gskStatus: "inprogress" })
         var stage = Number(this.state.gskStage);
         if (Number.isInteger(stage)) {
             stage = parseInt(stage);
@@ -45,7 +45,7 @@ class manualupdate extends Component {
                 console.log("stage:", stage);
                 axios.post('/api/getstartlistklassiek', { year: 2019, stage: stage, token: localStorage.getItem('authToken') })
                     .then((res) => {
-                        this.setState({ 
+                        this.setState({
                             gskStage: "",
                             gskStatus: res.data
                         })
@@ -60,7 +60,7 @@ class manualupdate extends Component {
 
     getResultsKlassiek(e) {
         e.preventDefault();
-        this.setState({grkStage: "In Progress",grkStatus: "inprogress" })
+        this.setState({ grkStage: "In Progress", grkStatus: "inprogress" })
         var stage = Number(this.state.grkStage);
         if (Number.isInteger(stage)) {
             stage = parseInt(stage);
@@ -69,7 +69,7 @@ class manualupdate extends Component {
                 axios.post('/api/getresultsklassiek', { year: 2019, stage: stage, token: localStorage.getItem('authToken') })
                     .then((res) => {
                         this.setState({ grkStage: res.data })
-                        this.setState({ 
+                        this.setState({
                             grkStage: "",
                             grkStatus: res.data
                         })
@@ -83,26 +83,33 @@ class manualupdate extends Component {
     }
 
     getStartlist() {
-        axios.post('/api/getstartlist', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken')})
-        .then((res) => {
-            this.setState({ grStage: res.data })            
-        })
+        axios.post('/api/getstartlist', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken') })
+            .then((res) => {
+                this.setState({ grStage: res.data })
+            })
     }
 
     getResults(e) {
         e.preventDefault();
-        this.setState({grStage: "In Progress",grstatus: "inprogress" })
+        this.setState({ grStage: "In Progress", grstatus: "inprogress" })
         var stage = Number(this.state.grStage);
-        if ( this.state.grStage === 'all' || Number.isInteger(stage)) {
+        if (this.state.grStage === 'all' || Number.isInteger(stage)) {
             stage = parseInt(stage);
-            if ( this.state.grStage === 'all' || (stage > 0 && stage < 23)) {
-                axios.post('/api/getresults', { raceName: this.state.raceName, year: this.state.year, stage:  this.state.grStage, token: localStorage.getItem('authToken') })
-                    .then((res) => {
-                        this.setState({ grStage: res.data })
-                    })
+            if (this.state.grStage === 'all' || (stage > 0 && stage < 23)) {
+                axios({
+                    method: 'post',
+                    url: '/api/getresults',
+                    data: { raceName: this.state.raceName, year: this.state.year, stage: this.state.grStage, token: localStorage.getItem('authToken') },
+                    responseType: 'stream'
+                })
+                .then((res) => {
+                    console.log(res.data)
+                    this.setState({ grStage: res.data })
+                })
             } else {
                 console.log("not in range", stage)
             }
+            // axios.post('/api/getresults', { raceName: this.state.raceName, year: this.state.year, stage:  this.state.grStage, token: localStorage.getItem('authToken') })
         } else {
             console.log("not an int:", stage)
         }
@@ -136,18 +143,18 @@ class manualupdate extends Component {
         this.setState({ raceName: event.target.value });
     }
 
-    copyTeamSelectionsFinalStage(){
-        axios.post('/api/copyTeamSelectionsFinalStage', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken')})
-        .then((res) => {
-            this.setState({ grStage: res.data })            
-        })
+    copyTeamSelectionsFinalStage() {
+        axios.post('/api/copyTeamSelectionsFinalStage', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken') })
+            .then((res) => {
+                this.setState({ grStage: res.data })
+            })
     }
 
-    copyTeamIfSelectionEmpty(){
-        axios.post('/api/copyTeamIfSelectionEmpty', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken')})
-        .then((res) => {
-            this.setState({ grStage: res.data })            
-        })
+    copyTeamIfSelectionEmpty() {
+        axios.post('/api/copyTeamIfSelectionEmpty', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken') })
+            .then((res) => {
+                this.setState({ grStage: res.data })
+            })
     }
 
     render() {

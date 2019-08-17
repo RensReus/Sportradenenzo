@@ -39,7 +39,7 @@ class Navbar extends Component {
                 <ChartsDropdown className="dropdown"/>
                 <StatsDropdown className="dropdown"/>
                 {this.props.isAdmin &&
-                    <Link className='item' to='/admin'><span className="h8 bold"><FontAwesomeIcon icon={faUserShield}/> Admin</span></Link>
+                    <Link className='item' to='/admin-sqlinterface'><span className="h8 bold"><FontAwesomeIcon icon={faUserShield}/> Admin</span></Link>
                 }
                 {buttonLog}
                 <img className="racelogo" src="/images/vueltalogo_small.png" alt="vueltalogo_small"></img>

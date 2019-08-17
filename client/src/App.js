@@ -83,14 +83,15 @@ class App extends Component {
             <PrivateRoute path="/home" component={Home} history={this.props.history} />
             <PrivateRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} />
             <PrivateRoute path="/teamselection" component={Teamselection} history={this.props.history} redirect = {this.state.redirect}/>
-            <AdminRoute path="/admin" component={Admin} history={this.props.history} />
-           
+            <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
             <PrivateRoute path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
             <PrivateRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
             <PrivateRoute path="/overzicht/:selection" component={Overzicht} history={this.props.history} />
             <PrivateRoute path="/profile/:account_id" component={Profile} history={this.props.history} />
             <PrivateRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} />
             <PrivateRoute path="/charts/:chartname" component={Charts} history={this.props.history} />
+            
+            <PrivateRoute exact path="/:racename-:year/stage/:stagenumber" component={Stage} history={this.props.history} />
         </div>
       </div>
     );
