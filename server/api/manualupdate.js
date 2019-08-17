@@ -75,7 +75,6 @@ module.exports = function (app) {
       if(decoded.admin){
         var year = parseInt(req.body.year);
         var raceName = req.body.raceName;
-        console.log(req.body.stage)
         if(req.body.stage === 'all'){
           var stages = Array.apply(null, {length: 22}).map(Number.call, Number);
           async.eachSeries(stages,function(stage,callback){
