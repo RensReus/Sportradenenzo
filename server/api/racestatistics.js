@@ -21,8 +21,8 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var race_id = race_id_global;
-                var poule_id = req.body.poule_id;
+                var race_id = current_race_id;
+                // var poule_id = req.body.poule_id;
                 var subquery = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore DESC) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
@@ -75,8 +75,24 @@ module.exports = function (app) {
                             }
                             return false;
                         })
+                        var rankTable = []
+                        for(let i in rowsRank){
+                            let newRow = {};
+                            for(let j in headersRank){
+                                newRow[headersRank[j]] = rowsRank[i][j]
+                            }
+                            rankTable.push(newRow)
+                        }
+                        var countTable = []
+                        for(let i in rowsCount){
+                            let newRow = {};
+                            for(let j in headersCount){
+                                newRow[headersCount[j]] = rowsCount[i][j]
+                            }
+                            countTable.push(newRow)
+                        }
 
-                        response.send({ rankTable: { header: headersRank, rows: rowsRank }, countTable: { header: headersCount, rows: rowsCount } })
+                        response.send({rankTable, countTable})
                     }
                 })
             }
@@ -90,7 +106,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var race_id = race_id_global;
+                var race_id = current_race_id;
                 var query = `SELECT  CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", concat(firstname, ' ', lastname) AS "Name", team AS "Team ", price AS "Price", SUM(stagescore) AS "Etappe",
             SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong", 
             SUM(teamscore) AS "Team", SUM(totalscore) AS "Total", ROUND(SUM(totalscore)*1e6/price,0) AS "Points per Million" FROM rider_participation  
@@ -119,7 +135,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var race_id = race_id_global;
+                var race_id = current_race_id;
                 var query = `SELECT  CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", concat(firstname, ' ', lastname) AS "Name", team AS "Team ",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Etappe",  
             SUM(gcscore)/GREATEST(count(DISTINCT username),1) AS "AK", SUM(pointsscore)/GREATEST(count(DISTINCT username),1) AS "Punten", SUM(komscore)/GREATEST(count(DISTINCT username),1) AS "Berg", SUM(yocscore)/GREATEST(count(DISTINCT username),1) AS "Jong", SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Team", SUM(totalscore)/GREATEST(count(DISTINCT username),1) AS "Total", 
             ROUND(SUM(totalscore)/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "Points per Million",  
@@ -202,7 +218,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                missedPoints(user.account_id,race_id_global,req.body.budgetparticipation,function(err,outputArray){
+                missedPoints(user.account_id,current_race_id,req.body.budgetparticipation,function(err,outputArray){
                     if(err) throw err;
                     res.send({
                         tableData: outputArray,
@@ -221,16 +237,16 @@ module.exports = function (app) {
             } else {
                 async.auto({ //TODO remove hardcoded users
                     bierfietsen: function(callback){
-                        missedPoints(1,race_id_global,req.body.budgetparticipation,callback)
+                        missedPoints(1,current_race_id,req.body.budgetparticipation,callback)
                     },
                     rens: function(callback){
-                        missedPoints(2,race_id_global,req.body.budgetparticipation,callback)
+                        missedPoints(2,current_race_id,req.body.budgetparticipation,callback)
                     },
                     sam: function(callback){
-                        missedPoints(4,race_id_global,req.body.budgetparticipation,callback)
+                        missedPoints(4,current_race_id,req.body.budgetparticipation,callback)
                     },
                     yannick: function(callback){
-                        missedPoints(5,race_id_global,req.body.budgetparticipation,callback)
+                        missedPoints(5,current_race_id,req.body.budgetparticipation,callback)
                     }
                 }, function (err,results){
                     if(err) throw err;
@@ -309,7 +325,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                teamoverzicht(user.account_id,race_id_global,req.body.budgetparticipation,function(err,results){
+                teamoverzicht(user.account_id,current_race_id,req.body.budgetparticipation,function(err,results){
                     if(err) throw err;
                     res.send({
                         tableData: results.tableData,
@@ -329,16 +345,16 @@ module.exports = function (app) {
             } else {
                 async.auto({
                     bierfietsen: function(callback){
-                        teamoverzicht(1,race_id_global,req.body.budgetparticipation,callback)
+                        teamoverzicht(1,current_race_id,req.body.budgetparticipation,callback)
                     },
                     rens: function(callback){
-                        teamoverzicht(2,race_id_global,req.body.budgetparticipation,callback)
+                        teamoverzicht(2,current_race_id,req.body.budgetparticipation,callback)
                     },
                     sam: function(callback){
-                        teamoverzicht(4,race_id_global,req.body.budgetparticipation,callback)
+                        teamoverzicht(4,current_race_id,req.body.budgetparticipation,callback)
                     },
                     yannick: function(callback){
-                        teamoverzicht(5,race_id_global,req.body.budgetparticipation,callback)
+                        teamoverzicht(5,current_race_id,req.body.budgetparticipation,callback)
                     }
                 }, function (err,results){
                     if(err) throw err;
@@ -388,16 +404,16 @@ module.exports = function (app) {
             } else {
                 async.auto({
                     bierfietsen: function(callback){
-                        teamoverzichtSimple(1,race_id_global,req.body.budgetparticipation,callback)
+                        teamoverzichtSimple(1,current_race_id,req.body.budgetparticipation,callback)
                     },
                     rens: function(callback){
-                        teamoverzichtSimple(2,race_id_global,req.body.budgetparticipation,callback)
+                        teamoverzichtSimple(2,current_race_id,req.body.budgetparticipation,callback)
                     },
                     sam: function(callback){
-                        teamoverzichtSimple(4,race_id_global,req.body.budgetparticipation,callback)
+                        teamoverzichtSimple(4,current_race_id,req.body.budgetparticipation,callback)
                     },
                     yannick: function(callback){
-                        teamoverzichtSimple(5,race_id_global,req.body.budgetparticipation,callback)
+                        teamoverzichtSimple(5,current_race_id,req.body.budgetparticipation,callback)
                     }
                 }, function (err,results){
                     if(err) throw err;
@@ -450,7 +466,7 @@ module.exports = function (app) {
                 INNER JOIN rider_participation USING(rider_participation_id)
                 INNER JOIN account_participation USING (account_participation_id)
                 INNER JOIN stage USING(stage_id)
-                WHERE stage.race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation} AND starttime < now() AT TIME ZONE 'Europe/Paris'
+                WHERE stage.race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND starttime < now() AT TIME ZONE 'Europe/Paris'
                 GROUP BY stagenr; `;
 
                 var uitgevallenQuery = `SELECT username AS "User", COUNT(rider_participation_id) AS "Uitvallers", SUM(price) FROM rider_participation
@@ -508,7 +524,7 @@ module.exports = function (app) {
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${race_id_global} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester'
+            WHERE stage.race_id = ${current_race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester'
             ORDER BY username, stagenr`
                 sqlDB.query(query, (err, results) => {
                     if (err) { console.log("WRONG QUERY:", query); throw err; }
@@ -568,7 +584,7 @@ module.exports = function (app) {
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished AND NOT username = 'tester'
+            WHERE stage.race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished AND NOT username = 'tester'
             ORDER BY username, stagenr`
                 sqlDB.query(query, (err, results) => {
                     if (err) { console.log("WRONG QUERY:", query); throw err; }
@@ -612,7 +628,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation})`
+                var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
                 var query = `SELECT totalscore, lastname, stagenr FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
             INNER JOIN rider USING (rider_id)
@@ -660,7 +676,7 @@ module.exports = function (app) {
                 throw err;
             } else {
                 var currentStageNum = functies.stageNumKlassieker();//TODO change to Grote ronde
-                var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${race_id_global} AND budgetparticipation = ${req.body.budgetparticipation})`
+                var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
                 var query = `SELECT totalscore, lastname, stagenr FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
             INNER JOIN rider USING (rider_id)

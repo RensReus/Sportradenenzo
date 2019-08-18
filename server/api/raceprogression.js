@@ -7,11 +7,11 @@ module.exports = function (app) {
 
     })
 
-    app.post('/api/currentstageredir', function (req, res) {
+    app.post('/api/getinitialdata', function (req, res) {
         var newRedir = '/teamselection';     
           if(currentstage_global !== 0){
             newRedir = '/stage/' + currentstage_global;
           }
-        res.send({redirect: newRedir});
+        res.send({redirect: newRedir, racename: current_racename, year: current_year});
     })
 }

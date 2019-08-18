@@ -13,7 +13,9 @@ app.use(cors({
 
 
 //global vars
-race_id_global = 6;
+current_race_id = 6;
+current_racename = 'vuelta';
+current_year = 2019;
 currentstage_global = 0;
 functies.setCurrentStage()
 
@@ -24,7 +26,7 @@ if (fs.existsSync('./server/db/Mongo/link.js')) { //Kijken of er een config is
   var configDB = { 'url': process.env.DATABASE_LINK }; //Zo niet gebruik heroku ding
 };
 var mongoose = require('mongoose');
-mongoose.connect(configDB.url, { ssl: true }); // verbinden met sportradenenzo mongodb
+mongoose.connect(configDB.url, { ssl: true, useNewUrlParser: true  }); // verbinden met sportradenenzo mongodb
 mongoose.connection.on('error', function (err) {
   console.log(err);
 });

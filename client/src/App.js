@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Redirect} from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import './index.css';
 import axios from 'axios';
 
@@ -12,7 +12,6 @@ import Home from './components/home';
 import Stage from './components/stage'
 import Teamselection from './components/teamselection';
 import Admin from './components/admin';
-import Etappewinsten from './components/etappewinsten';
 import Overzicht from './components/overzicht';
 import Charts from './components/charts';
 import Rider from './components/rider';
@@ -34,64 +33,81 @@ class App extends Component {
       loading: true,
       isLoggedIn: false,
       redirect: '/',
-      isAdmin: false 
+      isAdmin: false
     });
   }
 
-  render() {
-    //Kijken of de gebruiker is ingelogd en adminrechten heeft
-   
-    if(localStorage.getItem('authToken')){
+  componentDidMount() {
+    axios.post('/api/getinitialdata')
+      .then(res => {
+        this.setState({ redirect: res.data.redirect })
+      })
+    this.authenticate()
+  }
+
+  componentDidUpdate() {
+    this.authenticate()
+  }
+
+  authenticate() {
+    if (localStorage.getItem('authToken')) {
       var token = localStorage.getItem('authToken')
       var decoded = jwtDecode(token)
-      if(!this.state.isLoggedIn){ //Token bestaat, state moet ingelogd zijn
+      if (Date.now() / 1000 - decoded.exp > 0) {//token expired
+        localStorage.removeItem('authToken');
+        this.props.history.push('/')
+        this.setState({
+          isLoggedIn: false,
+          isAdmin: false
+        })
+      } else if (!this.state.isLoggedIn) { //Token bestaat, state moet ingelogd zijn
         this.setState({
           isLoggedIn: true,
           isAdmin: decoded.admin
         })
       }
-    }else{
-      if(this.state.isLoggedIn){ //Token bestaat, state moet uitgelogd en adminloos zijn
+    } else {
+      if (this.state.isLoggedIn) { //Token bestaat niet, state moet uitgelogd en adminloos zijn
         this.setState({
           isLoggedIn: false,
           isAdmin: false
+        }, () => {
+          //Redirect als uitgelogd en niet op de main pagina
+          if (this.props.history.location.pathname !== '/') {
+            this.setState({
+              redirect: this.props.history.location.pathname // voor redirect na inloggen
+            })
+            this.props.history.replace('/')
+          }
         })
       }
-      if(this.props.history.location.pathname !== '/'){ //Redirect als uitgelogd en niet op de main pagina
-        this.setState({
-          redirect: this.props.history.location.pathname
-        })
-        this.props.history.replace('/')
-      }
     }
-    if(this.state.redirect === '/'){
-      axios.post('/api/currentstageredir')
-        .then(res =>{
-          this.setState({redirect: res.data.redirect})
-        })
-    }
+  }
+
+
+
+  render() {
     return (
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
       <div className="content">
         <div className="backgroundImage"></div>
-        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} history={this.props.history}/>
+        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} history={this.props.history} />
         <div className="pageContainer">
-            <Route exact path="/" render={() => (
-              this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} />)
-            )} />
-            <PrivateRoute path="/home" component={Home} history={this.props.history} />
-            <PrivateRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} />
-            <PrivateRoute path="/teamselection" component={Teamselection} history={this.props.history} redirect = {this.state.redirect}/>
-            <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
-            <PrivateRoute path="/etappewinsten" component={Etappewinsten} history={this.props.history} />
-            <PrivateRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
-            <PrivateRoute path="/overzicht/:selection" component={Overzicht} history={this.props.history} />
-            <PrivateRoute path="/profile/:account_id" component={Profile} history={this.props.history} />
-            <PrivateRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} />
-            <PrivateRoute path="/charts/:chartname" component={Charts} history={this.props.history} />
-            
-            <PrivateRoute exact path="/:racename-:year/stage/:stagenumber" component={Stage} history={this.props.history} />
+          <Route exact path="/" render={() => (
+            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} />)
+          )} />
+          <PrivateRoute path="/home" component={Home} history={this.props.history} />
+          <PrivateRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} />
+          <PrivateRoute path="/teamselection" component={Teamselection} history={this.props.history} redirect={this.state.redirect} />
+          <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
+          <PrivateRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
+          <PrivateRoute path="/overzicht/:selection" component={Overzicht} history={this.props.history} />
+          <PrivateRoute path="/profile/:account_id" component={Profile} history={this.props.history} />
+          <PrivateRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} />
+          <PrivateRoute path="/charts/:chartname" component={Charts} history={this.props.history} />
+
+          <PrivateRoute exact path="/:racename-:year/stage/:stagenumber" component={Stage} history={this.props.history} />
         </div>
       </div>
     );

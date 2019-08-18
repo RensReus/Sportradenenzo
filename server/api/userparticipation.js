@@ -13,7 +13,7 @@ module.exports = function (app) {
 
     app.post('/api/getracepartcipation', function (req, res) {
         var query = `SELECT * FROM account_participation 
-        WHERE race_id = ${race_id_global} AND account_id = ${req.user.account_id}`
+        WHERE race_id = ${current_race_id} AND account_id = ${req.user.account_id}`
         sqlDB.query(query, (err,results) => {
             if (err) {console.log("WRONG QUERY:",query); throw err;}            
               else{
@@ -28,7 +28,7 @@ module.exports = function (app) {
     //         res.redirect('/')
     //     }else{
     //         var account_id = req.user.account_id;
-    //         var race_id = race_id_global;
+    //         var race_id = current_race_id;
     //         query = `INSERT INTO account_participation (account_id, race_id, budgetParticipation) 
     //         VALUES($1, $2, FALSE),($1, $2, TRUE)
     //         ON CONFLICT (account_id, race_id, budgetParticipation) DO NOTHING`

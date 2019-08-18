@@ -155,7 +155,7 @@ module.exports = function (app) {
                                 SQLread.getKopman(user.account_id, true, req.body.race, req.body.year, req.body.stage, callback)
                             },
                             startTime: function (callback) {
-                                SQLread.getStageStarttime(race_id_global, req.body.stage, callback)
+                                SQLread.getStageStarttime(current_race_id, req.body.stage, callback)
                             },
                             prevClassificationsGewoon: function(callback){
                                 var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
@@ -612,7 +612,7 @@ module.exports = function (app) {
             res.send({ 'mode': '404' });
             return;
         } else {
-            var prevText = "Naar 14: Eschborn-Frankfurt";//TODO get race name or stage 21 for GT
+            var prevText = "Naar 14: Eschborn-Frankfurt";
             var lastStageLink = "/stage/14";
             res.send({
                 prevText: prevText,

@@ -135,7 +135,7 @@ module.exports = function (app) {
       if(err)
         throw err;
       if(decoded.admin){
-        var race_id = race_id_global;
+        var race_id = current_race_id;
 
         var currentStagenr = currentstage_global;
         var stage_id = `(SELECT stage_id FROM stage
@@ -276,8 +276,8 @@ module.exports = function (app) {
           raceToSave.rider_participation = results[3].rows;
           raceToSave.save()
           console.log(req.body.raceName,req.body.year,'Backed Up')
-          //TODO remove data from sql
           res.send('Export Succesful')
+          // data deleten moet voorlopig handmatig voor de veiligheid
 
           // console.log(req.body.raceName,req.body.year,'Removed From SQL')
         })

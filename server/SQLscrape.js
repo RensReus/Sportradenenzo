@@ -519,7 +519,13 @@ module.exports = {
             var finished = false;
             var girobeschikbaar = false;
             $(".home1").first().children('.homeTbl1').first().children().first().children().first().children().eq(1).children().each(function () {
-                if ($(this).children().eq(2).text().startsWith('Tour de France')) { // TODO remove hardcoded name
+                var startString = ''
+                switch(current_racename){
+                    case 'giro': startString = 'Giro d\'Italia'; break;
+                    case 'tour': startString = 'Tour de France'; break;
+                    case 'vuelta': startString = 'Vuelta a España'; break;
+                }
+                if ($(this).children().eq(2).text().startsWith(startString)) {
                     girobeschikbaar = true;
                     if ($(this).children().eq(0).text() != 'finished' && $(this).children().eq(0).text() != '-') {
                         var timeRemaining = $(this).children().eq(0).text();

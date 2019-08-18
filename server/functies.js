@@ -69,24 +69,26 @@ calculateUserScoresOld = function (et, callback) {
 
 calculateUserScores = function(name,year,stage,callback){
     var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = '${name}')`
-    var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
-    sqlDB.query(participantsQuery,function(err,res){
+    var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id};\n`
+    var TTTstageQuery = `SELECT stagenr FROM stage WHERE race_id = ${race_id} AND type ='TTT';\n`
+    var totalQuery = participantsQuery + TTTstageQuery;
+    sqlDB.query(totalQuery,function(err,res){
         if(err) throw err;
         var totalQuery = '';
-        var TTTstage = 2;//TODO hardcoded
-        for (i in res.rows){// voor iedere gewone user
+        var TTTstages = res[1].rows.map(stage => stage.stagenr);
+        for (i in res[0].rows){// voor iedere gewone user
 
             for(var j = stage; j < 23; j++){// to show correct totalscores for later stages
                 var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
-                var account_participation_id = res.rows[i].account_participation_id;
+                var account_participation_id = res[0].rows[i].account_participation_id;
                 var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
                 var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id = ${stage_id})`
                 var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM stage_selection_rider 
                                 INNER JOIN results_points USING (rider_participation_id)
                                 WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}),0) `;
-                if(res.rows[i].budgetparticipation){// andere stage score voor budget
+                if(res[0].rows[i].budgetparticipation){// andere stage score voor budget
                     var divide2 = "";
-                    if(j == TTTstage){
+                    if(TTTstages.includes(j)){
                         divide2 = "/2";
                     }
                     stagescore = `COALESCE((SELECT SUM(results_points.totalscore - results_points.teamscore) FROM stage_selection_rider 
@@ -323,7 +325,7 @@ function stageNumKlassieker(){
 }
 
 var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to run every minute to initialize at the start.
-  var race_id = race_id_global;
+  var race_id = current_race_id;
   var stageQuery = `SELECT * FROM STAGE
                     WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
                     ORDER BY stagenr DESC
@@ -341,7 +343,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
                 if (err) {console.log("WRONG QUERY:",updateStageQuery); throw err;}
                 else console.log("Stage %s finished",stage.stagenr)
               });
-              SQLscrape.getResult('tour',2019,stage.stagenr,function(err,response){//TODO niet hardcoded
+              SQLscrape.getResult(current_racename,current_year,stage.stagenr,function(err,response){
                 if(err) throw err;
                 else console.log(response, "stage", stage.stagenr,"\n");
               })
@@ -349,7 +351,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
             scrapeResults.reschedule(newResultsRule);  //update new schedule
           })
         }else if(!stage.complete){//get results if not complete
-          SQLscrape.getResult('tour',2019,stage.stagenr,function(err,response){//TODO niet hardcoded 
+          SQLscrape.getResult(current_racename,current_year,stage.stagenr,function(err,response){ 
             if(err) throw err;
             else console.log(response, "stage", stage.stagenr,"\n");
           })
@@ -382,7 +384,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
 });
 
 function setCurrentStage(){
-    var race_id = race_id_global;
+    var race_id = current_race_id;
         var stageQuery = `SELECT * FROM STAGE
                     WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
                     ORDER BY stagenr desc
