@@ -1,6 +1,6 @@
 .navbar {
   background-color: var(--background-color-dark);
-  border-top: solid var(--main-color) 4px;
+  border-top: solid 4px;
   z-index: 999;
   box-shadow: 0px 5px 5px 0px rgba(136, 136, 136, 0.3);
   height: 48px;
@@ -12,6 +12,23 @@
   position: fixed;
   width: 100vw;
 }
+
+.navbar.giro {
+  border-top-color: var(--giro-color);
+}
+
+.navbar.tour {
+  border-top-color: var(--tour-color);
+}
+
+.navbar.vuelta {
+  border-top-color: var(--vuelta-color);
+}
+
+.navbar[racename]::after {
+  content: attr(racename);
+}
+
 
 @media screen and ( max-width: 767px) {
   .navbar {
@@ -26,7 +43,7 @@
   height: 36px;
   padding-left: 5px;
   padding-right: 5px;
-  color: var(--main-color);
+  color: var(--vuelta-color); /* TODO different logo colors  */
   padding-top: 6px;
 }
 
@@ -38,7 +55,7 @@
 }
 
 .navbar .logo:hover {
-  color: var(--main-color-light);
+  color: var(--vuelta-color-light); /* TODO different logo colors  */
   transition: 0.3s;
   cursor: pointer;
 }

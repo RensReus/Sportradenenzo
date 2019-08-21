@@ -20,47 +20,48 @@ class overzicht extends Component {
   }
 
   componentDidMount() {
-    switch (this.props.match.params.selection) {
-      case "all": this.renderAll(); break;
-      case "selected": this.renderSelected(); break;
-      case "missedpoints": this.renderMissedPoints(); break;
-      case "missedpointsall": this.renderMissedPointsAll(); break;
-      case "team": this.renderTeam(); break;
-      case "teamall": this.renderTeamAll(); break;
-      case "teamallsimple": this.renderTeamAllSimple(); break;
-      case "etappewinsten": this.renderEtappeWinsten(); break;
-      case "overigestats": this.renderOverigeStats(); break;
-      default: this.renderAll(); break;
+    this.stateUpdateAndRender()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props !== prevProps) {
+      this.stateUpdateAndRender()
     }
   }
 
-  componentDidUpdate() {
+  stateUpdateAndRender() {
     if (this.props.match.params.selection !== this.state.currlink) {
-      this.setState({ currlink: this.props.match.params.selection,
-        data: [],
-        coltype: [],
-        tableName: '',
-        extraTables: '',
-        budget: false,
-        budgetSwitchButton: '',
-      })
-      switch (this.props.match.params.selection) {
-        case "all": this.renderAll(); break;
-        case "selected": this.renderSelected(); break;
-        case "missedpoints": this.renderMissedPoints(); break;
-        case "missedpointsall": this.renderMissedPointsAll(); break;
-        case "team": this.renderTeam(); break;
-        case "teamall": this.renderTeamAll(); break;
-        case "teamallsimple": this.renderTeamAllSimple(); break;
-        case "etappewinsten": this.renderEtappeWinsten(); break;
-        case "overigestats": this.renderOverigeStats(); break;
-        default: this.renderAll(); break;
+      if (this.props.match.params.racename && this.props.match.params.year) {
+        this.setState({
+          race: this.props.match.params.racename,
+          year: this.props.match.params.year,
+          oldracelink: '/' + this.props.match.params.racename + '-' + this.props.match.params.year,
+          budget: false,
+          budgetSwitchButton: '',
+        }, () => {
+          this.renderPage()
+        })
+      } else if(this.props.racename){ //if racename not ''  {
+          this.setState({
+              racename: this.props.racename,
+              year: this.props.year,
+              budget: false,
+              budgetSwitchButton: '',
+          },()=>{
+              this.renderPage()
+          })
       }
     }
   }
 
-  budgetSwitch() {
-    this.setState({ budget: !this.state.budget }, () => {
+  renderPage() {
+    this.setState({
+      currlink: this.props.match.params.selection,
+      data: [],
+      coltype: [],
+      tableName: '',
+      extraTables: '',
+    }, () => {
       switch (this.props.match.params.selection) {
         case "all": this.renderAll(); break;
         case "selected": this.renderSelected(); break;
@@ -76,9 +77,15 @@ class overzicht extends Component {
     })
   }
 
-  renderAll() {
+  budgetSwitch() {
+    this.setState({ budget: !this.state.budget }, () => {
+      this.renderPage()
+    })
+  }
+
+  renderAll() {//race_id heeft de server al
     document.title = "Alle Renners Overzicht";
-    axios.post('/api/getriderpointsall', { token: localStorage.getItem('authToken'), race_id: 6 })
+    axios.post('/api/getriderpointsall', { token: localStorage.getItem('authToken')/*, race_id: 6*/ })
       .then((res) => {
         if (res) {
           this.setState({
@@ -92,14 +99,14 @@ class overzicht extends Component {
 
   renderSelected() {
     document.title = "Gekozen Renners Overzicht";
-    axios.post('/api/getriderpointsselected', { token: localStorage.getItem('authToken'), race_id: 6, poule_id: 0, budgetparticipation: this.state.budget })
+    axios.post('/api/getriderpointsselected', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
       .then((res) => {
         if (res) {
           this.setState({
             data: res.data.tableData,
             coltype: res.data.coltype,
             tableName: res.data.title,
-            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+            budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
           })
         }
       })
@@ -107,13 +114,13 @@ class overzicht extends Component {
 
   renderMissedPoints() {
     document.title = "Gemiste Punten";
-    axios.post('/api/missedpoints', { token: localStorage.getItem('authToken'), race_id: 6, budgetparticipation: this.state.budget })
+    axios.post('/api/missedpoints', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
       .then((res) => {
         if (res) {
           this.setState({
             data: res.data.tableData,
             tableName: res.data.title,
-            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+            budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
           })
         }
       })
@@ -121,7 +128,7 @@ class overzicht extends Component {
 
   renderMissedPointsAll() {
     document.title = "Gemiste Punten Iedereen";
-    axios.post('/api/missedpointsall', { token: localStorage.getItem('authToken'), race_id: 6, budgetparticipation: this.state.budget })
+    axios.post('/api/missedpointsall', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
       .then((res) => {
         if (res) {
           var extraTables = []
@@ -130,7 +137,7 @@ class overzicht extends Component {
           }
           this.setState({
             extraTables: extraTables,
-            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+            budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
           })
         }
       })
@@ -138,14 +145,14 @@ class overzicht extends Component {
 
   renderTeam() {
     document.title = "Team Overzicht";
-    axios.post('/api/teamoverzicht', { token: localStorage.getItem('authToken'), race_id: 6, budgetparticipation: this.state.budget })
+    axios.post('/api/teamoverzicht', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
       .then((res) => {
         if (res) {
           this.setState({
             data: res.data.tableData,
             tableName: res.data.title,
             coltype: res.data.coltype,
-            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+            budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
           })
         }
       })
@@ -153,7 +160,7 @@ class overzicht extends Component {
 
   renderTeamAll() {
     document.title = "Team Overzicht Iedereen";
-    axios.post('/api/teamoverzichtall', { token: localStorage.getItem('authToken'), race_id: 6, budgetparticipation: this.state.budget })
+    axios.post('/api/teamoverzichtall', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
       .then((res) => {
         if (res) {
           var extraTables = []
@@ -162,7 +169,7 @@ class overzicht extends Component {
           }
           this.setState({
             extraTables: extraTables,
-            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+            budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
           })
         }
       })
@@ -170,7 +177,7 @@ class overzicht extends Component {
 
   renderTeamAllSimple() {
     document.title = "Team Overzicht Iedereen";
-    axios.post('/api/teamoverzichtallsimple', { token: localStorage.getItem('authToken'), race_id: 6, budgetparticipation: this.state.budget })
+    axios.post('/api/teamoverzichtallsimple', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
       .then((res) => {
         if (res) {
           var extraTables = []
@@ -179,7 +186,7 @@ class overzicht extends Component {
           }
           this.setState({
             extraTables: extraTables,
-            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+            budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
           })
         }
       })
@@ -187,7 +194,7 @@ class overzicht extends Component {
 
   renderEtappeWinsten() {//werkt nog niet vorm van table klopt niet
     document.title = "Etappe Winsten Overzicht";
-    axios.post('/api/getstagevictories', { race_id: 6, poule_id: 0, token: localStorage.getItem('authToken'), budgetparticipation: this.state.budget })
+    axios.post('/api/getstagevictories', { racename:this.state.racename, year:this.state.year, token: localStorage.getItem('authToken'), budgetparticipation: this.state.budget })
       .then((res) => {
         if (res) {
           var extraTables = [];
@@ -195,7 +202,7 @@ class overzicht extends Component {
           extraTables.push(<div className="tableDiv" ><Table data={res.data.countTable} title={"Hoe vaak welke positie"} /></div>)
           this.setState({
             extraTables: extraTables,
-            budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+            budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
           })
         }
       })
@@ -203,7 +210,7 @@ class overzicht extends Component {
 
   renderOverigeStats() {
     document.title = "Overige Statistieken"
-    axios.post('/api/getadditionalstats', { poule_id: 0, token: localStorage.getItem('authToken'), budgetparticipation: this.state.budget }).then((res) => {
+    axios.post('/api/getadditionalstats', { token: localStorage.getItem('authToken'), budgetparticipation: this.state.budget }).then((res) => {
       if (res) {
         var extraTables = []
         for (var i in res.data.tables) {
@@ -211,7 +218,7 @@ class overzicht extends Component {
         }
         this.setState({
           extraTables: extraTables,
-          budgetSwitchButton: <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+          budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
         })
       }
     })

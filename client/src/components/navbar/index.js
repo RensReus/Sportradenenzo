@@ -29,7 +29,7 @@ class Navbar extends Component {
             currStage = '';
         }
         return (
-            <div className="navbar">
+            <div className={"navbar " + this.props.racename}>
                 <Link className='item' to='/home'>
                     <img className="logo" src="/images/logo.png" alt="logo_small"></img>
                 </Link>

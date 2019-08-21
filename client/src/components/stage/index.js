@@ -78,8 +78,8 @@ class Stage extends Component {
         super(props);
         this.state = {
             mode: 'loading',
-            race: 'tour',
-            year: '2019',
+            racename: '',
+            year: '',
             budget: false,
             stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
             stageSelectionGewoon: [],
@@ -114,23 +114,41 @@ class Stage extends Component {
     }
 
     componentDidMount() {
-        if(this.props.match.params.racename && this.props.match.params.year){
+        this.initialSetState();        
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props !== prevProps) { // compares properties before and after update
+            this.initialSetState();
+        }
+    }
+
+    initialSetState(){
+        if(this.props.match.params.racename && this.props.match.params.year){//not current race
             this.setState({
-                race: this.props.match.params.racename,
+                racename: this.props.match.params.racename,
                 year: this.props.match.params.year,
                 oldracelink: '/' + this.props.match.params.racename + '-' + this.props.match.params.year,
             }, () => {
                 this.updateData(this.state.stage)
+                this.props.setRace(this.state.racename)
             })
         }else{
-            this.updateData(this.state.stage)
+            if(this.props.racename){ //if racename not ''
+                this.setState({
+                    racename: this.props.racename,
+                    year: this.props.year,
+                },()=>{
+                    this.updateData(this.state.stage)
+                })
+            }
         }
+
     }
 
     previousStage() {
         const currentstage = parseInt(this.state.stage)
         if (currentstage > 1) {
-            console.log(this.state.oldracelink)
             this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
             this.setState({
                 stage: currentstage - 1
@@ -143,7 +161,6 @@ class Stage extends Component {
     nextStage() {
         const currentstage = parseInt(this.state.stage)
         if (currentstage < 22) {
-            console.log(this.state.oldracelink)
             const currentstage = parseInt(this.state.stage)
             this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage + 1).toString())
             this.setState({
@@ -157,7 +174,7 @@ class Stage extends Component {
         if(stage>22 || stage<1){
             this.props.history.push('/');
         }
-        const race = this.state.race
+        const race = this.state.racename
         const year = this.state.year
         document.title = "Etappe " + stage;
 
@@ -209,7 +226,7 @@ class Stage extends Component {
 
     setKopman(rider_participation_id) {
         const stage = this.state.stage
-        const race = this.state.race
+        const race = this.state.racename
         const year = this.state.year
         const budget = this.state.budget
         axios.post('/api/setkopman', { race, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
@@ -232,7 +249,7 @@ class Stage extends Component {
 
     removeRider(rider_participation_id) {
         const stage = this.state.stage
-        const race = this.state.race
+        const race = this.state.racename
         const year = this.state.year
         const budget = this.state.budget
         axios.post('/api/removeriderfromstage', { race, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
@@ -247,7 +264,7 @@ class Stage extends Component {
 
     selectRider(rider_participation_id) {
         const stage = this.state.stage
-        const race = this.state.race
+        const race = this.state.racename
         const year = this.state.year
         const budget = this.state.budget
         axios.post('/api/addridertostage', { race, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
@@ -350,7 +367,7 @@ class Stage extends Component {
                 allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].data} title={allSelections[i].title} coltype={allSelections[i].coltype}/>{notSelectedTable}</div>)
             }
             allSelectionsPopup = <ModalButton
-                            cssClassButton="buttonStandard blue2"
+                            cssClassButton={"buttonStandard " + this.state.racename}
                             content="Alle opstellingen "
                             modalContent={allSelectionsPopupContent}
                         />
@@ -360,11 +377,11 @@ class Stage extends Component {
                 <div className="stageInfo">
                     <div className='stagetext'>
                         <div id="prevStageButton">
-                            <button className="buttonStandard blue2" onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
+                            <button className={"buttonStandard " + this.state.racename} onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
                         </div>
                         <span className="bold black h7">Stage: {this.state.stage}</span>
                         <div id="nextStageButton">
-                            <button className="buttonStandard blue2" onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
+                            <button className={"buttonStandard " + this.state.racename} onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
                         </div>
                     </div>
                     <div className='stagestarttime h7 bold'>
@@ -372,7 +389,7 @@ class Stage extends Component {
                     </div>
                     {budgetSwitchButton}
                         <ModalButton
-                            cssClassButton="buttonStandard blue2"
+                            cssClassButton={"buttonStandard " + this.state.racename}
                             content="Profile "
                             contentIcon={stageProfileKnopIcon}
                             modalContent={stageProfile}

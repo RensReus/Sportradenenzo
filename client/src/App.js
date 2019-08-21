@@ -33,14 +33,18 @@ class App extends Component {
       loading: true,
       isLoggedIn: false,
       redirect: '/',
-      isAdmin: false
+      isAdmin: false,
+      racename: '',
+      year: ''
     });
+    this.setRace = this.setRace.bind(this);
+
   }
 
   componentDidMount() {
     axios.post('/api/getinitialdata')
       .then(res => {
-        this.setState({ redirect: res.data.redirect })
+        this.setState({ redirect: res.data.redirect, racename: res.data.racename, year: res.data.year})
       })
     this.authenticate()
   }
@@ -84,7 +88,13 @@ class App extends Component {
     }
   }
 
-
+  setRace(racename){
+    if(this.state.racename !== racename){
+      this.setState({
+        racename,
+      })
+    }
+  }
 
   render() {
     return (
@@ -92,22 +102,25 @@ class App extends Component {
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
       <div className="content">
         <div className="backgroundImage"></div>
-        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} history={this.props.history} />
+        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} history={this.props.history} racename={this.state.racename}/>
         <div className="pageContainer">
           <Route exact path="/" render={() => (
             this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} />)
           )} />
           <PrivateRoute path="/home" component={Home} history={this.props.history} />
-          <PrivateRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} />
-          <PrivateRoute path="/teamselection" component={Teamselection} history={this.props.history} redirect={this.state.redirect} />
+          <PrivateRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} racename={this.state.racename} year={this.state.year}/>
+          <PrivateRoute path="/teamselection" component={Teamselection} history={this.props.history} redirect={this.state.redirect} racename={this.state.racename} year={this.state.year}/>
           <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
           <PrivateRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
-          <PrivateRoute path="/overzicht/:selection" component={Overzicht} history={this.props.history} />
+          <PrivateRoute path="/overzicht/:selection" component={Overzicht} history={this.props.history} racename={this.state.racename} year={this.state.year}/>
           <PrivateRoute path="/profile/:account_id" component={Profile} history={this.props.history} />
-          <PrivateRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} />
-          <PrivateRoute path="/charts/:chartname" component={Charts} history={this.props.history} />
-
-          <PrivateRoute exact path="/:racename-:year/stage/:stagenumber" component={Stage} history={this.props.history} />
+          <PrivateRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} /> {/* TODO per rider_id en dan verschillende participations tonen */}
+          <PrivateRoute path="/charts/:chartname" component={Charts} history={this.props.history} racename={this.state.racename} year={this.state.year}/>
+          
+          {/* alle paginas voor vorige races */}
+          <PrivateRoute exact path="/:racename-:year/stage/:stagenumber" component={Stage} history={this.props.history} setRace={this.setRace} />
+          <PrivateRoute path="/:racename-:year/overzicht/:selection" component={Overzicht} history={this.props.history} setRace={this.setRace} />
+          <PrivateRoute path="/:racename-:year/charts/:chartname" component={Charts} history={this.props.history} setRace={this.setRace} />
         </div>
       </div>
     );

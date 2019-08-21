@@ -57,7 +57,18 @@ html{
     --background-color-dark: #444;
     --background-color-darker: rgb(46, 46, 46);
     --light-grey: ;
-    --main-color: var(--red4);
-    --main-color-light: var(--red5);
+
+    --default-color: var(--blue4);
+    --default-color-light: var(--blue5);
+
+    --giro-color: var(--pink4);
+    --giro-color-light: var(--pink5);
+
+    --tour-color: var(--yellow4);
+    --tour-color-light: var(--yellow5);
+    
+    --vuelta-color: var(--red4);
+    --vuelta-color-light: var(--red5);
+    
     --secondary-color: rgba();
 }

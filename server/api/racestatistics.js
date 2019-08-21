@@ -738,13 +738,13 @@ module.exports = function (app) {
                     INNER JOIN account_participation USING(account_participation_id)
                     INNER JOIN account USING(account_id)
                     INNER JOIN stage USING(stage_id)
-                    WHERE stage.race_id = ${req.body.race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
+                    WHERE stage.race_id = ${current_race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
                     ORDER BY stagescore DESC;\n`
 
                 var avgQuery = `SELECT ROUND(AVG(stagescore),2), stagenr FROM stage_selection
                 INNER JOIN stage USING(stage_id)
                 INNER JOIN account_participation USING(account_participation_id)
-                WHERE stage.race_id = ${req.body.race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
+                WHERE stage.race_id = ${current_race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
                 GROUP BY stagenr
                 ORDER BY stagenr;\n`
 

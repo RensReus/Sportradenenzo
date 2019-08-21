@@ -8,26 +8,38 @@ button.buttonStandard {
   padding-right: 5px;
   min-height: 5vh;
 }
-
+/* praktisch overbodig ?? */
 button.buttonStandard.blue{
-  background-color: var(--main-color);
+  background-color: var(--default-color);
   color: white;
 }
 
 button.buttonStandard.blue:hover{
-  background-color: var(--main-color-light);
+  background-color: var(--default-color-light);
   -webkit-transition: .4s;
   transition: .4s;
   cursor: pointer;
 }
-
-button.buttonStandard.blue2{
+/*  */
+button.buttonStandard{
   border: 2px solid;
   background: none;
-  color: var(--main-color);
+  color: var(--default-color);
 }
 
-button.buttonStandard.blue2:hover{
+button.buttonStandard.giro{
+  color: var(--giro-color);
+}
+
+button.buttonStandard.tour{
+  color: var(--tour-color);
+}
+
+button.buttonStandard.vuelta{
+  color: var(--vuelta-color);
+}
+
+button.buttonStandard:hover{
   background-color: #ddd;
   -webkit-transition: .4s;
   transition: .4s;
@@ -78,13 +90,13 @@ button > img{
   -webkit-transition: .4s;
   transition: .4s;
 }
-
+/* add race color */
 input:checked+.slider {
-  background-color: var(--main-color);
+  background-color: var(--vuelta-color);
 }
 
 input:focus+.slider {
-  box-shadow: 0 0 1px var(--main-color);
+  box-shadow: 0 0 1px var(--vuelta-color);
 }
 
 input:checked+.slider:before {
