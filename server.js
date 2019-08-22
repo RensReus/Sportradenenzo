@@ -49,21 +49,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-/* Express only serves static assets in production
+// Express only serves static assets in production
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
   const path = require("path");
   app.get("*", (req,res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+    res.sendFile(path.resolve(__dirname, "client", "public", "index.html"));
   });
 }else{
   app.get('*',(req,res) => {
     res.sendFile('./client/public/index.html', { root : __dirname})
   })
-}*/
-app.get('*',(req,res) => {
-  res.sendFile('./client/public/index.html', { root : __dirname})
-})
+}
 
 app.set("port", process.env.PORT || 3001);
 
