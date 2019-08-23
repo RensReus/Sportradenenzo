@@ -48,3 +48,9 @@ button.joinRace{
     margin-top: -100px; 
     margin-left: -200px; 
 }
+
+.filterField{
+    height: 15px;
+    display: block;
+    clear: both;
+}

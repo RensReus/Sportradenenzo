@@ -10,6 +10,7 @@ class Teamselection extends Component{
         super(props);
         this.state = {
             allRiders: [],
+            filteredRiders: [],
             userSelectionGewoon: [], 
             userSelectionBudget: [], 
             racename: '', 
@@ -17,12 +18,15 @@ class Teamselection extends Component{
             budgetGewoon: 0,
             budgetBudget: 0,
             joinButton: '',
-        showBudget: false}
+            filtervalue: '',
+            showBudget: false
+        }
         this.addRider = this.addRider.bind(this);
         this.removeRider = this.removeRider.bind(this);
         this.updatePage = this.updatePage.bind(this);
         this.budgetSwitch = this.budgetSwitch.bind(this);
         this.initialRender = this.initialRender.bind(this);
+        this.filter = this.filter.bind(this);
     }
 
     componentDidMount() {
@@ -48,6 +52,7 @@ class Teamselection extends Component{
                 }else{
                     this.setState({
                         allRiders: res.data.allRiders,
+                        filteredRiders: res.data.allRiders,
                         userSelectionGewoon: res.data.userSelectionGewoon,
                         budgetGewoon: res.data.budgetGewoon,
                         userSelectionBudget: res.data.userSelectionBudget,
@@ -121,16 +126,33 @@ class Teamselection extends Component{
         this.props.history.push(url);
     }
 
+    filter(e){
+        this.setState({ filtervalue: e.target.value },()=>{
+            var regex = new RegExp("\\w*"+this.state.filtervalue+"\\w*",'i')
+            var filteredRiders = [];
+            var allRiders = this.state.allRiders;
+            for(let i in allRiders){
+                if(allRiders[i].name.match(regex)||allRiders[i].team.match(regex)){
+                    filteredRiders.push(allRiders[i])
+                }
+            }
+            this.setState({filteredRiders})
+        })
+    }
+
     render(){
-        const allRiders = this.state.allRiders
+        const allRiders = this.state.filteredRiders
         const selectionGewoon = this.state.userSelectionGewoon
         const budgetGewoon = this.state.budgetGewoon
         const selectionBudget = this.state.userSelectionBudget
         const budgetBudget = this.state.budgetBudget
         return(
             <div className="container">
+                <div>
+                    <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+                    <textarea className = "filterField" value={this.state.filtervalue} onChange={(e) => {this.filter(e)}} />                
+                </div>
                 
-                <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
                 <div className="ridertablecontainer" style={{display: this.state.showBudget ? 'none' : 'block'}}>
                     <div className="teamindicator">
                         Gewone Team Selectie
