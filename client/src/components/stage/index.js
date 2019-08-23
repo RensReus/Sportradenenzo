@@ -174,11 +174,11 @@ class Stage extends Component {
         if(stage>22 || stage<1){
             this.props.history.push('/');
         }
-        const race = this.state.racename
+        const racename = this.state.racename
         const year = this.state.year
         document.title = "Etappe " + stage;
 
-        axios.post('/api/getstage', { race, year, stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
+        axios.post('/api/getstage', { racename, year, stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
             .then((res) => {
                 if (res.data.mode === '404') {
                     this.setState({
@@ -226,10 +226,10 @@ class Stage extends Component {
 
     setKopman(rider_participation_id) {
         const stage = this.state.stage
-        const race = this.state.racename
+        const racename = this.state.racename
         const year = this.state.year
         const budget = this.state.budget
-        axios.post('/api/setkopman', { race, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
+        axios.post('/api/setkopman', { racename, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
             .then((res) => {
                 if (budget) {
                     this.setState({ kopmanBudget: res.data.kopman })
@@ -249,10 +249,10 @@ class Stage extends Component {
 
     removeRider(rider_participation_id) {
         const stage = this.state.stage
-        const race = this.state.racename
+        const racename = this.state.racename
         const year = this.state.year
         const budget = this.state.budget
-        axios.post('/api/removeriderfromstage', { race, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
+        axios.post('/api/removeriderfromstage', { race: racename, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
             .then((res) => {
                 if (budget) {
                     this.setState({ stageSelectionBudget: res.data })
@@ -264,10 +264,10 @@ class Stage extends Component {
 
     selectRider(rider_participation_id) {
         const stage = this.state.stage
-        const race = this.state.racename
+        const racename = this.state.racename
         const year = this.state.year
         const budget = this.state.budget
-        axios.post('/api/addridertostage', { race, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
+        axios.post('/api/addridertostage', { racename, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
             .then((res) => {
                 if (budget) {
                     this.setState({ stageSelectionBudget: res.data })
@@ -364,7 +364,11 @@ class Stage extends Component {
                     notSelectedTable = <Table data={notSelected[i].riders} title={"Niet Opgesteld"}/>    
                     index++;                
                 }
-                allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].data} title={allSelections[i].title} coltype={allSelections[i].coltype}/>{notSelectedTable}</div>)
+                var totalRiders = '';
+                    if(parseInt(i)===allSelections.length-1){
+                    totalRiders = ' Totaal: ' + allSelections[i].data.length
+                }
+                allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].data} title={allSelections[i].title + totalRiders} coltype={allSelections[i].coltype}/>{notSelectedTable}</div>)
             }
             allSelectionsPopup = <ModalButton
                             cssClassButton={"buttonStandard " + this.state.racename}

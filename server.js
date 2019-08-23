@@ -13,8 +13,8 @@ app.use(cors({
 
 
 //global vars
-current_race_id = 6;
-current_racename = 'tour';
+current_race_id = 15;
+current_racename = 'vuelta';
 current_year = 2019;
 currentstage_global = 0;
 functies.setCurrentStage()

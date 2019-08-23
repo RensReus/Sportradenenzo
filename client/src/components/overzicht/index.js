@@ -64,15 +64,15 @@ class overzicht extends Component {
     }, () => {
       switch (this.props.match.params.selection) {
         case "all": this.renderAll(); break;
-        case "selected": this.renderSelected(); break;
+        case "selected" && this.props.redirect !=='/teamselection': this.renderSelected(); break;
         case "missedpoints": this.renderMissedPoints(); break;
         case "missedpointsall": this.renderMissedPointsAll(); break;
-        case "team": this.renderTeam(); break;
-        case "teamall": this.renderTeamAll(); break;
-        case "teamallsimple": this.renderTeamAllSimple(); break;
+        case "team" && this.props.redirect !=='/teamselection': this.renderTeam(); break;
+        case "teamall" && this.props.redirect !=='/teamselection': this.renderTeamAll(); break;
+        case "teamallsimple" && this.props.redirect !=='/teamselection': this.renderTeamAllSimple(); break;
         case "etappewinsten": this.renderEtappeWinsten(); break;
-        case "overigestats": this.renderOverigeStats(); break;
-        default: this.renderAll(); break;
+        case "overigestats" && this.props.redirect !=='/teamselection': this.renderOverigeStats(); break;
+        default: this.props.history.push(this.props.redirect); break;
       }
     })
   }
@@ -83,9 +83,9 @@ class overzicht extends Component {
     })
   }
 
-  renderAll() {//race_id heeft de server al
+  renderAll() {
     document.title = "Alle Renners Overzicht";
-    axios.post('/api/getriderpointsall', { token: localStorage.getItem('authToken')/*, race_id: 6*/ })
+    axios.post('/api/getriderpointsall', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year})
       .then((res) => {
         if (res) {
           this.setState({
@@ -99,7 +99,7 @@ class overzicht extends Component {
 
   renderSelected() {
     document.title = "Gekozen Renners Overzicht";
-    axios.post('/api/getriderpointsselected', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
+      axios.post('/api/getriderpointsselected', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
       .then((res) => {
         if (res) {
           this.setState({
@@ -114,17 +114,17 @@ class overzicht extends Component {
 
   renderMissedPoints() {
     document.title = "Gemiste Punten";
-    axios.post('/api/missedpoints', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
-      .then((res) => {
-        if (res) {
-          this.setState({
-            data: res.data.tableData,
-            tableName: res.data.title,
-            budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
-          })
-        }
-      })
-  }
+      axios.post('/api/missedpoints', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
+        .then((res) => {
+          if (res) {
+            this.setState({
+              data: res.data.tableData,
+              tableName: res.data.title,
+              budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
+            })
+          }
+        })
+    }
 
   renderMissedPointsAll() {
     document.title = "Gemiste Punten Iedereen";
@@ -210,7 +210,7 @@ class overzicht extends Component {
 
   renderOverigeStats() {
     document.title = "Overige Statistieken"
-    axios.post('/api/getadditionalstats', { token: localStorage.getItem('authToken'), budgetparticipation: this.state.budget }).then((res) => {
+    axios.post('/api/getadditionalstats', { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget }).then((res) => {
       if (res) {
         var extraTables = []
         for (var i in res.data.tables) {

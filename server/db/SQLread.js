@@ -85,7 +85,8 @@ module.exports = {
         var race_id = `(SELECT race_id FROM race WHERE name = $1 AND year = $2)`;
         var query = `SELECT rider.firstname || ' ' || rider.lastname as name, price, team, rider_participation_id FROM rider_participation
                 INNER JOIN rider using(rider_id)
-                WHERE race_id = ${race_id}`;
+                WHERE race_id = ${race_id}
+                ORDER BY price DESC`;
 
         sqlDB.query(query, values, (err, res) => {
             if (err) throw err;

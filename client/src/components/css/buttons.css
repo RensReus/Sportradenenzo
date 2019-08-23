@@ -7,6 +7,9 @@ button.buttonStandard {
   padding-left: 5px;
   padding-right: 5px;
   min-height: 5vh;
+  border: 2px solid;
+  background-color: var(--background-color);
+  color: var(--default-color);
 }
 /* praktisch overbodig ?? */
 button.buttonStandard.blue{
@@ -21,11 +24,7 @@ button.buttonStandard.blue:hover{
   cursor: pointer;
 }
 /*  */
-button.buttonStandard{
-  border: 2px solid;
-  background: none;
-  color: var(--default-color);
-}
+
 
 button.buttonStandard.giro{
   color: var(--giro-color);

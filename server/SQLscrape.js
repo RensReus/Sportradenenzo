@@ -20,7 +20,7 @@ module.exports = {
                 break;
             case "vuelta":
                 raceString = "vuelta-a-espana";
-                prijzenfile = "./server/prijzen.txt";
+                prijzenfile = "./server/vueltaprijzen.txt";
                 break;
         }
         var race_id = `(SELECT race_id FROM race WHERE name = '${raceName}' AND year = ${year})`;

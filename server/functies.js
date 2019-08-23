@@ -334,6 +334,9 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
     if (err) {console.log("WRONG QUERY:",stageQuery); throw err;}
     else{
       if(results.rows.length){// if some results, so at least after start of stage 1
+        if(currentstage_global===0){// set to 1 to make teamselection inaccessible
+            currentstage_global = 1
+        }
         var stage = results.rows[0];
         if(!stage.finished){
           SQLscrape.getTimetoFinish(function(stageFinished,newResultsRule){// getTimetoFinish if not finished

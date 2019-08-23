@@ -35,3 +35,13 @@ div.teamindicator{
 .unselectable{
     background-color: red
 }
+
+button.joinRace{
+    width:400px; 
+    height:200px; 
+    position: fixed; 
+    top: 30%; 
+    left: 50%; 
+    margin-top: -100px; 
+    margin-left: -200px; 
+}

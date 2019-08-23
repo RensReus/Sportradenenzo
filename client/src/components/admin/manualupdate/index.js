@@ -30,7 +30,7 @@ class manualupdate extends Component {
             grstatus: "",
             gsStatus: "",
             year: "2019",
-            raceName: "tour"
+            raceName: "vuelta"
         }
     }
 
