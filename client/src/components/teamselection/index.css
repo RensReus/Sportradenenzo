@@ -3,10 +3,13 @@ div.container{
     margin: 0;
 }
 div.ridertablecontainer{
-    width: 50%;
+    width: 40%;
 }
 div.usertablecontainer{
-    width: 50%;
+    position: fixed;
+    float: right;
+    width: 40%;
+    right: 0%; 
 }
 
 div.budget{
