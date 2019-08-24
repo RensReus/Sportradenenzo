@@ -252,8 +252,10 @@ class Stage extends Component {
         const racename = this.state.racename
         const year = this.state.year
         const budget = this.state.budget
-        axios.post('/api/removeriderfromstage', { race: racename, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
+        axios.post('/api/removeriderfromstage', { racename, year, stage, rider_participation_id, budgetParticipation: budget, token: localStorage.getItem('authToken') })
             .then((res) => {
+                console.log(budget)
+                console.log(res.data)
                 if (budget) {
                     this.setState({ stageSelectionBudget: res.data })
                 } else {
