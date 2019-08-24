@@ -523,7 +523,7 @@ module.exports = {
                 switch(current_racename){
                     case 'giro': startString = 'Giro d\'Italia'; break;
                     case 'tour': startString = 'Tour de France'; break;
-                    case 'vuelta': startString = 'Vuelta a España'; break;
+                    case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
                 }
                 if ($(this).children().eq(2).text().startsWith(startString)) {
                     girobeschikbaar = true;

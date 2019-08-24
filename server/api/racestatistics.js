@@ -466,14 +466,14 @@ module.exports = function (app) {
                 INNER JOIN rider_participation USING(rider_participation_id)
                 INNER JOIN account_participation USING (account_participation_id)
                 INNER JOIN stage USING(stage_id)
-                WHERE stage.race_id = ${6} AND budgetparticipation = ${req.body.budgetparticipation} AND starttime < now() AT TIME ZONE 'Europe/Paris'
+                WHERE stage.race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND starttime < now() AT TIME ZONE 'Europe/Paris'
                 GROUP BY stagenr; `;
 
                 var uitgevallenQuery = `SELECT username AS "User", COUNT(rider_participation_id) AS "Uitvallers", SUM(price) AS "Prijs" FROM rider_participation
                 INNER JOIN team_selection_rider USING(rider_participation_id)
                 INNER JOIN account_participation USING(account_participation_id)
                 INNER JOIN account USING(account_id)
-                WHERE rider_participation.race_id = ${6} AND dnf AND budgetparticipation = ${req.body.budgetparticipation}
+                WHERE rider_participation.race_id = ${current_race_id} AND dnf AND budgetparticipation = ${req.body.budgetparticipation}
                 GROUP BY "User"
                 ORDER BY "Uitvallers" DESC; `
 
@@ -484,7 +484,7 @@ module.exports = function (app) {
                                 LEFT JOIN team_selection_rider USING(rider_participation_id)
                                 LEFT JOIN account_participation USING(account_participation_id)
                                 LEFT JOIN account USING (account_id)
-                                WHERE rider_participation.race_id = ${6} AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
+                                WHERE rider_participation.race_id = ${current_race_id} AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
                                 GROUP BY "Name", "Team ", "Price", rider_participation.rider_participation_id
                     ORDER BY "Usercount" DESC, "Users") as a
                     INNER JOIN team_selection_rider USING(rider_participation_id)
@@ -501,7 +501,7 @@ module.exports = function (app) {
                                 LEFT JOIN team_selection_rider USING(rider_participation_id)
                                 LEFT JOIN account_participation USING(account_participation_id)
                                 LEFT JOIN account USING (account_id)
-                                WHERE rider_participation.race_id = ${6} AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
+                                WHERE rider_participation.race_id = ${current_race_id} AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
                                 GROUP BY "Name", "Team ", "Price", rider_participation.rider_participation_id
                     ORDER BY "Usercount" DESC, "Users") as a
                     INNER JOIN team_selection_rider USING(rider_participation_id)

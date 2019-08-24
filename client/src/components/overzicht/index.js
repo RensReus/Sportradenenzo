@@ -62,16 +62,17 @@ class overzicht extends Component {
       tableName: '',
       extraTables: '',
     }, () => {
+      console.log("redir",this.props)
       switch (this.props.match.params.selection) {
         case "all": this.renderAll(); break;
-        case "selected" && this.props.redirect !=='/teamselection': this.renderSelected(); break;
+        case "selected": this.renderSelected(); break;
         case "missedpoints": this.renderMissedPoints(); break;
         case "missedpointsall": this.renderMissedPointsAll(); break;
-        case "team" && this.props.redirect !=='/teamselection': this.renderTeam(); break;
-        case "teamall" && this.props.redirect !=='/teamselection': this.renderTeamAll(); break;
-        case "teamallsimple" && this.props.redirect !=='/teamselection': this.renderTeamAllSimple(); break;
+        case "team": this.renderTeam(); break;
+        case "teamall": this.renderTeamAll(); break;
+        case "teamallsimple": this.renderTeamAllSimple(); break;
         case "etappewinsten": this.renderEtappeWinsten(); break;
-        case "overigestats" && this.props.redirect !=='/teamselection': this.renderOverigeStats(); break;
+        case "overigestats": this.renderOverigeStats(); break;
         default: this.props.history.push(this.props.redirect); break;
       }
     })
