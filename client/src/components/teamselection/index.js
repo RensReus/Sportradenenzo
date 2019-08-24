@@ -132,7 +132,7 @@ class Teamselection extends Component{
             var filteredRiders = [];
             var allRiders = this.state.allRiders;
             for(let i in allRiders){
-                if(allRiders[i].name.match(regex)||allRiders[i].team.match(regex)){
+                if(allRiders[i].name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").match(regex)||allRiders[i].team.match(regex)){
                     filteredRiders.push(allRiders[i])
                 }
             }
