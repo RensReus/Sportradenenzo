@@ -254,7 +254,7 @@ module.exports = function (app) {
                     users.push({tableData: results.bierfietsen, title: "Bierfietsen"});
                     users.push({tableData: results.rens, title: "Rens"});
                     users.push({tableData: results.sam, title: "Sam"});
-                    users.push({tableData: results.yannick, title: "Yannick"});
+                    users.push({tableData: results.yannick, title: "Tannonk"});
                     res.send({users})
             })
             }
