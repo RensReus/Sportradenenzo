@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Table from '../shared/table'
+import FlagIcon from '../shared/flagIcon'
 
 class Rider extends Component {
   constructor(props) {
@@ -24,6 +25,7 @@ class Rider extends Component {
             posData: res.data.posData,
             pointsData: res.data.pointsData,
             riderName: res.data.riderName,
+            country: res.data.country
           })
         }
       })
@@ -32,7 +34,8 @@ class Rider extends Component {
   render() {
     return (
       <div className="overzichtContainer">
-        <div>{this.state.riderName}</div>
+        <div className="h3">{this.state.riderName} <FlagIcon code={this.state.country}/> </div>
+        
         <div className='tableDiv'><Table data={this.state.posData} title={"Uitslagen"} /></div>
         <div className='tableDiv'><Table data={this.state.pointsData} title={"Punten"} /></div>
       </div>

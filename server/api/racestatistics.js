@@ -182,7 +182,7 @@ module.exports = function (app) {
             WHERE rider_participation_id = ${req.body.rider_participation_id}
             GROUP BY "Etappe"
             ORDER BY "Etappe"; `
-            var nameQuery = `SELECT name, year, CONCAT(firstname, ' ', lastname) AS ridername FROM rider_participation
+            var nameQuery = `SELECT country, name, year, CONCAT(firstname, ' ', lastname) AS ridername FROM rider_participation
             INNER JOIN race USING(race_id)
             INNER JOIN rider USING(rider_id)
             WHERE rider_participation_id = ${req.body.rider_participation_id}; `
@@ -201,10 +201,12 @@ module.exports = function (app) {
                     }
                 }
                 var riderName = results[2].rows[0].ridername;
+                var country = results[2].rows[0].country;
                 res.send({
                     posData,
                     pointsData,
                     riderName,
+                    country,
                 })
             })
             }
@@ -431,21 +433,17 @@ module.exports = function (app) {
 
     teamoverzichtSimple = function (account_id, race_id, budgetparticipation, callback){
         var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetparticipation = ${budgetparticipation})`
-        var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
-            INNER JOIN stage_selection USING(stage_selection_id)
-            WHERE account_participation_id = ${account_participation_id}
-            ORDER BY stage_id) a`
+        var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM team_selection_rider
+            WHERE account_participation_id = ${account_participation_id}) a`
         var totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 ELSE totalscore END`
         if(budgetparticipation){
             totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 - teamscore ELSE totalscore - teamscore END`
             teamscore = '';
         }
-        var query = `SELECT CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name",  SUM(${totalscore}) AS "Score" from rider
-                    INNER JOIN rider_participation USING(rider_id)
-                    RIGHT JOIN ${selected_riders_stages} USING (rider_participation_id)
-                    INNER JOIN results_points USING(stage_id,rider_participation_id)
-                    GROUP BY "Name", "Name_link"
-                    ORDER BY "Score" DESC`
+        var query = `SELECT CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name" from team_selection_rider
+                    INNER JOIN rider_participation USING(rider_participation_id)
+                    INNER JOIN rider USING(rider_id)
+                    WHERE account_participation_id = ${account_participation_id} `
         var coltype = { "Name": 0, "Score": 1};
 
         sqlDB.query(query,(err,results) => {

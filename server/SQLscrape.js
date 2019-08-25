@@ -39,9 +39,11 @@ module.exports = {
                         var teamName = $(this).children().first().children().last().text();
                         // $(this).children()
                         $(this).children().eq(2).children(".rider").each(function (index, element) { //gaat iedere renner af
-                            var name = $(this).text();
+
+                            var name = $(this).children().first().text();
                             // sla achternaam voor naam en voorletters op
-                            var lastname = $(this).children().first().text();
+                            var lastname = $(this).children().first().children().first().text().toLowerCase();
+                            lastname = lastname.charAt(0).toUpperCase() + lastname.slice(1);
                             var voornaam = name.substring(lastname.length + 1);
                             var voornamen = voornaam.split(' ').filter(x => x);
                             var voorletters = "";
@@ -50,8 +52,8 @@ module.exports = {
                             }
 
                             var pcsid = $(this).attr('href').substring(6);
-                            if ($(this).siblings().eq(4 * index + 4).attr("class") != null) {
-                                var country = $(this).siblings().eq(4 * index + 4).attr("class").split(' ')[1];
+                            if ($(this).siblings().eq(4 * index + 1).attr("class") != null) {
+                                var country = $(this).siblings().eq(4 * index +1 ).attr("class").split(' ')[1];
                             }
                             var prijs = 66666666;
                             for (i in renners) {
