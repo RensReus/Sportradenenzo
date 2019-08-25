@@ -214,7 +214,7 @@ module.exports = function (app) {
                                         ORDER BY " " ASC
                                         LIMIT 5; `;
 
-                                        totalQuery = GCresultsQuery + pointsresultsQuery + komresultsQuery + youthresultsQuery;
+                                        totalQuery += GCresultsQuery + pointsresultsQuery + komresultsQuery + youthresultsQuery;
                                     }
                                     sqlDB.query(totalQuery, (err, selectClassResult) => {
                                         if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
@@ -224,7 +224,7 @@ module.exports = function (app) {
                                 }
                             }, function (err, asyncresults) {
                                 if (err) throw err;
-                                console.log(asyncresults)
+                                console.log(asyncresults.prevClassifications)
                                 res.send({
                                     'mode': 'selection',
                                     'userTeamGewoon': asyncresults.userSelectionGewoon,
