@@ -134,13 +134,17 @@ div.classification {
         grid-template-rows: 20vh auto auto auto;
         grid-gap: 1em;
         padding: 1vh;
-        background-color: var(--background-color);
         justify-items: center;
     }
     table.selecTable {
         grid-row: 2 / 3;
         grid-column: 1;
     }
+
+    table.selecTable tr:nth-child(9){
+      box-shadow: 0 1px var(--vuelta-color);
+    }
+
     div.stageInfo {
         grid-row: 1 / 2;
         grid-column: 1;
@@ -176,7 +180,6 @@ div.classification {
         grid-template-rows: auto auto auto;
         grid-gap: 1em;
         padding: 1vh;
-        background-color: var(--background-color);
         justify-items: center;
     }
     /*Stageselection indeling*/

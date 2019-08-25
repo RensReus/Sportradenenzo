@@ -19,7 +19,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   
   body {
     line-height: 1;
-    color: black;
+    color: var(--text-color);
     background: white;
   }
   
@@ -66,7 +66,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     box-sizing: border-box;
     min-height: 100vh;
     overflow: auto;
-    background-color: var(--background-color-transparent);
+    background-color: var(--background-color);
     margin: auto;
     padding-top: 53px;
     width: 75vw;
@@ -101,7 +101,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
       box-sizing: border-box;
       min-height: 100vh;
       overflow: auto;
-      background-color: var(--background-color-transparent);
+      background-color: var(--background-color);
       margin: auto;
       padding-top: 53px;
       width: 75vw;

@@ -1,14 +1,12 @@
 /*Default table css, overruled by more specified table classes*/
 table {
-    border: none;
-    width: 100%
+    width: 100%;
+    background: none;
 }
 
-tr:nth-child(odd) {
-    background: #c7c7c7;
-}
-tr:nth-child(even) {
-    background: rgb(141, 141, 141);
+tr {
+    width: 100%;
+    box-shadow: 0px 1px gray
 }
 
 th{
@@ -20,9 +18,10 @@ table > caption{
     background: var(--background-color-darker);
     color: white;
     font-size: 25px;
-    padding-top: 1px;
-    padding-bottom: 1px;
+    padding-top: 2px;
+    padding-bottom: 2px;
     text-align: center;
+    box-shadow: 0px 1px gray;
     width: 100%
 }
 
@@ -37,14 +36,28 @@ th.sortable{
 }
 
 th, td {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-    text-align: center;
-    font-size: 15px;
-    border: 1px black solid;
+    padding: 6px 5px 5px 5px; /* compensatie voor box shadow */
+    text-align: left;
+    font-size: 15px; 
 }
+
+tr.bold > :first-child{
+    padding: 4px 3px 3px 3px;
+}
+tr.gray > :first-child {
+    border:  2px white dotted;
+}
+
+tr.black > :first-child {
+    border:  2px white solid;
+}
+
+td.rank{
+    width: 25px;
+    text-align: center;
+}
+
+
 
 .scrollButton {
     background-color: grey;
@@ -73,10 +86,7 @@ th, td {
   tbody{
       width: 100%;
   }
-  tr {
-    width: 100%;
-  }
-
+  
   .tableLink {
     text-decoration: none;
     color:inherit;

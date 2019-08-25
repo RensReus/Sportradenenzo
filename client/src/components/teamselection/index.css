@@ -32,12 +32,30 @@ div.teamindicator{
 }
 
 .selected{
-    background-color: green
+    /* background-color: var(--background-color-lighter) */
+}
+
+tr.dnf{
+    color: var(--background-color-dark);
+    text-decoration: line-through;
 }
 
 .unselectable{
-    background-color: red
+    color: var(--text-color-grayed-out)
 }
+
+tr.unselectable  {
+    content: " ";
+    top: 50%;
+    left: 0;
+    border-bottom: 1px solid pink;
+    width: 100%;
+  }
+  
+  tr.unselectable > td:after {
+    content: "\00B7";
+    font-size: 1px;
+  }
 
 button.joinRace{
     width:400px; 

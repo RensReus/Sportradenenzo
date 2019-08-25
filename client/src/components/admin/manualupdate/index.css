@@ -1,5 +1,4 @@
 div.mainContainer {
-    background-color: rgba(230,230,240);
     overflow: auto;
     display:grid;
     grid-template-rows: repeat(3,1fr)    

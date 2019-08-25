@@ -46,10 +46,6 @@
     font-weight: bold;
 }
 
-.gray {
-    color: darkgray;
-}
-
-.black {
-    color: black;
+.grayedOut {
+    color: var(--text-color-grayed-out);
 }
