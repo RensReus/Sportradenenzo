@@ -301,6 +301,7 @@ class Stage extends Component {
         let allSelections
         let allSelectionsPopup
         let notSelected
+        let selectionsCompleteDiv
         // always
         var stageProfile = '';
         if (this.state.stage > 2 && this.state.stage < 22) {//TODO netter, check if file exists
@@ -344,6 +345,12 @@ class Stage extends Component {
             pTable = ''
             stResTable = ''
         } else if (mode === 'selection') {
+            var gewoonCompleet = (this.state.stageSelectionGewoon.length + (this.state.kopmanGewoon ? 1 : 0))*10
+            var budgetCompleet = (this.state.stageSelectionBudget.length + (this.state.kopmanBudget ? 1 : 0))*10;
+            selectionsCompleteDiv = <div className={"completeContainer " + ((gewoonCompleet + budgetCompleet) == 200 ? "allCompleet" : "")}>Compleet: 
+                                    <div className ="gewoonCompleet"><div style={{width: gewoonCompleet + "%"}} className ={"backgroundCompleet teamSize" }></div><div className="textCompleet">Gewoon</div></div>
+                                    <div className ="budgetCompleet"><div style={{width: budgetCompleet + "%"}} className ={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
+                                    </div>
             var starttime = new Date(this.state.starttime);
             var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
             starttimeString = dayArray[starttime.getDay()] + " " + starttime.getHours() + ":" + starttime.getMinutes();
@@ -394,6 +401,7 @@ class Stage extends Component {
                         {starttimeString}
                     </div>
                     {budgetSwitchButton}
+                        {selectionsCompleteDiv}
                         <ModalButton
                             cssClassButton={"buttonStandard " + this.state.racename}
                             content="Profile "
