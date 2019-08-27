@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 //import './index.css';
 import underConstruction from '../../under_construction.gif'
 
@@ -15,25 +15,15 @@ class Home extends Component{
     constructor(props) {
         super(props);
         this.state = ({
-            upcomingRace_id: 6,
-            upcomingParticipation: false          
+            
         });
       }
 
-    componentWillMount(){
+    componentDidMount(){
         document.title = "Profiel";
-        axios.post('/api/getracepartcipation',{race_id : this.state.upcomingRace_id})
-        .then((res)=>{
-            this.setState({upcomingParticipation: res.data.rowCount>0})
-        })
     }
 
-    addParticipation(race_id){
-        axios.post('/api/addparticipation',{race_id : race_id})
-        .then((res)=>{
-        })
-    }
-    
+       
     render(){
         return(
             <div className="standardContainer">
@@ -41,11 +31,8 @@ class Home extends Component{
                     <ActiveRacesTable/>
                 </div>
                 <img src={underConstruction}  alt="still building" />
-                <div style={{display: this.state.upcomingParticipation ? 'none' : 'block'}}>
-                    Mee doen aan Giro.
-                    Budget en gewoon in 1 account;
-                    <button disabled onClick={() => {this.addParticipation(this.state.upcomingRace_id)}} >Click me {";)"}</button>
-                </div>
+                Coming Soon meer hier
+                stuur suggesties naar Arjen Peijen
             </div>
         )
     }

@@ -11,7 +11,7 @@ class Profile extends Component{
         });
       }
 
-    componentWillMount(){
+    componentDidMount(){
         axios.post('/api/getprofiledata',{account_id: this.props.match.params.account_id,token: localStorage.getItem('authToken')})
         .then((res)=>{
             if(res.data.userNotFound){

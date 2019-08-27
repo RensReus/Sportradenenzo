@@ -52,9 +52,10 @@ class Rows extends Component {
                     link = "";//reset link
                 }
                 if (property !== "rowClassName") {
-                    var classname = property;
-                    if(classname===' ') classname = 'rank'
-                    row.push(<td key={i + property} className={classname}>{tdContent}</td>);
+                    var tdClassname = property;
+                    if(tdClassname === ' ') tdClassname = 'rank'
+                    if(tdClassname === '  ' && tdContent.length) tdClassname = 'change' + tdContent[0];
+                    row.push(<td key={i + property} className={tdClassname}>{tdContent}</td>);
                 } else {
                     className = data[i][property];
                 }

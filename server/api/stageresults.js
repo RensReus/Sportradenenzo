@@ -174,47 +174,26 @@ module.exports = function (app) {
                                         var name = `CONCAT(firstname, ' ', lastname) AS "Name"`
                                         var link = `CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link"`
                                         var team = `team AS "Team"`
-                                        var GCresultsQuery = `SELECT gcpos AS " ", ${link}, ${name}, ${team}, gcresult AS "Time", ${rowClassName}
-                                        FROM results_points
-                                        INNER JOIN rider_participation USING(rider_participation_id)
-                                        INNER JOIN rider USING(rider_id)
-                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
-                                        WHERE stage_id=${stage_idPrev} AND gcpos > 0 
-                                        GROUP BY " ", "Name_link", "Name", "Team", "Time", rider_participation.rider_participation_id
-                                        ORDER BY " " ASC
-                                        LIMIT 5; `;
 
-                                        var pointsresultsQuery = `SELECT pointspos AS " ", ${link}, ${name}, ${team}, pointsresult AS "Punten", ${rowClassName}
-                                        FROM results_points
-                                        INNER JOIN rider_participation USING(rider_participation_id)
-                                        INNER JOIN rider USING(rider_id)
-                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
-                                        WHERE stage_id=${stage_idPrev} AND pointspos > 0 
-                                        GROUP BY " ", "Name_link", "Name", "Team", "Punten", rider_participation.rider_participation_id
-                                        ORDER BY " " ASC
-                                        LIMIT 5; `;
-
-                                        var komresultsQuery = `SELECT kompos AS " ", ${link}, ${name}, ${team}, komresult AS "Punten", ${rowClassName}
-                                        FROM results_points
-                                        INNER JOIN rider_participation USING(rider_participation_id)
-                                        INNER JOIN rider USING(rider_id)
-                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
-                                        WHERE stage_id=${stage_idPrev} AND kompos > 0 
-                                        GROUP BY " ", "Name_link", "Name", "Team", "Punten", rider_participation.rider_participation_id
-                                        ORDER BY " " ASC
-                                        LIMIT 5; `;
-
-                                        var youthresultsQuery = `SELECT yocpos AS " ", ${link}, ${name}, ${team}, yocresult AS "Time", ${rowClassName}
-                                        FROM results_points
-                                        INNER JOIN rider_participation USING(rider_participation_id)
-                                        INNER JOIN rider USING(rider_id)
-                                        LEFT JOIN stage_selection_rider USING(rider_participation_id)
-                                        WHERE stage_id=${stage_idPrev} AND yocpos > 0 
-                                        GROUP BY " ", "Name_link", "Name", "Team", "Time", rider_participation.rider_participation_id
-                                        ORDER BY " " ASC
-                                        LIMIT 5; `;
-
-                                        totalQuery += GCresultsQuery + pointsresultsQuery + komresultsQuery + youthresultsQuery;
+                                        var classifications = [
+                                            {pos:'gcpos',result:'gcresult AS "Time"'},
+                                            {pos:'pointspos',result:'pointsresult AS "Time"'},
+                                            {pos:'kompos',result:'komresult AS "Time"'},
+                                            {pos:'yocpos',result:'yocresult AS "Time"'},
+                                        ];
+        
+                                        var totalQuery = '';
+        
+                                        for (var j in classifications){
+                                            var classificationQuery = `SELECT ${classifications[j].pos} AS " ", ${link}, ${name}, ${team}, ${classifications[j].result}, ${rowClassName}
+                                            FROM results_points
+                                            INNER JOIN rider_participation USING(rider_participation_id)
+                                            INNER JOIN rider USING(rider_id)
+                                            WHERE stage_id=${stage_idPrev} AND ${classifications[j].pos} > 0 
+                                            ORDER BY " " ASC
+                                            LIMIT 5;\n `;
+                                            totalQuery += classificationQuery;
+                                        }
                                     }
                                     sqlDB.query(totalQuery, (err, selectClassResult) => {
                                         if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
@@ -277,57 +256,31 @@ module.exports = function (app) {
                                 var name2 = `CONCAT(initials, ' ', lastname) AS "Name"`
                                 var link = `CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link"`
                                 var team = `team AS "Team"`
-                                var stageresultsQuery = `SELECT stagepos AS " ", ${link}, ${name2}, ${team}, stageresult AS "Time", ${rowClassName}
+
+                                var classifications = [
+                                    {pos:'stagepos',result:'stageresult AS "Time"',prev:'',change:''},
+                                    {pos:'gcpos',result:'gcresult AS "Time"',prev:',gcprev AS "prev"',change:', gcchange AS "  "'},
+                                    {pos:'pointspos',result:'pointsresult AS "Time"',prev:',pointsprev AS "prev"',change:', pointschange AS "  "'},
+                                    {pos:'kompos',result:'komresult AS "Time"',prev:',komprev AS "prev"',change:', komchange AS "  "'},
+                                    {pos:'yocpos',result:'yocresult AS "Time"',prev:',yocprev AS "prev"',change:', yocchange AS "  "'},
+                                ];
+
+                                var resultsQuery = '';
+
+                                for (var j in classifications){
+                                    var classificationQuery = `SELECT ${classifications[j].pos} AS " " ${classifications[j].change}, ${link}, ${name2}, ${team}, ${classifications[j].result}, ${rowClassName}
                                     FROM results_points
                                     INNER JOIN rider_participation USING(rider_participation_id)
                                     INNER JOIN rider USING(rider_id)
-                                    LEFT JOIN stage_selection_rider USING(rider_participation_id)
-                                    WHERE stage_id=${stage_id} AND stagepos > 0 
-                                    GROUP BY " ", "Name_link", "Name", "Team", "Time", rider_participation.rider_participation_id
+                                    WHERE stage_id=${stage_id} AND ${classifications[j].pos} > 0 
                                     ORDER BY " " ASC;\n `;
-
-                                var GCresultsQuery = `SELECT gcpos AS " ", ${link}, ${name2}, ${team}, gcresult AS "Time", ${rowClassName}
-                                    FROM results_points
-                                    INNER JOIN rider_participation USING(rider_participation_id)
-                                    INNER JOIN rider USING(rider_id)
-                                    LEFT JOIN stage_selection_rider USING(rider_participation_id)
-                                    WHERE stage_id=${stage_id} AND gcpos > 0 
-                                    GROUP BY " ", "Name_link", "Name", "Team", "Time", rider_participation.rider_participation_id
-                                    ORDER BY " " ASC;\n `;
-
-                                var pointsresultsQuery = `SELECT pointspos AS " ", ${link}, ${name2}, ${team}, pointsresult AS "Punten", ${rowClassName}
-                                    FROM results_points
-                                    INNER JOIN rider_participation USING(rider_participation_id)
-                                    INNER JOIN rider USING(rider_id)
-                                    LEFT JOIN stage_selection_rider USING(rider_participation_id)
-                                    WHERE stage_id=${stage_id} AND pointspos > 0 
-                                    GROUP BY " ", "Name_link", "Name", "Team", "Punten", rider_participation.rider_participation_id
-                                    ORDER BY " " ASC;\n `;
-
-                                var komresultsQuery = `SELECT kompos AS " ", ${link}, ${name2}, ${team}, komresult AS "Punten", ${rowClassName}
-                                    FROM results_points
-                                    INNER JOIN rider_participation USING(rider_participation_id)
-                                    INNER JOIN rider USING(rider_id)
-                                    LEFT JOIN stage_selection_rider USING(rider_participation_id)
-                                    WHERE stage_id=${stage_id} AND kompos > 0 
-                                    GROUP BY " ", "Name_link", "Name", "Team", "Punten", rider_participation.rider_participation_id
-                                    ORDER BY " " ASC;\n `;
-
-                                var youthresultsQuery = `SELECT yocpos AS " ", ${link}, ${name2}, ${team}, yocresult AS "Time", ${rowClassName}
-                                    FROM results_points
-                                    INNER JOIN rider_participation USING(rider_participation_id)
-                                    INNER JOIN rider USING(rider_id)
-                                    LEFT JOIN stage_selection_rider USING(rider_participation_id)
-                                    WHERE stage_id=${stage_id} AND yocpos > 0 
-                                    GROUP BY " ", "Name_link", "Name", "Team", "Time", rider_participation.rider_participation_id
-                                    ORDER BY " " ASC;\n `;
-
-                                var resultsQuery = stageresultsQuery + GCresultsQuery + pointsresultsQuery + komresultsQuery + youthresultsQuery;
+                                    resultsQuery += classificationQuery;
+                                }
 
                                 var budgetscore = '';
-                                // if(budgetParticipation='true') budgetscore = ' - teamscore '
+                                if(budgetParticipation === 'true') { budgetscore = ' - teamscore '}
                                 var selectionsQuery = `SELECT username, ARRAY_AGG(json_build_object('Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score',CASE WHEN kopman THEN totalscore ${budgetscore} + 0.5*stagescore ELSE totalscore ${budgetscore} END,'rowClassName',"rowClassName")) AS riders FROM
-                                (SELECT username,CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, kopman_id = rider_participation.rider_participation_id as kopman, ${rowClassName}  FROM  stage_selection_rider
+                                (SELECT username,CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, results_points.teamscore, kopman_id = rider_participation.rider_participation_id as kopman, ${rowClassName}  FROM  stage_selection_rider
                                 INNER JOIN rider_participation USING (rider_participation_id)
                                 INNER JOIN rider USING (rider_id)
                                 INNER JOIN stage_selection USING(stage_selection_id)
@@ -341,7 +294,7 @@ module.exports = function (app) {
                                 var allnotselected = `(
                                 SELECT rider_participation_id, account_participation_id FROM team_selection_rider
                                 INNER JOIN account_participation USING(account_participation_id )
-                                WHERE race_id = 6 AND budgetparticipation = ${budgetParticipation}
+                                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetParticipation} 
                                 EXCEPT
                                 SELECT rider_participation_id, account_participation_id FROM stage_selection_rider 
                                 INNER JOIN stage_selection USING(stage_selection_id)
@@ -352,16 +305,17 @@ module.exports = function (app) {
                                 var allselectedriders = `(SELECT rider_participation_id FROM stage_selection_rider 
                                 INNER JOIN stage_selection USING(stage_selection_id)
                                 INNER JOIN account_participation USING(account_participation_id)
-                                WHERE stage_id = ${stage_id} AND budgetparticipation = ${budgetParticipation}
+                                WHERE stage_id = ${stage_id} AND budgetparticipation = ${budgetParticipation} 
                                 GROUP BY rider_participation_id)`
+                                console.log(allselectedriders)
 
-                                var notSelectedQuery = `SELECT username, ARRAY_AGG(json_build_object('Name', CONCAT(firstname, ' ', lastname), 'Score',totalscore ${budgetscore})) AS riders FROM ${allnotselected}
+                                var notSelectedQuery = `SELECT username, ARRAY_AGG(json_build_object('Name', CONCAT(firstname, ' ', lastname), 'Score',totalscore ${budgetscore})) AS riders FROM ${allnotselected} 
                                 INNER JOIN account_participation USING(account_participation_id)
                                 INNER JOIN account USING(account_id)
                                 INNER JOIN rider_participation USING(rider_participation_id)
                                 INNER JOIN rider USING(rider_id)
-                                INNER JOIN results_points ON results_points.rider_participation_id = a.rider_participation_id AND results_points.stage_id = ${stage_id}
-                                WHERE a.rider_participation_id in ${allselectedriders}
+                                LEFT JOIN results_points ON results_points.rider_participation_id = a.rider_participation_id AND results_points.stage_id = ${stage_id} 
+                                WHERE a.rider_participation_id in ${allselectedriders} 
                                 GROUP BY username; \n`
 
                                 var query = teamresultQuery + userscoresQuery + resultsQuery + selectionsQuery + notSelectedQuery;
@@ -378,7 +332,6 @@ module.exports = function (app) {
                                 var notSelectedGewoon = uitslagresults[8].rows;
                                 var selectiesBudget = uitslagresults[16].rows;
                                 var notSelectedBudget = uitslagresults[17].rows;
-
 
                                 var allSelectionsGewoon = functies.selectionsPopUp(selectiesGewoon);
 

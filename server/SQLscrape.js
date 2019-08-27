@@ -194,7 +194,7 @@ module.exports = {
                     var index = 0;
 
                     if (stageType==='REG') {
-                        $(".basic").each(function (i, element) {
+                        $(".basic").each(function (i, element) {//for each classification
                             var end = $(this).children().eq(1).children().first().children().length;
                             if (end && cases[index] !== 'Teams' && $(this).parent().attr("data-id") !== 'bonifications' && $(this).parent().attr("data-id") !== 'today') {
                                 var classification = cases[index];
@@ -205,12 +205,14 @@ module.exports = {
                                 })
                                 var renCol = columns.indexOf("Rider");
                                 var teamCol = columns.indexOf("Team");
+                                var timeCol = columns.indexOf('Time');
+                                var pntCol = columns.indexOf('Pnt');
+                                var prevCol = columns.indexOf('Prev');
+
                                 var stagepos = 1;
                                 $(this).children().eq(1).children().each(function (index, element) {//voor iedere renner in de uitslag
                                     var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
                                     var teamName = $(this).children().eq(teamCol).children().eq(0).text();
-                                    var timeCol = columns.indexOf('Time');
-                                    var pntCol = columns.indexOf('Pnt');
                                     if (getIndex(ridersAll, 'pcsid', id) === -1) {
                                         ridersAll.push({ pcsid: id, team: teamName })
                                     }
@@ -223,7 +225,7 @@ module.exports = {
                                             pos = parseInt(pos);
                                             if (isNaN(pos)) pos = 0; //als DNF enzo
                                             var result = $(this).children().eq(timeCol).children().eq(0).text();
-                                            var rider = { pcsid: id, team: teamName, result: result };
+                                            var rider = { pcsid: id, team: teamName, result };
                                             if (pos) {//doesn't add rider if pos==0
                                                 ridersDay.push(rider);
                                             } else {
@@ -232,26 +234,62 @@ module.exports = {
                                             break;
 
                                         case 'GC'://Algemeen Klassement
+                                            var prev = '';
+                                            var change = '-'
+                                            if(prevCol>0){
+                                                prev = $(this).children().eq(prevCol).children().first().text()
+                                                change = $(this).children().eq(prevCol+1).text();
+                                                if(prev === ''){
+                                                    change = '*'
+                                                }
+                                            }
                                             var result = $(this).children().eq(timeCol).children().eq(0).text();
-                                            var rider = { pcsid: id, team: teamName, result: result };
+                                            var rider = { pcsid: id, team: teamName, result, prev, change};
                                             ridersGC.push(rider);
                                             break;
 
                                         case 'Points'://Sprinter Klassement
+                                            var prev = '';
+                                            var change = '-'
+                                            if(prevCol>0){
+                                                prev = $(this).children().eq(prevCol).children().first().text()
+                                                change = $(this).children().eq(prevCol+1).text();
+                                                if(prev === ''){
+                                                    change = '*'
+                                                }
+                                            }
                                             var result = $(this).children().eq(pntCol).text();
-                                            var rider = { pcsid: id, team: teamName, result: result };
+                                            var rider = { pcsid: id, team: teamName, result, prev, change};
                                             ridersPoints.push(rider);
                                             break;
 
                                         case 'Youth'://Jongeren Klassement
+                                            var prev = '';
+                                            var change = '-'
+                                            if(prevCol>0){
+                                                prev = $(this).children().eq(prevCol).children().first().text()
+                                                change = $(this).children().eq(prevCol+1).text();
+                                                if(prev === ''){
+                                                    change = '*'
+                                                }
+                                            }
                                             var result = $(this).children().eq(timeCol).children().eq(0).text();
-                                            var rider = { pcsid: id, team: teamName, result: result };
+                                            var rider = { pcsid: id, team: teamName, result, prev, change};
                                             ridersYouth.push(rider);
                                             break;
 
                                         case 'KOM'://Berg Klassement
+                                            var prev = '';
+                                            var change = '-'
+                                            if(prevCol>0){
+                                                prev = $(this).children().eq(prevCol).children().first().text()
+                                                change = $(this).children().eq(prevCol+1).text();
+                                                if(prev === ''){
+                                                    change = '*'
+                                                }
+                                            }
                                             var result = $(this).children().eq(pntCol).text();
-                                            var rider = { pcsid: id, team: teamName, result: result };
+                                            var rider = { pcsid: id, team: teamName, result, prev, change};
                                             ridersKom.push(rider);
                                             break;
                                     }
@@ -277,37 +315,74 @@ module.exports = {
                                 })
                                 var renCol = columns.indexOf("Rider");
                                 var teamCol = columns.indexOf("Team");
+                                var timeCol = columns.indexOf('Time');
+                                var pntCol = columns.indexOf('Pnt');
+                                var prevCol = columns.indexOf('Prev');
 
                                 $(this).children().eq(1).children().each(function (index, element) {//voor iedere renner in de uitslag
                                     var id = $(this).children().eq(renCol).children().eq(1).attr('href').substring(6);
                                     var teamName = $(this).children().eq(teamCol).children().eq(0).text();
-                                    var timeCol = columns.indexOf('Time');
-                                    var pntCol = columns.indexOf('Pnt');
                                     if (!getIndex(ridersAll, 'pcsid', id) + 1) {
                                         ridersAll.push({ pcsid: id, team: teamName })
                                     }
                                     switch (classification) {
                                         case 'GC'://Algemeen Klassement
+                                            var prev = '';
+                                            var change = '-'
+                                            if(prevCol>0){
+                                                prev = $(this).children().eq(prevCol).children().first().text()
+                                                change = $(this).children().eq(prevCol+1).text();
+                                                if(prev === ''){
+                                                    change = '*'
+                                                }
+                                            }
                                             var result = $(this).children().eq(timeCol).children().eq(0).text();
-                                            var rider = { pcsid: id, team: teamName, result: result };
+                                            var rider = { pcsid: id, team: teamName, result, prev, change};
                                             ridersGC.push(rider);
                                             break;
 
                                         case 'Points'://Sprinter Klassement
+                                            var prev = '';
+                                            var change = '-'
+                                            if(prevCol>0){
+                                                prev = $(this).children().eq(prevCol).children().first().text()
+                                                change = $(this).children().eq(prevCol+1).text();
+                                                if(prev === ''){
+                                                    change = '*'
+                                                }
+                                            }
                                             var result = $(this).children().eq(pntCol).text();
-                                            var rider = { pcsid: id, team: teamName, result: result };
+                                            var rider = { pcsid: id, team: teamName, result, prev, change};
                                             ridersPoints.push(rider);
                                             break;
 
                                         case 'Youth'://Jongeren Klassement
+                                            var prev = '';
+                                            var change = '-'
+                                            if(prevCol>0){
+                                                prev = $(this).children().eq(prevCol).children().first().text()
+                                                change = $(this).children().eq(prevCol+1).text();
+                                                if(prev === ''){
+                                                    change = '*'
+                                                }
+                                            }
                                             var result = $(this).children().eq(timeCol).children().eq(0).text();
-                                            var rider = { pcsid: id, team: teamName, result: result };
+                                            var rider = { pcsid: id, team: teamName, result, prev, change};
                                             ridersYouth.push(rider);
                                             break;
 
                                         case 'KOM'://Berg Klassement
+                                            var prev = '';
+                                            var change = '-'
+                                            if(prevCol>0){
+                                                prev = $(this).children().eq(prevCol).children().first().text()
+                                                change = $(this).children().eq(prevCol+1).text();
+                                                if(prev === ''){
+                                                    change = '*'
+                                                }
+                                            }
                                             var result = $(this).children().eq(pntCol).text();
-                                            var rider = { pcsid: id, team: teamName, result: result };
+                                            var rider = { pcsid: id, team: teamName, result, prev, change};
                                             ridersKom.push(rider);
                                             break;
                                     }
@@ -364,19 +439,20 @@ module.exports = {
                     var resultsQuery = `INSERT INTO results_points(stage_id, rider_participation_id, 
                                 stagepos, gcpos, pointspos, kompos, yocpos, 
                                 stagescore, gcscore, pointsscore, komscore, yocscore, teamscore, totalscore, 
-                                stageresult, gcresult, pointsresult, komresult, yocresult) 
+                                stageresult, gcresult, pointsresult, komresult, yocresult,
+                                gcprev, gcchange, pointsprev, pointschange, komprev, komchange, yocprev, yocchange) 
                                 VALUES`
 
                     for (var i = 0; i < ridersAll.length; i++) {// for each rider get the variables for the results_points table
                         var pcsid = ridersAll[i].pcsid;
                         var teamRider = ridersAll[i].team;
                         var teamscore = 0;
-
+                        var stagepos = 0;
                         //STAGE
                         if (stageType === 'TTT') {
-                            var stagepos = TTTresult.indexOf(teamRider) + 1; // positie in de uitslag
+                            stagepos = TTTresult.indexOf(teamRider) + 1; // positie in de uitslag
                         } else {
-                            var stagepos = getIndex(ridersDay, 'pcsid', pcsid) + 1;
+                            stagepos = getIndex(ridersDay, 'pcsid', pcsid) + 1;
                         }
                         if (finalStandings) stagepos = 0;
                         var stagescore = 0;
@@ -401,7 +477,12 @@ module.exports = {
                         var gcpos = getIndex(ridersGC, 'pcsid', pcsid) + 1;
                         var gcscore = 0;
                         var gcresult = "";
+                        var gcprev = ""
+                        var gcchange = ""
                         if (gcpos) {
+                            console.log(ridersGC[gcpos - 1])
+                            gcprev = ridersGC[gcpos - 1].prev
+                            gcchange = ridersGC[gcpos - 1].change
                             gcscore = getPunten('GC', gcpos, finalStandings);
                             gcresult = ridersGC[gcpos - 1].result;
                         }
@@ -417,8 +498,11 @@ module.exports = {
                         var pointspos = getIndex(ridersPoints, 'pcsid', pcsid) + 1;
                         var pointsscore = 0;
                         var pointsresult = "";
-
+                        var pointsprev = ""
+                        var pointschange = ""
                         if (pointspos) {
+                            pointsprev = ridersPoints[pointspos - 1].prev
+                            pointschange = ridersPoints[pointspos - 1].change
                             pointsscore = getPunten('Points', pointspos, finalStandings);
                             pointsresult = ridersPoints[pointspos - 1].result;
                         }
@@ -434,7 +518,11 @@ module.exports = {
                         var kompos = getIndex(ridersKom, 'pcsid', pcsid) + 1;
                         var komscore = 0;
                         var komresult = 0;
+                        var komprev = ""
+                        var komchange = ""
                         if (kompos) {
+                            komprev = ridersKom[kompos - 1].prev
+                            komchange = ridersKom[kompos - 1].change
                             komscore = getPunten('KOM', kompos, finalStandings);
                             komresult = ridersKom[kompos - 1].result;
                         }
@@ -447,14 +535,18 @@ module.exports = {
                         }
 
                         //YOC
-                        var yocpos = getIndex(ridersYouth, 'pcsid', pcsid) + 1;
-                        var yocscore = 0;
-                        var yocresult = "";
-                        if (yocpos) {
-                            yocscore = getPunten('Youth', yocpos, finalStandings);
-                            yocresult = ridersYouth[yocpos - 1].result;
+                        var youthpos = getIndex(ridersYouth, 'pcsid', pcsid) + 1;
+                        var youthscore = 0;
+                        var youthresult = "";
+                        var youthprev = ""
+                        var youthchange = ""
+                        if (youthpos) {
+                            youthprev = ridersYouth[youthpos - 1].prev
+                            youthchange = ridersYouth[youthpos - 1].change
+                            youthscore = getPunten('Youth', youthpos, finalStandings);
+                            youthresult = ridersYouth[youthpos - 1].result;
                         }
-                        if (teamRider === teamWinners['Youth'] && yocpos !== 1) {
+                        if (teamRider === teamWinners['Youth'] && youthpos !== 1) {
                             if (finalStandings) {
                                 teamscore += 6;
                             } else {
@@ -463,15 +555,21 @@ module.exports = {
                         }
 
                         //TOTAL
-                        var totalscore = stagescore + gcscore + pointsscore + komscore + yocscore + teamscore;
+                        var totalscore = stagescore + gcscore + pointsscore + komscore + youthscore + teamscore;
 
                         // SQLQUERY addition
                         var rider_id = `(SELECT rider_id FROM rider WHERE pcs_id = '${pcsid}')`
                         var rider_participation_id = `(SELECT rider_participation_id FROM rider_participation WHERE race_id = ${race_id} AND rider_id = ${rider_id})`
                         resultsQuery += `(${stage_id},${rider_participation_id},
-                                ${stagepos},    ${gcpos},   ${pointspos},   ${kompos},  ${yocpos}, 
-                                ${stagescore},  ${gcscore}, ${pointsscore}, ${komscore},${yocscore},${teamscore},${totalscore},
-                                '${stageresult}','${gcresult}','${pointsresult}','${komresult}','${yocresult}'),`;
+                                ${stagepos},    ${gcpos},   ${pointspos},   ${kompos},  ${youthpos}, 
+                                ${stagescore},  ${gcscore}, ${pointsscore}, ${komscore},${youthscore},${teamscore},${totalscore},
+                                '${stageresult}','${gcresult}','${pointsresult}','${komresult}','${youthresult}',
+                                '${gcprev}','${gcchange}','${pointsprev}','${pointschange}','${komprev}','${komchange}','${youthprev}','${youthchange}'),`;
+                                // console.log(`(${stage_id},${rider_participation_id},
+                                //     ${stagepos},    ${gcpos},   ${pointspos},   ${kompos},  ${youthpos}, 
+                                //     ${stagescore},  ${gcscore}, ${pointsscore}, ${komscore},${youthscore},${teamscore},${totalscore},
+                                //     '${stageresult}','${gcresult}','${pointsresult}','${komresult}','${youthresult}',
+                                //     '${gcprev}','${gcchange}','${pointsprev}','${pointschange}','${komprev}','${komchange}','${youthprev}','${youthchange}'),`)
                     }
 
                     resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO NOTHING';

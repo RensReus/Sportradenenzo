@@ -9,7 +9,7 @@
 
 .modal-content {
     position: fixed;
-    background: white;
+    background: var(--background-color);
     width: 90%;
     height: auto;
     top: 50%;

@@ -23,7 +23,7 @@ module.exports = function (app) {
                             console.log("ERROR");
                             console.log(err);
                             console.log(err.toString())
-                            res.send({ errorBool: true,'data': err , error:err.toString()});
+                            res.send({ errorBool: true,data: err , error: err.toString()});
                         }
                         else {
                             console.log("Query: ");

@@ -347,7 +347,7 @@ class Stage extends Component {
         } else if (mode === 'selection') {
             var gewoonCompleet = (this.state.stageSelectionGewoon.length + (this.state.kopmanGewoon ? 1 : 0))*10
             var budgetCompleet = (this.state.stageSelectionBudget.length + (this.state.kopmanBudget ? 1 : 0))*10;
-            selectionsCompleteDiv = <div className={"completeContainer " + ((gewoonCompleet + budgetCompleet) == 200 ? "allCompleet" : "")}>Compleet: 
+            selectionsCompleteDiv = <div className={"completeContainer " + ((gewoonCompleet + budgetCompleet) === 200 ? "allCompleet" : "")}>Compleet: 
                                     <div className ="gewoonCompleet"><div style={{width: gewoonCompleet + "%"}} className ={"backgroundCompleet teamSize" }></div><div className="textCompleet">Gewoon</div></div>
                                     <div className ="budgetCompleet"><div style={{width: budgetCompleet + "%"}} className ={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
                                     </div>
@@ -369,8 +369,9 @@ class Stage extends Component {
             var index = 0;
             for(var i in allSelections){
                 var notSelectedTable = '';
-                if(i<notSelected.length && allSelections[i].title === notSelected[index].username){
-                    notSelectedTable = <Table data={notSelected[i].riders} title={"Niet Opgesteld"}/>    
+                
+                if(index<notSelected.length && allSelections[i].title === notSelected[index].username){
+                    notSelectedTable = <Table data={notSelected[index].riders} title={"Niet Opgesteld"}/>    
                     index++;                
                 }
                 var totalRiders = '';

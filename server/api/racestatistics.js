@@ -256,7 +256,7 @@ module.exports = function (app) {
                     users.push({tableData: results.bierfietsen, title: "Bierfietsen"});
                     users.push({tableData: results.rens, title: "Rens"});
                     users.push({tableData: results.sam, title: "Sam"});
-                    users.push({tableData: results.yannick, title: "Tannonk"});
+                    users.push({tableData: results.yannick, title: "Yannick"});
                     res.send({users})
             })
             }
@@ -345,7 +345,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                async.auto({
+                async.auto({ //TODO remove hardcoded
                     bierfietsen: function(callback){
                         teamoverzicht(1,current_race_id,req.body.budgetparticipation,callback)
                     },
@@ -404,7 +404,7 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                async.auto({
+                async.auto({//TODO remove Hardcoded
                     bierfietsen: function(callback){
                         teamoverzichtSimple(1,current_race_id,req.body.budgetparticipation,callback)
                     },

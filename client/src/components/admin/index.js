@@ -85,7 +85,7 @@ class Outputtable extends Component {
                 properties.forEach(function (property) {
                     header.push(<th>{property}</th>)
                 })
-                for (i = 0; i < output.length; i++) {
+                for (i = 0; i < Math.min(output.length,200); i++) {
                     for (property in output[i]) {
                         row.push(<td>{output[i][property] == null ? "null" : output[i][property].toString()}</td>);
                     }
@@ -205,8 +205,8 @@ class Admin extends Component {
             .then((res) => {
                 var errorData = '';
                 if(res.data.errorBool){
-                    var errorRow = {' ':'error',"  ":res.data.error}
-                    var hintRow = {' ':'hint',"  ":res.data.hint}
+                    var errorRow = {' ':'Error:',"  ":res.data.error}
+                    var hintRow = {' ':'Hint:',"  ":res.data.data.hint}
                     errorData = [errorRow,hintRow];
                     this.setState({errorData})
                 }

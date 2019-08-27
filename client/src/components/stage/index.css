@@ -219,7 +219,7 @@ div.classification {
         text-align: center;
         height: 42px;
         border: gray 2px solid;
-        background: rgb(120,0,0);;
+        background: rgb(120,0,0);
     }
     div.gewoonCompleet {
         position: relative;
@@ -250,5 +250,21 @@ div.classification {
         left: 0;
         top: 0;
         width: 100%
+    }
+
+    td[class*='change']{
+        text-align: center;
+    }
+
+    td.change▲ {
+        color: rgb(0,100,0);
+    }
+
+    td.change▼ {
+        color: rgb(120,0,0);
+    }
+
+    td.change\* {
+        color: white;
     }
 }
