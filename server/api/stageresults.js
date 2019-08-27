@@ -181,9 +181,7 @@ module.exports = function (app) {
                                             {pos:'kompos',result:'komresult AS "Time"'},
                                             {pos:'yocpos',result:'yocresult AS "Time"'},
                                         ];
-        
-                                        var totalQuery = '';
-        
+             
                                         for (var j in classifications){
                                             var classificationQuery = `SELECT ${classifications[j].pos} AS " ", ${link}, ${name}, ${team}, ${classifications[j].result}, ${rowClassName}
                                             FROM results_points
