@@ -230,7 +230,9 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                missedPoints(user.account_id,current_race_id,req.body.budgetparticipation,function(err,outputArray){
+                var account_participation_id = `(SELECT account_participation_id, FROM account_participation
+                WHERE account_id = ${user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
+                missedPoints(account_participation_id, req.body.budgetparticipation, function(err,outputArray){
                     if(err) throw err;
                     res.send({tables:[{
                         tableData: outputArray,
@@ -247,43 +249,29 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                // var usersQuery = `SELECT account_participation_id, username FROM account_participation 
-                // INNER JOIN account USING (account_id)
-                // WHERE race_id = ${account_participation_id} AND budgetparticipation = ${req.body.budgetparticipation};`
-                // sqlDB.query(usersQuery, (err,results)=>{
-                //     async.map(results.rows,missedPoints())
-                //         missedPoints(results.rows[i].account_participation_id)
-                // })
-                async.auto({ //TODO remove hardcoded users
-                    bierfietsen: function(callback){
-                        missedPoints(1,current_race_id,req.body.budgetparticipation,callback)
-                    },
-                    rens: function(callback){
-                        missedPoints(2,current_race_id,req.body.budgetparticipation,callback)
-                    },
-                    sam: function(callback){
-                        missedPoints(4,current_race_id,req.body.budgetparticipation,callback)
-                    },
-                    yannick: function(callback){
-                        missedPoints(5,current_race_id,req.body.budgetparticipation,callback)
-                    }
-                }, function (err,results){
-                    if(err) throw err;
-                    var tables = []
-                    tables.push({tableData: results.bierfietsen, title: "Bierfietsen"});
-                    tables.push({tableData: results.rens, title: "Rens"});
-                    tables.push({tableData: results.sam, title: "Sam"});
-                    tables.push({tableData: results.yannick, title: "Yannick"});
-                    res.send({tables})
-            })
+                //TODO fix query
+
+                var usersQuery = `SELECT account_participation_id, username FROM account_participation 
+                INNER JOIN account USING (account_id)
+                WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
+                sqlDB.query(usersQuery, (err,results)=>{
+                    if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
+                    async.map(results.rows,function(account,done){
+                        missedPoints(account.account_participation_id, req.body.budgetparticipation ,function(err,tableData){
+                            done(err,{tableData,title:account.username})
+                        })
+                    },function(err,tables){
+                        if (err) throw err;
+                        res.send({tables})
+                    })
+                })
             }
         })
     })
 
-    missedPoints = function (account_id, race_id, budgetparticipation, callback) {
+    missedPoints = function (account_participation_id, budgetparticipation, callback) {
         var teamselection = `SELECT rider_participation_id FROM team_selection_rider
-                INNER JOIN account_participation USING(account_participation_id)
-                WHERE race_id = ${race_id} AND account_id = ${account_id} AND budgetparticipation = ${budgetparticipation}\n `
+                WHERE account_participation_id = ${account_participation_id}\n `
         var totalscore = 'totalscore';
         if(budgetparticipation) totalscore = 'totalscore - teamscore';
         var ridersQuery = `SELECT stagenr, ARRAY_AGG(JSON_BUILD_OBJECT('id',rider_participation_id,'stage', stagescore,'total',${totalscore}) ORDER BY ${totalscore} DESC) AS points FROM results_points 
@@ -291,8 +279,7 @@ module.exports = function (app) {
                 WHERE rider_participation_id IN (${teamselection})
                 GROUP BY stagenr;\n `;
         var resultsQuery = `SELECT stagescore FROM stage_selection 
-                INNER JOIN stage USING(stage_id) WHERE account_participation_id = 
-                (SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND budgetparticipation = ${budgetparticipation} AND race_id = ${race_id})
+                INNER JOIN stage USING(stage_id) WHERE account_participation_id = ${account_participation_id}
                 ORDER BY stagenr;\n `
         var totalQuery = ridersQuery + resultsQuery;
         sqlDB.query(totalQuery, (err, results) => {
@@ -343,7 +330,10 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                teamoverzicht(user.account_id,current_race_id,req.body.budgetparticipation,function(err,results){
+                //TODO fix query
+                var account_participation_id = `(SELECT account_participation_id FROM account_participation
+                    WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
+                teamoverzicht(account_participation_id,req.body.budgetparticipation,function(err,results){
                     if(err) throw err;
                     res.send({tables:[{
                         tableData: results.tableData,
@@ -361,34 +351,25 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                async.auto({ //TODO remove hardcoded
-                    bierfietsen: function(callback){
-                        teamoverzicht(1,current_race_id,req.body.budgetparticipation,callback)
-                    },
-                    rens: function(callback){
-                        teamoverzicht(2,current_race_id,req.body.budgetparticipation,callback)
-                    },
-                    sam: function(callback){
-                        teamoverzicht(4,current_race_id,req.body.budgetparticipation,callback)
-                    },
-                    yannick: function(callback){
-                        teamoverzicht(5,current_race_id,req.body.budgetparticipation,callback)
-                    }
-                }, function (err,results){
-                    if(err) throw err;
-                    var tables = []
-                    tables.push({tableData: results.bierfietsen.tableData, title: "Bierfietsen", coltype: results.bierfietsen.coltype});
-                    tables.push({tableData: results.rens.tableData, title: "Rens", coltype: results.bierfietsen.coltype});
-                    tables.push({tableData: results.sam.tableData, title: "Sam", coltype: results.bierfietsen.coltype});
-                    tables.push({tableData: results.yannick.tableData, title: "Yannick", coltype: results.bierfietsen.coltype});
-                    res.send({tables})
-            })   
+                var usersQuery = `SELECT account_participation_id, username FROM account_participation 
+                INNER JOIN account USING (account_id)   
+                WHERE account_id = ${user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
+                sqlDB.query(usersQuery, (err,results)=>{
+                    if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
+                    async.map(results.rows,function(account,done){
+                        teamoverzicht(account.account_participation_id, req.body.budgetparticipation ,function(err,teamoverzicht){
+                            done(err,{tableData:teamoverzicht.tableData,title:account.username, coltype:teamoverzicht.coltype})
+                        })
+                    },function(err,tables){
+                        if (err) throw err;
+                        res.send({tables})
+                    })
+                })
             }
         })
     })
 
-    teamoverzicht = function (account_id, race_id, budgetparticipation, callback){
-        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetparticipation = ${budgetparticipation})`
+    teamoverzicht = function (account_participation_id, budgetparticipation, callback){
         var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
             INNER JOIN stage_selection USING(stage_selection_id)
             WHERE account_participation_id = ${account_participation_id}

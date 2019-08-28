@@ -480,7 +480,6 @@ module.exports = {
                         var gcprev = ""
                         var gcchange = ""
                         if (gcpos) {
-                            console.log(ridersGC[gcpos - 1])
                             gcprev = ridersGC[gcpos - 1].prev
                             gcchange = ridersGC[gcpos - 1].change
                             gcscore = getPunten('GC', gcpos, finalStandings);
@@ -565,11 +564,6 @@ module.exports = {
                                 ${stagescore},  ${gcscore}, ${pointsscore}, ${komscore},${youthscore},${teamscore},${totalscore},
                                 '${stageresult}','${gcresult}','${pointsresult}','${komresult}','${youthresult}',
                                 '${gcprev}','${gcchange}','${pointsprev}','${pointschange}','${komprev}','${komchange}','${youthprev}','${youthchange}'),`;
-                                // console.log(`(${stage_id},${rider_participation_id},
-                                //     ${stagepos},    ${gcpos},   ${pointspos},   ${kompos},  ${youthpos}, 
-                                //     ${stagescore},  ${gcscore}, ${pointsscore}, ${komscore},${youthscore},${teamscore},${totalscore},
-                                //     '${stageresult}','${gcresult}','${pointsresult}','${komresult}','${youthresult}',
-                                //     '${gcprev}','${gcchange}','${pointsprev}','${pointschange}','${komprev}','${komchange}','${youthprev}','${youthchange}'),`)
                     }
 
                     resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO NOTHING';
