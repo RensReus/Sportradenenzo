@@ -54,7 +54,7 @@ class Rows extends Component {
                 if (property !== "rowClassName") {
                     var tdClassname = property;
                     if(tdClassname === ' ') tdClassname = 'rank'
-                    if(tdClassname === '  ' && tdContent.length) tdClassname = 'change' + tdContent[0];
+                    if(tdClassname === '  ' && tdContent !== undefined && tdContent.length) tdClassname = 'change' + tdContent[0];
                     row.push(<td key={i + property} className={tdClassname}>{tdContent}</td>);
                 } else {
                     className = data[i][property];
@@ -128,10 +128,26 @@ class Table extends Component {
         var coltype = this.state.coltype;
         var desc = this.state.desc;
         if (coltype[sortKey] && desc[sortKey]) {// number & desc
-            data.sort((b, a) => parseFloat(a[sortKey]) - parseFloat(b[sortKey]))
+            data.sort((b, a) => {
+                if(!b[sortKey]){
+                    return 1;
+                }else if(!a[sortKey]){
+                    return - 1;
+                }else{
+                    return parseFloat(a[sortKey]) - parseFloat(b[sortKey]);
+                }
+            })
         }
         if (coltype[sortKey] && !desc[sortKey]) {// number & asc
-            data.sort((a, b) => parseFloat(a[sortKey]) - parseFloat(b[sortKey]))
+            data.sort((a, b) => {
+                if(!b[sortKey]){
+                    return 1;
+                }else if(!a[sortKey]){
+                    return - 1;
+                }else{
+                    return parseFloat(a[sortKey]) - parseFloat(b[sortKey]);
+                }
+            })
         }
         if (!coltype[sortKey] && desc[sortKey]) {// string & desc
             data.sort((b, a) => a[sortKey].localeCompare(b[sortKey]))

@@ -376,9 +376,9 @@ class Stage extends Component {
                 }
                 var totalRiders = '';
                     if(parseInt(i)===allSelections.length-1){
-                    totalRiders = ' Totaal: ' + allSelections[i].data.length
+                    totalRiders = ' Totaal: ' + allSelections[i].tableData.length
                 }
-                allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].data} title={allSelections[i].title + totalRiders} coltype={allSelections[i].coltype}/>{notSelectedTable}</div>)
+                allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].tableData} title={allSelections[i].title + totalRiders} coltype={allSelections[i].coltype}/>{notSelectedTable}</div>)
             }
             allSelectionsPopup = <ModalButton
                             cssClassButton={"buttonStandard " + this.state.racename}

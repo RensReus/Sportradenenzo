@@ -49,7 +49,7 @@ class StatistiekenDropdown extends Component {
                     <Link className='item' to='/overzicht/all'>Alle renners</Link>
                     <Link className='item' to='/overzicht/selected'>Geselecteerde renners</Link>
                     <Link className='item' to='/rulesandpoints'>Regels en Punten uitleg</Link>
-                    <Link className='item' to='/overzicht/missedpoints'>Gemiste punten</Link>
+                    <Link className='item' to='/overzicht/teamcomparisons'>Selectie vergelijking</Link>
                     <Link className='item' to='/overzicht/overigestats'>Overige Statistieken</Link>
                 </div>
               )

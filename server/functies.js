@@ -423,7 +423,7 @@ function selectionsPopUp(selecties){//deze functie werkt ook voor de volledige s
             }
         }
         // allSelections.push({title: selecties[i].username, data: selecties[i].riders})
-        allSelections.push({title: selecties[i].username, data: []})
+        allSelections.push({title: selecties[i].username, tableData: []})
     }
     allSelectedRiders.sort(function(a,b){return b.selected - a.selected})
     //Hersorteren dagselecties van users
@@ -437,9 +437,9 @@ function selectionsPopUp(selecties){//deze functie werkt ook voor de volledige s
                 index = selecties[j].riders.findIndex(function(rider){return rider.Name === '* ' + riderName})
             }
             if(index === -1){
-                allSelections[j].data.push({"Name": " ", "Score": 0})
+                allSelections[j].tableData.push({"Name": " ", "Score": 0})
             }else{
-                allSelections[j].data.push(selecties[j].riders[index])
+                allSelections[j].tableData.push(selecties[j].riders[index])
             }
         }
     }
@@ -489,13 +489,13 @@ function selectionsPopUp(selecties){//deze functie werkt ook voor de volledige s
                         index = selecties[k].riders.findIndex(function(rider){return rider.Name === '* ' + riderName1})
                     }
                     if(index !== -1){//add rider1
-                        allSelections[k].data.push(selecties[k].riders[index])
+                        allSelections[k].tableData.push(selecties[k].riders[index])
                     }else{// add rider2
                         var index = selecties[k].riders.findIndex(function(rider){return rider.Name === riderName2})
                         if(index === -1){
                             index = selecties[k].riders.findIndex(function(rider){return rider.Name === '* ' + riderName2})
                         }
-                        allSelections[k].data.push(selecties[k].riders[index])
+                        allSelections[k].tableData.push(selecties[k].riders[index])
                     }
                 }
                 continue;
@@ -517,9 +517,9 @@ function selectionsPopUp(selecties){//deze functie werkt ook voor de volledige s
                 index = selecties[j].riders.findIndex(function(rider){return rider.Name === '* ' + riderName})
             }
             if(index === -1){
-                allSelections[j].data.push({"Name": " ", "Score": 0})
+                allSelections[j].tableData.push({"Name": " ", "Score": 0})
             }else{
-                allSelections[j].data.push(selecties[j].riders[index])
+                allSelections[j].tableData.push(selecties[j].riders[index])
             }
         }
         placesNeeded.push(placesNeededRider)
@@ -538,19 +538,19 @@ function selectionsPopUp(selecties){//deze functie werkt ook voor de volledige s
             }
             if(index!==-1){
                 allSelectedRiders1.slice(index,1)
-                var emptyPlaceIndex = allSelections[i].data.findIndex(function(rider){return rider.Name===" "})
+                var emptyPlaceIndex = allSelections[i].tableData.findIndex(function(rider){return rider.Name===" "})
                 if(emptyPlaceIndex !== -1){
-                    allSelections[i].data[emptyPlaceIndex] = selecties[i].riders[j];
+                    allSelections[i].tableData[emptyPlaceIndex] = selecties[i].riders[j];
                 }else{
-                    allSelections[i].data.push(selecties[i].riders[j])
+                    allSelections[i].tableData.push(selecties[i].riders[j])
                 }
             }
             sum += parseInt(selecties[i].riders[j].Score);
         }
-        allSelections[i].data.push({"Name":"Totaal","Score":sum,"rowClassName":"bold black"})
+        allSelections[i].tableData.push({"Name":"Totaal","Score":sum})
     }
 
-    allSelections.push({title:"Alle opsgestelde Renners", data: allSelectedRiders})
+    allSelections.push({tableData:allSelectedRiders,title:"Alle Opgestelde Renners"})
     return allSelections;
 }
 

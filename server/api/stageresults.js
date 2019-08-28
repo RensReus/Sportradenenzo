@@ -305,7 +305,6 @@ module.exports = function (app) {
                                 INNER JOIN account_participation USING(account_participation_id)
                                 WHERE stage_id = ${stage_id} AND budgetparticipation = ${budgetParticipation} 
                                 GROUP BY rider_participation_id)`
-                                console.log(allselectedriders)
 
                                 var notSelectedQuery = `SELECT username, ARRAY_AGG(json_build_object('Name', CONCAT(firstname, ' ', lastname), 'Score',totalscore ${budgetscore})) AS riders FROM ${allnotselected} 
                                 INNER JOIN account_participation USING(account_participation_id)
