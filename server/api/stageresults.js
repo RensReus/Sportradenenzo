@@ -36,6 +36,31 @@ module.exports = function (app) {
         });
     });
 
+    app.post('/api/removekopman',function(req,res){
+        jwt.verify(req.body.token, getSecret(), function (err, user) {
+            if (err || isNaN(req.body.stage) || req.body.stage < 1 || req.body.stage > 21) {
+                res.send(false)
+                throw err;
+            } else {
+                removekopman(user.account_id,req.body.racename, req.body.year, req.body.budgetParticipation, req.body.stage, req.body.rider_participation_id,function(err,kopman){
+                    res.send({ kopman })
+                })
+            }
+        });
+    })
+
+    removekopman = function(account_id, racename, year, budgetParticipation, stage, rider_participation_id,callback){
+        var race_id = `(SELECT race_id FROM race WHERE name = ${racename} AND year = ${year})`;
+        var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${stage} AND race_id=${race_id})`
+        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
+        var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE stage_id = ${stage_id} AND account_participation_id = ${account_participation_id})`
+        var deleteQuery = `UPDATE stage_selection SET kopman_id = NULL WHERE stage_selection_id = ${stage_selection_id} AND kopman_id = ${rider_participation_id}`
+        sqlDB.query(deleteQuery, (err, sqlres) => {
+            if (err) throw err;
+            callback(err,null)
+        })
+    }
+
     app.post('/api/removeriderfromstage', function (req, res) {
         jwt.verify(req.body.token, getSecret(), function (err, user) {
             if (err || isNaN(req.body.stage) || req.body.stage < 1 || req.body.stage > 21) {
@@ -49,6 +74,10 @@ module.exports = function (app) {
                 var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id})`
                 var query = `DELETE FROM stage_selection_rider
                             WHERE stage_selection_id=${stage_selection_id} AND rider_participation_id=$6`;
+                // TODO remove kopman
+                // removekopman(user.account_id,req.body.racename, req.body.year, req.body.budgetParticipation, req.body.stage, req.body.rider_participation_id,function(err,kopman){
+                //     res.send({ kopman })
+                // })
                 sqlDB.query(query, values, (err, sqlres) => {
                     if (err) throw err;
                     var values = [user.account_id, req.body.racename, req.body.year, req.body.budgetParticipation, req.body.stage];
