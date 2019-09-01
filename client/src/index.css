@@ -48,7 +48,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   /*Probeerscale voor breedte en hoogte*/
   /*4,8,12,16,24,32,48,64,96,128,192,256,384,512,640,768,896,1024*/
   
-  @media screen and ( min-width: 768px) {
+  @media screen and ( max-width: 1023px) {
     html {
       font-size: 62.5%;
       /* 12.5px */
@@ -69,10 +69,9 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     background-color: var(--background-color);
     margin: auto;
     padding-top: 53px;
-    width: 75vw;
   }
   
-  @media only screen and (min-width: 768px) {
+  @media only screen and (min-width: 1024px) {
     .content:before {
       content: "";
       position: fixed;

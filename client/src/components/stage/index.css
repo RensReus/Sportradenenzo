@@ -126,7 +126,7 @@ div.classification {
     width: 100%;
 }
 
-@media screen and ( max-width: 767px) {
+@media screen and ( max-width: 1023px) {
     div.stageContainer {
         display: grid;
         grid-template-columns: 100%;
@@ -160,19 +160,22 @@ div.classification {
     div.res {
         grid-column: 1;
         grid-row: 2 / 3;
+        max-width: 100vw;
     }
     /*Resultaten van de poule*/
     div.poule {
         grid-column: 1;
         grid-row: 2 / 3;
+        max-width: 100vw;
     }
     div.stage {
         grid-column: 1;
         grid-row: 3 / 4;
+        max-width: 100vw;
     }
 }
 
-@media screen and ( min-width: 768px) {
+@media screen and ( min-width: 1024px) {
     div.stageContainer {
         display: grid;
         grid-template-columns: auto auto;
