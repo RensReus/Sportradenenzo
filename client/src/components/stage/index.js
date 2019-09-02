@@ -288,7 +288,6 @@ class Stage extends Component {
         let pTable
         let stResTable
         let selecTable
-        let selectionTable
         let stageSelection
         let userTeam
         let kopman
@@ -305,7 +304,7 @@ class Stage extends Component {
         // always
         var stageProfile = '';
         if (this.state.stage > 2 && this.state.stage < 22) {//TODO netter, check if file exists
-            stageProfile = <img src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')} alt="profile" />
+            stageProfile = <img className = 'profileImage' src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')} alt="profile" />
         }
         var stageProfileKnopIcon = <FontAwesomeIcon icon={faMountain} />
         var budgetSwitchButton = <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
@@ -410,12 +409,11 @@ class Stage extends Component {
                             modalContent={stageProfile}
                         />
                 </div>
-                {selectionTable}
+                {allSelectionsPopup}
                 {selecTable}
                 {loadingGif}
                 {message}
                 <div className="res">{resTable}{pTable}</div>
-                {allSelectionsPopup}
                 <div className="stage">{stResTable}</div>
                 {prevClassificationsDiv}
 

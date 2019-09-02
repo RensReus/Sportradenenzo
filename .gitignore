@@ -6,5 +6,6 @@ node_modules
 server/db/SQL tables.txt
 server/db/sqlDBlink.js
 client/src/examples
+client/build
 server/jwtsecret.js
 server/db/Mongo/link.js

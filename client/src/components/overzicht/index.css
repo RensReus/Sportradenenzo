@@ -6,6 +6,7 @@ table.ScoreTable tr.bold gray {
 }
 
 .tableDiv{
-    float: left;
+    display: inline-block;
     padding: 10px;
+    vertical-align:top;
 }
