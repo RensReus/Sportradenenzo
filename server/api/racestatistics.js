@@ -332,7 +332,7 @@ module.exports = function (app) {
             } else {
                 //TODO fix query
                 var account_participation_id = `(SELECT account_participation_id FROM account_participation
-                    WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
+                    WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND account_id = ${user.account_id})`
                 teamoverzicht(account_participation_id,req.body.budgetparticipation,function(err,results){
                     if(err) throw err;
                     res.send({tables:[{
@@ -357,6 +357,7 @@ module.exports = function (app) {
                 sqlDB.query(usersQuery, (err,results)=>{
                     if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
                     async.map(results.rows,function(account,done){
+                        console.log("account",account)
                         teamoverzicht(account.account_participation_id, req.body.budgetparticipation ,function(err,teamoverzicht){
                             done(err,{tableData:teamoverzicht.tableData,title:account.username, coltype:teamoverzicht.coltype})
                         })
