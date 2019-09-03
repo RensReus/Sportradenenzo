@@ -15,7 +15,9 @@ class Usernamefield extends Component{
 class LogInSignUp extends Component{
     constructor(props){
       super(props);
-      this.state = ({Signup: false, error: ''});
+      this.state = ({
+          Signup: this.props.Signup, 
+          error: ''});
       this.loginSubmit = this.loginSubmit.bind(this);
       this.signupSubmit = this.signupSubmit.bind(this);
       this.formButton = this.formButton.bind(this);
@@ -60,6 +62,7 @@ class LogInSignUp extends Component{
         }
     }
     render() {
+        console.log(this.props)
         var classNameSignup = "formTab"
         var classNameLogin = "formTab active"
         let submit;

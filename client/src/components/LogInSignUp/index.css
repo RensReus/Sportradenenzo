@@ -44,6 +44,7 @@ button.formTab.active{
 }
 
 input.form-control{
+    color: var(--text-color);
     background:none;
     border-color: #bbaaaa;
     border-radius: 3px;

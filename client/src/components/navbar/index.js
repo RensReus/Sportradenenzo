@@ -25,7 +25,7 @@ class Navbar extends Component {
             raceOverview = <button className='item' ><span className="h8">Race overview</span></button>;
         } else {
             buttonSignUp = <Link className='item h8' to="/signup">Sign up</Link>;
-            buttonLog = <Link className='item h8' to="/login">Sign in</Link>;
+            buttonLog = <Link className='item h8' to="/">Log in</Link>;
             currStage = '';
         }
         return (
