@@ -412,13 +412,13 @@ module.exports = {
                         if (err) { console.log("WRONG QUERY:", prevQuery); throw err; }
                         if (et != 1) {
                             GCprevlength = prevRes[0].rows[0].count;
-                            // youngprevlength = prevRes[1].rows[0].youngCount;
+                            youngprevlength = prevRes[1].rows[0].youngCount;
                         }
 
                         var akComp = (ridersGC.length + ridersDNF.length) == GCprevlength;
                         var sprintComp = ridersPoints.length;
                         var bergComp = ridersKom.length;
-                        var jongComp = ridersYouth.length; //+ jongDNF.length == ;
+                        var jongComp = ridersYouth.length + ridersDNF.length >= youngprevlength;
                         if (et == 1) { jongComp = true; bergComp = true; }
                         if (akComp && sprintComp && bergComp && jongComp && ridersGC.length === ridersDay.length) {
                             uitslagCompleet = true;
