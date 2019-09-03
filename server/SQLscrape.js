@@ -193,7 +193,7 @@ module.exports = {
                     //process the full results and store in riders* arrays
                     var index = 0;
 
-                    if (stageType==='REG') {
+                    if (stageType!=='TTT' ) {
                         $(".basic").each(function (i, element) {//for each classification
                             var end = $(this).children().eq(1).children().first().children().length;
                             if (end && cases[index] !== 'Teams' && $(this).parent().attr("data-id") !== 'bonifications' && $(this).parent().attr("data-id") !== 'today') {
@@ -297,8 +297,7 @@ module.exports = {
 
                             }
                         });
-                    }
-                    if (stageType === 'TTT') {
+                    }else{
                         var TTTresult = new Array();
                         $(".resTTTh").first().parent(function () {
                             $(this).children('.tttRidersCont').each(function () {
@@ -405,21 +404,27 @@ module.exports = {
 
                     var uitslagCompleet = false;
                     var GCprevlength = 176;
+                    var pointsprevlength = 0;
+                    var komprevlength = 0;
+                    var youngprevlength = 0;
                     var prevstage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et - 1} AND race_id = ${race_id})`
                     var prevQuery = `SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT gcpos = 0;
-                                SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT yocpos = 0     `
+                                SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT pointspos = 0   
+                                SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT kompos = 0   
+                                SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT yocpos = 0`
                     sqlDB.query(prevQuery, function (err, prevRes) {
                         if (err) { console.log("WRONG QUERY:", prevQuery); throw err; }
                         if (et != 1) {
                             GCprevlength = prevRes[0].rows[0].count;
-                            youngprevlength = prevRes[1].rows[0].youngCount;
+                            pointsprevlength = prevRes[1].rows[0].count;
+                            komprevlength = prevRes[2].rows[0].count;
+                            youngprevlength = prevRes[3].rows[0].count;
                         }
 
                         var akComp = (ridersGC.length + ridersDNF.length) == GCprevlength;
-                        var sprintComp = ridersPoints.length;
-                        var bergComp = ridersKom.length;
-                        var jongComp = ridersYouth.length + ridersDNF.length >= youngprevlength;
-                        if (et == 1) { jongComp = true; bergComp = true; }
+                        var sprintComp = (ridersPoints.length + ridersDNF.length) >= pointsprevlength;
+                        var bergComp = (ridersKom.length + ridersDNF.length) >= komprevlength;
+                        var jongComp = (ridersYouth.length + ridersDNF.length) >= youngprevlength;
                         if (akComp && sprintComp && bergComp && jongComp && ridersGC.length === ridersDay.length) {
                             uitslagCompleet = true;
                         }
