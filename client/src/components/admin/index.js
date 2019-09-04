@@ -417,7 +417,6 @@ class Admin extends Component {
                             </div>
                         <input type="submit" value="submit" />
                     </form>
-                    <span className="h6">Als je dit ziet is de build geslaagd</span>
                     <Table data={this.state.errorData}/>
                     <Outputtable output={this.state.output} />
                 </div>
