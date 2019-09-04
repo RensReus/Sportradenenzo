@@ -26,6 +26,20 @@ import './components/css/tables.css'
 
 const jwtDecode = require('jwt-decode');
 
+axios.interceptors.request.use( 
+  reqConfig => {    
+    reqConfig.headers.authorization = localStorage.getItem('authtoken');
+    return reqConfig;
+}, (error) => {
+  switch (error.response.status) {
+       case 400:
+            console.log('Bad request');
+            break;
+       default:
+  }
+return Promise.reject(error);
+});
+
 class App extends Component {
   constructor(props) {
     super(props);
