@@ -220,7 +220,7 @@ div.classification {
 
     div.completeContainer{
         text-align: center;
-        height: 42px;
+        height: 63px;
         border: gray 2px solid;
         background: rgb(120,0,0);
     }
@@ -232,7 +232,7 @@ div.classification {
 
     div.budgetCompleet {
         position: relative;
-        top: 14px;
+        top: 21px;
         width: 100%
     }
 
@@ -245,7 +245,7 @@ div.classification {
         background: rgb(0,40,0);
         left: 0;
         top: 0;
-        height: 14px
+        height: 21px
     }
 
     div.textCompleet{
