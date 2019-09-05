@@ -4,8 +4,7 @@ const schedule = require('node-schedule');
 const sqlDB = require('./db/sqlDB');
 const fs = require('fs');
 
-module.exports = {
-    getStartlist: function (raceName, year, callback) {
+    getStartlist= function (raceName, year, callback) {
         var raceString = "";
         var prijzenfile = "";
         switch (raceName) {
@@ -121,7 +120,7 @@ module.exports = {
 
     },
 
-    getResult: function (raceName, year, et, callback) {
+    getResult= function (raceName, year, et, callback) {
         var raceString = "";
         switch (raceName) {
             case "giro":
@@ -607,7 +606,7 @@ module.exports = {
         });
     },
 
-    getRider: function (pcsid, callback) {
+    getRider= function (pcsid, callback) {
         request(`https://www.procyclingstats.com/rider/${pcsid}`, function (err, res, html) {
             if (!err && res.statusCode === 200) {
                 var $ = cheerio.load(html);
@@ -648,7 +647,7 @@ module.exports = {
             }
         });
     },
-    setCurrentStage: function(){ //TODO misschien ergens anders heen
+    setCurrentStage= function(){ //TODO misschien ergens anders heen
     var race_id = current_race_id;
         var stageQuery = `SELECT * FROM STAGE
                     WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
@@ -664,7 +663,11 @@ module.exports = {
         })
 }
 
-}
+module.exports.getStartlist = getStartlist;
+module.exports.getResult = getResult;
+module.exports.getRider = getRider;
+module.exports.setCurrentStage = setCurrentStage;
+
 
 //functies voor intern gebruik
 getIndex = function (array, attr, value) {
@@ -859,7 +862,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
                   if (err) {console.log("WRONG QUERY:",updateStageQuery); throw err;}
                   else console.log("Stage %s finished",stage.stagenr)
                 });
-                SQLscrape.getResult(current_racename,current_year,stage.stagenr,function(err,response){
+                getResult(current_racename,current_year,stage.stagenr,function(err,response){
                   if(err) throw err;
                   else console.log(response, "stage", stage.stagenr,"\n");
                 })
@@ -867,7 +870,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
               scrapeResults.reschedule(newResultsRule);  //update new schedule
             })
           }else if(!stage.complete){//get results if not complete
-            SQLscrape.getResult(current_racename,current_year,stage.stagenr,function(err,response){ 
+            getResult(current_racename,current_year,stage.stagenr,function(err,response){ 
               if(err) throw err;
               else console.log(response, "stage", stage.stagenr,"\n");
             })
