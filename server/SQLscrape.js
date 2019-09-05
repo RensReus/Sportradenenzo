@@ -1,6 +1,5 @@
 const cheerio = require('cheerio');
 const request = require('request');
-const functies = require('./functies');
 const schedule = require('node-schedule');
 const sqlDB = require('./db/sqlDB');
 const fs = require('fs');
@@ -580,11 +579,11 @@ module.exports = {
                                 if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
                                 else {
                                     console.log("Processed results stage", et, "Riders:", res[1].rowCount, "DNF:", ridersDNF.length)
-                                    functies.calculateUserScores(raceName, year, et, callback)
+                                    calculateUserScores(raceName, year, et, callback)
                                 }
                             })
                         } else {
-                            functies.calculateUserScores(raceName, year, et, callback)
+                            calculateUserScores(raceName, year, et, callback)
                         }
                     } else {
                         if (ridersAll.length) {// don't send if no results
@@ -592,68 +591,18 @@ module.exports = {
                                 if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
                                 else {
                                     console.log("Processed results stage", et, "Riders:", res[1].rowCount, "DNF:", ridersDNF.length)
-                                    functies.calculateUserScores(raceName, year, et, function (err, response) {
+                                    calculateUserScores(raceName, year, et, function (err, response) {
                                         if (err) throw err;
                                         getResult(raceName, year, 22, callback)//calculate eindklassement punten
                                     })
                                 }
                             })
                         } else {
-                            functies.calculateUserScores(raceName, year, et, callback)
+                            calculateUserScores(raceName, year, et, callback)
                         }
 
                     }
                 })
-            }
-        });
-    },
-
-    getTimetoFinish: function (callback) {
-        request({
-            url: 'https://www.procyclingstats.com/',
-            headers: { "Connection": "keep-alive" }
-        }, function (error, response, html) {
-            var $ = cheerio.load(html);
-            var rule = '';
-            var finished = false;
-            var girobeschikbaar = false;
-            $(".home1").first().children('.homeTbl1').first().children().first().children().first().children().eq(1).children().each(function () {
-                var startString = ''
-                switch(current_racename){
-                    case 'giro': startString = 'Giro d\'Italia'; break;
-                    case 'tour': startString = 'Tour de France'; break;
-                    case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
-                }
-                if ($(this).children().eq(2).text().startsWith(startString)) {
-                    girobeschikbaar = true;
-                    if ($(this).children().eq(0).text() != 'finished' && $(this).children().eq(0).text() != '-') {
-                        var timeRemaining = $(this).children().eq(0).text();
-                        console.log("Time Remaining: ", timeRemaining);
-                        if (timeRemaining[timeRemaining.length - 1] === 'm' || timeRemaining[0] === 1) { // als nog een uur of minder
-                            rule = '*/5 * * * *';// iedere 5 min checken 
-                            console.log("next run in 5 min")
-                            callback(finished, rule);
-                            return;
-                        } else {
-                            rule = '15 * * * *';// ieder uur op XX:15
-                            console.log("next run in 1 hour")
-                            callback(finished, rule);
-                            return;
-                        }
-
-                    } else {//als gefinisht
-                        rule = '* * * * *';// iedere 1 min checken 
-                        finished = true;
-                        callback(finished, rule);
-                        return;
-                    }
-                }
-            });
-            if (!girobeschikbaar) {
-                console.log("Race not available");
-                rule = '0 0 10 * *'; // check at 10am
-                callback(finished, rule);
-                return;
             }
         });
     },
@@ -698,7 +647,23 @@ module.exports = {
                 return;
             }
         });
-    }
+    },
+    setCurrentStage: function(){ //TODO misschien ergens anders heen
+    var race_id = current_race_id;
+        var stageQuery = `SELECT * FROM STAGE
+                    WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
+                    ORDER BY stagenr desc
+                    LIMIT 1`;
+        sqlDB.query(stageQuery, function (err, results) {
+            if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
+            if (results.rows.length) {// if some results, so at least after start of stage 1
+                var stage = results.rows[0];
+                if(stage.complete && stage.stagenr!==22) stage.stagenr++;
+                currentstage_global = stage.stagenr;
+            }
+        })
+}
+
 }
 
 //functies voor intern gebruik
@@ -773,3 +738,165 @@ getTTTPunten = function (pos) {
     return 0;
 }
 
+calculateUserScores = function(name,year,stage,callback){
+    var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = '${name}')`
+    var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id};\n`
+    var TTTstageQuery = `SELECT stagenr FROM stage WHERE race_id = ${race_id} AND type ='TTT';\n`
+    var totalQuery = participantsQuery + TTTstageQuery;
+    sqlDB.query(totalQuery,function(err,res){
+        if(err) throw err;
+        var totalQuery = '';
+        var TTTstages = res[1].rows.map(stage => stage.stagenr);
+        for (i in res[0].rows){// voor iedere gewone user
+
+            for(var j = stage; j < 23; j++){// to show correct totalscores for later stages
+                var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
+                var account_participation_id = res[0].rows[i].account_participation_id;
+                var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
+                var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id = ${stage_id})`
+                var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM stage_selection_rider 
+                                INNER JOIN results_points USING (rider_participation_id)
+                                WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}),0) `;
+                if(res[0].rows[i].budgetparticipation){// andere stage score voor budget
+                    var divide2 = "";
+                    if(TTTstages.includes(j)){
+                        divide2 = "/2";
+                    }
+                    stagescore = `COALESCE((SELECT SUM(results_points.totalscore - results_points.teamscore) FROM stage_selection_rider 
+                    INNER JOIN results_points USING (rider_participation_id)
+                    WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}),0)${divide2} ` ;
+                }
+                var kopmanScore = ` + (COALESCE ((SELECT 0.5 * stagescore FROM results_points
+                                    WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${stage_selection_id}) AND stage_id = ${stage_id}),0))`
+                stagescore +=  kopmanScore;
+                var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
+                var prevstagesScore = `COALESCE((SELECT SUM(stagescore) FROM stage_selection
+                    WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages}),0)`;
+                var totalscore = `${prevstagesScore} + ${stagescore}`;
+                scoreQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore})`;
+                scoreQuery += ` ON CONFLICT (account_participation_id,stage_id)
+                DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore; `
+                totalQuery += scoreQuery;
+
+            }
+        }
+        sqlDB.query(totalQuery,(err, res) => {
+            if (err) {console.log("WRONG QUERY:",totalQuery); throw err;}
+            callback(err, 'Calculated User Scores');
+        })
+    })
+}
+
+function getTimetoFinish(callback) {
+    request({
+        url: 'https://www.procyclingstats.com/',
+        headers: { "Connection": "keep-alive" }
+    }, function (error, response, html) {
+        var $ = cheerio.load(html);
+        var rule = '';
+        var finished = false;
+        var girobeschikbaar = false;
+        $(".home1").first().children('.homeTbl1').first().children().first().children().first().children().eq(1).children().each(function () {
+            var startString = ''
+            switch(current_racename){
+                case 'giro': startString = 'Giro d\'Italia'; break;
+                case 'tour': startString = 'Tour de France'; break;
+                case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
+            }
+            if ($(this).children().eq(2).text().startsWith(startString)) {
+                girobeschikbaar = true;
+                if ($(this).children().eq(0).text() != 'finished' && $(this).children().eq(0).text() != '-') {
+                    var timeRemaining = $(this).children().eq(0).text();
+                    console.log("Time Remaining: ", timeRemaining);
+                    if (timeRemaining[timeRemaining.length - 1] === 'm' || timeRemaining[0] === 1) { // als nog een uur of minder
+                        rule = '*/5 * * * *';// iedere 5 min checken 
+                        console.log("next run in 5 min")
+                        callback(finished, rule);
+                        return;
+                    } else {
+                        rule = '15 * * * *';// ieder uur op XX:15
+                        console.log("next run in 1 hour")
+                        callback(finished, rule);
+                        return;
+                    }
+
+                } else {//als gefinisht
+                    rule = '* * * * *';// iedere 1 min checken 
+                    finished = true;
+                    callback(finished, rule);
+                    return;
+                }
+            }
+        });
+        if (!girobeschikbaar) {
+            console.log("Race not available");
+            rule = '0 0 10 * *'; // check at 10am
+            callback(finished, rule);
+            return;
+        }
+    });
+}
+
+var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to run every minute to initialize at the start.
+    var race_id = current_race_id;
+    var stageQuery = `SELECT * FROM STAGE
+                      WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
+                      ORDER BY stagenr DESC
+                      LIMIT 1`;
+    sqlDB.query(stageQuery,function(err,results){//returns the most recent stage that started
+      if (err) {console.log("WRONG QUERY:",stageQuery); throw err;}
+      else{
+        if(results.rows.length){// if some results, so at least after start of stage 1
+          if(currentstage_global===0){// set to 1 to make teamselection inaccessible
+              currentstage_global = 1
+          }
+          var stage = results.rows[0];
+          if(!stage.finished){
+            getTimetoFinish(function(stageFinished,newResultsRule){// getTimetoFinish if not finished
+              if(stageFinished){
+                var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
+                sqlDB.query(updateStageQuery,function(err,results){
+                  if (err) {console.log("WRONG QUERY:",updateStageQuery); throw err;}
+                  else console.log("Stage %s finished",stage.stagenr)
+                });
+                SQLscrape.getResult(current_racename,current_year,stage.stagenr,function(err,response){
+                  if(err) throw err;
+                  else console.log(response, "stage", stage.stagenr,"\n");
+                })
+              }
+              scrapeResults.reschedule(newResultsRule);  //update new schedule
+            })
+          }else if(!stage.complete){//get results if not complete
+            SQLscrape.getResult(current_racename,current_year,stage.stagenr,function(err,response){ 
+              if(err) throw err;
+              else console.log(response, "stage", stage.stagenr,"\n");
+            })
+          }else{// if finished and complete set schedule to run again at start of next stage
+            if(currentstage_global<22){
+                currentstage_global += 1;
+            }
+            var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage.stagenr + 1}`;
+            sqlDB.query(nextStageQuery,function(err,nextStageResults){
+              if (err) {console.log("WRONG QUERY:",nextStageQuery); throw err;}
+              else{
+                if(stage.stagenr < 21){
+                  var d = nextStageResults.rows[0].starttime;
+                  resultsRule = `${d.getSeconds()+5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
+                  scrapeResults.reschedule(resultsRule);
+                  setCurrentStage();
+  
+                }else{// laatste etappe compleet geen scrapes meer nodig
+                    scrapeResults.cancel();
+                }
+              }
+            })
+          }
+        }else{
+            console.log("before stage 1")
+            scrapeResults.reschedule('0 18 * * *')// als voor een race check dan opnieuw iedere dag om 18:00
+        }
+      }
+    })
+  });
+
+  
