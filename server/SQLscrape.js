@@ -463,15 +463,11 @@ const fs = require('fs');
                         if (stagepos && stageType !== 'TTT') {
                             stagescore = getPunten('Stage', stagepos, finalStandings);
                             stageresult = ridersDay[stagepos - 1].result;
-                        } else {
-                            if (stagepos) {
-                                var stagescore = getTTTPunten(stagepos); // dagpunten worden berekend
-                            }
+                        } else if (stagepos) { //TTT stagepoints
+                            var stagescore = getTTTPunten(stagepos); // dagpunten worden berekend
                         }
-                        if (teamRider === teamWinners['Stage'] && stagepos !== 1 && stageType === 'REG') {
-                            if (finalStandings) {
-                                teamscore += 0;
-                            } else {
+                        if (teamRider === teamWinners['Stage'] && stagepos > 1 && stageType === 'REG') {
+                            if (!finalStandings) {
                                 teamscore += 10;
                             }
                         }
@@ -488,7 +484,7 @@ const fs = require('fs');
                             gcscore = getPunten('GC', gcpos, finalStandings);
                             gcresult = ridersGC[gcpos - 1].result;
                         }
-                        if (teamRider === teamWinners['GC'] && gcpos !== 1) {
+                        if (teamRider === teamWinners['GC'] && gcpos !== 1  && stagepos !== 0) {
                             if (finalStandings) {
                                 teamscore += 24;
                             } else {
@@ -508,7 +504,7 @@ const fs = require('fs');
                             pointsscore = getPunten('Points', pointspos, finalStandings);
                             pointsresult = ridersPoints[pointspos - 1].result;
                         }
-                        if (teamRider === teamWinners['Points'] && pointspos !== 1) {
+                        if (teamRider === teamWinners['Points'] && pointspos !== 1  && stagepos !== 0) {
                             if (finalStandings) {
                                 teamscore += 18;
                             } else {
@@ -528,7 +524,7 @@ const fs = require('fs');
                             komscore = getPunten('KOM', kompos, finalStandings);
                             komresult = ridersKom[kompos - 1].result;
                         }
-                        if (teamRider === teamWinners['KOM'] && kompos !== 1) {
+                        if (teamRider === teamWinners['KOM'] && kompos !== 1  && stagepos !== 0) {
                             if (finalStandings) {
                                 teamscore += 9;
                             } else {
@@ -548,7 +544,7 @@ const fs = require('fs');
                             youthscore = getPunten('Youth', youthpos, finalStandings);
                             youthresult = ridersYouth[youthpos - 1].result;
                         }
-                        if (teamRider === teamWinners['Youth'] && youthpos !== 1) {
+                        if (teamRider === teamWinners['Youth'] && youthpos !== 1  && stagepos !== 0) {
                             if (finalStandings) {
                                 teamscore += 6;
                             } else {
