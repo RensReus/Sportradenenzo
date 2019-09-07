@@ -7,6 +7,7 @@ import SelecTable from './stageselection'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft,faAngleRight,faMountain} from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
+import LoadingDiv from '../shared/loadingDiv'
 
 class StageResults extends Component {
     constructor(props) {
@@ -77,7 +78,10 @@ class Stage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            mode: 'loading',
+            mode: '',
+            loadingAll: true,
+            loadingStageres: false,
+            loadingSelection: false,
             racename: '',
             year: '',
             budget: false,
@@ -149,10 +153,12 @@ class Stage extends Component {
     previousStage() {
         const currentstage = parseInt(this.state.stage)
         if (currentstage > 1) {
-            this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
             this.setState({
-                stage: currentstage - 1
+                loadingStageres: true,
+                loadingSelection: true,
+            stage: currentstage - 1
             })
+            this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
             this.updateData(currentstage - 1)
         } else {
             this.props.history.push('/teamselection')// TODO disable after stage 1 start
@@ -164,7 +170,9 @@ class Stage extends Component {
             const currentstage = parseInt(this.state.stage)
             this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage + 1).toString())
             this.setState({
-                stage: currentstage + 1
+                loadingStageres: true,
+                loadingSelection: true,
+            stage: currentstage + 1
             })
             this.updateData(currentstage + 1)
         }
@@ -177,12 +185,15 @@ class Stage extends Component {
         const racename = this.state.racename
         const year = this.state.year
         document.title = "Etappe " + stage;
-
+        
         axios.post('/api/getstage', { racename, year, stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
             .then((res) => {
                 if (res.data.mode === '404') {
                     this.setState({
-                        mode: '404'
+                        mode: '404',
+                        loadingAll: false,
+                        loadingStageres: false,
+                        loadingSelection: false,
                     })
                 } else if (res.data.mode === 'selection') {
                     this.setState({
@@ -196,6 +207,9 @@ class Stage extends Component {
                         starttime: res.data.starttime,
                         prevClassificationsGewoon: res.data.prevClassificationsGewoon,
                         prevClassificationsBudget: res.data.prevClassificationsBudget,
+                        loadingAll: false,
+                        loadingStageres: false,
+                        loadingSelection: false,
                     })
                 } else if (res.data.mode === 'results') {
                     this.setState({
@@ -211,6 +225,9 @@ class Stage extends Component {
                         allSelectionsBudget: res.data.allSelectionsBudget,
                         notSelectedGewoon: res.data.notSelectedGewoon,
                         notSelectedBudget: res.data.notSelectedBudget,
+                        loadingAll: false,
+                        loadingStageres: false,
+                        loadingSelection: false,
                     })
                 }
             })
@@ -282,7 +299,6 @@ class Stage extends Component {
     
     render() {
         const mode = this.state.mode
-        let loadingGif
         let message
         let resTable
         let pTable
@@ -335,10 +351,7 @@ class Stage extends Component {
             allSelections = this.state.allSelectionsGewoon
             notSelected = this.state.notSelectedGewoon
         }
-        if (mode === 'loading') {
-            loadingGif = <img className="loadingGif" src="/images/bicycleWheel.gif" alt="bicycleWheel.gif"></img>
-            message = <span className="h6">Fetching data..</span>
-        } else if (mode === '404') {
+        if (mode === '404') {
             message = <span className="h6">404: Data not found</span>
             resTable = ''
             pTable = ''
@@ -353,8 +366,9 @@ class Stage extends Component {
             var starttime = new Date(this.state.starttime);
             var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
             starttimeString = dayArray[starttime.getDay()] + " " + starttime.getHours() + ":" + starttime.getMinutes();
-            selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} />
+            selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} loading={this.state.loadingSelection}/>
             prevClassificationsDiv = <div className="prevClassifications">
+                <LoadingDiv loading = {this.state.loadingSelection}/>
                 <div style={{ display: prevClassifications[0].rows.length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0].rows} title="AK" /></div>
                 <div style={{ display: prevClassifications[1].rows.length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1].rows} title="Punten" /></div>
                 <div style={{ display: prevClassifications[2].rows.length ? 'block' : 'none', float: "left" }} className="KOM"><Table data={prevClassifications[2].rows} title="Berg" /></div>
@@ -409,13 +423,19 @@ class Stage extends Component {
                             modalContent={stageProfile}
                         />
                 </div>
+                {message}
                 {allSelectionsPopup}
                 {selecTable}
-                {loadingGif}
-                {message}
-                <div className="res">{resTable}{pTable}</div>
-                <div className="stage">{stResTable}</div>
+                <div className="res">
+                    <LoadingDiv loading = {this.state.loadingStageres}/>
+                    {resTable}{pTable}
+                    </div>
+                <div className="stage">
+                    <LoadingDiv loading = {this.state.loadingStageres}/>
+                    {stResTable}
+                </div>
                 {prevClassificationsDiv}
+                <LoadingDiv loading = {this.state.loadingAll}/>
 
 
             </div>

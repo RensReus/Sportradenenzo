@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserMinus, faUserPlus, faCheckCircle as solFaCheckCircle} from "@fortawesome/free-solid-svg-icons"; // add/remove riders
 import { faCheckCircle as regFaCheckCircle} from "@fortawesome/free-regular-svg-icons"; // add/remove riders
+import LoadingDiv from '../../shared/loadingDiv'
 
 class SelecTableRow extends Component {
     setKopman = () => {
@@ -62,20 +63,23 @@ class SelecTable extends Component {
             }
         })
         return (
-            <table className="selecTable table1">
-                <caption>{selectionLength}/9</caption>
-                <thead>
-                    <tr>
-                        <th>Kopman</th>
-                        <th>Name</th>
-                        <th>Team</th>
-                        <th>   </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
+            <div className="selecTable" style={{position:'relative'}}>
+                <LoadingDiv loading = {this.props.loading}/>
+                <table>
+                    <caption>{selectionLength}/9</caption>
+                    <thead>
+                        <tr>
+                            <th>Kopman</th>
+                            <th>Name</th>
+                            <th>Team</th>
+                            <th>   </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows}
+                    </tbody>
+                </table>
+            </div>
         )
     }
 }

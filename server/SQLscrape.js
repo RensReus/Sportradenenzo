@@ -426,6 +426,7 @@ const fs = require('fs');
                         if (akComp && sprintComp && bergComp && jongComp && ridersGC.length === ridersDay.length) {
                             uitslagCompleet = true;
                         }
+                        // todo check if prevstage complete
 
                         var stageCompleteQuery = `UPDATE stage SET complete = TRUE, finished = TRUE WHERE stage_id = ${stage_id}`
                         if (uitslagCompleet) {

@@ -248,11 +248,9 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                //TODO fix query
-
                 var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)
-                WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
+                WHERE account_id = ${user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
                 sqlDB.query(usersQuery, (err,results)=>{
                     if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
                     async.map(results.rows,function(account,done){
@@ -338,7 +336,6 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                //TODO fix query
                 var account_participation_id = `(SELECT account_participation_id FROM account_participation
                     WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND account_id = ${user.account_id})`
                 teamoverzicht(account_participation_id,req.body.budgetparticipation,function(err,results){
@@ -361,7 +358,7 @@ module.exports = function (app) {
             } else {
                 var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
-                WHERE account_id = ${user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
+                WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
                 sqlDB.query(usersQuery, (err,results)=>{
                     if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
                     async.map(results.rows,function(account,done){

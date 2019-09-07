@@ -4,6 +4,7 @@ import axios from 'axios';
 import ManualUpdate from './manualupdate'
 import ImportExport from './importExport'
 import Table from '../shared/table'
+import LoadingDiv from '../shared/loadingDiv'
 var getCaretCoordinates = require('textarea-caret');
 
 class Outputtable extends Component {
@@ -154,6 +155,7 @@ class Admin extends Component {
             popUpLeft: 0,
             cursorPos: 0,
             errorData: [],
+            loadingDBinfo: false,
         });
         this.submitQuery = this.submitQuery.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -250,7 +252,6 @@ class Admin extends Component {
                     for (var i = 0; i< currWord.length; i++) {
                         var aEq = a.toLowerCase().charAt(i) === currWord.toLowerCase().charAt(i)
                         var bEq = b.toLowerCase().charAt(i) === currWord.toLowerCase().charAt(i)
-                        if(!aEq && !bEq) return 0;
                         if(aEq && !bEq) return -1;
                         if(!aEq && bEq) return 1;
                     }
@@ -352,6 +353,9 @@ class Admin extends Component {
     }
 
     getDBinfo(){
+        this.setState({
+            loadingDBinfo: true
+        })
         axios.post('/api/getdbinfo', { token: localStorage.getItem('authToken')})
             .then((res) => {
                 var DBinfoTables = []
@@ -360,6 +364,7 @@ class Admin extends Component {
                 }
                 this.setState({
                     DBinfoTables,
+                    loadingDBinfo: false,
                 })
             })
     }
@@ -420,8 +425,9 @@ class Admin extends Component {
                     <Table data={this.state.errorData}/>
                     <Outputtable output={this.state.output} />
                 </div>
-                <div style={{ display: this.state.showTab[1]}}>
+                <div style={{ display: this.state.showTab[1], position: 'relative' }}>
                     {this.state.DBinfoTables}
+                    <LoadingDiv loading = {this.state.loadingDBinfo}/>
                 </div>
                 <div style={{ display: this.state.showTab[2]}}>
                     <ManualUpdate />
