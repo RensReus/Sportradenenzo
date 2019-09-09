@@ -6,7 +6,7 @@ class Modal extends Component {
         const cssClass = this.props.show ? "modal display-block" : "modal display-none";
         const cssClass2 = this.props.show ? "modal-content display-block" : "modal display-none";
         return (
-            <div className={cssClass} onClick={() => this.props.hideModal()}>
+            <div className={cssClass} onClick={(e) => this.props.hideModal(e)}>
                 <div className={cssClass2}>{this.props.content}</div>
             </div>
         )
@@ -28,9 +28,11 @@ class ModalButton extends Component {
         document.addEventListener("keydown",this.hideModal)
     }
 
-    hideModal = () => {
-        this.setState({ visible: false });
-        document.removeEventListener("keydown",this.hideModal)
+    hideModal = (e) => {
+        if((e.type === "click" && !window.getSelection().toString().length)|| e.keyCode === 27){
+            this.setState({ visible: false });
+            document.removeEventListener("keydown",this.hideModal)
+        }
     }
 
     render() {
