@@ -286,8 +286,8 @@ module.exports = function (app) {
                                 var classifications = [
                                     {pos:'stagepos',result:'stageresult AS "Time"',prev:'',change:''},
                                     {pos:'gcpos',result:'gcresult AS "Time"',prev:',gcprev AS "prev"',change:', gcchange AS "  "'},
-                                    {pos:'pointspos',result:'pointsresult AS "Time"',prev:',pointsprev AS "prev"',change:', pointschange AS "  "'},
-                                    {pos:'kompos',result:'komresult AS "Time"',prev:',komprev AS "prev"',change:', komchange AS "  "'},
+                                    {pos:'pointspos',result:'pointsresult AS "Points"',prev:',pointsprev AS "prev"',change:', pointschange AS "  "'},
+                                    {pos:'kompos',result:'komresult AS "Points"',prev:',komprev AS "prev"',change:', komchange AS "  "'},
                                     {pos:'yocpos',result:'yocresult AS "Time"',prev:',yocprev AS "prev"',change:', yocchange AS "  "'},
                                 ];
 

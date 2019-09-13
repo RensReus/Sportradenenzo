@@ -362,8 +362,7 @@ module.exports = function (app) {
                 sqlDB.query(usersQuery, (err,results)=>{
                     if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
                     async.map(results.rows,function(account,done){
-                        console.log("account",account)
-                        teamoverzicht(account.account_participation_id, req.body.budgetparticipation ,function(err,teamoverzicht){
+                        teamoverzicht(account.account_participation_id, req.body.budgetparticipation, false ,function(err,teamoverzicht){
                             done(err,{tableData:teamoverzicht.tableData,title:account.username, coltype:teamoverzicht.coltype})
                         })
                     },function(err,tables){
@@ -375,11 +374,11 @@ module.exports = function (app) {
         })
     })
 
-    teamoverzicht = function (account_participation_id, budgetparticipation, callback){
+    teamoverzicht = function (account_participation_id, budgetparticipation, simple, callback){
         var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
-            INNER JOIN stage_selection USING(stage_selection_id)
-            WHERE account_participation_id = ${account_participation_id}
-            ORDER BY stage_id) a`
+        INNER JOIN stage_selection USING(stage_selection_id)
+        WHERE account_participation_id = ${account_participation_id}
+        ORDER BY stage_id) a`
         var totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 ELSE totalscore END`
         var stagescore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN stagescore * 1.5 ELSE stagescore END`
         var teamscore = `,  SUM(teamscore) AS "Team"`;
@@ -387,13 +386,18 @@ module.exports = function (app) {
             totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 - teamscore ELSE totalscore - teamscore END`
             teamscore = '';
         }
-        var query = `SELECT CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", CONCAT(firstname, ' ', lastname) as "Name", SUM(${stagescore}) AS "Stage", SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong" ${teamscore}, SUM(${totalscore}) "Total", COUNT(rider_participation_id) "Selected", ROUND(SUM(${totalscore})/COUNT(rider_participation_id),0) AS "Per Etappe"  from rider
+        var columns = `CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", CONCAT(firstname, ' ', lastname) as "Name", SUM(${stagescore}) AS "Stage", SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong" ${teamscore}, SUM(${totalscore}) "Total", COUNT(rider_participation_id) "Selected", ROUND(SUM(${totalscore})/COUNT(rider_participation_id),0) AS "Per Etappe"`
+        var coltype = { "Name": 0, "Stage": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Selected": 1, "Per Etappe": 1 };
+        if(simple){
+            coltype = {};
+            columns = `CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", SUM(${totalscore}) "Total"`
+        }
+        var query = `SELECT ${columns} FROM rider
                     INNER JOIN rider_participation USING(rider_id)
                     RIGHT JOIN ${selected_riders_stages} USING (rider_participation_id)
                     INNER JOIN results_points USING(stage_id,rider_participation_id)
                     GROUP BY "Name", "Name_link"
                     ORDER BY "Total" DESC`
-        var coltype = { "Name": 0, "Stage": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Selected": 1, "Per Etappe": 1 };
 
         sqlDB.query(query,(err,results) => {
             if (err) { console.log("WRONG QUERY:", query); throw err; }
@@ -407,29 +411,20 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                async.auto({//TODO remove Hardcoded
-                    bierfietsen: function(callback){
-                        teamoverzichtSimple(1,current_race_id,req.body.budgetparticipation,callback)
-                    },
-                    rens: function(callback){
-                        teamoverzichtSimple(2,current_race_id,req.body.budgetparticipation,callback)
-                    },
-                    sam: function(callback){
-                        teamoverzichtSimple(4,current_race_id,req.body.budgetparticipation,callback)
-                    },
-                    yannick: function(callback){
-                        teamoverzichtSimple(5,current_race_id,req.body.budgetparticipation,callback)
-                    }
-                }, function (err,results){
-                    if(err) throw err;
-                    var users = []
-                    users.push({riders: results.bierfietsen.tableData, username: "Bierfietsen", coltype: results.bierfietsen.coltype});
-                    users.push({riders: results.rens.tableData, username: "Rens", coltype: results.bierfietsen.coltype});
-                    users.push({riders: results.sam.tableData, username: "Sam", coltype: results.bierfietsen.coltype});
-                    users.push({riders: results.yannick.tableData, username: "Yannick", coltype: results.bierfietsen.coltype});
-                    var tables = selectionsPopUp(users);
-                    res.send({tables:tables.slice(0, -1)})
-            })   
+                var usersQuery = `SELECT account_participation_id, username FROM account_participation 
+                INNER JOIN account USING (account_id)   
+                WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
+                sqlDB.query(usersQuery, (err,results)=>{
+                    if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
+                    async.map(results.rows,function(account,done){
+                        teamoverzicht(account.account_participation_id, req.body.budgetparticipation, true ,function(err,teamoverzicht){
+                            done(err,{tableData:teamoverzicht.tableData,title:account.username, coltype:teamoverzicht.coltype})
+                        })
+                    },function(err,tables){
+                        if (err) throw err;
+                        res.send({tables})
+                    })
+                })
             }
         })
     })
