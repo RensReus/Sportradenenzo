@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors') //Zorgt voor authentication tussen proxy en server (snap het niet helemaal maar het werkt)
 const app = express();
-const SQLscrape = require('./server/SQLscrape');
+const scrape = require('./server/scrape');
 const fs = require('fs')
 app.use(cors({
   credentials: true
@@ -17,7 +17,7 @@ current_race_id = 15;
 current_racename = 'vuelta';
 current_year = 2019;
 currentstage_global = 0;
-SQLscrape.setCurrentStage()
+scrape.setCurrentStage()
 
 //Mongo
 if (fs.existsSync('./server/db/Mongo/link.js')) { //Kijken of er een config is

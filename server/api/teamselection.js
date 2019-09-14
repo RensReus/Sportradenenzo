@@ -5,7 +5,7 @@ module.exports = function (app) {
     const sqlDB = require('../db/sqlDB')
     const SQLread = require('../db/SQLread')
     const SQLwrite = require('../db/SQLwrite')
-    const SQLscrape = require('../SQLscrape')
+    const scrape = require('../scrape')
     const jwt = require('jsonwebtoken')
     const fs = require('fs');
 
@@ -137,7 +137,7 @@ module.exports = function (app) {
             res.redirect('/')
         } else if (currentstage_global === 0) {
             //Scrape de rider opnieuw om foute data te voorkomen
-            SQLscrape.getRider(req.body.rider.pcsid.toLowerCase(), function (response) {
+            scrape.getRider(req.body.rider.pcsid.toLowerCase(), function (response) {
                 if (response == 404) {
                     res.send(false)
                 } else {
@@ -268,7 +268,7 @@ module.exports = function (app) {
 
     //Haalt de data van een enkele renner van pcs
     app.post('/api/getrider', function (req, res) {
-        SQLscrape.getRider(req.body.pcsid, function (response) {
+        scrape.getRider(req.body.pcsid, function (response) {
             if (response == 404) {
                 res.send(false)
             } else {

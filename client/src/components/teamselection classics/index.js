@@ -88,7 +88,7 @@ class Teamselection extends Component {
         e.preventDefault();
         const pcsid = e.target.pcsid.value.split('/').pop(); //Interpreteer de aanwezigheid van / als een link en pak het laatste stukje
         this.setState({ buttonClass: 'riderSelectButton', buttonText: 'Fetching..' })
-        axios.post('/api/getrider', { pcsid: pcsid }) //to: SQLscrape.js
+        axios.post('/api/getrider', { pcsid: pcsid }) //to: scrape.js
             .then((res) => { //Returned false als niks gevonden
                 if (res.data === false) {
                     this.setState({ 

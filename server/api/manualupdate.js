@@ -1,7 +1,6 @@
-const kScrape = require('../db/klassiekerScrape');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
-const sqlScrape = require('../SQLscrape');
+const scrape = require('../scrape');
 const race_backup = require('../db/Mongo/models/race_backup.js')
 const async = require('async');
 
@@ -16,21 +15,21 @@ function getSecret() {
 module.exports = function (app) {
   const sqlDB = require('../db/sqlDB')
 
-  app.post('/api/getstartlistklassiek', function (req, res) {
-    jwt.verify(req.body.token, getSecret(), function (err, decoded) {
-      if(err)
-        throw err;
-      if(decoded.admin){
-        var year = parseInt(req.body.year);
-        var stage = parseInt(req.body.stage);
-        kScrape.getStartlist(year,stage,function(err,arg){ 
-          if(err) res.send("error");
-          console.log("Got startlist Klassieker year %s, stage %s", year,stage)
-          res.send("completed")
-        })
-      }
-    })
-  });
+  // app.post('/api/getstartlistklassiek', function (req, res) { //TODO change to new scrape
+  //   jwt.verify(req.body.token, getSecret(), function (err, decoded) {
+  //     if(err)
+  //       throw err;
+  //     if(decoded.admin){
+  //       var year = parseInt(req.body.year);
+  //       var stage = parseInt(req.body.stage);
+  //       scrape.getStartlist(year,stage,function(err,arg){ 
+  //         if(err) res.send("error");
+  //         console.log("Got startlist Klassieker year %s, stage %s", year,stage)
+  //         res.send("completed")
+  //       })
+  //     }
+  //   })
+  // });
 
   // app.post('/api/getresultsklassiek', function (req, res) {
   //   jwt.verify(req.body.token, getSecret(), function (err, decoded) {
@@ -39,7 +38,7 @@ module.exports = function (app) {
   //     if(decoded.admin){
   //       var year = parseInt(req.body.year);
   //       var stage = parseInt(req.body.stage);
-  //       kScrape.getResult(year,stage,function(){ 
+  //       scrape.getResult(year,stage,function(){ 
   //         console.log("Got Results Klassieker year %s, stage %s", year,stage)
   //         functies.calculateUserScoresKlassieker(year,stage,function(err,arg){ //TODO calculate has changed location
   //           if(err) res.send("error");
@@ -58,7 +57,8 @@ module.exports = function (app) {
       if(decoded.admin){
         var year = parseInt(req.body.year);
         var raceName = req.body.raceName;
-        sqlScrape.getStartlist(raceName,year,function(err,arg){ 
+        var race = {year, }
+        scrape.getStartlist(raceName,year,function(err,arg){ 
           if(err) res.send("error");
           console.log("Got startlist %s year %s",raceName, year)
           res.send("loaded startlist")
@@ -77,7 +77,7 @@ module.exports = function (app) {
         if(req.body.stage === 'all'){
           var stages = Array.apply(null, {length: 22}).map(Number.call, Number);
           async.eachSeries(stages,function(stage,callback){
-            sqlScrape.getResult(raceName,year,stage + 1,function(err,arg){ 
+            scrape.getResult(raceName,year,stage + 1,function(err,arg){ 
               if(err) res.send("error");
               console.log("Got results %s year %s stage %s",raceName, year, stage + 1)
               callback(null, !err)
@@ -87,7 +87,7 @@ module.exports = function (app) {
           })
         }else{
           var stage = parseInt(req.body.stage);
-          sqlScrape.getResult(raceName,year,stage,function(err,arg){ 
+          scrape.getResult(raceName,year,stage,function(err,arg){ 
             if(err) res.send("error");
             console.log("Got results %s year %s stage %s",raceName, year, stage)
             res.send("completed")
