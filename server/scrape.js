@@ -198,7 +198,7 @@ var getResult = function (raceName, year, et, callback) {
                 }
 
                 // define uitslagen arrays
-                var ridersResults = { 'all': [], 'Stage': [], 'GC': [], 'Points': [], 'Youth': [], 'KOM': [], 'dnf': [] }; //all, day, GC, points, youth, kom, dnf
+                var ridersResults = { 'all': [], 'Stage': [], 'GC': [], 'Points': [], 'Youth': [], 'KOM': [], 'dnf': [] }; 
                 var teamWinners = [];
                 var TTTresult = [];
                 if (stageType === 'TTT') {// TTTresults is teamnames
@@ -227,7 +227,8 @@ var getResult = function (raceName, year, et, callback) {
                             }
                             if (riderindex < 3 && classification === 'Stage') {// TODO CHECK classics
                                 teamWinners[classification + riderindex] = rider.team;
-                            } else if (riderindex === 0) {//GT
+                            } 
+                            if (riderindex === 0) {//GT
                                 teamWinners[classification] = rider.team;
                             }
                             ridersResults[classification].push(rider);//push riders to each classification list
@@ -465,15 +466,13 @@ var getEindPunten = function (kl, pos) {
     switch (kl) {
         case 'GC'://ak
             if (pos < ak.length) return ak[pos];
-            return 0;
         case 'Points'://punt
             if (pos < punt.length) return punt[pos];
-            return 0;
         case 'Youth'://jong
             if (pos < jong.length) return jong[pos];
-            return 0;
         case 'KOM'://berg
             if (pos < berg.length) return berg[pos];
+        default:
             return 0;
     }
 }
