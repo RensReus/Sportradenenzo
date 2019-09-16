@@ -122,6 +122,11 @@ class charts extends Component {
 				document.title = "Chart: Score Spreiding";
 				this.setState({ chartType: "column" })
 				break;
+			case "totalscorespread":
+				this.totalscoresspread()
+				document.title = "Chart: Score Spreiding";
+				this.setState({ chartType: "column" })
+				break;
 			default:
 				this.newChart();
 		}
@@ -276,12 +281,21 @@ class charts extends Component {
 	}
 
 	scorespread() {
-		axios.post('/api/chartscorespread', { race_id: 6, budgetparticipation: false, excludeFinal: true, token: localStorage.getItem('authToken')})
+		axios.post('/api/chartscorespread', {budgetparticipation: false, excludeFinal: true, token: localStorage.getItem('authToken')})
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
 					this.buildscorespread()
-					console.log(res.data)
+				}
+			})
+	}
+
+	totalscoresspread(){
+		axios.post('/api/charttotalscorespread', {budgetparticipation: false, token: localStorage.getItem('authToken')})
+			.then((res) => {
+				if (res) {
+					this.setState({ data: res.data })
+					this.buildscorespread()
 				}
 			})
 	}
@@ -296,6 +310,10 @@ class charts extends Component {
 			axisY: {
 				title: "Points"
 			},
+			toolTip: {
+				backgroundColor: 'black',
+				fontColor: 'white'
+			},
 			data: data
 		}
 
@@ -307,7 +325,6 @@ class charts extends Component {
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
-					console.log(res.data)
 					this.buildNewChart()
 
 				}
@@ -315,7 +332,6 @@ class charts extends Component {
 	}
 
 	buildNewChart(){
-		console.log("buidl", this.state.data)
 		var data = this.state.data;
 		var options = {
 			title: {
@@ -347,7 +363,6 @@ class charts extends Component {
 		}
 		var options = this.state.options;
 		options.theme = this.state.theme;
-		console.log(options)
 		return (
 			<div className="overzichtContainer">
 				{typeSelector}

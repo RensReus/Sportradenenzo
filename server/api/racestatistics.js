@@ -101,6 +101,101 @@ module.exports = function (app) {
     })
 
 
+    app.post('/api/gettourvictories', function (req, response) {
+        jwt.verify(req.body.token, getSecret(), function (err, user) {
+            if (err) {
+                res.redirect('/')
+                throw err;
+            } else {
+                var race_id = current_race_id;
+                // var poule_id = req.body.poule_id;
+                var subquery = `(SELECT username, finalscore, CONCAT(year, ' ', name) AS race, rank() over (PARTITION BY race ORDER BY finalscore DESC) FROM account_participation
+            INNER JOIN account USING (account_id)
+            INNER JOIN race USING(race_id)
+            WHERE budgetparticipation = ${req.body.budgetparticipation} AND NOT name = 'classics') AS subquery`
+                var rankQuery = `SELECT ARRAY_AGG(username ORDER BY finalscore DESC) as usernames, ARRAY_AGG(finalscore ORDER BY finalscore DESC) as scores, race FROM ${subquery} GROUP BY race; `;//ranking per stage
+                var countQuery = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
+            (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
+            GROUP BY username; \n`//aantal keer per ranking
+                var threeK = `COUNT(CASE WHEN finalscore > 3000 AND finalscore < 4000 THEN 1 END) AS "3K"`
+                var fourK = `COUNT(CASE WHEN finalscore > 4000 AND finalscore < 5000 THEN 1 END) AS "4K"`
+                var fiveK = `COUNT(CASE WHEN finalscore > 5000 THEN 1 END) AS "5K"`
+                var thousandsQuery = `SELECT username AS "User", ${threeK}, ${fourK}, ${fiveK} from account_participation
+                INNER JOIN account USING(account_id)
+                GROUP BY username
+                ORDER BY "5K" DESC, "4K" DESC, "3K" DESC`
+
+                var query = rankQuery + countQuery + thousandsQuery;
+                sqlDB.query(query, (err, res) => {
+                    if (err) { console.log("WRONG QUERY:", query); throw err; }
+                    else {
+                        var headersRank = ["Race"];
+                        var headersCount = ["User"];
+                        var rowsRank = [];
+                        var rowsCount = [];
+
+                        var userCount = res[1].rows.length
+                        for (var i in res[0].rows) {//ranking per stage
+                            var row = [res[0].rows[i].race];
+                            for (var j in res[0].rows[i].usernames) {
+                                row.push(res[0].rows[i].usernames[j] + " (" + res[0].rows[i].scores[j] + ")");
+                            }
+                            rowsRank.push(row);
+                        }
+
+
+                        for (var i in res[1].rows) {//aantal keer per ranking
+                            var user = res[1].rows[i];
+                            var row = new Array(userCount + 1).fill(0)
+                            row[0] = user.username;
+                            for (var j in user.ranks) {
+                                row[user.ranks[j]] = user.rankcounts[j];
+                            }
+                            rowsCount.push(row);
+                        }
+
+                        //make headers
+                        for (var i = 1; i < userCount + 1; i++) {
+                            headersRank.push(i + "e");
+                            headersCount.push(i + "e");
+                        }
+
+                        //sort rowsCount
+                        rowsCount.sort(function (a, b) {
+                            for (var i = 1; i < userCount + 1; i++) {
+                                if (a[i] > b[i]) return false;
+                                if (a[i] < b[i]) return true;
+                            }
+                            return false;
+                        })
+                        var rankTable = []
+                        for(let i in rowsRank){
+                            let newRow = {};
+                            for(let j in headersRank){
+                                newRow[headersRank[j]] = rowsRank[i][j]
+                            }
+                            rankTable.push(newRow)
+                        }
+                        var countTable = []
+                        for(let i in rowsCount){
+                            let newRow = {};
+                            for(let j in headersCount){
+                                newRow[headersCount[j]] = rowsCount[i][j]
+                            }
+                            countTable.push(newRow)
+                        }
+                        var tables = []
+                        tables.push({tableData: rankTable, title: "Etappe Uitslagen"})
+                        tables.push({tableData: countTable, title: "Hoe vaak welke positie"})
+                        tables.push({tableData: res[2].rows, title: "Scores per Duizend"})
+                        response.send({tables})
+                    }
+                })
+            }
+        })
+    })
+
+
     app.post('/api/getriderpointsall', function (req, res) {
         jwt.verify(req.body.token, getSecret(), function (err, user) {
             if (err) {
@@ -847,7 +942,7 @@ module.exports = function (app) {
                 if(req.body.excludeFinal) excludeFinalStr = `AND NOT stagenr = 22`
                 var budgetparticipation = req.body.budgetparticipation;
 
-                var barQuery = `SELECT username as label, stagescore as y, stagenr FROM stage_selection
+                var barQuery = `SELECT username as colorlabel, CONCAT(username, ' ', stagenr) as label, stagescore as y FROM stage_selection
                     INNER JOIN account_participation USING(account_participation_id)
                     INNER JOIN account USING(account_id)
                     INNER JOIN stage USING(stage_id)
@@ -872,7 +967,44 @@ module.exports = function (app) {
                     var colors = {Bierfietsen:'red', Rens:'blue', Sam:'green',Yannick:'yellow'}
                     for (var i in results[0].rows){
                         var row = results[0].rows[i];
-                        row.color = colors[row.label];
+                        row.color = colors[row.colorlabel];
+                        // console.log(results[1].rows)
+                        // row.x = results[1].rows[row.stagenr-1].round;
+                        data[0].dataPoints.push(row);
+                    }
+                    res.send(data);
+                })
+            }
+        })
+    })
+
+    app.post('/api/charttotalscorespread', function (req, res) {
+        jwt.verify(req.body.token, getSecret(), function (err, user) {
+            if (err) {
+                res.redirect('/')
+                throw err;
+            } else {
+                var budgetparticipation = req.body.budgetparticipation;
+
+                var racePointsQuery = `SELECT username as colorlabel, CONCAT(username, ' ', name, ' ', year) as label, finalscore as y FROM account_participation
+                INNER JOIN account USING(account_id)
+                INNER JOIN race USING(race_id)
+                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics'
+                ORDER BY finalscore DESC;\n`
+
+                var extraQuery = `SELECT username FROM account;`
+                var totalQuery = racePointsQuery + extraQuery;
+                sqlDB.query(totalQuery, (err, results) => {
+                    if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+                    var data = [{
+                        type: "column",
+                        showInLegend: true, 
+                        dataPoints: []
+                    }]
+                    var colors = {Bierfietsen:'red', Rens:'blue', Sam:'green',Yannick:'yellow'}
+                    for (var i in results[0].rows){
+                        var row = results[0].rows[i];
+                        row.color = colors[row.colorlabel];
                         // console.log(results[1].rows)
                         // row.x = results[1].rows[row.stagenr-1].round;
                         data[0].dataPoints.push(row);

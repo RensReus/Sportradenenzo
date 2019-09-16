@@ -42,6 +42,7 @@ class StatistiekenDropdown extends Component {
               ? (
                 <div className="dropdown-content">
                     <Link className='item' to='/overzicht/etappewinsten'>Uitslagen per etappe</Link>
+                    <Link className='item' to='/overzicht/rondewinsten'>Uitslagen per ronde</Link>
                     <Link className='item' to='/overzicht/missedpointsall'>Gemiste punten iedereen</Link>
                     <Link className='item' to='/overzicht/team'>Team overzicht</Link>
                     <Link className='item' to='/overzicht/teamall'>Team overzicht iedereen</Link>

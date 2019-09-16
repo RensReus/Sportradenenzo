@@ -61,6 +61,7 @@ class overzicht extends Component {
       "teamall":"Team Overzicht Iedereen",
       "teamallsimple":"Team Overzicht Iedereen",
       "etappewinsten":"Etappe Winsten Overzicht",
+      "rondewinsten":"Ronde Winsten Overzicht",
       "teamcomparisons":"Vergelijking van Selecties",
       "overigestats":"Overige Statistieken",
     }
@@ -73,6 +74,7 @@ class overzicht extends Component {
       "teamall":"teamoverzichtall",
       "teamallsimple":"teamoverzichtallsimple",
       "etappewinsten":"getstagevictories",
+      "rondewinsten":"gettourvictories",
       "teamcomparisons":"teamcomparisons",
       "overigestats":"getadditionalstats",
     }
@@ -90,6 +92,7 @@ class overzicht extends Component {
         case "teamall": 
         case "teamallsimple": 
         case "etappewinsten": 
+        case "rondewinsten": 
         case "overigestats": 
         case "teamcomparisons": 
           this.getDataAndRender(apilinks[pageref],titles[pageref])
