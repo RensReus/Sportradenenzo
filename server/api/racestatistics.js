@@ -122,6 +122,8 @@ module.exports = function (app) {
                 var fiveK = `COUNT(CASE WHEN finalscore > 5000 THEN 1 END) AS "5K"`
                 var thousandsQuery = `SELECT username AS "User", ${threeK}, ${fourK}, ${fiveK} from account_participation
                 INNER JOIN account USING(account_id)
+                INNER JOIN race USING(race_id)
+                WHERE NOT name = 'classics'
                 GROUP BY username
                 ORDER BY "5K" DESC, "4K" DESC, "3K" DESC`
 
