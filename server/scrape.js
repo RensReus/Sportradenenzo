@@ -170,6 +170,7 @@ var getResult = function (raceName, year, et, callback) {
         var stage_id = stage.stage_id;
         var race_id = stage.race_id;
         var stageType = stage.type;
+        var stageWeight = stage.weight;
 
         if (raceString === "") {//set if not GT
             raceString = stage.stagename;
@@ -225,10 +226,11 @@ var getResult = function (raceName, year, et, callback) {
                             } else if (getIndex(ridersResults['all'], 'pcs_id', rider.pcs_id) === -1) {// add if not already in list
                                 ridersResults['all'].push({ pcs_id: rider.pcs_id, team: rider.team })
                             }
-                            if (riderindex < 3 && classification === 'Stage') {// TODO CHECK classics
-                                teamWinners[classification + riderindex] = rider.team;
-                            } 
-                            if (riderindex === 0) {//GT
+                            if(stageType === 'CLA'){
+                                if (riderindex < 3 && classification === 'Stage') {
+                                    teamWinners[classification + riderindex] = rider.team;
+                                } 
+                            }else if (riderindex === 0) {//GT
                                 teamWinners[classification] = rider.team;
                             }
                             ridersResults[classification].push(rider);//push riders to each classification list
@@ -309,28 +311,26 @@ var getResult = function (raceName, year, et, callback) {
                         if (classification === 'Stage') {
                             if (stageType === 'TTT') {
                                 pos = TTTresult.indexOf(teamRider) + 1; // positie in de uitslag
-                                score = getTTTPunten(pos);
-                                totalscore += score;
-                            } else {// REG or ITT
+                            } else {// REG, ITT or CLA
                                 pos = getIndex(ridersResults[classification], 'pcs_id', pcs_id) + 1;
-                                score = getPunten(classification, pos, finalStandings)
-                                totalscore += score;
                                 if(pos > 0){
                                     result = ridersResults[classification][pos - 1].result;
                                 }
-                                teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, finalStandings, stageType)
                             }
+                            score = getPunten(stageType, classification, pos, finalStandings, stageWeight)
+                            totalscore += score;
+                            teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, finalStandings, stageType, stageWeight)
                             riderInsert += `${pos},${score},'${result}'`;
                         } else {// non 'Stage' Results
                             pos = getIndex(ridersResults[classification], 'pcs_id', pcs_id) + 1;
-                            score = getPunten(classification, pos, finalStandings)
+                            score = getPunten(stageType, classification, pos, finalStandings, stageWeight)
                             totalscore += score;
                             if(pos > 0){
                                 result = ridersResults[classification][pos - 1].result;
                                 prev = ridersResults[classification][pos - 1].prev;
                                 change = ridersResults[classification][pos - 1].change;
                             }
-                            teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, finalStandings, stageType)
+                            teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, finalStandings, stageType, stageWeight)
                             riderInsert += `,${pos},${score},'${result}','${prev}','${change}'`;
                         }
                     }
@@ -365,19 +365,16 @@ var resultsProcessRiders = function (classification, columns, row) {
 
     var timeCol = columns.indexOf('Time');
     var pntCol = columns.indexOf('Pnt');
-    var resultsCol = timeCol + 1 ? timeCol : pntCol;
-    var result = row.children().eq(resultsCol).children().eq(0).text();
+    var result = timeCol + 1 ? row.children().eq(timeCol).children().eq(0).text() : row.children().eq(pntCol).text();
 
     var prevCol = columns.indexOf('Prev');
     if (classification === 'Stage') {
-        //if REG
         var pos = row.children().first().text();
         if (pos === 'DF' || !isNaN(parseInt(pos))) {
             return [{ pcs_id, team, result }, false]
         } else {
             return [{ pcs_id, team }, true];
         }
-        //if TTT
     } else {
         var prev = '';
         var change = '-'
@@ -401,16 +398,22 @@ var getIndex = function (array, attr, value) {
     return -1;
 }
 
+// in SQL zetten
 var raceNames = ['omloop-het-nieuwsblad', 'kuurne-brussel-kuurne', 'strade-bianchi','milano-sanremo','e3-harelbeke','gent-wevelgem','dwars-door-vlaanderen','ronde-van-vlaanderen','Scheldeprijs','paris-roubaix','amstel-gold-race','la-fleche-wallone','liege-bastogne-liege','Eschborn-Frankfurt'];
 var raceWeight = [1.25, 1, 1.25, 2, 1.5, 1.5, 1.25, 2, 1, 2, 1.5, 1.5, 2, 1.25];
 
-var getPunten = function (kl, pos, finalStandings) {// TODO correcte punten voor klassiekers
+var getPunten = function (stageType, kl, pos, finalStandings, stageWeight = 1) {
     if (finalStandings) {
         var score = getEindPunten(kl, pos);
         return score;
     }
-    pos -= 1;
     var dag = [50, 44, 40, 36, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2];
+    if(stageType === "TTT"){
+        var dag = [40, 32, 28, 24, 20, 16, 12, 8];
+    }else if (stageType === "CLA"){
+        dag = dag.map(a => parseInt(a*2*stageWeight))
+    }
+    pos -= 1;
     var ak = [10, 8, 6, 4, 2];
     var punt = [8, 6, 4, 2, 1];
     var jong = [5, 3, 1];
@@ -419,23 +422,24 @@ var getPunten = function (kl, pos, finalStandings) {// TODO correcte punten voor
     switch (kl) {
         case 'Stage'://dag
             if (pos < dag.length) return dag[pos];
-            return 0;
+            break;
         case 'GC'://ak
             if (pos < ak.length) return ak[pos];
-            return 0;
+            break;
         case 'Points'://punt
             if (pos < punt.length) return punt[pos];
-            return 0;
+            break;
         case 'Youth'://jong
             if (pos < jong.length) return jong[pos];
-            return 0;
+            break;
         case 'KOM'://berg
             if (pos < berg.length) return berg[pos];
-            return 0;
+            break;
     }
+    return 0;
 }
 
-var getTeamPunten = function (teamRider, teamWinners, pos, classification, finalStandings, stageType) {
+var getTeamPunten = function (teamRider, teamWinners, pos, classification, finalStandings, stageType, stageWeight = 1) {
     pos -= 1;
     var teampoints = { 'Stage': 10, 'GC': 8, 'Points': 6, 'KOM': 3, 'Youth': 2 }
     if (stageType === 'ITT') teampoints['Stage'] = 0;
@@ -444,16 +448,15 @@ var getTeamPunten = function (teamRider, teamWinners, pos, classification, final
     }
     if (stageType === 'CLA') {
         var totalTeamPoints = 0;
-        if (pos != 0 && teamRider == teamWinners['Stage' + 0]) totalTeamPoints += 20;
-        if (pos != 1 && teamRider == teamWinners['Stage' + 1]) totalTeamPoints += 12;
-        if (pos != 2 && teamRider == teamWinners['Stage' + 2]) totalTeamPoints += 4;
+        if (pos != 0 && teamRider == teamWinners['Stage' + 0]) totalTeamPoints += parseInt(20 * stageWeight);
+        if (pos != 1 && teamRider == teamWinners['Stage' + 1]) totalTeamPoints += parseInt(12 * stageWeight);
+        if (pos != 2 && teamRider == teamWinners['Stage' + 2]) totalTeamPoints += parseInt(4 * stageWeight);
         return totalTeamPoints
     }
     if (teamWinners[classification] === teamRider && pos !== 0) {
         return teampoints[classification];
-    }else{
-        return 0;
     }
+    return 0;
 }
 
 var getEindPunten = function (kl, pos) {
@@ -466,22 +469,17 @@ var getEindPunten = function (kl, pos) {
     switch (kl) {
         case 'GC'://ak
             if (pos < ak.length) return ak[pos];
+            break;
         case 'Points'://punt
             if (pos < punt.length) return punt[pos];
+            break;
         case 'Youth'://jong
             if (pos < jong.length) return jong[pos];
+            break;
         case 'KOM'://berg
-            if (pos < berg.length) return berg[pos];
-        default:
-            return 0;
+            if (pos < berg.length) return berg[pos];            
+            break;
     }
-}
-
-var getTTTPunten = function (pos) {
-    pos -= 1;
-    if (pos < 0) return 0;
-    var punten = [40, 32, 28, 24, 20, 16, 12, 8];
-    if (pos < punten.length) return punten[pos];
     return 0;
 }
 

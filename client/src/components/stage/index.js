@@ -161,7 +161,7 @@ class Stage extends Component {
             this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
             this.updateData(currentstage - 1)
         } else {
-            this.props.history.push('/teamselection')// TODO disable after stage 1 start
+            this.props.history.push('/teamselection')
         }
     }
     nextStage() {

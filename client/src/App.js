@@ -131,7 +131,7 @@ class App extends Component {
           <PrivateRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
           <PrivateRoute path="/overzicht/:selection" component={Overzicht} history={this.props.history} racename={this.state.racename} year={this.state.year} redirect={this.state.redirect}/>
           <PrivateRoute path="/profile/:account_id" component={Profile} history={this.props.history} />
-          <PrivateRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} /> {/* TODO per rider_id en dan verschillende participations tonen */}
+          <PrivateRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} /> {/* TODO per rider_id en dan verschillende participations tonen, pas als vorige races in de DB staan  */}
           <PrivateRoute path="/charts/:chartname" component={Charts} history={this.props.history} racename={this.state.racename} year={this.state.year}/>
           
           {/* alle paginas voor vorige races */}

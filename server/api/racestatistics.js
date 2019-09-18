@@ -625,7 +625,6 @@ module.exports = function (app) {
                 res.redirect('/')
                 throw err;
             } else {
-                //TODO extra tabellen
                 var usersQuery = `SELECT username, ARRAY_AGG(json_build_object('price', price, 'rider_participation_id', rider_participation_id)) AS riders FROM team_selection_rider 
                 INNER JOIN rider_participation USING (rider_participation_id)
                 INNER JOIN account_participation USING (account_participation_id)
@@ -849,90 +848,60 @@ module.exports = function (app) {
         })
     })
 
-    app.post('/api/chartriderpercentagetotal', function (req, res) {
-        jwt.verify(req.body.token, getSecret(), function (err, user) {
-            if (err) {
-                res.redirect('/')
-                throw err;
-            } else {
-                var currentStageNum = stageNumKlassieker();//TODO change to Grote ronde
-                var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
-                var query = `SELECT totalscore, lastname, stagenr FROM results_points
-            INNER JOIN rider_participation USING (rider_participation_id)
-            INNER JOIN rider USING (rider_id)
-            INNER JOIN stage USING (stage_id)
-            WHERE rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})
-            ORDER by lastname, stagenr`
-                var query2 = `select array_agg(stagenr) as stages, array_agg(totalscore) as scores, lastname from team_selection_rider
-            left join results_points using(rider_participation_id)
-            left join rider_participation using(rider_participation_id)
-            left join rider using(rider_id)
-            left join stage using(stage_id)
-            where account_participation_id = ${account_participation_id} AND stage.finished
-            group by lastname`
+    // app.post('/api/chartriderpercentagetotal', function (req, res) { // vrij waardeloos 
+    //     jwt.verify(req.body.token, getSecret(), function (err, user) {
+    //         if (err) {
+    //             res.redirect('/')
+    //             throw err;
+    //         } else {
+    //             var currentStageNum = stageNumKlassieker(); // deze info moet van db komen of global var
+    //             var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
+    //             var query = `SELECT totalscore, lastname, stagenr FROM results_points
+    //         INNER JOIN rider_participation USING (rider_participation_id)
+    //         INNER JOIN rider USING (rider_id)
+    //         INNER JOIN stage USING (stage_id)
+    //         WHERE rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})
+    //         ORDER by lastname, stagenr`
+    //             var query2 = `select array_agg(stagenr) as stages, array_agg(totalscore) as scores, lastname from team_selection_rider
+    //         left join results_points using(rider_participation_id)
+    //         left join rider_participation using(rider_participation_id)
+    //         left join rider using(rider_id)
+    //         left join stage using(stage_id)
+    //         where account_participation_id = ${account_participation_id} AND stage.finished
+    //         group by lastname`
 
-                sqlDB.query(query2, (err, results) => {
-                    if (err) { console.log("WRONG QUERY:", query2); throw err; }
-                    var data = [];
+    //             sqlDB.query(query2, (err, results) => {
+    //                 if (err) { console.log("WRONG QUERY:", query2); throw err; }
+    //                 var data = [];
 
-                    for (var i in results.rows) {
-                        var lastname = results.rows[i].lastname;
-                        var riderObj = {
-                            type: "line",
-                            name: lastname,
-                            showInLegend: true,
-                            dataPoints: []
-                        }
-                        var rider = results.rows[i]
-                        var total = 0;
-                        for (var j = 0; j < currentStageNum + 1; j++) {
-                            var index = rider.stages.indexOf(j);
-                            if (index + 1) {// index not -1
-                                total += rider.scores[index];
-                            }
-                            riderObj.dataPoints.push({ x: j, y: total })
-
-
-                        }
-                        data.push(riderObj)
-                    }
+    //                 for (var i in results.rows) {
+    //                     var lastname = results.rows[i].lastname;
+    //                     var riderObj = {
+    //                         type: "line",
+    //                         name: lastname,
+    //                         showInLegend: true,
+    //                         dataPoints: []
+    //                     }
+    //                     var rider = results.rows[i]
+    //                     var total = 0;
+    //                     for (var j = 0; j < currentStageNum + 1; j++) {
+    //                         var index = rider.stages.indexOf(j);
+    //                         if (index + 1) {// index not -1
+    //                             total += rider.scores[index];
+    //                         }
+    //                         riderObj.dataPoints.push({ x: j, y: total })
 
 
-                    res.send(data);
-                })
-            }
-        })
-    })
+    //                     }
+    //                     data.push(riderObj)
+    //                 }
 
-    function stageNumKlassieker(){//TODO verwijderen en data in sql
-        var dates = [new Date("2017-10-01") // omloop
-                    ,new Date("2017-10-01") // KBK
-                    ,new Date("2017-10-01") // Strade
-                    ,new Date("2017-10-01") // MS
-                    ,new Date("2017-10-01") // E3
-                    ,new Date("2017-10-01") // GW
-                    ,new Date("2019-04-03") // DDV
-                    ,new Date("2019-04-07") // RVV
-                    ,new Date("2019-04-10") // Schelde
-                    ,new Date("2019-04-14") // roubaix
-                    ,new Date("2019-04-21") // AGR
-                    ,new Date("2019-04-24") // waalse pijl
-                    ,new Date("2019-04-28") // LBL
-                    ,new Date("2019-05-01")] // frankfurt
-    
-    
-        var currDate = new Date();
-        currDate.setHours(0,0,0,0);
-        // if(currDate < dates[0]){ Return team selection
-        //     return 0;
-        // }
-        for (i in dates){
-            if (currDate <= dates[i]){
-                return parseInt(i)+1
-            }
-        }
-        return parseInt(dates.length) + 1 // return eindklassement           
-    }
+
+    //                 res.send(data);
+    //             })
+    //         }
+    //     })
+    // })
 
     app.post('/api/chartscorespread', function (req, res) {
         jwt.verify(req.body.token, getSecret(), function (err, user) {
