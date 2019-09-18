@@ -133,7 +133,7 @@ class charts extends Component {
 	}
 
 	userscores() {
-		axios.post('/api/chartuserstagescores', { race_id: 5, poule_id: 0, budgetparticipation:false, token: localStorage.getItem('authToken') })
+		axios.post('/api/chartuserstagescores', { race_id: 5, poule_id: 0, budgetparticipation:false })
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -170,7 +170,7 @@ class charts extends Component {
 	}
 	
 	userranking(){
-		axios.post('/api/chartuserranking', { race_id: 5, poule_id: 0,budgetparticipation:false, token: localStorage.getItem('authToken') })
+		axios.post('/api/chartuserranking', { race_id: 5, poule_id: 0,budgetparticipation:false })
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -207,7 +207,7 @@ class charts extends Component {
 	}
 
 	riderpercentage() {
-		axios.post('/api/chartriderpercentage', { race_id: 5, poule_id: 0, token: localStorage.getItem('authToken'), budgetparticipation:false })
+		axios.post('/api/chartriderpercentage', { race_id: 5, poule_id: 0, budgetparticipation:false })
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -244,7 +244,7 @@ class charts extends Component {
 	}
 
 	riderpercentagetotal() {
-		axios.post('/api/chartriderpercentagetotal', { race_id: 5, poule_id: 0, token: localStorage.getItem('authToken'), budgetparticipation:false })
+		axios.post('/api/chartriderpercentagetotal', { race_id: 5, poule_id: 0, budgetparticipation:false })
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -281,7 +281,7 @@ class charts extends Component {
 	}
 
 	scorespread() {
-		axios.post('/api/chartscorespread', {budgetparticipation: false, excludeFinal: true, token: localStorage.getItem('authToken')})
+		axios.post('/api/chartscorespread', {budgetparticipation: false, excludeFinal: true})
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -291,7 +291,7 @@ class charts extends Component {
 	}
 
 	totalscoresspread(){
-		axios.post('/api/charttotalscorespread', {budgetparticipation: false, token: localStorage.getItem('authToken')})
+		axios.post('/api/charttotalscorespread', {budgetparticipation: false})
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })
@@ -321,7 +321,7 @@ class charts extends Component {
 	}
 
 	newChart(){
-		axios.post('/api/newchart', {budgetparticipation: false, token: localStorage.getItem('authToken')})
+		axios.post('/api/newchart', {budgetparticipation: false})
 			.then((res) => {
 				if (res) {
 					this.setState({ data: res.data })

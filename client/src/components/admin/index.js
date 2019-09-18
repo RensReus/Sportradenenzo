@@ -203,7 +203,7 @@ class Admin extends Component {
             query = query.replace(toreplace, varObject[varName])
             if(i>200) break;
         }
-        axios.post('/api/admin', { token: localStorage.getItem('authToken'), query })
+        axios.post('/api/admin/query', { query })
             .then((res) => {
                 var errorData = '';
                 if(res.data.errorBool){
@@ -356,7 +356,7 @@ class Admin extends Component {
         this.setState({
             loadingDBinfo: true
         })
-        axios.post('/api/getdbinfo', { token: localStorage.getItem('authToken')})
+        axios.post('/api/admin/getdbinfo')
             .then((res) => {
                 var DBinfoTables = []
                 for (var i in res.data.tables) {

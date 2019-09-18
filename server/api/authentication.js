@@ -1,7 +1,7 @@
 module.exports = function (app) {
   var passport = require('passport');
   const crypto = require('crypto')
-  var refreshtoken = require('../db/Mongo/models/refreshtoken')
+  const refreshtoken = require('../db/Mongo/models/refreshtoken')
   const sqlDB = require('../db/sqlDB')
   const fs = require('fs');
   const jwt = require('jsonwebtoken')
@@ -13,23 +13,6 @@ module.exports = function (app) {
     }
   }
 
-  function checkToken(){
-    //get the token from the header if present
-    const token = req.headers["x-access-token"] || req.headers["authorization"];
-    //if no token found, return response (without going to the next middelware)
-    if (!token) return res.status(401).send("Access denied. No token provided.");
-
-    try {
-      //if can verify the token, set req.user and pass to next middleware
-      const decoded = jwt.verify(token);
-      req.user = decoded;
-      next();
-    } catch (ex) {
-      //if invalid token
-      res.status(400).send("Invalid token.");
-    }
-  }
-
   function generateToken(user, refreshString){
     //Create the authentication token
     var payload = {
@@ -38,7 +21,7 @@ module.exports = function (app) {
       admin : user.admin,
       refreshString : refreshString
     }
-    return token = jwt.sign(payload, getSecret(), {expiresIn: 60*60}) //1 Minuut
+    return token = jwt.sign(payload, getSecret(), {expiresIn: 60*60}) //1 Uur
   }
 
   function generateRefreshToken(user, refreshString){
@@ -121,6 +104,7 @@ module.exports = function (app) {
             generateRefreshToken(user, refreshString)
             //Maak de authtoken aan
             var token = generateToken(user, refreshString)
+            res.append('authorization', token)
             return res.send({
               succes: true,
               token: token
@@ -129,6 +113,7 @@ module.exports = function (app) {
             console.log("Refresh token gevonden, authtoken aanmaken")
             //Maak de authtoken aan met juiste string
             var token = generateToken(user, result.refreshString)
+            res.append('authorization', token)
             return res.send({
               succes: true,
               token: token

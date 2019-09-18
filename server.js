@@ -69,6 +69,7 @@ app.listen(app.get("port"), () => {
 });
 
 require('./server/passport')(passport);
+require('./server/api/authorization')(app) //Belangrijk! Moet bovenaan de lijst staan
 require('./server/api/admin')(app)
 require('./server/api/authentication')(app)
 require('./server/api/manualupdate')(app)

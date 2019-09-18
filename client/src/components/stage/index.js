@@ -186,7 +186,7 @@ class Stage extends Component {
         const year = this.state.year
         document.title = "Etappe " + stage;
         
-        axios.post('/api/getstage', { racename, year, stage, token: localStorage.getItem('authToken') }) //to: stageresults.js
+        axios.post('/api/getstage', { racename, year, stage }) //to: stageresults.js
             .then((res) => {
                 if (res.data.mode === '404') {
                     this.setState({
