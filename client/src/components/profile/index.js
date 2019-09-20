@@ -12,7 +12,7 @@ class Profile extends Component{
       }
 
     componentDidMount(){
-        axios.post('/api/getprofiledata',{account_id: this.props.match.params.account_id,token: localStorage.getItem('authToken')})
+        axios.post('/api/getprofiledata',{account_id: this.props.match.params.account_id})
         .then((res)=>{
             if(res.data.userNotFound){
 

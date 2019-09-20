@@ -110,7 +110,7 @@ class overzicht extends Component {
 
    getDataAndRender(apiLink,title) {
     document.title = title;
-      axios.post('/api/'+apiLink, { token: localStorage.getItem('authToken'), racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
+      axios.post('/api/'+apiLink, { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
         .then((res) => {
           if (res) {
             console.log(res)

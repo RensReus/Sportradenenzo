@@ -83,7 +83,6 @@ class App extends Component {
           if (response.headers.authorization) { //Als geen token maar geen 401, dan server side uitzondering, verder niks mee doen
             var decoded = jwtDecode(response.headers.authorization)
             if (!self.state.isLoggedIn) {
-              console.log('setting logged in to true and admin state to' + decoded.admin)
               self.setState({
                 isLoggedIn: true,
                 isAdmin: decoded.admin

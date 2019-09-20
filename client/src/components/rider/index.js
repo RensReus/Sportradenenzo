@@ -17,7 +17,7 @@ class Rider extends Component {
 
 
   componentDidMount() {
-    axios.post('/api/getriderresults', { rider_participation_id: this.props.match.params.rider_participation_id, token: localStorage.getItem('authToken')})
+    axios.post('/api/getriderresults', { rider_participation_id: this.props.match.params.rider_participation_id})
       .then((res) => {
         if (res) {
           document.title = res.data.riderName;

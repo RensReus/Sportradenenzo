@@ -43,7 +43,7 @@ class Teamselection extends Component{
         const year = this.state.year;
         document.title = "Team Keuze " + race;
         if(this.props.redirect === '/teamselection'){
-            axios.post('/api/getridersandteam',{race, year, token: localStorage.getItem('authToken')}) //to: teamselection.js
+            axios.post('/api/getridersandteam',{race, year}) //to: teamselection.js
             .then((res)=>{
                 if(res.data.noParticipation){
                     this.setState({
@@ -66,7 +66,7 @@ class Teamselection extends Component{
     }
 
     joinRace(){
-        axios.post('/api/addaccountparticipation',{token: localStorage.getItem('authToken') })
+        axios.post('/api/addaccountparticipation')
         .then((res)=>{
             if(res){
                if(res.data.participationAdded){
@@ -83,7 +83,7 @@ class Teamselection extends Component{
     addRider = (riderID, budgetParticipation) =>{
         const racename = this.state.racename
         const year = this.state.year
-        axios.post('/api/teamselectionadd',{race: racename, year, rider_participation_id : riderID, budgetParticipation, token: localStorage.getItem('authToken') })
+        axios.post('/api/teamselectionadd',{race: racename, year, rider_participation_id : riderID, budgetParticipation})
         .then((res)=>{
             if(res){
                this.updatePage(res.data,budgetParticipation);
@@ -94,7 +94,7 @@ class Teamselection extends Component{
     removeRider = (riderID, budgetParticipation) =>{
         const racename = this.state.racename
         const year = this.state.year
-        axios.post('/api/teamselectionremove',{race: racename, year, rider_participation_id : riderID, budgetParticipation, token: localStorage.getItem('authToken') })
+        axios.post('/api/teamselectionremove',{race: racename, year, rider_participation_id : riderID, budgetParticipation})
         .then((res)=>{
             if(res){
                this.updatePage(res.data,budgetParticipation);
