@@ -1,5 +1,4 @@
 const express = require("express");
-const session = require('express-session');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -40,14 +39,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));// get information from html forms
 app.use(bodyParser.json());       // to support JSON-encoded bodies
-app.use(session({
-  secret: 'speciaalbierishetlekkerstesoortbier',
-  resave: true,
-  saveUninitialized: false,
-  cookie: { secure: false }
-}));
 app.use(passport.initialize());
-app.use(passport.session());
 
 // Express only serves static assets in production
 if (process.env.NODE_ENV === "production") {
