@@ -658,6 +658,7 @@ module.exports = function (app) {
                     }
                 }
                 sum += parseInt(selecties[i].riders[j].Score);
+                console.log(i,sum,selecties[i].riders[j])
             }
             allSelections[i].tableData.push({ "Name": "Totaal", "Score": sum })
         }
