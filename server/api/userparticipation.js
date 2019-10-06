@@ -34,7 +34,13 @@ module.exports = function (app) {
     // })
 
     app.post('/api/getprofiledata', function (req, res) {
-        var account_id = req.body.account_id;
+        //TODO: Dit gaat mis als iemand een account met alleen nummers heeft
+        if(Number.isInteger(req.body.account_id)){ //Als het geen nummer is, ga er vanuit dat het een username is
+            var account_id = req.body.account_id;
+        } else {
+             var account_id = `(SELECT account_id FROM account
+                    WHERE username = '${req.body.account_id}')`
+        }
         var accountQuery = `SELECT * FROM account
                 WHERE account_id = ${account_id};\n `
         var participationsQuery = `SELECT * FROM account_participation
@@ -52,8 +58,9 @@ module.exports = function (app) {
         sqlDB.query(totalQuery, (err, results) => {
             if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
             else {
+                console.log(results[0].rows)
                 if (results[0].rows.length === 0) {
-                    res.send({ userNotFound: true })
+                    res.status(404).send('User not found')
                 } else {
                     var username = results[0].rows[0].username;
                     var scores = results[2].rows;

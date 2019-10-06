@@ -17,6 +17,7 @@ import Charts from './components/charts';
 import Rider from './components/rider';
 import Rulesandpoints from './components/rulesandpoints';
 import Profile from './components/profile'
+import Fourofour from './components/fourofour'
 
 //Import de standaard css stukken
 import './components/css/buttons.css'
@@ -35,7 +36,8 @@ class App extends Component {
       redirect: '/',
       isAdmin: false,
       racename: '',
-      year: ''
+      year: '',
+      message: ''
     });
     this.setRace = this.setRace.bind(this);
 
@@ -44,7 +46,7 @@ class App extends Component {
   componentDidMount() {
     axios.post('/api/getinitialdata')
       .then(res => {
-        this.setState({ redirect: res.data.redirect, racename: res.data.racename, year: res.data.year })
+        this.setState({ redirect: res.data.redirect, racename: res.data.racename, year: res.data.year, loading: false})
       })
     //Start de response interceptor
     createAxiosResponseInterceptor();
@@ -80,14 +82,16 @@ class App extends Component {
       const interceptor = axios.interceptors.response.use(
         response => {
           console.log(response)
-          if (response.headers.authorization) { //Als geen token maar geen 401, dan server side uitzondering, verder niks mee doen
-            var decoded = jwtDecode(response.headers.authorization)
-            if (!self.state.isLoggedIn) {
-              self.setState({
-                isLoggedIn: true,
-                isAdmin: decoded.admin
-              });
-            }
+          if (response.headers.authorization) { //Als er een token mee wordt gestuurd
+            var decoded = jwtDecode(response.headers.authorization);
+          } else { //Geen token meegestuurd, haal het lokaal op
+            var decoded = jwtDecode(localStorage.getItem('authToken'));
+          }
+          if (!self.state.isLoggedIn) {
+            self.setState({
+              isLoggedIn: true,
+              isAdmin: decoded.admin
+            });
           }
           return response
         }, (error) => {
@@ -107,6 +111,15 @@ class App extends Component {
                   self.props.history.replace('/')
                 }
               }
+              break;
+            case 404:
+              self.setState({
+                redirect: self.props.history.location.pathname // voor redirect na inloggen
+              })
+              self.setState({
+                message: error.response.data
+              })
+              self.props.history.replace('/404')
               break;
             case 498: //Refresh token aangemaakt, stuur request opnieuw
               return new Promise((resolve) => {
@@ -141,6 +154,9 @@ class App extends Component {
   }
 
   render() {
+    if(this.state.loading){
+      return <div />
+    }
     return (
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
@@ -163,6 +179,7 @@ class App extends Component {
           <ReactRoute path="/profile/:account_id" component={Profile} history={this.props.history} />
           <ReactRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} /> {/* TODO per rider_id en dan verschillende participations tonen, pas als vorige races in de DB staan */}
           <ReactRoute path="/charts/:chartname" component={Charts} history={this.props.history} racename={this.state.racename} year={this.state.year} />
+          <ReactRoute path="/404" component={Fourofour} history={this.props.history} message={this.state.message} />
 
           {/* alle paginas voor vorige races */}
           <ReactRoute exact path="/:racename-:year/stage/:stagenumber" component={Stage} history={this.props.history} setRace={this.setRace} />
