@@ -30,8 +30,6 @@ module.exports = function (app) {
       account_id : user.account_id,
       refreshString : refreshString
     })
-    console.log("Reftoken aangemaakt")
-    console.log(reftoken)
     reftoken.save(function(err){
       if(err) throw err;
     })
@@ -41,7 +39,7 @@ module.exports = function (app) {
   app.post("/api/signup", function(req,res,next) {
     //Check for existing username
     var values = [req.body.username]
-    var query = "SELECT * FROM account WHERE username = $1"
+    var query = "SELECT * FROM account WHERE username ILIKE $1"
     sqlDB.query(query, values, (err, sqlres) => {
       if(err)
         throw err;
@@ -83,7 +81,6 @@ module.exports = function (app) {
 
   //Login into an excisting account
   app.post('/api/login', function (req, res, next) {
-    console.log(req.headers)
     passport.authenticate('local-login', {failureFlash: true}, function (err, user) {
       if (err) { 
         return next(err);
@@ -98,7 +95,6 @@ module.exports = function (app) {
         refreshtoken.find({ account_id : user.account_id }, function(err,result){
           if (err) throw err;
           if(!result){
-            console.log("Geen token gevonden")
             //Als er geen refresh token is maak er een aan
             refreshString = crypto.randomBytes(40).toString('hex');
             generateRefreshToken(user, refreshString)
@@ -110,7 +106,6 @@ module.exports = function (app) {
               token: token
             })
           }else{
-            console.log("Refresh token gevonden, authtoken aanmaken")
             //Maak de authtoken aan met juiste string
             var token = generateToken(user, result.refreshString)
             res.append('authorization', token)
@@ -144,7 +139,6 @@ module.exports = function (app) {
               //Als er geen refresh token is, user kan niet ingelogd worden
               res.send({isLoggedIn: false, isAdmin: false})
             }else{
-              console.log("authtoken created after expiry")
               //Maak de authtoken aan met juiste string
               var token = generateToken(user, result.refreshString)
               return res.send({

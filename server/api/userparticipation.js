@@ -34,12 +34,13 @@ module.exports = function (app) {
     // })
 
     app.post('/api/getprofiledata', function (req, res) {
-        //TODO: Dit gaat mis als iemand een account met alleen nummers heeft
-        if(Number.isInteger(req.body.account_id)){ //Als het geen nummer is, ga er vanuit dat het een username is
+        console.log(req.body)
+        if(req.body.account_id){ //Als het geen nummer is, ga er vanuit dat het een username is
             var account_id = req.body.account_id;
-        } else {
+        }
+        if(req.body.username){
              var account_id = `(SELECT account_id FROM account
-                    WHERE username = '${req.body.account_id}')`
+                    WHERE username ILIKE '${req.body.username}')`
         }
         var accountQuery = `SELECT * FROM account
                 WHERE account_id = ${account_id};\n `

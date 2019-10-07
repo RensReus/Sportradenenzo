@@ -82,16 +82,18 @@ class App extends Component {
       const interceptor = axios.interceptors.response.use(
         response => {
           console.log(response)
-          if (response.headers.authorization) { //Als er een token mee wordt gestuurd
-            var decoded = jwtDecode(response.headers.authorization);
-          } else { //Geen token meegestuurd, haal het lokaal op
-            var decoded = jwtDecode(localStorage.getItem('authToken'));
-          }
           if (!self.state.isLoggedIn) {
-            self.setState({
-              isLoggedIn: true,
-              isAdmin: decoded.admin
-            });
+            if (response.headers.authorization) {
+              self.setState({
+                isLoggedIn: true,
+                isAdmin: jwtDecode(response.headers.authorization).admin
+              });
+            } else {
+              self.setState({
+                isLoggedIn: true,
+                isAdmin: jwtDecode(localStorage.getItem('authToken')).admin
+              });
+            }
           }
           return response
         }, (error) => {
@@ -176,7 +178,8 @@ class App extends Component {
           <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
           <ReactRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
           <ReactRoute path="/overzicht/:selection" component={Overzicht} history={this.props.history} racename={this.state.racename} year={this.state.year} redirect={this.state.redirect} />
-          <ReactRoute path="/profile/:account_id" component={Profile} history={this.props.history} />
+          <ReactRoute path="/profile/id/:account_id" component={Profile} history={this.props.history} />
+          <ReactRoute exact path="/profile/:username" component={Profile} history={this.props.history} />
           <ReactRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} /> {/* TODO per rider_id en dan verschillende participations tonen, pas als vorige races in de DB staan */}
           <ReactRoute path="/charts/:chartname" component={Charts} history={this.props.history} racename={this.state.racename} year={this.state.year} />
           <ReactRoute path="/404" component={Fourofour} history={this.props.history} message={this.state.message} />
