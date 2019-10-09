@@ -4,7 +4,7 @@ module.exports = function (app) {
     const refreshtoken = require('../db/Mongo/models/refreshtoken')
 
     function getSecret() {
-        if (fs.existsSync('./server/jwtsecret.js')) {
+        if (fs.existsSync('./src/server/jwtsecret.js')) {
             return secret = require('../jwtsecret');
         } else {
             return secret = process.env.JWT_SECRET;
@@ -33,7 +33,6 @@ module.exports = function (app) {
                                 if (!result) {
                                     return res.status(401).send("Access denied. No token provided.");
                                 } else {
-                                    console.log("Refresh token gevonden, authtoken aanmaken")
                                     //Maak de authtoken aan met juiste string
                                     var newToken = jwt.sign({
                                         account_id: expiredToken.account_id,

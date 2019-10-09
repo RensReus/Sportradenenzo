@@ -1,9 +1,10 @@
-const scrape = require('../scrape');
+const scrape = require('../scrape.ts');
 const race_backup = require('../db/Mongo/models/race_backup.js')
 const async = require('async');
 
-module.exports = function (app) {
+module.exports = function (app, current_race_id) {
   const sqlDB = require('../db/sqlDB')
+  var race_id = current_race_id;
 
   // app.post('/api/getstartlistklassiek', function (req, res) { //TODO change to new scrape
   //   jwt.verify(req.body.token, getSecret(), function (err, decoded) {
@@ -115,8 +116,6 @@ module.exports = function (app) {
 
   app.post('/api/copyTeamIfSelectionEmpty', function (req, res) {
     if (req.user.admin) {
-      var race_id = current_race_id;
-
       var currentStagenr = currentstage_global;
       var stage_id = `(SELECT stage_id FROM stage
                           WHERE stagenr = ${currentStagenr} AND race_id = ${race_id})`;

@@ -6,7 +6,7 @@ module.exports = function (app) {
   const fs = require('fs');
   const jwt = require('jsonwebtoken')
   function getSecret(){
-    if (fs.existsSync('./server/jwtsecret.js')) {
+    if (fs.existsSync('./src/server/jwtsecret.js')) {
       return secret = require('../jwtsecret');
     } else {
       return secret = process.env.JWT_SECRET;

@@ -1,11 +1,11 @@
 //In dit bestand staan alle calls die betrekking hebben tot de resultaten van een stage
 
-module.exports = function (app) {
+module.exports = function (app, current_race_id) {
     const sqlDB = require('../db/sqlDB');
     const async = require('async');
+    var race_id = current_race_id
 
     app.post('/api/getstagevictories', function (req, response) {
-        var race_id = current_race_id;
         // var poule_id = req.body.poule_id;
         var subquery = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore DESC) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
@@ -87,7 +87,6 @@ module.exports = function (app) {
 
     app.post('/api/gettourvictories', function (req, response) {
 
-        var race_id = current_race_id;
         // var poule_id = req.body.poule_id;
         var subquery = `(SELECT username, finalscore, CONCAT(year, ' ', name) AS race, rank() over (PARTITION BY race ORDER BY finalscore DESC) FROM account_participation
             INNER JOIN account USING (account_id)
@@ -177,7 +176,6 @@ module.exports = function (app) {
 
 
     app.post('/api/getriderpointsall', function (req, res) {
-        var race_id = current_race_id;
         var teamscore = `SUM(teamscore) AS "Team",`
         var totalscore = `SUM(totalscore)`
         var budgetFilter = ''
@@ -209,7 +207,6 @@ module.exports = function (app) {
     })
 
     app.post('/api/getriderpointsselected', function (req, res) {
-        var race_id = current_race_id;
         var query = `SELECT  CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link", concat(firstname, ' ', lastname) AS "Name", team AS "Team ",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Etappe",  
                 SUM(gcscore)/GREATEST(count(DISTINCT username),1) AS "AK", SUM(pointsscore)/GREATEST(count(DISTINCT username),1) AS "Punten", SUM(komscore)/GREATEST(count(DISTINCT username),1) AS "Berg", SUM(yocscore)/GREATEST(count(DISTINCT username),1) AS "Jong", SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Team", SUM(totalscore)/GREATEST(count(DISTINCT username),1) AS "Total", 
                 ROUND(SUM(totalscore)/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "Points per Million",  

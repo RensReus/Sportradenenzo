@@ -2,59 +2,59 @@ const cheerio = require('cheerio');
 const request = require('request');
 const schedule = require('node-schedule');
 const sqlDB = require('./db/sqlDB');
-const fs = require('fs');
-
 
 var getStartlist = function (race, callback) {
     var raceString = "";
     var prijzenfile = "";
     var raceDataQuery = "";
     // set race_id
+    var race_id
     if (race.race_id != null) {
-        var race_id = race.race_id;
+        race_id = race.race_id;
     } else {// set race_id using racename/year
-        var race_id = `(SELECT race_id FROM race WHERE name = '${race.raceName}' AND year = ${race.year})`;
+        race_id = `(SELECT race_id FROM race WHERE name = '${race.raceName}' AND year = ${race.year})`;
     }
     //set racestring
     if (race.racename === 'classics') {//if classics get name of the stage/race from DB
         raceDataQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${race.racenr}`
         sqlDB.query(raceDataQuery, (err, results) => {
-            if (err) { console.log("WRONG QUERY:", race_idQuery); throw err; }
+            if (err) { console.log("WRONG QUERY:", raceDataQuery); throw err; }
             else {
-                startlistProcessRiders(results.rows[0].name, 'classics', callback)
+                startlistProcessRiders(results.rows[0].name, 'classics', race.year, '', race_id, callback)
             }
         })
     } else {//if not classics set racestring and load price list
         switch (race.raceName) {
             case "giro":
                 raceString = "giro-d-italia";
-                prijzenfile = "./server/Giroprijzen.txt";
+                prijzenfile = "./src/server/Giroprijzen.txt";
                 break;
             case "tour":
                 raceString = "tour-de-france";
-                prijzenfile = "./server/tourprijzen.txt";
+                prijzenfile = "./src/server/tourprijzen.txt";
                 break;
             case "vuelta":
                 raceString = "vuelta-a-espana";
-                prijzenfile = "./server/vueltaprijzen.txt";
+                prijzenfile = "./src/server/vueltaprijzen.txt";
                 break;
         }
         fs.readFile(prijzenfile, function (err, file) {
             var data = file.toString().split("\n");
             var riderprices = []
-            for (i in data) {
+            for (var i in data) {
                 var rider = riderprices[i].split(" ");
                 var pcs_id = rider[0];
                 var price = parseFloat(rider[1]);
                 riderprices.push({ pcs_id, price })
             }
-            startlistProcessRiders(raceString, riderprices, callback)
+            startlistProcessRiders(raceString, riderprices, race.year, rider, race_id, callback)
         })
     }
 }
 
-var startlistProcessRiders = function (raceString, prices, callback) {
+var startlistProcessRiders = function (raceString, prices, year, rider, race_id, callback) {
     request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, function (error, response, html) {
+        var stage_id=0; //Placeholder
         if (!error && response.statusCode === 200) {
             var $ = cheerio.load(html);
             var riderQuery = `INSERT INTO rider(pcs_id, country, firstname, lastname, initials) VALUES`;
@@ -82,13 +82,13 @@ var startlistProcessRiders = function (raceString, prices, callback) {
                     if ($(this).siblings().eq(4 * index + 1).attr("class") != null) {
                         var country = $(this).siblings().eq(4 * index + 1).attr("class").split(' ')[1];
                     }
-                    if (renners === 'classics') {//voor klassiekers zijn de prijzen te veel werk om in te voeren
+                    if (prices === 'classics') {//voor klassiekers zijn de prijzen te veel werk om in te voeren
                         var prijs = 500000;
                     } else {// voor grote ronde zijn de prijzen ingelezen
                         var prijs = 66666666;
-                        for (i in prices) {
-                            if (riders[i].pcs_id === pcs_id) {
-                                prijs = parseFloat(riders[i].price) * 1000000;
+                        for (let j in prices) {
+                            if (rider[j].pcs_id === pcs_id) {
+                                prijs = parseFloat(rider[j].price) * 1000000;
                             }
                         }
                         if (prijs === 66666666)//rider not in prices file
@@ -143,7 +143,6 @@ var startlistProcessRiders = function (raceString, prices, callback) {
         }
     });
 }
-
 
 var getResult = function (raceName, year, et, callback) {
     var stageQuery = `SELECT * FROM stage INNER JOIN race USING(race_id) WHERE stagenr = ${et} AND name = '${raceName}' AND year = ${year}`;
@@ -219,8 +218,8 @@ var getResult = function (raceName, year, et, callback) {
                         })
 
                         $(this).children().eq(1).children().each(function (riderindex, element) {//voor iedere renner in de uitslag
-                            var [rider, DNF] = resultsProcessRiders(classification, columns, $(this))
-                            if (DNF) {//doesn't add rider if pos==0
+                            var rider = resultsProcessRiders(classification, columns, $(this))
+                            if (rider.DNF) {//doesn't add rider if pos==0
                                 ridersResults['dnf'].push(rider);
                                 // return false;// skip to next
                             } else if (getIndex(ridersResults['all'], 'pcs_id', rider.pcs_id) === -1) {// add if not already in list
@@ -371,9 +370,9 @@ var resultsProcessRiders = function (classification, columns, row) {
     if (classification === 'Stage') {
         var pos = row.children().first().text();
         if (pos === 'DF' || !isNaN(parseInt(pos))) {
-            return [{ pcs_id, team, result }, false]
+            return { pcs_id, team, result, DNF: false}
         } else {
-            return [{ pcs_id, team }, true];
+            return { pcs_id, team, result, DNF: true};
         }
     } else {
         var prev = '';
@@ -385,7 +384,7 @@ var resultsProcessRiders = function (classification, columns, row) {
                 change = '*'
             }
         }
-        return [{ pcs_id, team, result, prev, change }, false]
+        return { pcs_id, team, result, prev, change, DNF: false }
     }
 }
 
@@ -411,7 +410,7 @@ var getPunten = function (stageType, kl, pos, finalStandings, stageWeight = 1) {
     if(stageType === "TTT"){
         var dag = [40, 32, 28, 24, 20, 16, 12, 8];
     }else if (stageType === "CLA"){
-        dag = dag.map(a => parseInt(a*2*stageWeight))
+        dag = dag.map(a => a*2*stageWeight)
     }
     pos -= 1;
     var ak = [10, 8, 6, 4, 2];
@@ -448,9 +447,9 @@ var getTeamPunten = function (teamRider, teamWinners, pos, classification, final
     }
     if (stageType === 'CLA') {
         var totalTeamPoints = 0;
-        if (pos != 0 && teamRider == teamWinners['Stage' + 0]) totalTeamPoints += parseInt(20 * stageWeight);
-        if (pos != 1 && teamRider == teamWinners['Stage' + 1]) totalTeamPoints += parseInt(12 * stageWeight);
-        if (pos != 2 && teamRider == teamWinners['Stage' + 2]) totalTeamPoints += parseInt(4 * stageWeight);
+        if (pos != 0 && teamRider == teamWinners['Stage' + 0]) totalTeamPoints += 20 * stageWeight;
+        if (pos != 1 && teamRider == teamWinners['Stage' + 1]) totalTeamPoints += 12 * stageWeight;
+        if (pos != 2 && teamRider == teamWinners['Stage' + 2]) totalTeamPoints += 4 * stageWeight;
         return totalTeamPoints
     }
     if (teamWinners[classification] === teamRider && pos !== 0) {
@@ -492,7 +491,7 @@ var calculateUserScores = function (name, year, stage, callback) {
         if (err) throw err;
         var totalQuery = '';
         var TTTstages = res[1].rows.map(stage => stage.stagenr);
-        for (i in res[0].rows) {// voor iedere gewone user
+        for (var i in res[0].rows) {// voor iedere gewone user
 
             for (var j = stage; j < 23; j++) {// to show correct totalscores for later stages
                 var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
@@ -532,13 +531,13 @@ var calculateUserScores = function (name, year, stage, callback) {
     })
 }
 
-calculateUserScoresKlassieker = function(year,stage,callback){ //TODO integreren in voorgaande functie
+var calculateUserScoresKlassieker = function(year,stage,callback){ //TODO integreren in voorgaande functie
     var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = 'classics')`
     var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
     sqlDB.query(participantsQuery,function(err,res){
         if(err) throw err;
         var totalQuery = '';
-        for (i in res.rows){// voor iedere user
+        for (var i in res.rows){// voor iedere user
             for(var j = stage; j < 15; j++){// to show correct totalscores for later stages
                 var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
                 var account_participation_id = res.rows[i].account_participation_id;
@@ -548,7 +547,7 @@ calculateUserScoresKlassieker = function(year,stage,callback){ //TODO integreren
                                 INNER JOIN results_points USING (rider_participation_id)
                                 WHERE rider_participation.race_id = ${race_id} AND account_participation_id = ${account_participation_id} and stage_id = ${stage_id}),0)`;
                 var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
-                var prevstagesScore = 0
+                var prevstagesScore = '0'
                 if(j != 1){
                     var prevstagesScore = `(SELECT SUM(stagescore) FROM stage_selection
                     WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages})`;
@@ -612,7 +611,7 @@ var getRider = function (pcsid, callback) {
     });
 }
 
-var setCurrentStage = function(){ //TODO misschien ergens anders heen
+var setCurrentStage = function(current_race_id){ //TODO misschien ergens anders heen
     var race_id = current_race_id;
     var stageQuery = `SELECT * FROM STAGE
                 WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
@@ -623,7 +622,7 @@ var setCurrentStage = function(){ //TODO misschien ergens anders heen
         if (results.rows.length) {// if some results, so at least after start of stage 1
             var stage = results.rows[0];
             if(stage.complete && stage.stagenr!==22) stage.stagenr++;
-            currentstage_global = stage.stagenr;
+            current_stage = stage.stagenr;
         }
     })
 }
@@ -634,7 +633,7 @@ module.exports.getRider = getRider;
 module.exports.setCurrentStage = setCurrentStage;
 
 var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to run every minute to initialize at the start.
-    var race_id = current_race_id;
+    var race_id = 15;
     var stageQuery = `SELECT * FROM STAGE
                       WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
                       ORDER BY stagenr DESC
@@ -643,8 +642,8 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
       if (err) {console.log("WRONG QUERY:",stageQuery); throw err;}
       else{
         if(results.rows.length){// if some results, so at least after start of stage 1
-          if(currentstage_global===0){// set to 1 to make teamselection inaccessible
-              currentstage_global = 1
+          if(current_stage===0){// set to 1 to make teamselection inaccessible
+              current_stage = 1
           }
           var stage = results.rows[0];
           if(!stage.finished){
@@ -668,8 +667,8 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
               else console.log(response, "stage", stage.stagenr,"\n");
             })
           }else{// if finished and complete set schedule to run again at start of next stage
-            if(currentstage_global<22){
-                currentstage_global += 1;
+            if(current_stage<22){
+                current_stage += 1;
             }
             var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage.stagenr + 1}`;
             sqlDB.query(nextStageQuery,function(err,nextStageResults){
@@ -677,9 +676,9 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
               else{
                 if(stage.stagenr < 21){
                   var d = nextStageResults.rows[0].starttime;
-                  resultsRule = `${d.getSeconds()+5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
+                  var resultsRule = `${d.getSeconds()+5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
                   scrapeResults.reschedule(resultsRule);
-                  setCurrentStage();
+                  setCurrentStage(current_race_id);
   
                 }else{// laatste etappe compleet geen scrapes meer nodig
                     scrapeResults.cancel();

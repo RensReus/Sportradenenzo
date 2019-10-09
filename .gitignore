@@ -3,8 +3,8 @@
 .eslintrc.json
 .vscode
 node_modules
-server/db/SQL tables.txt
-server/db/sqlDBlink.js
-client/src/examples
-server/jwtsecret.js
-server/db/Mongo/link.js
+src/server/db/SQL tables.txt
+src/server/db/sqlDBlink.js
+src/client/src/examples
+src/server/jwtsecret.js
+src/server/db/Mongo/link.js

@@ -1,11 +1,11 @@
 // In dit bestand staan alle calls die te maken hebben met het selecteren van het team voor een race
 
-module.exports = function (app) {
+module.exports = function (app, current_race_id, currentstage_global) {
     const async = require('async')
     const sqlDB = require('../db/sqlDB')
     const SQLread = require('../db/SQLread')
     const SQLwrite = require('../db/SQLwrite')
-    const scrape = require('../scrape')
+    const scrape = require('../scrape.ts')
 
     app.post('/api/getridersandteam', function (req, res) {
         if (currentstage_global === 0) {
@@ -17,10 +17,10 @@ module.exports = function (app) {
                             SQLread.getAllRiders(req.body.race, req.body.year, callback)
                         },
                         userSelectionGewoon: function (callback) {
-                            SQLread.getTeamSelection(user.account_id, false, req.body.race, req.body.year, callback)
+                            SQLread.getTeamSelection(req.user.account_id, false, req.body.race, req.body.year, callback)
                         },
                         userSelectionBudget: function (callback) {
-                            SQLread.getTeamSelection(user.account_id, true, req.body.race, req.body.year, callback)
+                            SQLread.getTeamSelection(req.user.account_id, true, req.body.race, req.body.year, callback)
                         },
                         race: function (callback) {
                             SQLread.getRace(req.body.race, req.body.year, callback)

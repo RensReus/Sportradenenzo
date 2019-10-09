@@ -1,4 +1,4 @@
-module.exports = function (app) {
+module.exports = function (app, current_race_id) {
     const sqlDB = require('../db/sqlDB')
 
     app.post('/api/getracepartcipation', function (req, res) {

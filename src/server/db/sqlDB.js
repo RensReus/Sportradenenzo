@@ -1,5 +1,5 @@
 var fs = require('fs');
-if (fs.existsSync('./server/db/sqlDBlink.js')) {
+if (fs.existsSync('./src/server/db/sqlDBlink.js')) {
     var sqlDBstring = require('./sqlDBlink');
 } else {
     var sqlDBstring = process.env.DATABASE_URL;
