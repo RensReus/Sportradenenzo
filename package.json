@@ -36,7 +36,7 @@
     "client": "node start-client.js",
     "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
     "lint": "eslint .",
-    "build": "npm install -D typescript && npx tsc && cd src/client/ && npm install --only=dev && npm install --save @babel/runtime && npm run build",
+    "build": "npm i -D typescript && npm i --save @types/express @types/node && npx tsc && cd src/client/ && npm i --only=dev && npm i --save @babel/runtime && npm run build",
     "heroku-postbuild": "node heroku-build.js"
   },
   "devDependencies": {
