@@ -36,7 +36,7 @@
     "client": "node start-client.js",
     "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
     "lint": "eslint .",
-    "heroku-prebuild": "npm i -D typescript ts-node && npm i -D --save @types/express @types/node && cd src/client/ && npm i --only=dev && npm i --save @babel/runtime",
+    "heroku-prebuild": "npm i --only=dev && cd src/client/ && npm i --only=dev && npm i --save @babel/runtime",
     "build": "npx tsc && cd src/client/ && npm run build",
     "heroku-postbuild": "node heroku-build.js"
   },
