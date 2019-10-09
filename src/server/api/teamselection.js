@@ -5,7 +5,7 @@ module.exports = function (app, current_race_id, currentstage_global) {
     const sqlDB = require('../db/sqlDB')
     const SQLread = require('../db/SQLread')
     const SQLwrite = require('../db/SQLwrite')
-    const scrape = require('../scrape.ts')
+    const scrape = require('../scrape')
 
     app.post('/api/getridersandteam', function (req, res) {
         if (currentstage_global === 0) {

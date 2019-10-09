@@ -1,4 +1,4 @@
-const scrape = require('../scrape.ts');
+const scrape = require('../scrape');
 const race_backup = require('../db/Mongo/models/race_backup.js')
 const async = require('async');
 
