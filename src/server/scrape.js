@@ -3,7 +3,8 @@ const request = require('request');
 const schedule = require('node-schedule');
 const sqlDB = require('./db/sqlDB');
 
-var getStartlist = function (race, callback) {
+const getStartlist = function (race, callback) {
+    const fs = require('fs');
     var raceString = "";
     var prijzenfile = "";
     var raceDataQuery = "";

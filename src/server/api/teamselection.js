@@ -1,11 +1,13 @@
 // In dit bestand staan alle calls die te maken hebben met het selecteren van het team voor een race
 
-module.exports = function (app, current_race_id, currentstage_global) {
+module.exports = function (app, current_race, currentstage_global) {
     const async = require('async')
     const sqlDB = require('../db/sqlDB')
     const SQLread = require('../db/SQLread')
     const SQLwrite = require('../db/SQLwrite')
     const scrape = require('../scrape')
+    
+    const current_race_id = current_race.id;
 
     app.post('/api/getridersandteam', function (req, res) {
         if (currentstage_global === 0) {

@@ -1,9 +1,9 @@
 //In dit bestand staan alle calls die betrekking hebben tot de resultaten van een stage
 
-module.exports = function (app, current_race_id) {
+module.exports = function (app, current_race) {
     const sqlDB = require('../db/sqlDB');
     const async = require('async');
-    var race_id = current_race_id
+    var race_id = current_race.id
 
     app.post('/api/getstagevictories', function (req, response) {
         // var poule_id = req.body.poule_id;
