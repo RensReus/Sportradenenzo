@@ -127,4 +127,4 @@ module.exports = (app) => {
       res.send(true);
     }
   });
-};
+}

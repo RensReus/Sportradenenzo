@@ -3,6 +3,7 @@
 module.exports = function (app, current_race) {
     const sqlDB = require('../db/sqlDB');
     const async = require('async');
+    console.log(current_race)
     var race_id = current_race.id
 
     app.post('/api/getstagevictories', function (req, response) {
@@ -280,7 +281,7 @@ module.exports = function (app, current_race) {
 
     app.post('/api/missedpoints', function (req, res) {
         var account_participation_id = `(SELECT account_participation_id, FROM account_participation
-                WHERE account_id = ${req.user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
+                WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
         missedPoints(account_participation_id, req.body.budgetparticipation, function (err, outputArray) {
             if (err) throw err;
             res.send({
@@ -295,7 +296,7 @@ module.exports = function (app, current_race) {
     app.post('/api/missedpointsall', function (req, res) {
         var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)
-                WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
+                WHERE race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
         sqlDB.query(usersQuery, (err, results) => {
             if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
             async.map(results.rows, function (account, done) {
@@ -375,7 +376,7 @@ module.exports = function (app, current_race) {
 
     app.post('/api/teamoverzicht', function (req, res) {
         var account_participation_id = `(SELECT account_participation_id FROM account_participation
-                    WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND account_id = ${req.user.account_id})`
+                    WHERE race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND account_id = ${req.user.account_id})`
         teamoverzicht(account_participation_id, req.body.budgetparticipation, function (err, results) {
             if (err) throw err;
             res.send({
@@ -391,7 +392,7 @@ module.exports = function (app, current_race) {
     app.post('/api/teamoverzichtall', function (req, res) {
         var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
-                WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
+                WHERE race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
         sqlDB.query(usersQuery, (err, results) => {
             if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
             async.map(results.rows, function (account, done) {
@@ -439,7 +440,7 @@ module.exports = function (app, current_race) {
     app.post('/api/teamoverzichtallsimple', function (req, res) {
         var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
-                WHERE race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
+                WHERE race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
         sqlDB.query(usersQuery, (err, results) => {
             if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
             async.map(results.rows, function (account, done) {
@@ -460,14 +461,14 @@ module.exports = function (app, current_race) {
                 INNER JOIN rider_participation USING(rider_participation_id)
                 INNER JOIN account_participation USING (account_participation_id)
                 INNER JOIN stage USING(stage_id)
-                WHERE stage.race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND starttime < now() AT TIME ZONE 'Europe/Paris'
+                WHERE stage.race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND starttime < now() AT TIME ZONE 'Europe/Paris'
                 GROUP BY stagenr; `;
 
         var uitgevallenQuery = `SELECT username AS "User", COUNT(rider_participation_id) AS "Uitvallers", SUM(price) AS "Prijs" FROM rider_participation
                 INNER JOIN team_selection_rider USING(rider_participation_id)
                 INNER JOIN account_participation USING(account_participation_id)
                 INNER JOIN account USING(account_id)
-                WHERE rider_participation.race_id = ${current_race_id} AND dnf AND budgetparticipation = ${req.body.budgetparticipation}
+                WHERE rider_participation.race_id = ${race_id} AND dnf AND budgetparticipation = ${req.body.budgetparticipation}
                 GROUP BY "User"
                 ORDER BY "Uitvallers" DESC; `
 
@@ -478,7 +479,7 @@ module.exports = function (app, current_race) {
                                 LEFT JOIN team_selection_rider USING(rider_participation_id)
                                 LEFT JOIN account_participation USING(account_participation_id)
                                 LEFT JOIN account USING (account_id)
-                                WHERE rider_participation.race_id = ${current_race_id} AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
+                                WHERE rider_participation.race_id = ${race_id} AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
                                 GROUP BY "Name", "Team ", "Price", rider_participation.rider_participation_id
                     ORDER BY "Usercount" DESC, "Users") as a
                     INNER JOIN team_selection_rider USING(rider_participation_id)
@@ -495,7 +496,7 @@ module.exports = function (app, current_race) {
                                 LEFT JOIN team_selection_rider USING(rider_participation_id)
                                 LEFT JOIN account_participation USING(account_participation_id)
                                 LEFT JOIN account USING (account_id)
-                                WHERE rider_participation.race_id = ${current_race_id} AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
+                                WHERE rider_participation.race_id = ${race_id} AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation}
                                 GROUP BY "Name", "Team ", "Price", rider_participation.rider_participation_id
                     ORDER BY "Usercount" DESC, "Users") as a
                     INNER JOIN team_selection_rider USING(rider_participation_id)
@@ -525,9 +526,9 @@ module.exports = function (app, current_race) {
                 INNER JOIN rider_participation USING (rider_participation_id)
                 INNER JOIN account_participation USING (account_participation_id)
                 INNER JOIN account USING (account_id)
-                WHERE rider_participation.race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation}
+                WHERE rider_participation.race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation}
                 GROUP BY username;
-                SELECT budget FROM race WHERE race_id = ${current_race_id}`
+                SELECT budget FROM race WHERE race_id = ${race_id}`
         sqlDB.query(usersQuery, (err, results) => {
             if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
             var countAbs = [];
@@ -592,7 +593,7 @@ module.exports = function (app, current_race) {
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${current_race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester'
+            WHERE stage.race_id = ${race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester'
             ORDER BY username, stagenr`
         sqlDB.query(query, (err, results) => {
             if (err) { console.log("WRONG QUERY:", query); throw err; }
@@ -644,7 +645,7 @@ module.exports = function (app, current_race) {
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished AND NOT username = 'tester'
+            WHERE stage.race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished AND NOT username = 'tester'
             ORDER BY username, stagenr`
         sqlDB.query(query, (err, results) => {
             if (err) { console.log("WRONG QUERY:", query); throw err; }
@@ -681,7 +682,7 @@ module.exports = function (app, current_race) {
     })
 
     app.post('/api/chartriderpercentage', function (req, res) {
-        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
+        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
         var query = `SELECT totalscore, lastname, stagenr FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
             INNER JOIN rider USING (rider_id)
@@ -727,7 +728,7 @@ module.exports = function (app, current_race) {
     //             throw err;
     //         } else {
     //             var currentStageNum = stageNumKlassieker(); // deze info moet van db komen of global var
-    //             var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${current_race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
+    //             var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${user.account_id} AND race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
     //             var query = `SELECT totalscore, lastname, stagenr FROM results_points
     //         INNER JOIN rider_participation USING (rider_participation_id)
     //         INNER JOIN rider USING (rider_id)
@@ -784,13 +785,13 @@ module.exports = function (app, current_race) {
                     INNER JOIN account_participation USING(account_participation_id)
                     INNER JOIN account USING(account_id)
                     INNER JOIN stage USING(stage_id)
-                    WHERE stage.race_id = ${current_race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
+                    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
                     ORDER BY stagescore DESC;\n`
 
         var avgQuery = `SELECT ROUND(AVG(stagescore),2), stagenr FROM stage_selection
                 INNER JOIN stage USING(stage_id)
                 INNER JOIN account_participation USING(account_participation_id)
-                WHERE stage.race_id = ${current_race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
+                WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
                 GROUP BY stagenr
                 ORDER BY stagenr;\n`
 

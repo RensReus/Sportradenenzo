@@ -5,6 +5,7 @@ import StatsDropdown from './Dropdowns/Statistieken'
 import ChartsDropdown from './Dropdowns/Charts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserShield } from "@fortawesome/free-solid-svg-icons"; //User icon voor profielpagina //Admin icon
+import {SRELogo} from '../shared/svg/all-icons.js'
 
 class Navbar extends Component {
     redirect = (url) => {
@@ -20,29 +21,31 @@ class Navbar extends Component {
         let currStage;
         let raceOverview;
         if (this.props.isLoggedIn) {
-            buttonLog = <button className='item h8' onClick={() => this.logout()}>Logout</button>;
-            currStage = <Link className='item' to='/'><span className="h8">Current stage</span></Link>;
-            raceOverview = <button className='item' ><span className="h8">Race overview</span></button>;
+            buttonLog = <button className='navbar_item h8' onClick={() => this.logout()}>Logout</button>;
+            currStage = <Link className='navbar_item' to='/'><span className="h8">Current stage</span></Link>;
+            raceOverview = <button className='navbar_item' ><span className="h8">Race overview</span></button>;
         } else {
-            buttonSignUp = <Link className='item h8' to="/signup">Sign up</Link>;
-            buttonLog = <Link className='item h8' to="/">Log in</Link>;
+            buttonSignUp = <Link className='navbar_item h8' to="/signup">Sign up</Link>;
+            buttonLog = <Link className='navbar_item h8' to="/">Log in</Link>;
             currStage = '';
         }
         return (
             <div className={"navbar " + this.props.racename}>
-                <Link className='item' to='/home'>
-                    <img className="logo" src="/images/logo.png" alt="logo_small"></img>
+                <Link className='navbar_itemhome' to='/home'>
+                    <SRELogo className={'navbar_homelogo ' + this.props.racename}/>
                 </Link>
-                {buttonSignUp}
-                {currStage}
-                {raceOverview}
-                <ChartsDropdown className="dropdown"/>
-                <StatsDropdown className="dropdown"/>
-                {this.props.isAdmin &&
-                    <Link className='item' to='/admin-sqlinterface'><span className="h8 bold"><FontAwesomeIcon icon={faUserShield}/> Admin</span></Link>
-                }
-                {buttonLog}
-                <img className="racelogo" src="/images/vueltalogo_small.png" alt="vueltalogo_small"></img>
+                <div className='navbar_itemcontainer'>
+                    {buttonSignUp}
+                    {currStage}
+                    {raceOverview}
+                    <ChartsDropdown className="navbar_dropdown"/>
+                    <StatsDropdown className="navbar_dropdown"/>
+                    {this.props.isAdmin &&
+                        <Link className='navbar_item' to='/admin-sqlinterface'><span className="h8 bold"><FontAwesomeIcon icon={faUserShield}/> Admin</span></Link>
+                    }
+                    {buttonLog}
+                </div>
+                <img className="navbar_racelogo" src="/images/vueltalogo_small.png" alt="vueltalogo_small"></img>
             </div>
         )
     }

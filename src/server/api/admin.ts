@@ -25,7 +25,7 @@ module.exports = (app) => {
                         console.log('RESPONSE');
                         // tslint:disable-next-line: no-console
                         console.log(sqlres);
-                        res.send({ data : sqlres });
+                        res.send({ data: sqlres });
                     }
                 });
         } else {
@@ -74,7 +74,7 @@ module.exports = (app) => {
                         throw err;
                     } else {
                         const sum = { Tables: 'Totaal', Rows: 0, Inserts: 0, Updates: 0, Deletions: 0 };
-                        sqlres[0].rows.forEach( (row) => {
+                        sqlres[0].rows.forEach((row) => {
                             sum.Rows += parseInt(row.Rows, 10);
                             sum.Inserts += parseInt(row.Inserts, 10);
                             sum.Updates += parseInt(row.Updates, 10);
@@ -90,4 +90,4 @@ module.exports = (app) => {
             return res.status(401).send('Access denied. No admin');
         }
     });
-};
+}

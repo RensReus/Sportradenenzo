@@ -35,23 +35,23 @@ class StatistiekenDropdown extends Component {
   
     render() {
       return (
-        <div className="dropdown">
-          <a className="item" href="/statistieken/overview" onClick={this.showMenu}><span className="h8">Statistieken <FontAwesomeIcon icon={this.state.showMenu ? (faAngleUp):(faAngleDown)}/></span></a>
+        <div className="navbar_dropdown">
+          <a className="navbar_item" href="/statistieken/overview" onClick={this.showMenu}><span className="h8">Statistieken <FontAwesomeIcon icon={this.state.showMenu ? (faAngleUp):(faAngleDown)}/></span></a>
           {
             this.state.showMenu
               ? (
-                <div className="dropdown-content">
-                    <Link className='item' to='/overzicht/etappewinsten'>Uitslagen per etappe</Link>
-                    <Link className='item' to='/overzicht/rondewinsten'>Uitslagen per ronde</Link>
-                    <Link className='item' to='/overzicht/missedpointsall'>Gemiste punten iedereen</Link>
-                    <Link className='item' to='/overzicht/team'>Team overzicht</Link>
-                    <Link className='item' to='/overzicht/teamall'>Team overzicht iedereen</Link>
-                    <Link className='item' to='/overzicht/teamallsimple'>Team overzicht iedereen Simpel</Link>
-                    <Link className='item' to='/overzicht/all'>Alle renners</Link>
-                    <Link className='item' to='/overzicht/selected'>Geselecteerde renners</Link>
-                    <Link className='item' to='/rulesandpoints'>Regels en Punten uitleg</Link>
-                    <Link className='item' to='/overzicht/teamcomparisons'>Selectie vergelijking</Link>
-                    <Link className='item' to='/overzicht/overigestats'>Overige Statistieken</Link>
+                <div className="navbar_dropdown-content">
+                    <Link className='navbar_dropdown_item h9' to='/overzicht/etappewinsten'>Uitslagen per etappe</Link>
+                    <Link className='navbar_dropdown_item h9' to='/overzicht/rondewinsten'>Uitslagen per ronde</Link>
+                    <Link className='navbar_dropdown_item h9' to='/overzicht/missedpointsall'>Gemiste punten iedereen</Link>
+                    <Link className='navbar_dropdown_item h9' to='/overzicht/team'>Team overzicht</Link>
+                    <Link className='navbar_dropdown_item h9' to='/overzicht/teamall'>Team overzicht iedereen</Link>
+                    <Link className='navbar_dropdown_item h9' to='/overzicht/teamallsimple'>Team overzicht iedereen Simpel</Link>
+                    <Link className='navbar_dropdown_item h9' to='/overzicht/all'>Alle renners</Link>
+                    <Link className='navbar_dropdown_item h9' to='/overzicht/selected'>Geselecteerde renners</Link>
+                    <Link className='navbar_dropdown_item h9' to='/rulesandpoints'>Regels en Punten uitleg</Link>
+                    <Link className='navbar_dropdown_item h9' to='/overzicht/teamcomparisons'>Selectie vergelijking</Link>
+                    <Link className='navbar_dropdown_item h9' to='/overzicht/overigestats'>Overige Statistieken</Link>
                 </div>
               )
               : (

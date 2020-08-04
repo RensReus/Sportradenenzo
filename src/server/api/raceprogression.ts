@@ -10,10 +10,12 @@ module.exports = (app, current_race, stage) => {
 
     app.post('/api/getinitialdata', (req, res) => {
       let newRedir: string;
-      newRedir = '/teamselection';
       if (stage !== 0) {
         newRedir = '/stage/' + stage;
+      } else {
+        newRedir = '/teamselection';
       }
+      console.log(newRedir, racename, year);
       res.send({redirect: newRedir, racename, year});
     });
 };

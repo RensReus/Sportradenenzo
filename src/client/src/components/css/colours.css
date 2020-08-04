@@ -2,14 +2,15 @@ html{
   /*Defineer de kleuren van de website*/
     /*Grijstinten*/
     --grey1: hsl(0, 0%, 10%);
-    --grey2: hsl(0, 0%, 20%);
-    --grey3: hsl(0, 0%, 30%);
-    --grey4: hsl(0, 0%, 40%);
-    --grey5: hsl(0, 0%, 50%);
-    --grey6: hsl(0, 0%, 60%);
-    --grey7: hsl(0, 0%, 70%);
-    --grey8: hsl(0, 0%, 80%);
-    --grey9: hsl(0, 0%, 90%);
+    --grey2: hsl(0, 0%, 15%);
+    --grey3: hsl(0, 0%, 20%);
+    --grey4: hsl(0, 0%, 30%);
+    --grey5: hsl(0, 0%, 40%);
+    --grey6: hsl(0, 0%, 50%);
+    --grey7: hsl(0, 0%, 60%);
+    --grey8: hsl(0, 0%, 70%);
+    --grey9: hsl(0, 0%, 80%);
+    --grey10: hsl(0, 0%, 90%);
     /*Roodtinten/Vueltakleuren*/
     --red1: hsl(0, 100%, 20%);
     --red2: hsl(0, 100%, 32%);
@@ -19,6 +20,7 @@ html{
     --red6: hsl(0, 100%, 74%);
     --red7: hsl(0, 100%, 80%);
     --red8: hsl(0, 100%, 92%);
+    --red9: hsl(0, 20%, 90%);
     /*Groentinten*/
     --green1: hsl(120, 100%, 20%);
     --green2: hsl(120, 90%, 32%);
@@ -35,6 +37,8 @@ html{
     --blue6: hsl(220, 80%, 74%);
     --blue7: hsl(220, 80%, 80%);
     --blue8: hsl(220, 80%, 92%);
+    --blue9: hsl(220, 50%, 90%);
+    --blue10: hsl(220, 50%, 95%);
     /*Rozetinten/Girokleuren*/
     --pink1: hsl(300, 100%, 20%);
     --pink2: hsl(300, 100%, 32%);
@@ -53,15 +57,15 @@ html{
     --yellow7: hsl(55, 100%, 92%);
 
 
-    --text-color: rgb(180, 180, 180);
+    --text-color: var(--grey4);
     --text-color-grayed-out: rgb(80, 80, 80);
+    --text-color-dark-background: var(--grey8);
 
-    --background-color-lighter:   rgb(90, 90, 90);  
-    --background-color-light:   rgb(70, 70, 70);
-    --background-color:   rgb(50, 50, 50);
-    --background-color-dark: rgb(30, 30, 30);
-    --background-color-darker: rgb(10, 10, 10);
-    --light-grey: ;
+    --background-color-lighter:   var(--blue10);  
+    --background-color-light:   var(--blue9);
+    --background-color:   var(--grey3);
+    --background-color-dark: var(--grey2);
+    --background-color-darker: var(--grey1);
 
     --default-color: var(--blue4);
     --default-color-light: var(--blue5);

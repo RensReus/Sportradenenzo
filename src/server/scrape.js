@@ -612,20 +612,25 @@ var getRider = function (pcsid, callback) {
     });
 }
 
-var setCurrentStage = function(current_race_id){ //TODO misschien ergens anders heen
-    var race_id = current_race_id;
-    var stageQuery = `SELECT * FROM STAGE
-                WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
-                ORDER BY stagenr desc
-                LIMIT 1`;
-    sqlDB.query(stageQuery, function (err, results) {
-        if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
-        if (results.rows.length) {// if some results, so at least after start of stage 1
-            var stage = results.rows[0];
-            if(stage.complete && stage.stagenr!==22) stage.stagenr++;
-            current_stage = stage.stagenr;
-        }
-    })
+const setCurrentStage = (current_race) => { //TODO misschien ergens anders heen
+    let promise = new Promise((resolve,reject)=>{
+        setTimeout(() => {                
+            const race_id = current_race.id;
+            const stageQuery = `SELECT * FROM STAGE
+                        WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
+                        ORDER BY stagenr desc
+                        LIMIT 1`;
+            sqlDB.query(stageQuery, function (err, results) {
+            if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
+            if (results.rows.length) {// if some results, so at least after start of stage 1
+                const stage = results.rows[0];
+                if(stage.complete && stage.stagenr!==22) { stage.stagenr++; }
+                resolve(stage.stagenr);
+            }
+        });
+        }, 3000);
+    });
+    return promise;
 }
 
 module.exports.getStartlist = getStartlist;
@@ -634,7 +639,9 @@ module.exports.getRider = getRider;
 module.exports.setCurrentStage = setCurrentStage;
 
 var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to run every minute to initialize at the start.
+    const current_stage = 0;
     var race_id = 15;
+
     var stageQuery = `SELECT * FROM STAGE
                       WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
                       ORDER BY stagenr DESC

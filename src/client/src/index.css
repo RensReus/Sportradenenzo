@@ -19,8 +19,6 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   
   body {
     line-height: 1;
-    color: var(--text-color);
-    background: white;
   }
   
   ol, ul {
@@ -47,8 +45,9 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   
   /*Probeerscale voor breedte en hoogte*/
   /*4,8,12,16,24,32,48,64,96,128,192,256,384,512,640,768,896,1024*/
+  /*4,8,10,15,20,30,40,60,80,120,160,240,320,480,640,760,960,1280*/
   
-  @media screen and ( max-width: 1023px) {
+  @media screen and ( max-width: 1279px) {
     html {
       font-size: 62.5%;
       /* 12.5px */
@@ -62,48 +61,42 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     text-decoration: none;
   }
     
+  .content {
+    background-color: var(--background-color-lighter);
+  }
+
+  .content.dark {
+    background-color: var(--background-color-dark);
+  }
+
   div.pageContainer {
     box-sizing: border-box;
     min-height: 100vh;
     overflow: auto;
-    background-color: var(--background-color);
+    background-color: var(--background-color-light);
     margin: auto;
-    padding-top: 53px;
+    padding-top: 70px;
+    color: var(--text-color);
   }
   
-  @media only screen and (min-width: 1024px) {
-    .content:before {
-      content: "";
-      position: fixed;
-      left: 0;
-      right: 0;
-      z-index: -1;
-      background-image: url("/images/BramTankink.jpg");
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      height: 100vh;
-      -webkit-filter: blur(2px);
-      -moz-filter: blur(2px);
-      -o-filter: blur(2px);
-      -ms-filter: blur(2px);
-      filter: blur(2px);
-    }
-    .content {
-      height: 100vh;
-      left: 0;
-      right: 0;
-      z-index: 0;
-    }
-  
+  div.pageContainer.dark{
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+
+  @media only screen and (min-width: 1280px) {
     div.pageContainer {
       box-sizing: border-box;
       min-height: 100vh;
       overflow: auto;
-      background-color: var(--background-color);
+      background-color: var(--background-color-lighter);
       margin: auto;
-      padding-top: 53px;
-      width: 75vw;
+      padding-top: 70px;
+      width: 1280px;
+    }
+
+    div.pageContainer.dark{
+      background-color: var(--background-color);
     }
   }
   

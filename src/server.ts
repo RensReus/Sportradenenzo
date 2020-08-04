@@ -1,25 +1,32 @@
-import express = require('express');
-import morgan = require('morgan');
-import bodyParser = require('body-parser');
-import cookieParser = require('cookie-parser');
-import fs = require('fs');
-import path = require('path');
+const express = require('express');
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 
 // Global vars
-const current_race = {id: 15, name: 'vuelta', year: 2019};
-var current_stage = 0;
-import scrape = require('./server/scrape');
-scrape.setCurrentStage(current_race.id);
+const current_race = { id: 15, name: 'vuelta', year: 2019 };
+let current_stage = 0;
+// Get current stage
+const scrape = require('./server/scrape');
+current_stage = scrape.setCurrentStage(current_race)
+  .then((res) => {
+    current_stage = res;
+  })
+  .catch((res) => {
+    console.log(res);
+  });
 
 // Mongo
-let configDB: string;
+let configDB;
 if (fs.existsSync('./src/server/db/Mongo/link.js')) { // Kijken of er een config is
   configDB = require('./server/db/Mongo/link.js');
 } else {
   configDB = process.env.DATABASE_LINK; // Zo niet gebruik heroku env var
 }
-import mongoose = require('mongoose');
+const mongoose = require('mongoose');
 mongoose.connect(configDB, { ssl: true, useNewUrlParser: true }); // verbinden met sportradenenzo mongodb
 mongoose.connection.on('error', (err) => {
   console.log(err);
@@ -27,7 +34,7 @@ mongoose.connection.on('error', (err) => {
 
 
 // Passport
-import passport = require('passport');
+const passport = require('passport');
 app.use(morgan('dev'));
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.urlencoded({
@@ -54,12 +61,13 @@ app.listen(app.get('port'), () => {
   console.log(`Magicka accidit`);
 });
 
+// Load the api
 require('./server/passport')(passport);
 require('./server/api/authorization')(app); // Belangrijk! Moet bovenaan de lijst staan
 require('./server/api/admin')(app);
 require('./server/api/authentication')(app);
 require('./server/api/manualupdate')(app, current_race);
-require('./server/api/raceprogression')(app, current_race, current_stage);
+require('./server/api/raceprogression')(app, current_race, 22);
 require('./server/api/racestatistics')(app, current_race);
 require('./server/api/stageresults')(app);
 require('./server/api/teamselection')(app, current_race, current_stage);

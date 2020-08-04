@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './index.css';
 import axios from 'axios';
+import FlagIcon from '../shared/flagIcon'
+import { ReactComponent as HillImage } from '../shared/svg/Hills.svg'
 
 class Usernamefield extends Component{
     render(){
@@ -63,31 +65,30 @@ class LogInSignUp extends Component{
     }
     render() {
         console.log(this.props)
-        var classNameSignup = "formTab"
-        var classNameLogin = "formTab active"
         let submit;
         let usernamefield;
         let buttontext;
         if (this.state.Signup) {
             submit = this.signupSubmit
-            classNameSignup = "formTab active"
-            classNameLogin = "formTab"
             usernamefield = <Usernamefield/>
             buttontext = "Sign up"
         }else{
             submit = this.loginSubmit
-            classNameSignup = "formTab"
-            classNameLogin = "formTab active"
             usernamefield = ''
             buttontext = "Sign in"
             
         }
         return(
             <div className="homepageContainer">
-                <button id="logintabButton" className={classNameLogin} onClick={this.formButton}>Sign in</button>
-                <button id="signuptabButton" className={classNameSignup} onClick={this.formButton}>Sign up</button>
-                <div className="formsAndMore">
+                <div className='home_headers_container'>
+                    <span className='home_header_text h6'>Create your own fantasy cycling team</span>
+                    <span className='home_header_text h6'>Upcoming races</span>
+                </div>
+                <div className="formContainer">
                     <form action="" onSubmit={submit}>
+                        <div className="inputContainer">
+                            <input className="form-control" name="username" ref="username" type="username" placeholder="Username"/>
+                        </div>
                         <div className="inputContainer">
                             <input className="form-control" name="email" type="email" placeholder="Email Address" ref={(input) => { this.input = input; }}/>
                         </div>
@@ -96,13 +97,45 @@ class LogInSignUp extends Component{
                             <input className="form-control" name="password" ref="password" type="password" placeholder="Password"/>
                         </div>
                         <div className="formButtonContainer">
-                            <button className="buttonStandard blue">{buttontext}</button>
+                            <button className="plain blue">{buttontext}</button>
                         </div>
                     </form>
                     <div className="errordiv">{this.state.error}</div>
+                <button className='plain blue'>Sign up</button>
                 </div>
-                <div>
-                    
+                <div className='home_news_container'>
+                    <div className='home_news_headerrow'>
+                        <span className='home_news_header h7 bold'>Spring classics 2020</span>
+                        <span className='home_news_header_date h7'>Deadline: 29-2</span>
+                        <div className='home_news_image_container'>
+                            <div className='home_news_image_shadow'></div>
+                            <HillImage/>
+                        </div>
+                    </div>
+                    <div className='home_news_tablerows'>
+                        <span className='home_news_row h8'><FlagIcon code='be'/> Omloop het Nieuwsblad</span>
+                        <span className='home_news_row_date h9'>29-02</span>
+                        <span className='home_news_row h8'><FlagIcon code='it'/> Strade Bianche</span>
+                        <span className='home_news_row_date h9'>07-03</span>
+                        <span className='home_news_row h8'><FlagIcon code='it'/> Milano-Sanremo</span>
+                        <span className='home_news_row_date h9'>21-03</span>
+                        <span className='home_news_row h8'><FlagIcon code='be'/> E3 BinckBank Classic</span>
+                        <span className='home_news_row_date h9'>27-03</span>
+                        <span className='home_news_row h8'><FlagIcon code='be'/> Gent-Wevelgem</span>
+                        <span className='home_news_row_date h9'>29-03</span>
+                        <span className='home_news_row h8'><FlagIcon code='be'/> Dwars door Vlaanderen</span>
+                        <span className='home_news_row_date h9'>01-04</span>
+                        <span className='home_news_row h8'><FlagIcon code='be'/> Ronde van Vlaanderen</span>
+                        <span className='home_news_row_date h9'>05-04</span>
+                        <span className='home_news_row h8'><FlagIcon code='fr'/> Parijs-Roubaix</span>
+                        <span className='home_news_row_date h9'>12-04</span>
+                        <span className='home_news_row h8'><FlagIcon code='nl'/> Amstel Gold Race</span>
+                        <span className='home_news_row_date h9'>19-04</span>
+                        <span className='home_news_row h8'><FlagIcon code='be'/> La Flèche Wallonne</span>
+                        <span className='home_news_row_date h9'>22-04</span>
+                        <span className='home_news_row h8'><FlagIcon code='be'/> Liège-Bastogne-Liège</span>
+                        <span className='home_news_row_date h9'>26-04</span>
+                    </div>
                 </div>
             </div>
         )

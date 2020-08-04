@@ -1,16 +1,22 @@
 .navbar {
-  background-color: var(--background-color-dark);
-  border-top: solid 4px;
+  background-color: var(--grey3);
+  border-top: solid 2px;
+  border-top-color: var(--default-color);
   z-index: 999;
   box-shadow: 0px 5px 5px 0px rgba(136, 136, 136, 0.3);
-  height: 48px;
+  height: 44px;
   -webkit-user-select: none;
-  -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
   overflow: hidden;
   position: fixed;
   width: 100vw;
+  display: grid;
+  grid-template-columns: 210px auto 150px;
+}
+
+.navbar.dark {
+  background-color: var(--grey1)
 }
 
 .navbar.giro {
@@ -37,40 +43,61 @@
   }
 }
 
-/* LOGO */
+/* HOME LINK LOGO */
 
-.navbar .logo {
-  height: 36px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: var(--vuelta-color); /* TODO different logo colors  */
-  padding-top: 6px;
-}
-
-.navbar .racelogo {
-  height: 36px;
-  float: right;
-  padding-top: 6px;
+.navbar_itemhome {
+  background: none;
+  color: gray;
+  border: 5px;
+  height: 44px;
+  padding-left: 10px;
   padding-right: 10px;
+  overflow: auto;
+  grid-column: 1 / 2;
 }
 
-.navbar .logo:hover {
-  color: var(--vuelta-color-light); /* TODO different logo colors  */
+.navbar_homelogo {
+  height: 32px;
+  padding-top: 6px;
+  fill: var(--default-color);
+  stroke: var(--default-color);
+}
+
+.navbar_homelogo.vuelta{
+  fill: var(--vuelta-color);
+  stroke: var(--vuelta-color);
+}
+
+.navbar_homelogo:hover {
+  fill: var(--vuelta-color-light); /* TODO different logo colors  */
   transition: 0.3s;
   cursor: pointer;
 }
 
-/* Dropdown Button */
+/* RACE LOGO */
 
-.navbar .item {
+.navbar_racelogo {
+  height: 36px;
+  float: right;
+  padding-top: 4px;
+  padding-right: 10px;
+  grid-column: 3 / 4;
+}
+
+.navbar_itemcontainer {
+  grid-column: 2 / 3;
+}
+
+.navbar_item {
   background: none;
   color: gray;
   border: 5px;
-  padding: 10px 10px;
+  padding: 10px;
   text-decoration: black;
+  display: inline-block;
 }
 
-.item:hover {
+.navbar_item:hover {
   color: white;
   cursor: pointer;
   transition: 0.3s;
@@ -78,14 +105,14 @@
 
 /* The container <div> - needed to position the dropdown content */
 
-.dropdown {
-  background-color: var(--background-color-dark);
+.navbar_dropdown {
+  background-color: inherit;
   position: relative;
   display: inline-block;
 }
 
-.dropdown-content {
-  background-color: var(--background-color-dark);
+.navbar_dropdown-content {
+  background-color: var(--grey3);
   display: block;
   padding-top: 0.5vh;
   position: fixed;
@@ -97,6 +124,20 @@
 
 /* Links inside the dropdown */
 
-.dropdown-content a {
+.navbar_dropdown-content a {
   display: block;
+}
+
+.navbar_dropdown_item {
+  color: gray;
+  border: 5px;
+  padding: 7px;
+  text-decoration: black;
+  display: inline-block;
+}
+
+.navbar_dropdown_item:hover {
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
 }

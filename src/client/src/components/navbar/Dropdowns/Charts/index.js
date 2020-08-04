@@ -35,18 +35,18 @@ class StatistiekenDropdown extends Component {
   
     render() {
       return (
-        <div className="dropdown">
-          <a className="item" href="/charts/overview" onClick={this.showMenu}><span className="h8">Charts <FontAwesomeIcon icon={this.state.showMenu ? (faAngleUp):(faAngleDown)}/></span></a>
+        <div className="navbar_dropdown">
+          <a className="navbar_item" href="/charts/overview" onClick={this.showMenu}><span className="h8">Charts <FontAwesomeIcon icon={this.state.showMenu ? (faAngleUp):(faAngleDown)}/></span></a>
           {
             this.state.showMenu
               ? (
-                <div className="dropdown-content">
-                    <Link className='item' to='/charts/userscores'>Relatief Scoreverloop</Link>
-                    <Link className='item' to='/charts/userrank'>Ranking</Link>
-                    <Link className='item' to='/charts/riderpercentage'>Puntenaandeel Renner per Etappe</Link>
-                    <Link className='item' to='/charts/riderpercentagetotal'>Puntenaandeel Renner totaal</Link>
-                    <Link className='item' to='/charts/scorespread'>Score verdeling</Link>
-                    <Link className='item' to='/charts/totalscorespread'>Score verdeling Totaal</Link>
+                <div className="navbar_dropdown-content">
+                    <Link className='navbar_dropdown_item h9' to='/charts/userscores'>Relatief Scoreverloop</Link>
+                    <Link className='navbar_dropdown_item h9' to='/charts/userrank'>Ranking</Link>
+                    <Link className='navbar_dropdown_item h9' to='/charts/riderpercentage'>Puntenaandeel Renner per Etappe</Link>
+                    <Link className='navbar_dropdown_item h9' to='/charts/riderpercentagetotal'>Puntenaandeel Renner totaal</Link>
+                    <Link className='navbar_dropdown_item h9' to='/charts/scorespread'>Score verdeling</Link>
+                    <Link className='navbar_dropdown_item h9' to='/charts/totalscorespread'>Score verdeling Totaal</Link>
                 </div>
               )
               : (
