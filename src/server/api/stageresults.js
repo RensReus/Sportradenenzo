@@ -3,9 +3,9 @@ const async = require('async')
 const sqlDB = require('../db/sqlDB')
 const SQLread = require('../db/SQLread')
 
-module.exports = function (app) {
+module.exports = function(app) {
 
-    app.post('/api/setkopman', function (req, res) {
+    app.post('/api/setkopman', function(req, res) {
         var values = [req.user.account_id, req.body.racename, req.body.year, req.body.budgetParticipation, req.body.stage, req.body.rider_participation_id];
         var race_id = `(SELECT race_id FROM race WHERE name = $2 AND year = $3)`;
         var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id} AND budgetParticipation = $4)`;
@@ -20,13 +20,13 @@ module.exports = function (app) {
 
     });
 
-    app.post('/api/removekopman', function (req, res) {
-        removekopman(req.user.account_id, req.body.racename, req.body.year, req.body.budgetParticipation, req.body.stage, req.body.rider_participation_id, function (err, kopman) {
+    app.post('/api/removekopman', function(req, res) {
+        removekopman(req.user.account_id, req.body.racename, req.body.year, req.body.budgetParticipation, req.body.stage, req.body.rider_participation_id, function(err, kopman) {
             res.send({ kopman })
         })
     });
 
-    removekopman = function (account_id, racename, year, budgetParticipation, stage, rider_participation_id, callback) {
+    removekopman = function(account_id, racename, year, budgetParticipation, stage, rider_participation_id, callback) {
         var race_id = `(SELECT race_id FROM race WHERE name = ${racename} AND year = ${year})`;
         var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${stage} AND race_id=${race_id})`
         var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
@@ -38,7 +38,7 @@ module.exports = function (app) {
         })
     }
 
-    app.post('/api/removeriderfromstage', function (req, res) {
+    app.post('/api/removeriderfromstage', function(req, res) {
         var values = [req.user.account_id, req.body.racename, req.body.year, req.body.budgetParticipation, req.body.stage, req.body.rider_participation_id];
         var race_id = `(SELECT race_id FROM race WHERE name = $2 AND year = $3)`;
         var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id} AND budgetParticipation = $4)`;
@@ -71,7 +71,7 @@ module.exports = function (app) {
         })
     });
 
-    app.post('/api/addridertostage', function (req, res) {
+    app.post('/api/addridertostage', function(req, res) {
         var values = [req.user.account_id, req.body.racename, req.body.year, req.body.budgetParticipation, req.body.stage];
         var race_id = `(SELECT race_id FROM race WHERE name = $2 AND year = $3)`;
         var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id} AND budgetParticipation = $4)`;
@@ -112,43 +112,43 @@ module.exports = function (app) {
 
     });
 
-    app.post('/api/getstage', function (req, res) {
+    app.post('/api/getstage', function(req, res) {
         var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
         var now = new Date();
         var query = `SELECT starttime FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
         sqlDB.query(query, (err, results) => {
             if (err) { console.log("WRONG QUERY:", query); throw err; }
-            console.log(results)
+            // console.log(results)
             if (!results.rows.length) {
                 res.send({ mode: '404' })
             } else {
-                if (now < results.rows[0].starttime && req.body.stage != 22) {// if before deadline or stage '22' (finalstandings)
+                if (now < results.rows[0].starttime && req.body.stage != 22) { // if before deadline or stage '22' (finalstandings)
                     async.auto({
-                        userSelectionGewoon: function (callback) {
+                        userSelectionGewoon: function(callback) {
                             SQLread.getTeamSelection(req.user.account_id, false, req.body.racename, req.body.year, callback)
                         },
-                        userSelectionBudget: function (callback) {
+                        userSelectionBudget: function(callback) {
                             SQLread.getTeamSelection(req.user.account_id, true, req.body.racename, req.body.year, callback)
                         },
-                        stageSelectionGewoon: function (callback) {
+                        stageSelectionGewoon: function(callback) {
                             SQLread.getStageSelection(req.user.account_id, false, req.body.racename, req.body.year, req.body.stage, callback)
                         },
-                        stageSelectionBudget: function (callback) {
+                        stageSelectionBudget: function(callback) {
                             SQLread.getStageSelection(req.user.account_id, true, req.body.racename, req.body.year, req.body.stage, callback)
                         },
-                        kopmanGewoon: function (callback) {
+                        kopmanGewoon: function(callback) {
                             SQLread.getKopman(req.user.account_id, false, req.body.racename, req.body.year, req.body.stage, callback)
                         },
-                        kopmanBudget: function (callback) {
+                        kopmanBudget: function(callback) {
                             SQLread.getKopman(req.user.account_id, true, req.body.racename, req.body.year, req.body.stage, callback)
                         },
-                        startTime: function (callback) {
+                        startTime: function(callback) {
                             SQLread.getStageStarttime(current_race_id, req.body.stage, callback)
                         },
-                        prevClassifications: function (callback) {
+                        prevClassifications: function(callback) {
                             var budget = ['false', 'true'];
                             var totalQuery = '';
-                            for (var i in budget) {//voor budget en gewoon
+                            for (var i in budget) { //voor budget en gewoon
                                 var budgetParticipation = budget[i]
                                 var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
                                 var account_participation_id = `(SELECT account_participation_id FROM account_participation 
@@ -187,9 +187,9 @@ module.exports = function (app) {
                                 callback(err, selectClassResult)
                             })
                         }
-                    }, function (err, asyncresults) {
+                    }, function(err, asyncresults) {
                         if (err) throw err;
-                        console.log(asyncresults.prevClassifications)
+                        // console.log(asyncresults.prevClassifications)
                         res.send({
                             'mode': 'selection',
                             'userTeamGewoon': asyncresults.userSelectionGewoon,
@@ -206,7 +206,7 @@ module.exports = function (app) {
                 } else {
                     var budget = ['false', 'true'];
                     var totalQuery = '';
-                    for (var i in budget) {//voor budget en gewoon
+                    for (var i in budget) { //voor budget en gewoon
                         var budgetParticipation = budget[i]
                         var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
                         var account_participation_id = `(SELECT account_participation_id FROM account_participation 
@@ -393,7 +393,7 @@ module.exports = function (app) {
     });
 
 
-    app.post('/api/getstageresultsclassics', function (req, res) {
+    app.post('/api/getstageresultsclassics', function(req, res) {
 
         if (!req.user) {
             res.send({ 'mode': '404' });
@@ -479,7 +479,7 @@ module.exports = function (app) {
                     for (var j in selecties) {
                         if (userscores[i].username == selecties[j].username) {
                             userscores[i]['riderCount'] = selecties[j].count;
-                            userscores[i]['riders'] = selecties[j].riders.sort(function (a, b) { return b.totalscore - a.totalscore });
+                            userscores[i]['riders'] = selecties[j].riders.sort(function(a, b) { return b.totalscore - a.totalscore });
                         }
                     }
                 }
@@ -499,7 +499,7 @@ module.exports = function (app) {
         }
     });
 
-    app.post('/api/getfinalclassics', function (req, res) {
+    app.post('/api/getfinalclassics', function(req, res) {
         if (!req.user) {
             res.send({ 'mode': '404' });
             return;
@@ -515,9 +515,9 @@ module.exports = function (app) {
     });
 
 
-    selectionsPopUp = function (selecties) {//deze functie werkt ook voor de volledige selecties van 20
+    selectionsPopUp = function(selecties) { //deze functie werkt ook voor de volledige selecties van 20
         //Voor de gecombineerde opstellingen popup
-        var allSelectedRiders = [];//alle geselecteerde riders sorterd naar aantal keer geselecteerd
+        var allSelectedRiders = []; //alle geselecteerde riders sorterd naar aantal keer geselecteerd
         var allSelections = [];
         for (var i in selecties) {
             for (var j in selecties[i].riders) {
@@ -526,7 +526,7 @@ module.exports = function (app) {
                     riderName = riderName.substring(2)
                 }
                 var riderObj = { name: riderName, selected: 1, users: selecties[i].username };
-                var index = allSelectedRiders.findIndex(function (rider) { return rider.name === riderName });
+                var index = allSelectedRiders.findIndex(function(rider) { return rider.name === riderName });
                 if (index === -1) {
                     allSelectedRiders.push(riderObj);
                 } else {
@@ -537,16 +537,16 @@ module.exports = function (app) {
             // allSelections.push({title: selecties[i].username, data: selecties[i].riders})
             allSelections.push({ title: selecties[i].username, tableData: [] })
         }
-        allSelectedRiders.sort(function (a, b) { return b.selected - a.selected })
-        //Hersorteren dagselecties van users
+        allSelectedRiders.sort(function(a, b) { return b.selected - a.selected })
+            //Hersorteren dagselecties van users
         var allSelectedRiders34 = allSelectedRiders.filter(rider => rider.selected > 2);
         //alle renners die 3 of 4x zijn gekozen kunnen automatisch boven aan gezet worden
         for (var i in allSelectedRiders34) {
             var riderName = allSelectedRiders34[i].name;
             for (var j in selecties) {
-                var index = selecties[j].riders.findIndex(function (rider) { return rider.Name === riderName })
+                var index = selecties[j].riders.findIndex(function(rider) { return rider.Name === riderName })
                 if (index === -1) {
-                    index = selecties[j].riders.findIndex(function (rider) { return rider.Name === '* ' + riderName })
+                    index = selecties[j].riders.findIndex(function(rider) { return rider.Name === '* ' + riderName })
                 }
                 if (index === -1) {
                     allSelections[j].tableData.push({ "Name": " ", "Score": 0 })
@@ -558,14 +558,14 @@ module.exports = function (app) {
         // voor de renners die 2x zijn gekozen wordt het iets lastiger omdat je moet checken of je 2 dubbel gekozen renners naast elkaar kan zetten
         var allSelectedRiders2 = allSelectedRiders.filter(rider => rider.selected === 2);
 
-        var placesNeeded = [];// een overzichtje van alle 2x renners en door wie geselecteerd
+        var placesNeeded = []; // een overzichtje van alle 2x renners en door wie geselecteerd
         for (var i in allSelectedRiders2) {
             var placesNeededRider = []
             var riderName = allSelectedRiders2[i].name;
-            for (var j in selecties) {//kijk of deze renner zo hoog mogelijk geplaatst kan worden
-                var index = selecties[j].riders.findIndex(function (rider) { return rider.Name === riderName })
+            for (var j in selecties) { //kijk of deze renner zo hoog mogelijk geplaatst kan worden
+                var index = selecties[j].riders.findIndex(function(rider) { return rider.Name === riderName })
                 if (index === -1) {
-                    index = selecties[j].riders.findIndex(function (rider) { return rider.Name === '* ' + riderName })
+                    index = selecties[j].riders.findIndex(function(rider) { return rider.Name === '* ' + riderName })
                 }
                 if (index !== -1) {
                     placesNeededRider.push(j)
@@ -588,24 +588,26 @@ module.exports = function (app) {
         while (placesNeeded.length > 1 && i < placesNeeded.length - 1) {
             var matched = false;
             for (var j = i + 1; j < placesNeeded.length; j++) {
-                if (allUnique(placesNeeded[i], placesNeeded[j])) {//passen ze samen dan insert
+                if (allUnique(placesNeeded[i], placesNeeded[j])) { //passen ze samen dan insert
                     matched = true;
                     var riderName2 = allSelectedRiders2[j].name;
                     var riderName1 = allSelectedRiders2[i].name;
                     //verwijder de 2 passende renners
-                    allSelectedRiders2.splice(j, 1); allSelectedRiders2.splice(i, 1);
-                    placesNeeded.splice(j, 1); placesNeeded.splice(i, 1);
+                    allSelectedRiders2.splice(j, 1);
+                    allSelectedRiders2.splice(i, 1);
+                    placesNeeded.splice(j, 1);
+                    placesNeeded.splice(i, 1);
                     for (var k in selecties) {
-                        var index = selecties[k].riders.findIndex(function (rider) { return rider.Name === riderName1 })
+                        var index = selecties[k].riders.findIndex(function(rider) { return rider.Name === riderName1 })
                         if (index === -1) {
-                            index = selecties[k].riders.findIndex(function (rider) { return rider.Name === '* ' + riderName1 })
+                            index = selecties[k].riders.findIndex(function(rider) { return rider.Name === '* ' + riderName1 })
                         }
-                        if (index !== -1) {//add rider1
+                        if (index !== -1) { //add rider1
                             allSelections[k].tableData.push(selecties[k].riders[index])
-                        } else {// add rider2
-                            var index = selecties[k].riders.findIndex(function (rider) { return rider.Name === riderName2 })
+                        } else { // add rider2
+                            var index = selecties[k].riders.findIndex(function(rider) { return rider.Name === riderName2 })
                             if (index === -1) {
-                                index = selecties[k].riders.findIndex(function (rider) { return rider.Name === '* ' + riderName2 })
+                                index = selecties[k].riders.findIndex(function(rider) { return rider.Name === '* ' + riderName2 })
                             }
                             allSelections[k].tableData.push(selecties[k].riders[index])
                         }
@@ -623,10 +625,10 @@ module.exports = function (app) {
         // alle overgebleven 2x renners toevoegen
         for (var i in allSelectedRiders2) {
             var riderName = allSelectedRiders2[i].name;
-            for (var j in selecties) {//kijk of deze renner zo hoog mogelijk geplaatst kan worden
-                var index = selecties[j].riders.findIndex(function (rider) { return rider.Name === riderName })
+            for (var j in selecties) { //kijk of deze renner zo hoog mogelijk geplaatst kan worden
+                var index = selecties[j].riders.findIndex(function(rider) { return rider.Name === riderName })
                 if (index === -1) {
-                    index = selecties[j].riders.findIndex(function (rider) { return rider.Name === '* ' + riderName })
+                    index = selecties[j].riders.findIndex(function(rider) { return rider.Name === '* ' + riderName })
                 }
                 if (index === -1) {
                     allSelections[j].tableData.push({ "Name": " ", "Score": 0 })
@@ -644,13 +646,13 @@ module.exports = function (app) {
         for (var i in selecties) {
             var sum = 0;
             for (var j in selecties[i].riders) {
-                var index = allSelectedRiders1.findIndex(function (rider) { return rider.name === selecties[i].riders[j].Name })
+                var index = allSelectedRiders1.findIndex(function(rider) { return rider.name === selecties[i].riders[j].Name })
                 if (index === -1) {
-                    index = allSelectedRiders1.findIndex(function (rider) { return '* ' + rider.name === selecties[i].riders[j].Name })
+                    index = allSelectedRiders1.findIndex(function(rider) { return '* ' + rider.name === selecties[i].riders[j].Name })
                 }
                 if (index !== -1) {
                     allSelectedRiders1.slice(index, 1)
-                    var emptyPlaceIndex = allSelections[i].tableData.findIndex(function (rider) { return rider.Name === " " })
+                    var emptyPlaceIndex = allSelections[i].tableData.findIndex(function(rider) { return rider.Name === " " })
                     if (emptyPlaceIndex !== -1) {
                         allSelections[i].tableData[emptyPlaceIndex] = selecties[i].riders[j];
                     } else {
@@ -658,7 +660,7 @@ module.exports = function (app) {
                     }
                 }
                 sum += parseInt(selecties[i].riders[j].Score);
-                console.log(i,sum,selecties[i].riders[j])
+                // console.log(i, sum, selecties[i].riders[j])
             }
             allSelections[i].tableData.push({ "Name": "Totaal", "Score": sum })
         }

@@ -1,7 +1,7 @@
-const race_backup = require('../db/Mongo/models/race_backup.js');
-const async = require('async');
 
 module.exports = (app, current_race) => {
+  const race_backup = require('../db/Mongo/models/race_backup.js');
+  const async = require('async');
   const sqlDB = require('../db/sqlDB');
   const race_id = current_race.id;
 

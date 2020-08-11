@@ -1,0 +1,10 @@
+vuejs                                                       react
+niet alles heet index.js                                    niet het hele project herschrijven
+vue bestanden zijn componentnaam.vue lekker duidelijk       geen component registratie denk ik
+this.variablename ipv this.state.variablename               
+duidelijkere scheiding tussen functies en data              ook vrij expliciet in react
+computed variables (geen idee of dit nuttig is voor ons)
+het html achtige zit was expliciter in een eigen ding
+het html achtige zit aan het begin van het bestand (misschien kan de volgorde gewoon zoals je wilt)
+emit events
+v-show, v-if

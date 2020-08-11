@@ -5,7 +5,7 @@ import ModalButton from '../shared/modal'
 import Table from '../shared/table'
 import SelecTable from './stageselection'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleLeft,faAngleRight,faMountain} from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
+import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
 import LoadingDiv from '../shared/loadingDiv'
 
@@ -13,22 +13,22 @@ class StageResults extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            scrollShow: ['block', 'none', 'none', 'none', 'none'],
+            scrollShow: [true, false, false, false, false],
         }
     }
 
     componentDidMount() {
         if (this.props.stage === 22) {
             this.setState({
-                scrollShow: ['none', 'block', 'none', 'none', 'none'],
+                scrollShow: [false, true, false, false, false],
             })
         }
     }
     showResult(i) {
         var scrollShow = this.state.scrollShow;
-        var curr = scrollShow.indexOf('block');
-        scrollShow[curr] = 'none';
-        scrollShow[i] = 'block';
+        var curr = scrollShow.indexOf(true);
+        scrollShow[curr] = false;
+        scrollShow[i] = true;
         this.setState({ scrollShow: scrollShow });
     }
     render() {
@@ -41,34 +41,21 @@ class StageResults extends Component {
                 klassementen.push([])
             }
         }
-        buttons.push(<button style={{ display: klassementen[0].length ? 'block' : 'none' }} className={"klassementButton " + this.state.scrollShow[0]} key="Etappe" onClick={this.showResult.bind(this, 0)}>Etappe</button>)
-        buttons.push(<button style={{ display: klassementen[1].length ? 'block' : 'none' }} className={"klassementButton " + this.state.scrollShow[1]} key="Algemeen" onClick={this.showResult.bind(this, 1)}>Algemeen</button>)
-        buttons.push(<button style={{ display: klassementen[2].length ? 'block' : 'none' }} className={"klassementButton " + this.state.scrollShow[2]} key="Punten" onClick={this.showResult.bind(this, 2)}>Punten</button>)
-        buttons.push(<button style={{ display: klassementen[3].length ? 'block' : 'none' }} className={"klassementButton " + this.state.scrollShow[3]} key="Berg" onClick={this.showResult.bind(this, 3)}>Berg</button>)
-        buttons.push(<button style={{ display: klassementen[4].length ? 'block' : 'none' }} className={"klassementButton " + this.state.scrollShow[4]} key="Jong" onClick={this.showResult.bind(this, 4)}>Jong</button>)
+        var classificationNamesButtons = ['Etappe', 'Algemeen', 'Punten', 'Bergen', 'Jong'];
+        var classificationNames = ['Etappe', 'Algemeen Klassement', 'Punten Klassement', 'Bergen Klassement', 'Jongeren Klassement'];
         return (
             <div className="classificationsContainer">
                 <div style={{ display: 'flex' }}>
-                    {buttons}
+                    {classificationNamesButtons.map((element, index) => {
+                        return <button style={{ display: klassementen[index].length ? 'block' : 'none' }} className={"klassementButton " + this.state.scrollShow[index]} key={element} onClick={this.showResult.bind(this, index)}>{element}</button>
+                    })}
                 </div>
-                <div className="classification" style={{ display: this.state.scrollShow[0] }}>
-                    <Table data={klassementen[0]} title={"Etappe"} maxRows={20} classNames="classification" />
-                </div>
-                <div className="classification" style={{ display: this.state.scrollShow[1] }}>
-                    <Table data={klassementen[1]} title={"Algemeen Klassement"} maxRows={20} classNames="classification" />
-                </div>
-                <div className="classification" style={{ display: this.state.scrollShow[2] }}>
-                    <Table data={klassementen[2]} title={"Punten Klassement"} maxRows={20} classNames="classification" />
-                </div>
-                <div className="classification" style={{ display: this.state.scrollShow[3] }}>
-                    <Table data={klassementen[3]} title={"Berg Klassement"} maxRows={20} classNames="classification" />
-                </div>
-                <div className="classification" style={{ display: this.state.scrollShow[4] }}>
-                    <Table data={klassementen[4]} title={"Jongeren Klassement"} maxRows={20} classNames="classification" />
-                </div>
+                {classificationNames.map((element, index) => {
+                    return <div className="classification">{ this.state.scrollShow[index] && 
+                        <Table data={klassementen[index]} title={element} maxRows={20} classNames="classification" />
+                    }</div>
+                })}
             </div>
-
-
         )
     }
 }
@@ -118,7 +105,7 @@ class Stage extends Component {
     }
 
     componentDidMount() {
-        this.initialSetState();        
+        this.initialSetState();
     }
 
     componentDidUpdate(prevProps) {
@@ -127,8 +114,8 @@ class Stage extends Component {
         }
     }
 
-    initialSetState(){
-        if(this.props.match.params.racename && this.props.match.params.year){//not current race
+    initialSetState() {
+        if (this.props.match.params.racename && this.props.match.params.year) {//not current race
             this.setState({
                 racename: this.props.match.params.racename,
                 year: this.props.match.params.year,
@@ -137,12 +124,12 @@ class Stage extends Component {
                 this.updateData(this.state.stage)
                 this.props.setRace(this.state.racename)
             })
-        }else{
-            if(this.props.racename){ //if racename not ''
+        } else {
+            if (this.props.racename) { //if racename not ''
                 this.setState({
                     racename: this.props.racename,
                     year: this.props.year,
-                },()=>{
+                }, () => {
                     this.updateData(this.state.stage)
                 })
             }
@@ -156,10 +143,10 @@ class Stage extends Component {
             this.setState({
                 loadingStageres: true,
                 loadingSelection: true,
-            stage: currentstage - 1
+                stage: currentstage - 1
             })
             this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
-            this.updateData(currentstage - 1)
+            // this.updateData(currentstage - 1)   
         } else {
             this.props.history.push('/teamselection')
         }
@@ -172,20 +159,20 @@ class Stage extends Component {
             this.setState({
                 loadingStageres: true,
                 loadingSelection: true,
-            stage: currentstage + 1
+                stage: currentstage + 1
             })
             this.updateData(currentstage + 1)
         }
     }
 
     updateData(stage) {
-        if(stage>22 || stage<1){
+        if (stage > 22 || stage < 1) {
             this.props.history.push('/');
         }
         const racename = this.state.racename
         const year = this.state.year
         document.title = "Etappe " + stage;
-        
+
         axios.post('/api/getstage', { racename, year, stage }) //to: stageresults.js
             .then((res) => {
                 if (res.data.mode === '404') {
@@ -296,7 +283,6 @@ class Stage extends Component {
             })
     }
 
-    
     render() {
         const mode = this.state.mode
         let message
@@ -320,10 +306,10 @@ class Stage extends Component {
         // always
         var stageProfile = '';
         if (this.state.stage > 2 && this.state.stage < 22) {//TODO netter, check if file exists
-            stageProfile = <img className = 'profileImage' src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')} alt="profile" />
+            stageProfile = <img className='profileImage' src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')} alt="profile" />
         }
         var stageProfileKnopIcon = <FontAwesomeIcon icon={faMountain} />
-        var budgetSwitchButton = <BudgetSwitchButton budget = {this.state.budget} budgetSwitch = {this.budgetSwitch}/>
+        var budgetSwitchButton = <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
         //selection
         if (this.state.budget) {
             stageSelection = this.state.stageSelectionBudget
@@ -357,18 +343,18 @@ class Stage extends Component {
             pTable = ''
             stResTable = ''
         } else if (mode === 'selection') {
-            var gewoonCompleet = (this.state.stageSelectionGewoon.length + (this.state.kopmanGewoon ? 1 : 0))*10
-            var budgetCompleet = (this.state.stageSelectionBudget.length + (this.state.kopmanBudget ? 1 : 0))*10;
-            selectionsCompleteDiv = <div className={"completeContainer " + ((gewoonCompleet + budgetCompleet) === 200 ? "allCompleet" : "")}>Compleet: 
-                                    <div className ="gewoonCompleet"><div style={{width: gewoonCompleet + "%"}} className ={"backgroundCompleet teamSize" }></div><div className="textCompleet">Gewoon</div></div>
-                                    <div className ="budgetCompleet"><div style={{width: budgetCompleet + "%"}} className ={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
-                                    </div>
+            var gewoonCompleet = (this.state.stageSelectionGewoon.length + (this.state.kopmanGewoon ? 1 : 0)) * 10
+            var budgetCompleet = (this.state.stageSelectionBudget.length + (this.state.kopmanBudget ? 1 : 0)) * 10;
+            selectionsCompleteDiv = <div className={"completeContainer " + ((gewoonCompleet + budgetCompleet) === 200 ? "allCompleet" : "")}>Compleet:
+                                    <div className="gewoonCompleet"><div style={{ width: gewoonCompleet + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
+                <div className="budgetCompleet"><div style={{ width: budgetCompleet + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
+            </div>
             var starttime = new Date(this.state.starttime);
             var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
             starttimeString = dayArray[starttime.getDay()] + " " + starttime.getHours() + ":" + starttime.getMinutes();
-            selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} loading={this.state.loadingSelection}/>
+            selecTable = <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} loading={this.state.loadingSelection} />
             prevClassificationsDiv = <div className="prevClassifications">
-                <LoadingDiv loading = {this.state.loadingSelection}/>
+                <LoadingDiv loading={this.state.loadingSelection} />
                 <div style={{ display: prevClassifications[0].rows.length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0].rows} title="AK" /></div>
                 <div style={{ display: prevClassifications[1].rows.length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1].rows} title="Punten" /></div>
                 <div style={{ display: prevClassifications[2].rows.length ? 'block' : 'none', float: "left" }} className="KOM"><Table data={prevClassifications[2].rows} title="Berg" /></div>
@@ -376,28 +362,28 @@ class Stage extends Component {
             </div>
         } else if (mode === 'results') {
             resTable = <Table data={userTeamResult} title={"Selectie"} />
-            pTable = <Table data={userScores} title={"Poule Stand"} coltype= {this.state.userScoresColtype}/>
+            pTable = <Table data={userScores} title={"Poule Stand"} coltype={this.state.userScoresColtype} />
             stResTable = <StageResults data={stageresults} stage={this.state.stage} />
             var allSelectionsPopupContent = [];
             var index = 0;
-            for(var i in allSelections){
+            for (var i in allSelections) {
                 var notSelectedTable = '';
-                
-                if(index<notSelected.length && allSelections[i].title === notSelected[index].username){
-                    notSelectedTable = <Table data={notSelected[index].riders} title={"Niet Opgesteld"}/>    
-                    index++;                
+
+                if (index < notSelected.length && allSelections[i].title === notSelected[index].username) {
+                    notSelectedTable = <Table data={notSelected[index].riders} title={"Niet Opgesteld"} />
+                    index++;
                 }
                 var totalRiders = '';
-                    if(parseInt(i)===allSelections.length-1){
+                if (parseInt(i) === allSelections.length - 1) {
                     totalRiders = ' Totaal: ' + allSelections[i].tableData.length
                 }
-                allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].tableData} title={allSelections[i].title + totalRiders} coltype={allSelections[i].coltype}/>{notSelectedTable}</div>)
+                allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].tableData} title={allSelections[i].title + totalRiders} coltype={allSelections[i].coltype} />{notSelectedTable}</div>)
             }
             allSelectionsPopup = <ModalButton
-                            cssClassButton={"buttonStandard " + this.state.racename}
-                            content="Alle opstellingen "
-                            modalContent={allSelectionsPopupContent}
-                        />
+                cssClassButton={"buttonStandard " + this.state.racename}
+                content="Alle opstellingen "
+                modalContent={allSelectionsPopupContent}
+            />
         }
         return (
             <div className="stageContainer">
@@ -415,27 +401,27 @@ class Stage extends Component {
                         {starttimeString}
                     </div>
                     {budgetSwitchButton}
-                        {selectionsCompleteDiv}
-                        <ModalButton
-                            cssClassButton={"buttonStandard " + this.state.racename}
-                            content="Profile "
-                            contentIcon={stageProfileKnopIcon}
-                            modalContent={stageProfile}
-                        />
+                    {selectionsCompleteDiv}
+                    <ModalButton
+                        cssClassButton={"buttonStandard " + this.state.racename}
+                        content="Profile "
+                        contentIcon={stageProfileKnopIcon}
+                        modalContent={stageProfile}
+                    />
                 </div>
                 {message}
                 {allSelectionsPopup}
                 {selecTable}
                 <div className="res">
-                    <LoadingDiv loading = {this.state.loadingStageres}/>
+                    <LoadingDiv loading={this.state.loadingStageres} />
                     {resTable}{pTable}
-                    </div>
+                </div>
                 <div className="stage">
-                    <LoadingDiv loading = {this.state.loadingStageres}/>
+                    <LoadingDiv loading={this.state.loadingStageres} />
                     {stResTable}
                 </div>
                 {prevClassificationsDiv}
-                <LoadingDiv loading = {this.state.loadingAll}/>
+                <LoadingDiv loading={this.state.loadingAll} />
 
 
             </div>
