@@ -8,31 +8,28 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
 import LoadingDiv from '../shared/loadingDiv'
+import _ from "lodash"
 
 class StageResults extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            scrollShow: [true, false, false, false, false],
+            classificationIndex: 0
         }
     }
 
     componentDidMount() {
         if (this.props.stage === 22) {
             this.setState({
-                scrollShow: [false, true, false, false, false],
+                classificationIndex: 1
             })
         }
     }
     showResult(i) {
-        var scrollShow = this.state.scrollShow;
-        var curr = scrollShow.indexOf(true);
-        scrollShow[curr] = false;
-        scrollShow[i] = true;
-        this.setState({ scrollShow: scrollShow });
+        this.props.changedClassificationDisplay(i);
+        this.setState({ classificationIndex: i });
     }
     render() {
-        var buttons = []
         var klassementen = [];
         for (var i = 0; i < 5; i++) {
             if (this.props.data[i]) {
@@ -47,14 +44,14 @@ class StageResults extends Component {
             <div className="classificationsContainer">
                 <div style={{ display: 'flex' }}>
                     {classificationNamesButtons.map((element, index) => {
-                        return <button style={{ display: klassementen[index].length ? 'block' : 'none' }} className={"klassementButton " + this.state.scrollShow[index]} key={element} onClick={this.showResult.bind(this, index)}>{element}</button>
+                        var buttonclassname = "klassementButton ";
+                        buttonclassname += index == this.state.classificationIndex ? 'block' : 'none';
+                        return <button style={{ display: 'block' }} className={buttonclassname} key={element} onClick={this.showResult.bind(this, index)}>{element}</button>
                     })}
                 </div>
-                {classificationNames.map((element, index) => {
-                    return <div className="classification">{ this.state.scrollShow[index] && 
-                        <Table data={klassementen[index]} title={element} maxRows={20} classNames="classification" />
-                    }</div>
-                })}
+                <div className="classification">
+                    <Table data={klassementen[this.state.classificationIndex]} title={classificationNames[this.state.classificationIndex]} maxRows={20} classNames="classification" />
+                </div>
             </div>
         )
     }
@@ -75,6 +72,8 @@ class Stage extends Component {
             stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
             stageSelectionGewoon: [],
             stageSelectionBudget: [],
+            stageresultsGewoon: [[], [], [], [], []],
+            stageresultsBudget: [[], [], [], [], []],
             userTeamGewoon: [],
             userTeamBudget: [],
             kopmanGewoon: '',
@@ -82,6 +81,8 @@ class Stage extends Component {
             userTeamResult: [],
             userScoresGewoon: [],
             userScoresBudget: [],
+            userTeamResultGewoon: [],
+            userTeamResultBudget: [],
             stageresults: [],
             lastStage: false,
             raceStarted: false,
@@ -93,6 +94,10 @@ class Stage extends Component {
             notSelectedGewoon: [],
             notSelectedBudget: [],
             oldracelink: '',
+            //new for partial update
+            classificationDownloaded: { gewoon: [false, false, false, false, false], budget: [false, false, false, false, false] },
+            pouleTeamResultDownloaded: { gewoon: false, budget: false },
+            classificationIndex: 0,
         }
         this.selectRider = this.selectRider.bind(this)
         this.removeRider = this.removeRider.bind(this)
@@ -102,39 +107,41 @@ class Stage extends Component {
         this.nextStage = this.nextStage.bind(this);
         this.updateData = this.updateData.bind(this);
         this.addRemoveRider = this.addRemoveRider.bind(this);
+        this.getStageResults = this.getStageResults.bind(this);
+        this.changedClassificationDisplay = this.changedClassificationDisplay.bind(this);
+        this.setDownloadedTrue = this.setDownloadedTrue.bind(this);
     }
 
     componentDidMount() {
         this.initialSetState();
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props !== prevProps) { // compares properties before and after update
-            this.initialSetState();
-        }
-    }
-
     initialSetState() {
         if (this.props.match.params.racename && this.props.match.params.year) {//not current race
+            var classificationIndex = 0;
+            if (this.state.stage == 22) classificationIndex += 1;
             this.setState({
                 racename: this.props.match.params.racename,
                 year: this.props.match.params.year,
                 oldracelink: '/' + this.props.match.params.racename + '-' + this.props.match.params.year,
+                classificationIndex
             }, () => {
                 this.updateData(this.state.stage)
                 this.props.setRace(this.state.racename)
             })
         } else {
             if (this.props.racename) { //if racename not ''
+                var classificationIndex = 0;
+                if (this.state.stage == 22) classificationIndex += 1;
                 this.setState({
                     racename: this.props.racename,
                     year: this.props.year,
+                    classificationIndex
                 }, () => {
                     this.updateData(this.state.stage)
                 })
             }
         }
-
     }
 
     previousStage() {
@@ -143,10 +150,11 @@ class Stage extends Component {
             this.setState({
                 loadingStageres: true,
                 loadingSelection: true,
+                resultsComplete: false,
                 stage: currentstage - 1
             })
             this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
-            // this.updateData(currentstage - 1)   
+            this.updateData(currentstage - 1)
         } else {
             this.props.history.push('/teamselection')
         }
@@ -159,72 +167,150 @@ class Stage extends Component {
             this.setState({
                 loadingStageres: true,
                 loadingSelection: true,
+                resultsComplete: false,
                 stage: currentstage + 1
             })
             this.updateData(currentstage + 1)
         }
     }
 
+    changedClassificationDisplay(classificationIndex) {
+        this.setState({
+            classificationIndex
+        }, () => {
+            this.getStageResults();
+        })
+    }
+
+    autoupdate() {
+        this.setState({
+            classificationDownloaded: [false, false, false, false, false]
+        }, () => {
+            //TODO reset downloaded vars
+            this.updateData(this.state.stage)
+        })
+    }
+
     updateData(stage) {
         if (stage > 22 || stage < 1) {
             this.props.history.push('/');
         }
-        const racename = this.state.racename
-        const year = this.state.year
+        const racename = this.state.racename;
+        const year = this.state.year;
+        const budget = this.state.budget;
         document.title = "Etappe " + stage;
+        var pouleTeamResultDownloaded = budget ? this.state.pouleTeamResultDownloaded.budget : this.state.pouleTeamResultDownloaded.gewoon;
+        if (!pouleTeamResultDownloaded) {
+            axios.post('/api/getstage2', { racename, year, stage, budgetParticipation: budget }) //to: stageresults.js
+                .then((res) => {
+                    if (res.data.mode === '404') {
+                        this.setState({
+                            mode: '404',
+                        })
+                    } else if (res.data.mode === 'selection') {
+                        this.setState({
+                            mode: 'selection',
+                            userTeamGewoon: res.data.userTeamGewoon,
+                            userTeamBudget: res.data.userTeamBudget,
+                            stageSelectionGewoon: res.data.stageSelectionGewoon,
+                            stageSelectionBudget: res.data.stageSelectionBudget,
+                            kopmanGewoon: res.data.kopmanGewoon.kopman_id,
+                            kopmanBudget: res.data.kopmanBudget.kopman_id,
+                            starttime: res.data.starttime,
+                            prevClassificationsGewoon: res.data.prevClassificationsGewoon,
+                            prevClassificationsBudget: res.data.prevClassificationsBudget,
+                        })
+                    } else if (res.data.mode === 'results') {
+                        if (res.data.budgetParticipation) {
+                            console.log("results budget query",res.data)
+                            this.setState({
+                                mode: 'results',
+                                userScoresColtype: res.data.userScoresColtype,
+                                userTeamResultBudget: res.data.teamresult,
+                                userScoresBudget: res.data.userscores,
+                            })
+                        } else {
+                            this.setState({
+                                mode: 'results',
+                                userScoresColtype: res.data.userScoresColtype,
+                                userTeamResultGewoon: res.data.teamresult,
+                                userScoresGewoon: res.data.userscores,
+                            })
+                        }
+                        this.setState({
+                            mode: 'results',
+                            userScoresColtype: res.data.userScoresColtype,
+                        })
+                    }
+                    this.setLoaders(false);
+                })
+        }
+        this.getStageResults()
+    }
 
-        axios.post('/api/getstage', { racename, year, stage }) //to: stageresults.js
-            .then((res) => {
-                if (res.data.mode === '404') {
-                    this.setState({
-                        mode: '404',
-                        loadingAll: false,
-                        loadingStageres: false,
-                        loadingSelection: false,
-                    })
-                } else if (res.data.mode === 'selection') {
-                    this.setState({
-                        mode: 'selection',
-                        userTeamGewoon: res.data.userTeamGewoon,
-                        userTeamBudget: res.data.userTeamBudget,
-                        stageSelectionGewoon: res.data.stageSelectionGewoon,
-                        stageSelectionBudget: res.data.stageSelectionBudget,
-                        kopmanGewoon: res.data.kopmanGewoon.kopman_id,
-                        kopmanBudget: res.data.kopmanBudget.kopman_id,
-                        starttime: res.data.starttime,
-                        prevClassificationsGewoon: res.data.prevClassificationsGewoon,
-                        prevClassificationsBudget: res.data.prevClassificationsBudget,
-                        loadingAll: false,
-                        loadingStageres: false,
-                        loadingSelection: false,
-                    })
-                } else if (res.data.mode === 'results') {
-                    this.setState({
-                        mode: 'results',
-                        userTeamResultGewoon: res.data.teamresultGewoon,
-                        userTeamResultBudget: res.data.teamresultBudget,
-                        userScoresGewoon: res.data.userscoresGewoon,
-                        userScoresBudget: res.data.userscoresBudget,
-                        userScoresColtype: res.data.userScoresColtype,
-                        stageresultsGewoon: res.data.stageresultsGewoon,
-                        stageresultsBudget: res.data.stageresultsBudget,
-                        allSelectionsGewoon: res.data.allSelectionsGewoon,
-                        allSelectionsBudget: res.data.allSelectionsBudget,
-                        notSelectedGewoon: res.data.notSelectedGewoon,
-                        notSelectedBudget: res.data.notSelectedBudget,
-                        loadingAll: false,
-                        loadingStageres: false,
-                        loadingSelection: false,
-                    })
-                }
+    getStageResults() {
+        const racename = this.state.racename;
+        const year = this.state.year;
+        const stage = this.state.stage;
+        const budget = this.state.budget;
+        const classificationIndex = this.state.classificationIndex;
+        var classificationDownloaded = budget ? this.state.classificationDownloaded.budget : this.state.classificationDownloaded.gewoon;
+        
+        if (!classificationDownloaded[classificationIndex])
+            this.setState({
+                loadingStageres: true,
             })
+            axios.post('/api/getStageResults', { racename, year, stage, budgetParticipation: budget, classificationIndex })
+                .then((res) => {
+                    this.setDownloadedTrue(res.data.budgetParticipation,res.data.classificationIndex);
+                    if (res.data.budgetParticipation) {
+                        console.log("budget results")
+                        var updatedResults = _.cloneDeep(this.state.stageresultsBudget);
+                        updatedResults[res.data.classificationIndex] = res.data.stageresults;
+                        this.setState({
+                            loadingStageres: false,
+                            stageresultsBudget: updatedResults,
+                        })
+                    } else {
+                        var updatedResults = _.cloneDeep(this.state.stageresultsGewoon);
+                        updatedResults[res.data.classificationIndex] = res.data.stageresults;
+                        this.setState({
+                            loadingStageres: false,
+                            stageresultsGewoon: updatedResults,
+                        })
+                    }
+                })
+    }
+
+    getAllSelections() {
+        //TODO implement
+    }
+
+    setDownloadedTrue(budget, classificationIndex) {
+        //TODO implement
+    }
+
+    setLoaders(state) {
+        this.setState({
+            loadingAll: state,
+            loadingStageres: state,
+            loadingSelection: state,
+        })
     }
 
     budgetSwitch() {
         if (this.state.budget) {
-            this.setState({ budget: false })
+            this.setState({
+                budget: false
+            }, () => {
+                this.updateData(this.state.stage)
+            })
         } else {
-            this.setState({ budget: true })
+            this.setState({
+                budget: true
+            }, () => {
+                this.updateData(this.state.stage)
+            })
         }
     }
 
@@ -258,8 +344,6 @@ class Stage extends Component {
         const budget = this.state.budget
         axios.post('/api/removeriderfromstage', { racename, year, stage, rider_participation_id, budgetParticipation: budget })
             .then((res) => {
-                console.log(budget)
-                console.log(res.data)
                 if (budget) {
                     this.setState({ stageSelectionBudget: res.data })
                 } else {
@@ -363,8 +447,9 @@ class Stage extends Component {
         } else if (mode === 'results') {
             resTable = <Table data={userTeamResult} title={"Selectie"} />
             pTable = <Table data={userScores} title={"Poule Stand"} coltype={this.state.userScoresColtype} />
-            stResTable = <StageResults data={stageresults} stage={this.state.stage} />
-            var allSelectionsPopupContent = [];
+            console.log("RESULTS", stageresults)
+            stResTable = <StageResults data={stageresults} stage={this.state.stage} changedClassificationDisplay={this.changedClassificationDisplay} />
+            var allSelectionsPopupContent = []; //TODO fix
             var index = 0;
             for (var i in allSelections) {
                 var notSelectedTable = '';
@@ -413,7 +498,7 @@ class Stage extends Component {
                 {allSelectionsPopup}
                 {selecTable}
                 <div className="res">
-                    <LoadingDiv loading={this.state.loadingStageres} />
+                    <LoadingDiv loading={this.state.loadingSelection} />
                     {resTable}{pTable}
                 </div>
                 <div className="stage">

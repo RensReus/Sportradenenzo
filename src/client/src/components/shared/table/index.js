@@ -108,7 +108,7 @@ class Table extends Component {
             maxRows: this.props.maxRows,
         })
         var scrollShow = this.state.scrollShow;
-        if(this.props.maxRows < this.props.data.length){ //if more rows than allows spread over multiple tabs
+        if(this.props.maxRows < this.props.data.length){ //if more rows than allowed spread over multiple tabs
             var scrollCount = Math.ceil(this.props.data.length/this.props.maxRows);
             for(var i = 0; i < scrollCount; i++){
                 scrollShow[i]= !i ? 'table' : 'none'

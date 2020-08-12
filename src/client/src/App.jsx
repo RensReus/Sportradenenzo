@@ -55,14 +55,12 @@ class App extends Component {
     //De request interceptor voegt aan elke response naar de server de authtoken toe aan de request header
     axios.interceptors.request.use(
       reqConfig => {
-        console.log(reqConfig)
         if (localStorage.getItem('authToken')) {
           //Voeg token toe aan de req headers
           reqConfig.headers.authorization = localStorage.getItem('authToken');
         } else {
           reqConfig.headers.authorization = null;
         }
-        console.log(reqConfig.url)
         return reqConfig;
       }, (error) => {
         switch (error.response.status) {
@@ -81,7 +79,6 @@ class App extends Component {
     function createAxiosResponseInterceptor() {
       const interceptor = axios.interceptors.response.use(
         response => {
-          console.log(response)
           if (!self.state.isLoggedIn) {
             if (response.headers.authorization) {
               self.setState({
