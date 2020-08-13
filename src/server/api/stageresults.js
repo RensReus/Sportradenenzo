@@ -205,7 +205,7 @@ module.exports = function (app) {
                     });
                 } else { // after stage start (stageresults) mode='results'
                     var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
-                    var budgetParticipation = req.body.budgetParticipation;
+                    var budgetParticipation = req.body.budgetParticipation == 1;
                     var account_participation_id = `(SELECT account_participation_id FROM account_participation 
                             WHERE account_id=${req.user.account_id} AND race_id=${race_id} AND budgetparticipation = ${budgetParticipation})`;
                     var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
@@ -255,6 +255,7 @@ module.exports = function (app) {
                             }
                             teamresult.push(totalteam);
                         }
+                        budgetParticipation = budgetParticipation ? 1 : 0;
                         res.send({
                             'mode': 'results',
                             teamresult,
@@ -282,7 +283,7 @@ module.exports = function (app) {
                     res.send("etappe nog niet gestart");
                 } else {
                     var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
-                    var budgetParticipation = req.body.budgetParticipation;
+                    var budgetParticipation = req.body.budgetParticipation == 1;
                     var account_participation_id = `(SELECT account_participation_id FROM account_participation 
                             WHERE account_id=${req.user.account_id} AND race_id=${race_id} AND budgetparticipation = ${budgetParticipation})`;
                     var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
@@ -311,6 +312,7 @@ module.exports = function (app) {
                     sqlDB.query(resultsQuery, (err, stageresults) => {
                         if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
 
+                        budgetParticipation = budgetParticipation ? 1 : 0;
                         res.send({
                             classificationIndex: i,
                             budgetParticipation,
@@ -325,7 +327,7 @@ module.exports = function (app) {
     app.post('/api/getAllSelections', function (req, res) {
         var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
         var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
-        var budgetParticipation = req.body.budgetParticipation;
+        var budgetParticipation = req.body.budgetParticipation == 1;
         var budgetscore = '';
         if (budgetParticipation === 'true') { budgetscore = ' - teamscore ' }
         var account_participation_id = `(SELECT account_participation_id FROM account_participation 
@@ -381,6 +383,7 @@ module.exports = function (app) {
             if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
 
             var allSelections = selectionsPopUp(allSelectionsResults[0].rows);
+            budgetParticipation = budgetParticipation ? 1 : 0;
             res.send({
                 notSelectedBudget: allSelectionsResults[1].rows,
                 allSelections,
