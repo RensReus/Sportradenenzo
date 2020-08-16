@@ -189,8 +189,8 @@ class Stage extends Component {
         const year = this.state.year;
         const budget = this.state.budget;
         document.title = "Etappe " + stage;
-        if (!this.state.pouleTeamResultDownloaded[budget]) { //TODO set these vars to true
-            axios.post('/api/getstage', { racename, year, stage, budgetParticipation: budget }) //to: stageresults.js
+        if (!this.state.pouleTeamResultDownloaded[budget]) {
+            axios.post('/api/getstage', { racename, year, stage, budgetParticipation: budget })
                 .then((res) => {
                     if (res.data.mode === '404') {
                         this.setState({
@@ -205,6 +205,8 @@ class Stage extends Component {
                         newKopman[budget] = res.data.kopman;
                         let newPrevClassifications = _.cloneDeep(this.state.kopman)
                         newPrevClassifications[budget] = res.data.kopman;
+                        let newPouleTeamResultDownloaded = _.cloneDeep(this.state.pouleTeamResultDownloaded)
+                        newPouleTeamResultDownloaded[budget] = res.data.kopman;
                         this.setState({
                             mode: 'selection',
                             userTeam: newUserTeam,
@@ -212,6 +214,7 @@ class Stage extends Component {
                             kopman: newKopman,
                             starttime: res.data.starttime,
                             prevClassifications: newPrevClassifications,
+                            pouleTeamResultDownloaded: newPouleTeamResultDownloaded
                         })
                     } else if (res.data.mode === 'results') {
                         let stageSelectionResults = _.cloneDeep(this.state.stageSelectionResults)
@@ -408,14 +411,16 @@ class Stage extends Component {
                     </div>
                     {selectionsCompleteDiv}
                 </div>
-                { mode === 'selection' && <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} loading={this.state.loadingSelection} />}
-                { mode === 'selection' && <div className="prevClassifications">
-                    <LoadingDiv loading={this.state.loadingSelection} />
-                    <div style={{ display: prevClassifications[0].rows.length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0].rows} title="AK" /></div>
-                    <div style={{ display: prevClassifications[1].rows.length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1].rows} title="Punten" /></div>
-                    <div style={{ display: prevClassifications[2].rows.length ? 'block' : 'none', float: "left" }} className="KOM"><Table data={prevClassifications[2].rows} title="Berg" /></div>
-                    <div style={{ display: prevClassifications[3].rows.length ? 'block' : 'none', float: "left" }} className="Youth"><Table data={prevClassifications[3].rows} title="Jong" /></div>
-                </div>} {/* TODO move to stage selection file? */}
+                { mode === 'selection' && <div> {/* TODO? fix css divs/ move to stage selection file */}
+                    <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} loading={this.state.loadingSelection} />
+                    <div className="prevClassifications">
+                        <LoadingDiv loading={this.state.loadingSelection} />
+                        <div style={{ display: prevClassifications[0].rows.length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0].rows} title="AK" /></div>
+                        <div style={{ display: prevClassifications[1].rows.length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1].rows} title="Punten" /></div>
+                        <div style={{ display: prevClassifications[2].rows.length ? 'block' : 'none', float: "left" }} className="KOM"><Table data={prevClassifications[2].rows} title="Berg" /></div>
+                        <div style={{ display: prevClassifications[3].rows.length ? 'block' : 'none', float: "left" }} className="Youth"><Table data={prevClassifications[3].rows} title="Jong" /></div>
+                    </div>
+                </div>}
 
                 {/* Results TODO merge into one div*/}
                 {/* {mode === 'results' &&
