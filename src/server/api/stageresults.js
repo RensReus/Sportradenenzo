@@ -223,7 +223,8 @@ module.exports = function (app) {
                                             WHERE stage_id=${stage_id} AND budgetparticipation = ${budgetParticipation}
                                             ORDER BY "Total" DESC; `;
 
-          var totalQuery = teamresultQuery + userscoresQuery;
+          var resultsCompleteQuery = `SELECT complete FROM stage WHERE stage_id = ${stage_id}`
+          var totalQuery = teamresultQuery + userscoresQuery + resultsCompleteQuery;
 
           var userScoresColtype = { "Stage": 1, "Total": 1 };
           sqlDB.query(totalQuery, (err, uitslagresults) => {
@@ -250,6 +251,7 @@ module.exports = function (app) {
               'mode': 'results',
               teamresult,
               userscores,
+              resultsComplete: uitslagresults[2].rows[0].complete,
               userScoresColtype: userScoresColtype,
             })
           })

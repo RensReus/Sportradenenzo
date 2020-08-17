@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
 import LoadingDiv from '../shared/loadingDiv'
-import _ from "lodash"
+import _, { reduce } from "lodash"
 
 class StageResults extends Component {
   constructor(props) {
@@ -174,13 +174,19 @@ class Stage extends Component {
   }
 
   autoupdate() {
-    // TODO add timer if stage not complete using debounce (iedere minuut? of x seconde na refresh die wss op hele minuut gebeurt)
-    this.setState({
-      pouleTeamResultDownloaded: [false, false],
-      classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]]
-    }, () => {
-      this.updateData(this.state.stage)
-    })
+    var now = new Date();
+    var msToGo = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), 10, 0) - now; //10s after autoscrape
+    if (msToGo < 0) {
+        msToGo += 60*1000; // plus 60s if negative
+    }
+    setTimeout(function(){
+        this.setState({
+            pouleTeamResultDownloaded: [false, false],
+            classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]]
+        }, () => {
+            this.updateData(this.state.stage)
+        })
+    }.bind(this), msToGo);
   }
 
   updateData(stage) {
@@ -205,29 +211,30 @@ class Stage extends Component {
             newStageSelection[budget] = res.data.stageSelection;
             let newKopman = _.cloneDeep(this.state.kopman)
             newKopman[budget] = res.data.kopman;
-            let newPrevClassifications = _.cloneDeep(this.state.kopman)
-            newPrevClassifications[budget] = res.data.kopman;
-            let newPouleTeamResultDownloaded = _.cloneDeep(this.state.pouleTeamResultDownloaded)
-            newPouleTeamResultDownloaded[budget] = res.data.kopman;
+            let newPrevClassifications = _.cloneDeep(this.state.prevClassifications)
+            newPrevClassifications[budget] = res.data.prevClassifications;
             this.setState({
-              mode: 'selection',
-              userTeam: newUserTeam,
-              stageSelection: newStageSelection,
-              kopman: newKopman,
-              starttime: res.data.starttime,
-              prevClassifications: newPrevClassifications,
-              pouleTeamResultDownloaded: newPouleTeamResultDownloaded
+                mode: 'selection',
+                userTeam: newUserTeam,
+                stageSelection: newStageSelection,
+                kopman: newKopman,
+                starttime: res.data.starttime,
+                prevClassifications: newPrevClassifications,
             })
-          } else if (res.data.mode === 'results') {
+        } else if (res.data.mode === 'results') {
             let stageSelectionResults = _.cloneDeep(this.state.stageSelectionResults)
             stageSelectionResults[budget] = res.data.teamresult;
             let newUserScores = _.cloneDeep(this.state.userScores)
             newUserScores[budget] = res.data.userscores;
+            let newPouleTeamResultDownloaded = _.cloneDeep(this.state.pouleTeamResultDownloaded)
+            newPouleTeamResultDownloaded[budget] = true;
+            if (!res.data.resultsComplete) this.autoupdate();
             this.setState({
-              mode: 'results',
-              userScoresColtype: res.data.userScoresColtype,
-              stageSelectionResults: stageSelectionResults,
-              userScores: newUserScores
+                mode: 'results',
+                userScoresColtype: res.data.userScoresColtype,
+                stageSelectionResults: stageSelectionResults,
+                userScores: newUserScores,
+                pouleTeamResultDownloaded: newPouleTeamResultDownloaded
             })
           }
           this.setLoaders(false);
@@ -260,7 +267,6 @@ class Stage extends Component {
   }
 
   getAllSelections() { //TODO add loader
-    console.log('get all selections')
     const racename = this.state.racename;
     const year = this.state.year;
     const stage = this.state.stage;
@@ -271,7 +277,6 @@ class Stage extends Component {
         newAllSelections[budget] = res.data.allSelections;
         let newNotSelected = _.cloneDeep(this.state.notSelected);
         newNotSelected[budget] = res.data.notSelected;
-        console.log("alselections", res.data)
         this.setState({
           allSelections: newAllSelections,
           notSelected: newNotSelected
