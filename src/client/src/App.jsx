@@ -174,17 +174,17 @@ class App extends Component {
           <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} redirect={this.state.redirect} racename={this.state.racename} year={this.state.year} />
           <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
           <ReactRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
-          <ReactRoute path="/overzicht/:selection" component={Overzicht} history={this.props.history} racename={this.state.racename} year={this.state.year} redirect={this.state.redirect} />
+          <ReactRoute exact path="/overzicht/:selection" component={Overzicht} history={this.props.history} racename={this.state.racename} year={this.state.year} redirect={this.state.redirect} />
           <ReactRoute path="/profile/id/:account_id" component={Profile} history={this.props.history} />
           <ReactRoute exact path="/profile/:username" component={Profile} history={this.props.history} />
           <ReactRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} /> {/* TODO per rider_id en dan verschillende participations tonen, pas als vorige races in de DB staan */}
-          <ReactRoute path="/charts/:chartname" component={Charts} history={this.props.history} racename={this.state.racename} year={this.state.year} />
+          <ReactRoute exact path="/charts/:chartname" component={Charts} history={this.props.history} racename={this.state.racename} year={this.state.year} />
           <ReactRoute path="/404" component={Fourofour} history={this.props.history} message={this.state.message} />
 
           {/* alle paginas voor vorige races */}
           <ReactRoute exact path="/:racename-:year/stage/:stagenumber" component={Stage} history={this.props.history} setRace={this.setRace} />
-          <ReactRoute path="/:racename-:year/overzicht/:selection" component={Overzicht} history={this.props.history} setRace={this.setRace} />
-          <ReactRoute path="/:racename-:year/charts/:chartname" component={Charts} history={this.props.history} setRace={this.setRace} />
+          <ReactRoute exact path="/:racename-:year/overzicht/:selection" component={Overzicht} history={this.props.history} setRace={this.setRace} />
+          <ReactRoute exact path="/:racename-:year/charts/:chartname" component={Charts} history={this.props.history} setRace={this.setRace} />
         </div>
       </div>
     );

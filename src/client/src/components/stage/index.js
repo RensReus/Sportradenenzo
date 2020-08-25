@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
 import LoadingDiv from '../shared/loadingDiv'
-import _, { reduce } from "lodash"
+import _ from "lodash"
 
 class StageResults extends Component {
   constructor(props) {

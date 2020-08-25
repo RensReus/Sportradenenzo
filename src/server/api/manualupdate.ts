@@ -150,6 +150,7 @@ module.exports = (app, current_race) => {
   });
 
   app.post('/api/import', (req, res) => {
+    // TODO Rens remove rider participation and add team selection rider
     if (req.user.admin) {
       const race_idQuery = `SELECT race_id FROM race
           WHERE year = ${req.body.year} AND name = '${req.body.raceName}';\n`;
@@ -206,7 +207,7 @@ module.exports = (app, current_race) => {
             rider_participationQuery = rider_participationQuery.slice(0, -1) + ')';
           }
           if (race.rider_participation.length) { rider_participationQuery += ' ON CONFLICT(race_id,rider_id) DO NOTHING;\n'; }
-          const totalQuery = rider_participationQuery + results_pointsQuery + stage_selection_riderQuery;
+          const totalQuery = results_pointsQuery + stage_selection_riderQuery;
           sqlDB.query(totalQuery, (err, results2) => {
             if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
             console.log('IMPORTED ', req.body.raceName, req.body.year);
@@ -234,19 +235,29 @@ module.exports = (app, current_race) => {
         INNER JOIN stage_selection USING(stage_selection_id)
         INNER JOIN stage USING(stage_id)
         WHERE race_id = ${race_id};\n`;
-      const rider_participationQuery = `SELECT rider_participation.* FROM rider_participation
+      const team_selection_riderQuery = `SELECT team_selection_rider.* FROM team_selection_rider
+        INNER JOIN account_participation USING(account_participation_id)
         WHERE race_id = ${race_id};\n`;
-      const totalQuery = race_idQuery + results_pointsQuery + stage_selection_riderQuery + rider_participationQuery;
+      
+      const totalQuery = race_idQuery + results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
       sqlDB.query(totalQuery, (err, results) => {
         if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
         const raceToSave = new race_backup;
         raceToSave._id = results[0].rows[0].race_id;
         raceToSave.results_points = results[1].rows;
         raceToSave.stage_selection_rider = results[2].rows;
-        raceToSave.rider_participation = results[3].rows;
-        raceToSave.save()
-        console.log(req.body.raceName, req.body.year, 'Backed Up');
-        res.send('Export Succesful');
+        raceToSave.team_selection_rider = results[3].rows;
+        raceToSave.save(
+          function(err) {
+            if (err) {
+              console.log(req.body.raceName, req.body.year, 'Not Backed Up');
+              res.send(err.toString())
+            } else {
+              console.log(req.body.raceName, req.body.year, 'Backed Up');
+              res.send('Export Succesful');
+            }
+          }
+        )
         // data deleten moet voorlopig handmatig voor de veiligheid
 
         // console.log(req.body.raceName,req.body.year,'Removed From SQL')

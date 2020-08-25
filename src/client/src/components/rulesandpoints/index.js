@@ -63,13 +63,18 @@ class Rulesandpoints extends Component {
 
     return (
       <div>
-        Teamselectie:
-        - 20 renners.
-        - max 4 per team.
-        - binnen het budget blijven.
+        <ul>
 
-        Bij TTT punten voor alle finishende renners
-        Geen team dag punten bij ITT TTT
+        <li>Teamselectie:
+        <ul>
+          <li>20 renners.</li>
+          <li>max 4 renners van hetzelfde team.</li>
+          <li>binnen het budget blijven.</li>
+        </ul>
+        </li>
+        <li>Bij TTT punten voor alle finishende renners</li>
+        <li>Geen team dag punten bij ITT en TTT wel voor klassementen</li>
+        </ul>
           <div className="tableDiv">
           <Table data={dagPunten} title="Per Etappe" />
         </div>
