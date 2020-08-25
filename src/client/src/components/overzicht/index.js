@@ -17,12 +17,12 @@ class overzicht extends Component {
   }
 
   componentDidMount() {
-    this.stateUpdateAndRender()
+    this.stateUpdateAndRender();
   }
 
   componentDidUpdate(prevProps) {
     if (this.props !== prevProps) {
-      this.stateUpdateAndRender()
+      this.stateUpdateAndRender();
     }
   }
 
@@ -30,12 +30,13 @@ class overzicht extends Component {
     if (this.props.match.params.selection !== this.state.currlink) {
       if (this.props.match.params.racename && this.props.match.params.year) {
         this.setState({
-          race: this.props.match.params.racename,
+          racename: this.props.match.params.racename,
           year: this.props.match.params.year,
           oldracelink: '/' + this.props.match.params.racename + '-' + this.props.match.params.year,
           budget: false,
           budgetSwitchButton: '',
         }, () => {
+          this.props.setRace(this.state.racename)
           this.renderPage()
         })
       } else if(this.props.racename){ //if racename not ''  {
@@ -112,7 +113,7 @@ class overzicht extends Component {
     document.title = title;
       axios.post('/api/'+apiLink, { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
         .then((res) => {
-          if (res) {
+          if (res.data.mode != '404') {
             console.log(res)
             var extraTables = []
             for (var i in res.data.tables) {
