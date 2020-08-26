@@ -191,7 +191,7 @@ module.exports = function (app, current_race) {
               'stageSelection': asyncresults.stageSelection,
               'kopman': asyncresults.kopman,
               starttime: asyncresults.startTime.starttime,
-              prevClassifications: asyncresults.prevClassifications.slice(0, 4),
+              prevClassifications: asyncresults.prevClassifications.slice(0, 4).map(x => x.rows),
             })
           });
         } else { // after stage start (stageresults) mode='results'
