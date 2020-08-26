@@ -10,9 +10,9 @@ class Selectionbutton extends Component{
         let buttonText
         if(this.props.selected==='unselected'){
             buttonText = 'Add'
-        }else if(this.props.selected=='selected'){
+        }else if(this.props.selected==='selected'){
             buttonText = 'Added'
-        }else if(this.props.selected=='unselectable'){
+        }else if(this.props.selected==='unselectable'){
             buttonText = 'No.'
         }
         return(

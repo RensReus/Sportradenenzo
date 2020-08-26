@@ -149,10 +149,10 @@ class Teamselection extends Component {
     const selectionBudget = this.state.userSelectionBudget
     const budgetBudget = this.state.budgetBudget
     return (
-      <div className="container">
-        <div>
+      <div className="containerTeamselection">
+        <div className="switchAndSearch">
           <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
-          <textarea className="filterField" value={this.state.filtervalue} onChange={(e) => { this.filter(e) }} />
+          Search for a rider: <textarea className="filterField" value={this.state.filtervalue} onChange={(e) => { this.filter(e) }} />
         </div>
 
         <div className="ridertablecontainer" style={{ display: this.state.showBudget ? 'none' : 'block' }}>
