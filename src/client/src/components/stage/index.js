@@ -252,7 +252,7 @@ class Stage extends Component {
     const stage = this.state.stage;
     const budget = this.state.budget;
     const classificationIndex = this.state.classificationIndex;
-    if (!this.state.classificationDownloaded[budget][classificationIndex]) {
+    if (!this.state.classificationDownloaded[budget][classificationIndex] && (this.state.mode === '' || this.state.mode === 'results')) {
       this.setState({
         loadingStageres: true,
       })
@@ -434,21 +434,19 @@ class Stage extends Component {
         </div>}
 
         {/* Results TODO merge into one div*/}
-        {/* {mode === 'results' &&
-                    <div> */}
-        {allSelectionsPopup}
-        <div className="res">
-          <LoadingDiv loading={this.state.loadingSelection} />
-          <Table data={this.state.stageSelectionResults[budget]} title={"Selectie"} />
-          <Table data={this.state.userScores[budget]} title={"Poule Stand"} coltype={this.state.userScoresColtype} />
-        </div>
-        <div className="stage">
-          <LoadingDiv loading={this.state.loadingStageres} />
-          <StageResults data={this.state.stageResults[budget]} stage={this.state.stage} changedClassificationDisplay={this.changedClassificationDisplay} />
-        </div>
-        <LoadingDiv loading={this.state.loadingAll} />
-        {/* </div>
-                } */}
+        {mode === 'results' && <div>
+          {allSelectionsPopup}
+          <div className="res">
+            <LoadingDiv loading={this.state.loadingSelection} />
+            <Table data={this.state.stageSelectionResults[budget]} title={"Selectie"} />
+            <Table data={this.state.userScores[budget]} title={"Poule Stand"} coltype={this.state.userScoresColtype} />
+          </div>
+          <div className="stage">
+            <LoadingDiv loading={this.state.loadingStageres} />
+            <StageResults data={this.state.stageResults[budget]} stage={this.state.stage} changedClassificationDisplay={this.changedClassificationDisplay} />
+          </div>
+          <LoadingDiv loading={this.state.loadingAll} />
+        </div>}
 
       </div>
     )
