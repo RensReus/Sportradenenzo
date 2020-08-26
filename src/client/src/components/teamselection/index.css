@@ -31,8 +31,12 @@ div.teamindicator{
     width: 400px;
 }
 
-.selected{
-    /* background-color: var(--background-color-lighter) */
+.riderRow .selected{
+    background-color: lightgreen;
+}
+
+.riderRow .unselectable{
+    background-color: lightsalmon;
 }
 
 tr.dnf{

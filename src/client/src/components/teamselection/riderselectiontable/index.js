@@ -7,8 +7,16 @@ class Selectionbutton extends Component{
         }
     }
     render(){
+        let buttonText
+        if(this.props.selected==='unselected'){
+            buttonText = 'Add'
+        }else if(this.props.selected=='selected'){
+            buttonText = 'Added'
+        }else if(this.props.selected=='unselectable'){
+            buttonText = 'No.'
+        }
         return(
-            <button className={this.props.selected} onClick={() => this.addRider(this.props.riderID, this.props.budgetParticipation)}>{this.props.selected}</button>
+            <button className={this.props.selected} onClick={() => this.addRider(this.props.riderID, this.props.budgetParticipation)}>{buttonText}</button>
         )
     }
 }
@@ -16,7 +24,7 @@ class Selectionbutton extends Component{
 class Riderrow extends Component{
     render(){
         return(
-            <tr >
+            <tr className='riderRow'>
                 <td className={this.props.selected}>{this.props.name}</td>
                 <td className={this.props.selected}>{this.props.team}</td>
                 <td className={this.props.selected}>{this.props.price}</td>
