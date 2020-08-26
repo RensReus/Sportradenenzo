@@ -2,7 +2,7 @@
 
 const { get } = require('https');
 
-module.exports = function (app, current_race) {
+module.exports = function (app) {
   const sqlDB = require('../db/sqlDB');
   const async = require('async');
 

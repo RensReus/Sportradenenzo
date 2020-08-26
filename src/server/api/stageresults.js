@@ -3,7 +3,7 @@ const async = require('async')
 const sqlDB = require('../db/sqlDB')
 const SQLread = require('../db/SQLread')
 
-module.exports = function (app) {
+module.exports = function (app, current_race) {
 
   app.post('/api/setkopman', function (req, res) {
     var budgetParticipation = req.body.budgetParticipation == 1;
