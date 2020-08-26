@@ -7,17 +7,17 @@ const path = require('path');
 const app = express();
 
 // Global vars
-const current_race = { id: 15, name: 'vuelta', year: 2019 };
+const current_race = { id: 17, name: 'tour', year: 2020 };
 let current_stage = 0;
 // Get current stage
 const scrape = require('./server/scrape');
-current_stage = scrape.setCurrentStage(current_race)
-  .then((res) => {
-    current_stage = res;
-  })
-  .catch((res) => {
-    console.log(res);
-  });
+// current_stage = scrape.setCurrentStage(current_race) //TODO rens fix require and promise combination
+//   .then((res) => {
+//     current_stage = res;
+//   })
+//   .catch((res) => {
+//     console.log(res);
+//   });
 
 // Mongo
 let configDB;
@@ -67,7 +67,7 @@ require('./server/api/authorization')(app); // Belangrijk! Moet bovenaan de lijs
 require('./server/api/admin')(app);
 require('./server/api/authentication')(app);
 require('./server/api/manualupdate')(app, current_race);
-require('./server/api/raceprogression')(app, current_race, 22);
+require('./server/api/raceprogression')(app, current_race, current_stage);
 require('./server/api/racestatistics')(app, current_race);
 require('./server/api/stageresults')(app);
 require('./server/api/teamselection')(app, current_race, current_stage);

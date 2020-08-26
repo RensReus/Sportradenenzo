@@ -4,6 +4,7 @@ module.exports = (app, current_race) => {
   const async = require('async');
   const sqlDB = require('../db/sqlDB');
   const race_id = current_race.id;
+  const scrape = require('../scrape')
 
   // app.post('/api/getstartlistklassiek', function (req, res) { //TODO change to new scrape
   //   jwt.verify(req.body.token, getSecret(), function (err, decoded) {
@@ -44,7 +45,8 @@ module.exports = (app, current_race) => {
     if (req.user.admin) {
       const year = parseInt(req.body.year, 10);
       const raceName = req.body.raceName;
-      scrape.getStartlist(raceName, year, (err, arg) => {
+      var race = { raceName: raceName, year: year };
+      scrape.getStartlist(race, (err, arg) => {
         if (err) { res.send('error'); }
         console.log('Got startlist %s year %s', raceName, year);
         res.send('loaded startlist');
@@ -194,7 +196,7 @@ module.exports = (app, current_race) => {
           // rider_participation
           let rider_participationQuery: string;
           if (race.rider_participation.length) { rider_participationQuery = 'INSERT INTO rider_participation VALUES'; }
-          for (const i of  Object.keys(race.rider_participation)) {
+          for (const i of Object.keys(race.rider_participation)) {
             if (i !== '0') { rider_participationQuery += ','; }
             rider_participationQuery += '(';
             for (var prop in race.rider_participation[i]) {
@@ -238,17 +240,23 @@ module.exports = (app, current_race) => {
       const team_selection_riderQuery = `SELECT team_selection_rider.* FROM team_selection_rider
         INNER JOIN account_participation USING(account_participation_id)
         WHERE race_id = ${race_id};\n`;
-      
+
       const totalQuery = race_idQuery + results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
       sqlDB.query(totalQuery, (err, results) => {
         if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
+        // race_backup.updateOne({_id:results[0].rows[0].race_id},{
+        //   $set: {"raceName":req.body.raceName,"year":req.body.year}
+        // },
+        // function(err, result) {
+        //   console.log(" updated",req.body.raceName)
+        // })
         const raceToSave = new race_backup;
         raceToSave._id = results[0].rows[0].race_id;
         raceToSave.results_points = results[1].rows;
         raceToSave.stage_selection_rider = results[2].rows;
         raceToSave.team_selection_rider = results[3].rows;
         raceToSave.save(
-          function(err) {
+          function (err) {
             if (err) {
               console.log(req.body.raceName, req.body.year, 'Not Backed Up');
               res.send(err.toString())
