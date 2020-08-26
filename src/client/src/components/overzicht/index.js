@@ -8,7 +8,7 @@ class overzicht extends Component {
   constructor(props) {
     super(props);
     this.state = ({
-      extraTables: '',
+      tables: '',
       budget: false,
       budgetSwitchButton: '',
       currlink: '',
@@ -39,64 +39,53 @@ class overzicht extends Component {
           this.props.setRace(this.state.racename)
           this.renderPage()
         })
-      } else if(this.props.racename){ //if racename not ''  {
-          this.setState({
-              racename: this.props.racename,
-              year: this.props.year,
-              budget: false,
-              budgetSwitchButton: '',
-          },()=>{
-              this.renderPage()
-          })
+      } else if (this.props.racename) { //if racename not ''  {
+        this.setState({
+          racename: this.props.racename,
+          year: this.props.year,
+          budget: false,
+          budgetSwitchButton: '',
+        }, () => {
+          this.renderPage()
+        })
       }
     }
   }
 
   renderPage() {
-    var titles = {
-      "all":"Alle Renners Overzicht",
-      "selected":"Gekozen Renners Overzicht",
-      "missedpoints":"Gemiste Punten",
-      "missedpointsall":"Gemiste Punten Iedereen",
-      "team":"Team Overzicht",
-      "teamall":"Team Overzicht Iedereen",
-      "teamallsimple":"Team Overzicht Iedereen",
-      "etappewinsten":"Etappe Winsten Overzicht",
-      "rondewinsten":"Ronde Winsten Overzicht",
-      "teamcomparisons":"Vergelijking van Selecties",
-      "overigestats":"Overige Statistieken",
-    }
     var apilinks = {
-      "all":"getriderpointsall",
-      "selected":"getriderpointsselected",
-      "missedpoints":"missedpoints",
-      "missedpointsall":"missedpointsall",
-      "team":"teamoverzicht",
-      "teamall":"teamoverzichtall",
-      "teamallsimple":"teamoverzichtallsimple",
-      "etappewinsten":"getstagevictories",
-      "rondewinsten":"gettourvictories",
-      "teamcomparisons":"teamcomparisons",
-      "overigestats":"getadditionalstats",
+      "all": "getriderpointsall",
+      "selected": "getriderpointsselected",
+      "missedpoints": "missedpoints",
+      "missedpointsall": "missedpointsall",
+      "team": "teamoverzicht",
+      "teamall": "teamoverzichtall",
+      "teamallsimple": "teamoverzichtallsimple",
+      "etappewinsten": "getstagevictories",
+      "rondewinsten": "gettourvictories",
+      "teamcomparisons": "teamcomparisons",
+      "overigestats": "getadditionalstats",
     }
     this.setState({
       currlink: this.props.match.params.selection,
-      extraTables: '',
+      tables: '',
     }, () => {
       var pageref = this.state.currlink;
       switch (pageref) {
+        case "rondewinsten":
+        this.getDataAndRender(apilinks[pageref],true)
+        break;        
         case "all":
-        case "selected": 
-        case "missedpoints": 
-        case "missedpointsall": 
-        case "team": 
-        case "teamall": 
-        case "teamallsimple": 
-        case "etappewinsten": 
-        case "rondewinsten": 
-        case "overigestats": 
-        case "teamcomparisons": 
-          this.getDataAndRender(apilinks[pageref],titles[pageref])
+        case "selected":
+        case "missedpoints":
+        case "missedpointsall":
+        case "team":
+        case "teamall":
+        case "teamallsimple":
+        case "etappewinsten":
+        case "overigestats":
+        case "teamcomparisons":
+          this.getDataAndRender(apilinks[pageref],false)
           break;
         default: this.props.history.push(this.props.redirect); break;
       }
@@ -109,30 +98,34 @@ class overzicht extends Component {
     })
   }
 
-   getDataAndRender(apiLink,title) {
-    return //TODO remove when race has started
-    document.title = title;
-      axios.post('/api/'+apiLink, { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
-        .then((res) => {
-          if (res.data.mode != '404') {
-            console.log(res)
-            var extraTables = []
-            for (var i in res.data.tables) {
-              extraTables.push(<div className="tableDiv" ><Table data={res.data.tables[i].tableData} title={res.data.tables[i].title} coltype={res.data.tables[i].coltype} /></div>)
-            }
-            this.setState({
-              extraTables: extraTables,
-              budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
-            })
+  getDataAndRender(selection, alwaysget) {
+    axios.post('/api/statistics', { selection, alwaysget, racename: this.state.racename, year: this.state.year, budgetparticipation: this.state.budget })
+      .then((res) => {
+        if (res.data.mode !== '404') {
+          document.title = res.data.title;
+          var tables = []
+          for (var i in res.data.tables) {
+            tables.push(<div className="tableDiv" ><Table data={res.data.tables[i].tableData} title={res.data.tables[i].title} coltype={res.data.tables[i].coltype} /></div>)
           }
-        })
-    }
+          this.setState({
+            tables: tables,
+            budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
+          })
+        } else {
+          document.title = '404';
+          this.setState({
+            tables: [],
+            budgetSwitchButton: ''
+          })
+        }
+      })
+  }
 
   render() {
     return (
       <div className="overzichtContainer">
         {this.state.budgetSwitchButton}
-        {this.state.extraTables}
+        {this.state.tables}
       </div>
 
     )

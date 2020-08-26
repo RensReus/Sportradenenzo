@@ -49,8 +49,6 @@ class Outputtable extends Component {
       }
       commandType = response.command;
       output = response.rows;
-      console.log("Tab", tabNR)
-      console.log(output)
       if (error) { output = [] }
       const header = []
       var row = []
@@ -192,6 +190,7 @@ class Admin extends Component {
         varObject[varName] = varContent;
       }
     }
+    console.log(variables)
     var query = this.state.value;
     i = 0;
     while (query.indexOf('$') + 1) {
@@ -226,7 +225,8 @@ class Admin extends Component {
     this.setState({ value: e.target.value }, () => {
       // var caret = getCaretCoordinates(document.activeElement, document.activeElement.selectionEnd);
       var cursorPos = document.activeElement.selectionStart;
-      // this.setState({popUpTop: caret.top + caret.height, popUpLeft:caret.left, cursorPos})
+      // popUpTop: caret.top + caret.height, popUpLeft:caret.left,
+      this.setState({cursorPos})
       var startindex = -1;
       for (var i = cursorPos - 1; i > -1; i--) {
         if ([' ', '\n', '\t', '(', ')', '"', '{', '}', '.', ','].includes(this.state.value.charAt(i))) {

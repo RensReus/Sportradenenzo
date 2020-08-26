@@ -79,7 +79,7 @@ class Stage extends Component {
       lastStage: false,
       raceStarted: false,
       starttime: '',
-      prevClassifications: [[], []],
+      prevClassifications: [[[], [], [], []], [[], [], [], []]],
       allSelections: [[], []],
       notSelected: [[], []],
       oldracelink: '',
@@ -177,15 +177,15 @@ class Stage extends Component {
     var now = new Date();
     var msToGo = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), 10, 0) - now; //10s after autoscrape
     if (msToGo < 0) {
-        msToGo += 60*1000; // plus 60s if negative
+      msToGo += 60 * 1000; // plus 60s if negative
     }
-    setTimeout(function(){
-        this.setState({
-            pouleTeamResultDownloaded: [false, false],
-            classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]]
-        }, () => {
-            this.updateData(this.state.stage)
-        })
+    setTimeout(function () {
+      this.setState({
+        pouleTeamResultDownloaded: [false, false],
+        classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]]
+      }, () => {
+        this.updateData(this.state.stage)
+      })
     }.bind(this), msToGo);
   }
 
@@ -193,7 +193,7 @@ class Stage extends Component {
     if (stage > 22 || stage < 1) {
       this.props.history.push('/');
     }
-    if (isNaN(stage)){ //related to currentstage error TODO remove when fixed
+    if (isNaN(stage)) { //related to currentstage error TODO remove when fixed
       return;
     }
     const racename = this.state.racename;
@@ -208,36 +208,36 @@ class Stage extends Component {
               mode: '404',
             })
           } else if (res.data.mode === 'selection') {
-            let newUserTeam = _.cloneDeep(this.state.userTeam)
-            newUserTeam[budget] = res.data.userTeam;
-            let newStageSelection = _.cloneDeep(this.state.stageSelection)
-            newStageSelection[budget] = res.data.stageSelection;
-            let newKopman = _.cloneDeep(this.state.kopman)
-            newKopman[budget] = res.data.kopman;
-            let newPrevClassifications = _.cloneDeep(this.state.prevClassifications)
-            newPrevClassifications[budget] = res.data.prevClassifications;
+            let userTeam = _.cloneDeep(this.state.userTeam)
+            userTeam[budget] = res.data.userTeam;
+            let stageSelection = _.cloneDeep(this.state.stageSelection)
+            stageSelection[budget] = res.data.stageSelection;
+            let kopman = _.cloneDeep(this.state.kopman)
+            kopman[budget] = res.data.kopman;
+            let prevClassifications = _.cloneDeep(this.state.prevClassifications)
+            prevClassifications[budget] = res.data.prevClassifications;
             this.setState({
-                mode: 'selection',
-                userTeam: newUserTeam,
-                stageSelection: newStageSelection,
-                kopman: newKopman,
-                starttime: res.data.starttime,
-                prevClassifications: newPrevClassifications,
+              mode: 'selection',
+              userTeam,
+              stageSelection,
+              kopman,
+              starttime: res.data.starttime,
+              prevClassifications,
             })
-        } else if (res.data.mode === 'results') {
+          } else if (res.data.mode === 'results') {
             let stageSelectionResults = _.cloneDeep(this.state.stageSelectionResults)
             stageSelectionResults[budget] = res.data.teamresult;
-            let newUserScores = _.cloneDeep(this.state.userScores)
-            newUserScores[budget] = res.data.userscores;
-            let newPouleTeamResultDownloaded = _.cloneDeep(this.state.pouleTeamResultDownloaded)
-            newPouleTeamResultDownloaded[budget] = true;
+            let userScores = _.cloneDeep(this.state.userScores)
+            userScores[budget] = res.data.userscores;
+            let pouleTeamResultDownloaded = _.cloneDeep(this.state.pouleTeamResultDownloaded)
+            pouleTeamResultDownloaded[budget] = true;
             if (!res.data.resultsComplete) this.autoupdate();
             this.setState({
-                mode: 'results',
-                userScoresColtype: res.data.userScoresColtype,
-                stageSelectionResults: stageSelectionResults,
-                userScores: newUserScores,
-                pouleTeamResultDownloaded: newPouleTeamResultDownloaded
+              mode: 'results',
+              userScoresColtype: res.data.userScoresColtype,
+              stageSelectionResults,
+              userScores: userScores,
+              pouleTeamResultDownloaded
             })
           }
           this.setLoaders(false);
@@ -331,15 +331,15 @@ class Stage extends Component {
     const year = this.state.year
     const budget = this.state.budget
     if (addRemove === 'add') {
-      link = 'addridertostage';
+      link = '/api/addridertostage';
     } else if (addRemove === 'remove') {
-      link = 'removeriderfromstage';
+      link = '/api/removeriderfromstage';
     }
     axios.post(link, { racename, year, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
-        let newStageSelection = _.cloneDeep(this.state.stageSelection);
-        newStageSelection[budget] = res.data.stageSelection;
-        this.setState({ stageSelectionBudget: newStageSelection })
+        let stageSelection = _.cloneDeep(this.state.stageSelection);
+        stageSelection[budget] = res.data.stageSelection;
+        this.setState({ stageSelection })
       })
   }
 
@@ -362,8 +362,8 @@ class Stage extends Component {
     let allSelections = this.state.allSelections[budget];
     let notSelected = this.state.notSelected[budget];
     if (mode === 'selection') {
-      var gewoonCompleet = (this.state.stageSelection[0].length + (this.state.kopman[0] ? 1 : 0)) * 10
-      var budgetCompleet = (this.state.stageSelection[1].length + (this.state.kopman[1] ? 1 : 0)) * 10;
+      var gewoonCompleet = (this.state.stageSelection[0].length + (this.state.kopman[0].kopman_id ? 1 : 0)) * 10
+      var budgetCompleet = (this.state.stageSelection[1].length + (this.state.kopman[1].kopman_id ? 1 : 0)) * 10;
       selectionsCompleteDiv = <div className={"completeContainer " + ((gewoonCompleet + budgetCompleet) === 200 ? "allCompleet" : "")}>Compleet:
                                     <div className="gewoonCompleet"><div style={{ width: gewoonCompleet + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
         <div className="budgetCompleet"><div style={{ width: budgetCompleet + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
@@ -426,10 +426,10 @@ class Stage extends Component {
           <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} loading={this.state.loadingSelection} />
           <div className="prevClassifications">
             <LoadingDiv loading={this.state.loadingSelection} />
-            <div style={{ display: prevClassifications[0].rows.length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0].rows} title="AK" /></div>
-            <div style={{ display: prevClassifications[1].rows.length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1].rows} title="Punten" /></div>
-            <div style={{ display: prevClassifications[2].rows.length ? 'block' : 'none', float: "left" }} className="KOM"><Table data={prevClassifications[2].rows} title="Berg" /></div>
-            <div style={{ display: prevClassifications[3].rows.length ? 'block' : 'none', float: "left" }} className="Youth"><Table data={prevClassifications[3].rows} title="Jong" /></div>
+            <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0]} title="AK" /></div>
+            <div style={{ display: prevClassifications[1].length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1]} title="Punten" /></div>
+            <div style={{ display: prevClassifications[2].length ? 'block' : 'none', float: "left" }} className="KOM"><Table data={prevClassifications[2]} title="Berg" /></div>
+            <div style={{ display: prevClassifications[3].length ? 'block' : 'none', float: "left" }} className="Youth"><Table data={prevClassifications[3]} title="Jong" /></div>
           </div>
         </div>}
 

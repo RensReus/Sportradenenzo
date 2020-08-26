@@ -3,7 +3,7 @@ const async = require('async')
 const sqlDB = require('../db/sqlDB')
 const SQLread = require('../db/SQLread')
 
-module.exports = function (app) {
+module.exports = function (app, current_race) {
 
   app.post('/api/setkopman', function (req, res) {
     var budgetParticipation = req.body.budgetParticipation == 1;
@@ -143,7 +143,7 @@ module.exports = function (app) {
               SQLread.getKopman(req.user.account_id, budgetParticipation, req.body.racename, req.body.year, req.body.stage, callback)
             },
             startTime: function (callback) {
-              SQLread.getStageStarttime(current_race_id, req.body.stage, callback)
+              SQLread.getStageStarttime(current_race.id, req.body.stage, callback)
             },
             prevClassifications: function (callback) {
               var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
@@ -191,7 +191,7 @@ module.exports = function (app) {
               'stageSelection': asyncresults.stageSelection,
               'kopman': asyncresults.kopman,
               starttime: asyncresults.startTime.starttime,
-              prevClassifications: asyncresults.prevClassifications.slice(0, 4),
+              prevClassifications: asyncresults.prevClassifications.slice(0, 4).map(x => x.rows),
             })
           });
         } else { // after stage start (stageresults) mode='results'
