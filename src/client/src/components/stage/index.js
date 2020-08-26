@@ -72,7 +72,7 @@ class Stage extends Component {
       stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
       stageSelection: [[], []],
       userTeam: [[], []],
-      kopman: ['', ''],
+      kopman: [null, null],
       stageSelectionResults: [[], []],
       userScores: [[], []],
       stageResults: [[], []],
@@ -83,12 +83,12 @@ class Stage extends Component {
       allSelections: [[], []],
       notSelected: [[], []],
       oldracelink: '',
-      //new for partial update
       classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
       pouleTeamResultDownloaded: [false, false],
       classificationIndex: 0,
     }
     this.setKopman = this.setKopman.bind(this)
+    this.removeKopman = this.removeKopman.bind(this)
     this.budgetSwitch = this.budgetSwitch.bind(this)
     this.previousStage = this.previousStage.bind(this);
     this.nextStage = this.nextStage.bind(this);
@@ -318,9 +318,23 @@ class Stage extends Component {
     const budget = this.state.budget
     axios.post('/api/setkopman', { racename, year, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
-        let newKopman = _.cloneDeep(this.state.kopman);
-        newKopman[budget] = res.data.kopman;
-        this.setState({ kopman: newKopman })
+        console.log(res)
+        let kopman = _.cloneDeep(this.state.kopman);
+        kopman[budget] = res.data.kopman;
+        this.setState({ kopman })
+      })
+  }
+
+  removeKopman(rider_participation_id) {
+    const stage = this.state.stage
+    const racename = this.state.racename
+    const year = this.state.year
+    const budget = this.state.budget
+    axios.post('/api/removekopman', { racename, year, stage, rider_participation_id, budgetParticipation: budget })
+      .then((res) => {
+        let kopman = _.cloneDeep(this.state.kopman);
+        kopman[budget] = res.data.kopman;
+        this.setState({ kopman })
       })
   }
 
@@ -337,9 +351,17 @@ class Stage extends Component {
     }
     axios.post(link, { racename, year, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
+        let kopman = _.cloneDeep(this.state.kopman)
+        kopman[budget] = res.data.kopman;
+        let prevClassifications = _.cloneDeep(this.state.prevClassifications)
+        prevClassifications[budget] = res.data.prevClassifications;
         let stageSelection = _.cloneDeep(this.state.stageSelection);
         stageSelection[budget] = res.data.stageSelection;
-        this.setState({ stageSelection })
+        this.setState({
+          stageSelection,
+          kopman,
+          prevClassifications
+        })
       })
   }
 
@@ -362,8 +384,10 @@ class Stage extends Component {
     let allSelections = this.state.allSelections[budget];
     let notSelected = this.state.notSelected[budget];
     if (mode === 'selection') {
-      var gewoonCompleet = (this.state.stageSelection[0].length + (this.state.kopman[0].kopman_id ? 1 : 0)) * 10
-      var budgetCompleet = (this.state.stageSelection[1].length + (this.state.kopman[1].kopman_id ? 1 : 0)) * 10;
+      var gewoonCompleet = (this.state.stageSelection[0].length + (this.state.kopman[0] ? 1 : 0)) * 10;
+      var budgetCompleet = (this.state.stageSelection[1].length + (this.state.kopman[1] ? 1 : 0)) * 10;
+      console.log("gewoon", this.state.stageSelection[0].length, this.state.kopman[0])
+      console.log("budget", this.state.stageSelection[1].length, this.state.kopman[1])
       selectionsCompleteDiv = <div className={"completeContainer " + ((gewoonCompleet + budgetCompleet) === 200 ? "allCompleet" : "")}>Compleet:
                                     <div className="gewoonCompleet"><div style={{ width: gewoonCompleet + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
         <div className="budgetCompleet"><div style={{ width: budgetCompleet + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
@@ -423,7 +447,7 @@ class Stage extends Component {
           {selectionsCompleteDiv}
         </div>
         {mode === 'selection' && <div> {/* TODO? fix css divs/ move to stage selection file */}
-          <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} loading={this.state.loadingSelection} />
+          <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} removeKopman={this.removeKopman} loading={this.state.loadingSelection} />
           <div className="prevClassifications">
             <LoadingDiv loading={this.state.loadingSelection} />
             <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0]} title="AK" /></div>

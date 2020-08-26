@@ -5,18 +5,15 @@ import { faCheckCircle as regFaCheckCircle} from "@fortawesome/free-regular-svg-
 import LoadingDiv from '../../shared/loadingDiv'
 
 class SelecTableRow extends Component {
-    setKopman = () => {
-        this.props.setKopman(this.props.riderID);
-    }
     render() {
         let addRemoveButton
         let setKopmanButton
         if (this.props.selected === 'selected') {
             addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID, 'remove')}><FontAwesomeIcon icon={faUserMinus}/></button>
             if (this.props.kopman === this.props.riderID) {
-                setKopmanButton = <button className="selectbutton" onClick={() => this.setKopman(this.props.riderID)}><FontAwesomeIcon icon={solFaCheckCircle}/></button>
+                setKopmanButton = <button className="selectbutton" onClick={() => this.props.removeKopman(this.props.riderID)}><FontAwesomeIcon icon={solFaCheckCircle}/></button>
             } else {
-                setKopmanButton = <button className="selectbutton" onClick={() => this.setKopman(this.props.riderID)}><FontAwesomeIcon icon={regFaCheckCircle}/></button>
+                setKopmanButton = <button className="selectbutton" onClick={() => this.props.setKopman(this.props.riderID)}><FontAwesomeIcon icon={regFaCheckCircle}/></button>
             }
         } else if (this.props.selected === 'unselected') {
             addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID, 'add')}><FontAwesomeIcon icon={faUserPlus}/></button>
@@ -56,7 +53,7 @@ class SelecTable extends Component {
                 return <SelecTableRow name={name} team={team} selected='dnf' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />
             } else {
                 if (selected === 'selected') {
-                    return <SelecTableRow name={name} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} setKopman={this.props.setKopman} />
+                    return <SelecTableRow name={name} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} setKopman={this.props.setKopman} removeKopman={this.props.removeKopman} />
                 } else {
                     return <SelecTableRow name={name} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />
                 }
