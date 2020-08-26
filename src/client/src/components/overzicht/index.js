@@ -110,6 +110,7 @@ class overzicht extends Component {
   }
 
    getDataAndRender(apiLink,title) {
+    return //TODO remove when race has started
     document.title = title;
       axios.post('/api/'+apiLink, { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
         .then((res) => {

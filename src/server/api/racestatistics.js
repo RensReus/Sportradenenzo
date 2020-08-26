@@ -3,7 +3,9 @@
 module.exports = function (app, current_race) {
   const sqlDB = require('../db/sqlDB');
   const async = require('async');
-  //TODO 404 not found if no results for race_id
+  //TODO 404 not found if no results for race_id 
+  // TODO don't show certain results if races hasn't started yet
+  // TODO send all overzicht requests through one api with a parameter e.g. app.post('api/racestatistics/:pageid')
   app.post('/api/getstagevictories', function (req, response) {
     var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
     // var poule_id = req.body.poule_id;
