@@ -690,7 +690,7 @@ var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to 
                 var d = nextStageResults.rows[0].starttime;
                 var resultsRule = `${d.getSeconds() + 5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
                 scrapeResults.reschedule(resultsRule);
-                setCurrentStage(current_race_id);
+                setCurrentStage(current_race.id);
 
               } else {// laatste etappe compleet geen scrapes meer nodig
                 scrapeResults.cancel();

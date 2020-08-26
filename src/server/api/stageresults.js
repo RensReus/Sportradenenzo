@@ -143,7 +143,7 @@ module.exports = function (app) {
               SQLread.getKopman(req.user.account_id, budgetParticipation, req.body.racename, req.body.year, req.body.stage, callback)
             },
             startTime: function (callback) {
-              SQLread.getStageStarttime(current_race_id, req.body.stage, callback)
+              SQLread.getStageStarttime(current_race.id, req.body.stage, callback)
             },
             prevClassifications: function (callback) {
               var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;

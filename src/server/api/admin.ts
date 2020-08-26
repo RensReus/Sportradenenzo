@@ -21,10 +21,6 @@ module.exports = (app) => {
                         console.log('Query: ');
                         // tslint:disable-next-line: no-console
                         console.log(sqlQuery);
-                        // tslint:disable-next-line: no-console
-                        console.log('RESPONSE');
-                        // tslint:disable-next-line: no-console
-                        console.log(sqlres);
                         res.send({ data: sqlres });
                     }
                 });

@@ -1,26 +1,78 @@
 //In dit bestand staan alle calls die betrekking hebben tot de resultaten van een stage
 
+const { get } = require('https');
+
 module.exports = function (app, current_race) {
   const sqlDB = require('../db/sqlDB');
   const async = require('async');
-  //TODO 404 not found if no results for race_id 
-  // TODO don't show certain results if races hasn't started yet
-  // TODO send all overzicht requests through one api with a parameter e.g. app.post('api/racestatistics/:pageid')
-  app.post('/api/getstagevictories', function (req, response) {
+
+  var titles = { //TODO rewrite the rest of the statics to go through single endpoint
+    "all": "Alle Renners Overzicht",
+    "selected": "Gekozen Renners Overzicht",
+    "missedpoints": "Gemiste Punten",
+    "missedpointsall": "Gemiste Punten Iedereen",
+    "team": "Team Overzicht",
+    "teamall": "Team Overzicht Iedereen",
+    "teamallsimple": "Team Overzicht Iedereen",
+    "teamcomparisons": "Vergelijking van Selecties",
+    "overigestats": "Overige Statistieken",
+  }
+  app.post('/api/statistics', function (req, res) {
     var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
-    // var poule_id = req.body.poule_id;
+    var budgetparticipation = req.body.budgetparticipation;
+    if (!req.body.alwaysget) {
+      var raceHasStartedQuery = `SELECT * FROM STAGE
+      WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
+      ORDER BY stagenr desc
+      LIMIT 1`;
+      sqlDB.query(raceHasStartedQuery, (err, results) => {
+        if (err) { console.log("WRONG QUERY:", query); console.log(err.toString()) }
+        if (results.rows.length === 0) {
+          res.send({mode:'404'})
+        }else{
+          getData(req.body.selection, race_id, budgetparticipation, function (err, results) {
+            if (err) { console.log(err.toString()) }
+            res.send(results);
+          })
+        }
+      })
+    }else{
+      getData(req.body.selection, race_id, budgetparticipation, function (err, results) {
+        if (err) { console.log(err.toString()) }
+        res.send(results);
+      })
+    }
+  })
+
+  async function getData(selection, race_id, budgetparticipation, callback) {
+    switch (selection) {
+      case "getstagevictories": getstagevictories(race_id, budgetparticipation, callback); break;
+      case "gettourvictories": gettourvictories(budgetparticipation, callback); break;
+      case "getriderpointsall": getriderpointsall(budgetparticipation, callback); break;
+      case "getriderpointsselected": getriderpointsselected(budgetparticipation, callback); break;
+      case "missedpoints": missedpoints(budgetparticipation, callback); break;
+      case "missedpointsall": missedpointsall(budgetparticipation, callback); break;
+      case "teamoverzicht": teamoverzicht(budgetparticipation, callback); break;
+      case "teamoverzichtall": teamoverzichtall(budgetparticipation, callback); break;
+      case "teamoverzichtallsimple": teamoverzichtallsimple(budgetparticipation, callback); break;
+      case "teamcomparisons": teamcomparisons(budgetparticipation, callback); break;
+      case "getadditionalstats": getadditionalstats(budgetparticipation, callback); break;
+    }
+  }
+
+  getstagevictories = function (race_id, budgetparticipation, callback) {
     var subquery = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore DESC) FROM stage_selection
-            INNER JOIN account_participation USING (account_participation_id)
-            INNER JOIN account USING (account_id)
-            INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${race_id} AND NOT username = 'tester' AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished) AS subquery`
+    INNER JOIN account_participation USING (account_participation_id)
+    INNER JOIN account USING (account_id)
+    INNER JOIN stage USING (stage_id)
+    WHERE stage.race_id = ${race_id} AND NOT username = 'tester' AND budgetparticipation = ${budgetparticipation} AND stage.finished) AS subquery`
     var query1 = `SELECT ARRAY_AGG(username ORDER BY stagescore DESC) as usernames, ARRAY_AGG(stagescore ORDER BY stagescore DESC) as scores, stagenr FROM ${subquery} GROUP BY stagenr; `;//ranking per stage
     var query2 = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
-            (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
-            GROUP BY username`//aantal keer per ranking
+    (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
+    GROUP BY username`//aantal keer per ranking
     var query = query1 + query2;
     sqlDB.query(query, (err, res) => {
-      if (err) { console.log("WRONG QUERY:", query); throw err; }
+      if (err) { console.log("WRONG QUERY:", query); callback(err, {}) }
       else {
         var headersRank = ["Stage"];
         var headersCount = ["User"];
@@ -36,7 +88,6 @@ module.exports = function (app, current_race) {
           rowsRank.push(row);
         }
 
-
         for (var i in res[1].rows) {//aantal keer per ranking
           var user = res[1].rows[i];
           var row = new Array(userCount + 1).fill(0)
@@ -80,54 +131,59 @@ module.exports = function (app, current_race) {
         var tables = []
         tables.push({ tableData: rankTable, title: "Etappe Uitslagen" })
         tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
-        response.send({ tables })
+        callback(err, { tables, title: "Etappe Winsten Overzicht" })
       }
     })
+  }
 
-  })
-
-
-  app.post('/api/gettourvictories', function (req, response) {
+  gettourvictories = function (budgetparticipation, callback) {
     // var poule_id = req.body.poule_id;
     var subquery = `(SELECT username, finalscore, CONCAT(year, ' ', name) AS race, rank() over (PARTITION BY race ORDER BY finalscore DESC) FROM account_participation
             INNER JOIN account USING (account_id)
             INNER JOIN race USING(race_id)
-            WHERE budgetparticipation = ${req.body.budgetparticipation} AND NOT name = 'classics') AS subquery`
+            WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished = TRUE) AS subquery`
     var rankQuery = `SELECT ARRAY_AGG(username ORDER BY finalscore DESC) as usernames, ARRAY_AGG(finalscore ORDER BY finalscore DESC) as scores, race FROM ${subquery} GROUP BY race; `;//ranking per stage
     var countQuery = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
             (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
             GROUP BY username; \n`//aantal keer per ranking
-    var threeK = `COUNT(CASE WHEN finalscore > 3000 AND finalscore < 4000 THEN 1 END) AS "3K"`
-    var fourK = `COUNT(CASE WHEN finalscore > 4000 AND finalscore < 5000 THEN 1 END) AS "4K"`
-    var fiveK = `COUNT(CASE WHEN finalscore > 5000 THEN 1 END) AS "5K"`
-    var thousandsQuery = `SELECT username AS "User", ${threeK}, ${fourK}, ${fiveK} from account_participation
+    
+    var low = `COUNT(CASE WHEN finalscore < 4000 THEN 1 END) AS "<4K"`
+    var medium = `COUNT(CASE WHEN finalscore > 4000 AND finalscore < 5000 THEN 1 END) AS "4K"`
+    var high = `COUNT(CASE WHEN finalscore > 5000 THEN 1 END) AS ">5K"`
+    var orderby = `ORDER BY ">5K" DESC, "4K" DESC, "<4K" DESC`
+    if (budgetparticipation){
+      low = `COUNT(CASE WHEN finalscore < 500 THEN 1 END) AS "<500"`
+      medium = `COUNT(CASE WHEN finalscore > 500 AND finalscore < 1000 THEN 1 END) AS "500 "`
+      high = `COUNT(CASE WHEN finalscore > 1000 THEN 1 END) AS ">1K"`
+      orderby = `ORDER BY ">1K" DESC, "500 " DESC, "<500" DESC`
+    }
+    var thousandsQuery = `SELECT username AS "User", ${low}, ${medium}, ${high} from account_participation
                 INNER JOIN account USING(account_id)
                 INNER JOIN race USING(race_id)
-                WHERE NOT name = 'classics'
+                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics'
                 GROUP BY username
-                ORDER BY "5K" DESC, "4K" DESC, "3K" DESC`
+                ${orderby}`
 
     var query = rankQuery + countQuery + thousandsQuery;
-    sqlDB.query(query, (err, res) => {
-      if (err) { console.log("WRONG QUERY:", query); throw err; }
+    sqlDB.query(query, (err, results) => {
+      if (err) { console.log("WRONG QUERY:", query); callback(err, {}) }
       else {
         var headersRank = ["Race"];
         var headersCount = ["User"];
         var rowsRank = [];
         var rowsCount = [];
 
-        var userCount = res[1].rows.length
-        for (var i in res[0].rows) {//ranking per stage
-          var row = [res[0].rows[i].race];
-          for (var j in res[0].rows[i].usernames) {
-            row.push(res[0].rows[i].usernames[j] + " (" + res[0].rows[i].scores[j] + ")");
+        var userCount = results[1].rows.length
+        for (var i in results[0].rows) {//ranking per stage
+          var row = [results[0].rows[i].race];
+          for (var j in results[0].rows[i].usernames) {
+            row.push(results[0].rows[i].usernames[j] + " (" + results[0].rows[i].scores[j] + ")");
           }
           rowsRank.push(row);
         }
 
-
-        for (var i in res[1].rows) {//aantal keer per ranking
-          var user = res[1].rows[i];
+        for (var i in results[1].rows) {//aantal keer per ranking
+          var user = results[1].rows[i];
           var row = new Array(userCount + 1).fill(0)
           row[0] = user.username;
           for (var j in user.ranks) {
@@ -167,14 +223,14 @@ module.exports = function (app, current_race) {
           countTable.push(newRow)
         }
         var tables = []
-        tables.push({ tableData: rankTable, title: "Etappe Uitslagen" })
+        tables.push({ tableData: rankTable, title: "Ronde Uitslagen" })
         tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
-        tables.push({ tableData: res[2].rows, title: "Scores per Duizend" })
-        response.send({ tables })
+        console.log(results[2].rows)
+        tables.push({ tableData: results[2].rows, title: "Score verdelingen" })
+        callback(err, { tables, title: "Ronde Winsten Overzicht" })
       }
     })
-  })
-
+  }
 
   app.post('/api/getriderpointsall', function (req, res) {
     var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
