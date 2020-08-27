@@ -1,7 +1,5 @@
 //In dit bestand staan alle calls die betrekking hebben tot de resultaten van een stage
 
-const { get } = require('https');
-
 module.exports = function (app) {
   const sqlDB = require('../db/sqlDB');
   const async = require('async');
