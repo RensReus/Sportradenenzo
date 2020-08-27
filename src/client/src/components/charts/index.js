@@ -112,13 +112,19 @@ class charts extends Component {
         year: this.props.year,
         budget: false,
       }, () => {
-        this.initialRender()
+        this.initialRender()  
       })
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props !== prevProps) {
+      this.initialRender();
+    }
+  }
+
   initialRender() {
-    switch (this.state.chartname) {
+    switch (this.props.match.params.chartname) {
       case "userscores":
         this.userscores();
         document.title = "Chart: User Scores";
@@ -154,13 +160,21 @@ class charts extends Component {
     }
   }
 
+  set404() {
+    console.log('error 404')
+    document.title = "404";
+  }
+
   userscores() {
+    console.log("userscores")
     axios.post('/api/chartuserstagescores', { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
       .then((res) => {
-        if (res) {
+        if (res.data.mode !== '404') {
           this.setState({ data: res.data }, () => {
             this.buildUserscores()
           })
+        } else {
+          this.set404()
         }
       })
   }
@@ -195,10 +209,12 @@ class charts extends Component {
   userranking() {
     axios.post('/api/chartuserranking', { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
       .then((res) => {
-        if (res) {
+        if (res.data.mode !== '404') {
           this.setState({ data: res.data }, () => {
             this.buildUserranking()
           })
+        } else {
+          this.set404()
         }
       })
   }
@@ -275,6 +291,8 @@ class charts extends Component {
           this.setState({ data: res.data }, () => {
             this.buildRiderpercentagetotal(this.state.chartType)
           })
+        } else {
+          this.set404()
         }
       })
   }

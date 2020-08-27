@@ -80,8 +80,6 @@ class App extends Component {
       const interceptor = axios.interceptors.response.use(
         response => {
           if (!self.state.isLoggedIn) {
-            console.log("response:")
-            console.log(response)
             if (response.headers.authorization) {
               self.setState({
                 isLoggedIn: true,
