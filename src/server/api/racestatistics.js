@@ -158,7 +158,7 @@ module.exports = function (app) {
     var thousandsQuery = `SELECT username AS "User", ${low}, ${medium}, ${high} from account_participation
                 INNER JOIN account USING(account_id)
                 INNER JOIN race USING(race_id)
-                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics'
+                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished
                 GROUP BY username
                 ${orderby}`
 

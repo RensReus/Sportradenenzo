@@ -308,7 +308,7 @@ class Admin extends Component {
         break;
       }
     }
-    var toInsert = this.state.currentSuggestions[selection];
+    var toInsert = this.state.currentSuggestions[selection] + " ";
     var newValue = this.state.value.substring(0, startindex + 1) + toInsert + this.state.value.substring(cursorPos)
     this.setSuggestions();
     this.setState({

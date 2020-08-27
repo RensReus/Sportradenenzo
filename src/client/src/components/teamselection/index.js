@@ -17,7 +17,7 @@ class Teamselection extends Component {
       year: '',
       budgetGewoon: 0,
       budgetBudget: 0,
-      joinButton: '',
+      joinButton: ' ',
       filtervalue: '',
       showBudget: false
     }
@@ -51,6 +51,7 @@ class Teamselection extends Component {
             })
           } else {
             this.setState({
+              joinButton: '',
               allRiders: res.data.allRiders,
               filteredRiders: res.data.allRiders,
               userSelectionGewoon: res.data.userSelectionGewoon,
@@ -149,40 +150,46 @@ class Teamselection extends Component {
     const selectionBudget = this.state.userSelectionBudget
     const budgetBudget = this.state.budgetBudget
     return (
-      <div className="containerTeamselection">
-        <div className="switchAndSearch">
-          <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
+      <div>
+        {this.state.joinButton === '' &&
+          <div className="containerTeamselection">
+            <div className="switchAndSearch">
+              <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
           Search for a rider: <textarea className="filterField" value={this.state.filtervalue} onChange={(e) => { this.filter(e) }} />
-        </div>
+            </div>
 
-        <div className="ridertablecontainer" style={{ display: this.state.showBudget ? 'none' : 'block' }}>
-          <div className="teamindicator">
-            Gewone Team Selectie
+            <div className="ridertablecontainer" style={{ display: this.state.showBudget ? 'none' : 'block' }}>
+              <div className="teamindicator">
+                Gewone Team Selectie
                     </div>
-          <Riderselectiontable riders={allRiders} selectionIDs={selectionGewoon.map(rider => rider.rider_participation_id)} selectionTeams={selectionGewoon.map(rider => rider.team)} budget={budgetGewoon} addRider={this.addRider} budgetParticipation={false} />
-        </div>
-        <div className="usertablecontainer" style={{ display: this.state.showBudget ? 'none' : 'block' }}>
-          <div className="budget">
-            Budget Left: {this.state.budgetGewoon} Renners {selectionGewoon.length}/20
+              <Riderselectiontable riders={allRiders} selectionIDs={selectionGewoon.map(rider => rider.rider_participation_id)} selectionTeams={selectionGewoon.map(rider => rider.team)} budget={budgetGewoon} addRider={this.addRider} budgetParticipation={false} />
+            </div>
+            <div className="usertablecontainer" style={{ display: this.state.showBudget ? 'none' : 'block' }}>
+              <div className="budget">
+                Budget Left: {this.state.budgetGewoon} Renners {selectionGewoon.length}/20
                     </div>
-          <Userselectiontable selection={selectionGewoon} removeRider={this.removeRider} budgetParticipation={false} />
-        </div>
-        <div className="ridertablecontainer" style={{ display: !this.state.showBudget ? 'none' : 'block' }}>
-          <div className="teamindicator">
-            Budget Team Selectie
+              <Userselectiontable selection={selectionGewoon} removeRider={this.removeRider} budgetParticipation={false} />
+            </div>
+            <div className="ridertablecontainer" style={{ display: !this.state.showBudget ? 'none' : 'block' }}>
+              <div className="teamindicator">
+                Budget Team Selectie
                     </div>
-          <Riderselectiontable riders={allRiders} selectionIDs={selectionBudget.map(rider => rider.rider_participation_id)} selectionTeams={selectionBudget.map(rider => rider.team)} budget={budgetBudget} addRider={this.addRider} budgetParticipation={true} />
-        </div>
-        <div className="usertablecontainer" style={{ display: !this.state.showBudget ? 'none' : 'block' }}>
-          <div className="budget">
-            Budget Left: {this.state.budgetBudget} Renners {selectionBudget.length}/20
+              <Riderselectiontable riders={allRiders} selectionIDs={selectionBudget.map(rider => rider.rider_participation_id)} selectionTeams={selectionBudget.map(rider => rider.team)} budget={budgetBudget} addRider={this.addRider} budgetParticipation={true} />
+            </div>
+            <div className="usertablecontainer" style={{ display: !this.state.showBudget ? 'none' : 'block' }}>
+              <div className="budget">
+                Budget Left: {this.state.budgetBudget} Renners {selectionBudget.length}/20
                     </div>
-          <Userselectiontable selection={selectionBudget} removeRider={this.removeRider} budgetParticipation={true} />
+              <Userselectiontable selection={selectionBudget} removeRider={this.removeRider} budgetParticipation={true} />
+            </div>
+            <div id="stage1button">
+              <button onClick={() => this.redirect('/stage/1')}>To stages </button>
+            </div>
+          </div>
+        }
+        <div className="containerTeamselection">
+          {this.state.joinButton}
         </div>
-        <div id="stage1button">
-          <button onClick={() => this.redirect('/stage/1')}>To stages </button>
-        </div>
-        {this.state.joinButton}
       </div>
     )
   }
