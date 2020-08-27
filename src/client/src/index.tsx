@@ -5,7 +5,7 @@ import { Router } from 'react-router-dom';
 import "./index.css";
 import * as serviceWorker from './serviceWorker';
 
-import createHistory from 'history/createBrowserHistory';
+const createHistory = require("history").createBrowserHistory;
 const history = createHistory();
 
 ReactDOM.render(

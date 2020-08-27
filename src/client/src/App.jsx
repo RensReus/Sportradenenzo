@@ -80,6 +80,8 @@ class App extends Component {
       const interceptor = axios.interceptors.response.use(
         response => {
           if (!self.state.isLoggedIn) {
+            console.log("response:")
+            console.log(response)
             if (response.headers.authorization) {
               self.setState({
                 isLoggedIn: true,
@@ -94,6 +96,7 @@ class App extends Component {
           }
           return response
         }, (error) => {
+          console.log("error:" + error)
           switch (error.response.status) {
             case 401: //Geen token gevonden
               console.log('Not authorized');
@@ -102,13 +105,14 @@ class App extends Component {
                   isLoggedIn: false,
                   isAdmin: false
                 })
-                //Redirect als uitgelogd en niet op de main pagina
-                if (self.props.history.location.pathname !== '/') {
-                  self.setState({
-                    redirect: self.props.history.location.pathname // voor redirect na inloggen
-                  })
-                  self.props.history.replace('/')
-                }
+              }                
+              //Redirect als uitgelogd en niet op de main pagina
+              if (self.props.history.location.pathname !== '/') {
+                console.log('redir')
+                self.setState({
+                  redirect: self.props.history.location.pathname // voor redirect na inloggen
+                })
+                self.props.history.replace('/')
               }
               break;
             case 404:
