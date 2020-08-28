@@ -27,7 +27,7 @@ class Riderrow extends Component{
             <tr className='riderRow'>
                 <td className={this.props.selected}>{this.props.name}</td>
                 <td className={this.props.selected}>{this.props.team}</td>
-                <td className={this.props.selected}>{this.props.price}</td>
+                <td className={this.props.selected}>{this.props.price.toLocaleString('nl', {useGrouping:true})}</td>
                 <td><Selectionbutton selected={this.props.selected} addRider={this.props.addRider} riderID={this.props.riderID} budgetParticipation={this.props.budgetParticipation}/></td>
             </tr>
         )

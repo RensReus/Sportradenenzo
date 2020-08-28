@@ -166,7 +166,7 @@ class Teamselection extends Component {
             </div>
             <div className="usertablecontainer" style={{ display: this.state.showBudget ? 'none' : 'block' }}>
               <div className="budget">
-                Budget Left: {this.state.budgetGewoon} Renners {selectionGewoon.length}/20
+                Budget Left: {this.state.budgetGewoon.toLocaleString('nl', {useGrouping:true})} Renners {selectionGewoon.length}/20
                     </div>
               <Userselectiontable selection={selectionGewoon} removeRider={this.removeRider} budgetParticipation={false} />
             </div>
@@ -178,7 +178,7 @@ class Teamselection extends Component {
             </div>
             <div className="usertablecontainer" style={{ display: !this.state.showBudget ? 'none' : 'block' }}>
               <div className="budget">
-                Budget Left: {this.state.budgetBudget} Renners {selectionBudget.length}/20
+                Budget Left: {this.state.budgetBudget.toLocaleString('nl', {useGrouping:true})} Renners {selectionBudget.length}/20
                     </div>
               <Userselectiontable selection={selectionBudget} removeRider={this.removeRider} budgetParticipation={true} />
             </div>
