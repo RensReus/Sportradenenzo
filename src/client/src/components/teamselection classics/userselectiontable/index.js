@@ -18,7 +18,7 @@ class UserRiderrow extends Component{
             <tr>
                 <td>{rider.firstname} {rider.lastname}</td>
                 <td>{rider.team}</td>
-                <td>{rider.price}</td>
+                <td>{rider.price.toLocaleString('nl', {useGrouping:true})}</td>
                 <td><Deselectionbutton removeRider={this.props.removeRider} riderID={this.props.riderID}/></td>
             </tr>
         )

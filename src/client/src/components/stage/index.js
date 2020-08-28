@@ -373,8 +373,14 @@ class Stage extends Component {
     let selectionsCompleteDiv
     // always
     var stageProfile = '';
-    if (this.state.stage > 2 && this.state.stage < 22) {//TODO netter, check if file exists
-      stageProfile = <img className='profileImage' src={require('../../stageProfiles/stage' + this.state.stage + '.jpg')} alt="profile" />
+    if (this.state.racename && this.state.year) {//TODO netter, check if file exists
+      stageProfile = <div>
+        <img className='profileImage' src={require(`../../stageProfiles/${this.state.racename}/${this.state.year}/etappe-${this.state.stage}.jpg`)} alt="profile" />
+        <br></br>
+        finish
+        <br></br>
+        <img className='profileImage' src={require(`../../stageProfiles/${this.state.racename}/${this.state.year}/etappe-${this.state.stage}-finish.jpg`)} alt="profile" />
+        </div>
     }
     //selection
     let userTeam = this.state.userTeam[budget];
