@@ -37,7 +37,6 @@ tim-declercq 0.75
 dries-devenyns 0.75
 bob-jungels 1
 michael-morkov 0.75
-zdenek-stybar 0.75
 thibaut-pinot 4
 william-bonnet 0.5
 david-gaudu 1.5
@@ -65,7 +64,6 @@ neilson-powless 0.5
 nairo-quintana 3.5
 winner-anacona 0.5
 warren-barguil 2
-maxime-bouet 0.5
 dayer-quintana-rojas 0.5
 diego-rosa 0.5
 clement-russo 0.5
@@ -174,3 +172,5 @@ cyril-gautier 0.5
 quentin-pacher 0.5
 kevin-reza 0.5
 pierre-rolland 0.75
+remi-cavagna 0.75
+kevin-ledanois 0.5
