@@ -4,15 +4,6 @@ module.exports = function (app) {
   const sqlDB = require('../db/sqlDB');
   const async = require('async');
 
-  var titles = { //TODO rewrite the rest of the statics to go through single endpoint
-    "missedpoints": "Gemiste Punten",
-    "missedpointsall": "Gemiste Punten Iedereen",
-    "team": "Team Overzicht",
-    "teamall": "Team Overzicht Iedereen",
-    "teamallsimple": "Team Overzicht Iedereen",
-    "teamcomparisons": "Vergelijking van Selecties",
-    "overigestats": "Overige Statistieken",
-  }
   app.post('/api/statistics', function (req, res) {
     var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
     var budgetparticipation = req.body.budgetparticipation;
@@ -46,7 +37,7 @@ module.exports = function (app) {
       case "gettourvictories": gettourvictories(budgetparticipation, callback); break;
       case "getriderpointsall": getriderpointsall(race_id, budgetparticipation, callback); break;
       case "getriderpointsselected": getriderpointsselected(race_id, budgetparticipation, callback); break;
-      case "missedpoints": missedpoints(race_id, budgetparticipation, callback); break;
+      case "missedpoints": missedpoints(race_id, budgetparticipation, account_id, callback); break;
       case "missedpointsall": missedpointsall(race_id, budgetparticipation, callback); break;
       case "teamoverzicht": teamoverzicht(race_id, budgetparticipation, account_id, callback); break;
       case "teamoverzichtall": teamoverzichtall(race_id, budgetparticipation, callback); break;
@@ -290,40 +281,37 @@ module.exports = function (app) {
     })
   }
 
-  app.post('/api/missedpoints', function (req, res) {
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+  missedpoints = function (race_id, budgetparticipation, account_id, callback){
     var account_participation_id = `(SELECT account_participation_id, FROM account_participation
-                WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
-    missedPoints(account_participation_id, req.body.budgetparticipation, function (err, outputArray) {
+                WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetparticipation = ${budgetparticipation})`
+    missedPointsUser(account_participation_id, budgetparticipation, function (err, outputArray) {
       if (err) throw err;
-      res.send({
-        tables: [{
-          tableData: outputArray,
-          title: "Gemiste Punten"
-        }]
-      })
+      var tables = [{
+        tableData: outputArray,
+        title: "Gemiste Punten"
+      }]
+      callback(err, { tables, title: "Gemiste Punten" })
     })
-  })
+  }
 
-  app.post('/api/missedpointsall', function (req, res) {
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+  missedpointsall = function (race_id, budgetparticipation, callback){
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)
-                WHERE race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation};`
+                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation};`
     sqlDB.query(usersQuery, (err, results) => {
       if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
       async.map(results.rows, function (account, done) {
-        missedPoints(account.account_participation_id, req.body.budgetparticipation, function (err, tableData) {
+        missedPointsUser(account.account_participation_id, budgetparticipation, function (err, tableData) {
           done(err, { tableData, title: account.username })
         })
       }, function (err, tables) {
         if (err) throw err;
-        res.send({ tables })
+        callback(err, { tables, title: "Gemiste Punten Iedereen" })
       })
     })
-  })
+  }
 
-  missedPoints = function (account_participation_id, budgetparticipation, callback) {
+  missedPointsUser = function (account_participation_id, budgetparticipation, callback) {
     var teamselection = `SELECT rider_participation_id FROM team_selection_rider
                 WHERE account_participation_id = ${account_participation_id}\n `
     var totalscore = 'totalscore';
