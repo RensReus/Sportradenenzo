@@ -85,6 +85,7 @@ class Stage extends Component {
       oldracelink: '',
       classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
       pouleTeamResultDownloaded: [false, false],
+      selectionsComplete: [0,0],
       classificationIndex: 0,
     }
     this.setKopman = this.setKopman.bind(this)
@@ -223,6 +224,7 @@ class Stage extends Component {
               kopman,
               starttime: res.data.starttime,
               prevClassifications,
+              selectionsComplete: res.data.selectionsComplete
             })
           } else if (res.data.mode === 'results') {
             let stageSelectionResults = _.cloneDeep(this.state.stageSelectionResults)
@@ -321,7 +323,10 @@ class Stage extends Component {
         console.log(res)
         let kopman = _.cloneDeep(this.state.kopman);
         kopman[budget] = res.data.kopman;
-        this.setState({ kopman })
+        this.setState({ 
+          kopman,
+          selectionsComplete: res.data.selectionsComplete
+        })
       })
   }
 
@@ -334,7 +339,10 @@ class Stage extends Component {
       .then((res) => {
         let kopman = _.cloneDeep(this.state.kopman);
         kopman[budget] = res.data.kopman;
-        this.setState({ kopman })
+        this.setState({ 
+          kopman,
+          selectionsComplete: res.data.selectionsComplete
+        })
       })
   }
 
@@ -360,7 +368,8 @@ class Stage extends Component {
         this.setState({
           stageSelection,
           kopman,
-          prevClassifications
+          prevClassifications,
+          selectionsComplete: res.data.selectionsComplete
         })
       })
   }
@@ -390,10 +399,8 @@ class Stage extends Component {
     let allSelections = this.state.allSelections[budget];
     let notSelected = this.state.notSelected[budget];
     if (mode === 'selection') {
-      var gewoonCompleet = (this.state.stageSelection[0].length + (this.state.kopman[0] ? 1 : 0)) * 10;
-      var budgetCompleet = (this.state.stageSelection[1].length + (this.state.kopman[1] ? 1 : 0)) * 10;
-      console.log("gewoon", this.state.stageSelection[0].length, this.state.kopman[0])
-      console.log("budget", this.state.stageSelection[1].length, this.state.kopman[1])
+      var gewoonCompleet = this.state.selectionsComplete[0] * 10;
+      var budgetCompleet = this.state.selectionsComplete[1] * 10;
       selectionsCompleteDiv = <div className={"completeContainer " + ((gewoonCompleet + budgetCompleet) === 200 ? "allCompleet" : "")}>Compleet:
                                     <div className="gewoonCompleet"><div style={{ width: gewoonCompleet + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
         <div className="budgetCompleet"><div style={{ width: budgetCompleet + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>

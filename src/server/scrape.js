@@ -567,8 +567,6 @@ var calculateUserScoresKlassieker = function (year, stage, callback) { //TODO in
     })
   })
   callback(null, 'Calculated User Scores');
-
-
 }
 
 var getRider = function (pcsid, callback) {
@@ -632,7 +630,7 @@ const setCurrentStage = (current_race) => { //TODO misschien ergens anders heen
           resolve(0);
         }
       });
-    }, 500);
+    }, 1000);
   });
   return promise;
 }
@@ -644,7 +642,7 @@ module.exports.setCurrentStage = setCurrentStage;
 
 var scrapeResults = schedule.scheduleJob("* * * * *", function () {//default to run every minute to initialize at the start.
   const current_stage = 0;
-  var race_id = 15;
+  var race_id = 15; //TODO get current race in this file
 
   var stageQuery = `SELECT * FROM STAGE
                       WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}

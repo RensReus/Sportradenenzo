@@ -12,6 +12,7 @@
     padding-top: 53px; /* TODO netter */
     position: fixed;
     background: var(--background-color);
+    color: white; /*TODO var?*/
     max-width: 90%;
     height: auto;
     max-height: 90%;

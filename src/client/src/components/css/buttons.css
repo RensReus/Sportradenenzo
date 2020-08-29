@@ -26,7 +26,7 @@ button.buttonStandard.blue:hover{
 /*  */
 
 
-button.buttonStandard.giro{
+/* button.buttonStandard.giro{ TODO figure out a better solution
   color: var(--giro-color);
 }
 
@@ -36,7 +36,7 @@ button.buttonStandard.tour{
 
 button.buttonStandard.vuelta{
   color: var(--vuelta-color);
-}
+} */
 
 button.buttonStandard:hover{
   background-color: #ddd;

@@ -520,6 +520,7 @@ module.exports = function (app) {
       var budgetRel = [];
       var coltype = { ' ': 0 }
       var budget = results[1].rows[0].budget / 1000000;
+      if (budgetparticipation) budget = 11.5;
       for (var i in results[0].rows) {
         var team1 = results[0].rows[i].riders;
         var user1 = results[0].rows[i].username

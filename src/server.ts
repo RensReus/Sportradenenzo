@@ -74,4 +74,4 @@ setTimeout(() => {
   require('./server/api/stageresults')(app, current_race);
   require('./server/api/teamselection')(app, current_race, current_stage);
   require('./server/api/userparticipation')(app, current_race);
-}, 1000);
+}, 2000);
