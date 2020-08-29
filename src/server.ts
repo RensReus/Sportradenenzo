@@ -11,13 +11,13 @@ const current_race = { id: 17, name: 'tour', year: 2020 };
 let current_stage = 0;
 // Get current stage
 const scrape = require('./server/scrape');
-// current_stage = scrape.setCurrentStage(current_race) //TODO rens fix require and promise combination
-//   .then((res) => {
-//     current_stage = res;
-//   })
-//   .catch((res) => {
-//     console.log(res);
-//   });
+scrape.setCurrentStage(current_race)
+  .then((res) => {
+    current_stage = res;
+  })
+  .catch((res) => {
+    console.log(res);
+  });
 
 // Mongo
 let configDB;
@@ -62,14 +62,16 @@ app.listen(app.get('port'), () => {
 });
 
 // Load the api
-require('./server/passport')(passport);
-require('./server/api/authorization')(app); // Belangrijk! Moet bovenaan de lijst staan
-require('./server/api/admin')(app);
-require('./server/api/authentication')(app);
-require('./server/api/manualupdate')(app, current_race);
-require('./server/api/raceprogression')(app, current_race, current_stage);
-require('./server/api/racestatistics')(app);
-require('./server/api/charts')(app);
-require('./server/api/stageresults')(app, current_race);
-require('./server/api/teamselection')(app, current_race, current_stage);
-require('./server/api/userparticipation')(app, current_race);
+setTimeout(() => {
+  require('./server/passport')(passport);
+  require('./server/api/authorization')(app); // Belangrijk! Moet bovenaan de lijst staan
+  require('./server/api/admin')(app);
+  require('./server/api/authentication')(app);
+  require('./server/api/manualupdate')(app, current_race);
+  require('./server/api/raceprogression')(app, current_race, current_stage);
+  require('./server/api/racestatistics')(app);
+  require('./server/api/charts')(app);
+  require('./server/api/stageresults')(app, current_race);
+  require('./server/api/teamselection')(app, current_race, current_stage);
+  require('./server/api/userparticipation')(app, current_race);
+}, 1000);

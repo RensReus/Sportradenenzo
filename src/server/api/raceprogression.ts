@@ -1,5 +1,4 @@
 // In dit bestand staan alle calls die checken wat de status van een race of etappe is (Moet nog beginnen, begonnen, of afgelopen)
-
 module.exports = (app, current_race, stage) => {
     const sqlDB = require('../db/sqlDB');
     const racename = current_race.name;

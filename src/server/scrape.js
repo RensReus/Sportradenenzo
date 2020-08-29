@@ -632,7 +632,7 @@ const setCurrentStage = (current_race) => { //TODO misschien ergens anders heen
           resolve(0);
         }
       });
-    }, 3000);
+    }, 500);
   });
   return promise;
 }

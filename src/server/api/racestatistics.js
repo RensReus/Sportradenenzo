@@ -533,10 +533,10 @@ module.exports = function (app) {
           var sameRiders = 0;
           var sameBudget = 0;
           if (i === j) {
-            row[user2] = '';
-            rowBudget[user2] = '';
-            rowRel[user2] = '';
-            rowBudgetRel[user2] = '';
+            row[user2] = 'X';
+            rowBudget[user2] = 'X';
+            rowRel[user2] = 'X';
+            rowBudgetRel[user2] = 'X';
             continue;
           }
           var team2 = results[0].rows[j].riders;
