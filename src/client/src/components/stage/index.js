@@ -380,7 +380,7 @@ class Stage extends Component {
         finish
         <br></br>
         <img className='profileImage' src={require(`../../stageProfiles/${this.state.racename}/${this.state.year}/etappe-${this.state.stage}-finish.jpg`)} alt="profile" />
-        </div>
+      </div>
     }
     //selection
     let userTeam = this.state.userTeam[budget];
@@ -425,36 +425,38 @@ class Stage extends Component {
       />
     }
     return (
-      <div className="stageContainer">
+      <div>
         {/* 404 */}
         {mode === '404' && <span className="h6">404: Data not found</span>}
         {/* Always TODO merge into one clean div */}
-        <div className="stageInfo">
-          <div className='stagetext'>
-            <div id="prevStageButton">
-              <button className={"buttonStandard " + this.state.racename} onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
+        <div className="stageContainer">
+          <div className="stageInfo">
+            <div className='stagetext'>
+              <div id="prevStageButton">
+                <button className={"buttonStandard " + this.state.racename} onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
+              </div>
+              <span className="bold black h7">Stage: {this.state.stage}</span>
+              <div id="nextStageButton">
+                <button className={"buttonStandard " + this.state.racename} onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
+              </div>
             </div>
-            <span className="bold black h7">Stage: {this.state.stage}</span>
-            <div id="nextStageButton">
-              <button className={"buttonStandard " + this.state.racename} onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
+            <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
+            <ModalButton
+              cssClassButton={"buttonStandard " + this.state.racename}
+              content="Profile "
+              contentIcon={<FontAwesomeIcon icon={faMountain} />}
+              modalContent={stageProfile}
+            />
+            {/* Selection */}
+            <div className='stagestarttime h7 bold'> {/* TODO move to stage selection file? */}
+              {starttimeString}
             </div>
+            {selectionsCompleteDiv}
           </div>
-          <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
-          <ModalButton
-            cssClassButton={"buttonStandard " + this.state.racename}
-            content="Profile "
-            contentIcon={<FontAwesomeIcon icon={faMountain} />}
-            modalContent={stageProfile}
-          />
-          {/* Selection */}
-          <div className='stagestarttime h7 bold'> {/* TODO move to stage selection file? */}
-            {starttimeString}
-          </div>
-          {selectionsCompleteDiv}
         </div>
-        {mode === 'selection' && <div> {/* TODO? fix css divs/ move to stage selection file */}
+        {mode === 'selection' && <div className="stageContainer"> {/* TODO? fix css divs/ move to stage selection file */}
           <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} removeKopman={this.removeKopman} loading={this.state.loadingSelection} />
-          <div className="prevClassifications">
+          <div className="prevClassifications"> {/* TODO check in etappe 2 of dit een beetje werkt */}
             <LoadingDiv loading={this.state.loadingSelection} />
             <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0]} title="AK" /></div>
             <div style={{ display: prevClassifications[1].length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1]} title="Punten" /></div>
@@ -464,7 +466,7 @@ class Stage extends Component {
         </div>}
 
         {/* Results TODO merge into one div*/}
-        {mode === 'results' && <div>
+        {mode === 'results' && <div className="stageContainer">
           {allSelectionsPopup}
           <div className="res">
             <LoadingDiv loading={this.state.loadingSelection} />
