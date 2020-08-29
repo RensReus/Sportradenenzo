@@ -1,3 +1,5 @@
+import { startSchedule } from "./server/scrape";
+
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
@@ -11,9 +13,22 @@ const current_race = { id: 17, name: 'tour', year: 2020 };
 let current_stage = 0;
 // Get current stage
 const scrape = require('./server/scrape');
-scrape.setCurrentStage(current_race)
+scrape.setCurrentStage(current_race.id)
   .then((res) => {
     current_stage = res;
+    // Load the api
+    require('./server/passport')(passport);
+    require('./server/api/authorization')(app); // Belangrijk! Moet bovenaan de lijst staan
+    require('./server/api/admin')(app);
+    require('./server/api/authentication')(app);
+    require('./server/api/manualupdate')(app, current_race);
+    require('./server/api/raceprogression')(app, current_race, current_stage);
+    require('./server/api/racestatistics')(app);
+    require('./server/api/charts')(app);
+    require('./server/api/stageresults')(app, current_race);
+    require('./server/api/teamselection')(app, current_race, current_stage);
+    require('./server/api/userparticipation')(app, current_race);
+    startSchedule("* * * * * *",current_race.id,current_stage)
   })
   .catch((res) => {
     console.log(res);
@@ -60,18 +75,3 @@ app.set('port', process.env.PORT || 3001);
 app.listen(app.get('port'), () => {
   console.log(`Magicka accidit`);
 });
-
-// Load the api
-setTimeout(() => {
-  require('./server/passport')(passport);
-  require('./server/api/authorization')(app); // Belangrijk! Moet bovenaan de lijst staan
-  require('./server/api/admin')(app);
-  require('./server/api/authentication')(app);
-  require('./server/api/manualupdate')(app, current_race);
-  require('./server/api/raceprogression')(app, current_race, current_stage);
-  require('./server/api/racestatistics')(app);
-  require('./server/api/charts')(app);
-  require('./server/api/stageresults')(app, current_race);
-  require('./server/api/teamselection')(app, current_race, current_stage);
-  require('./server/api/userparticipation')(app, current_race);
-}, 2000);

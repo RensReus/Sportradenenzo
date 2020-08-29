@@ -416,10 +416,10 @@ class Admin extends Component {
         <div style={{ display: this.state.showTab[0] }}>
           <form action="" onSubmit={this.submitQuery} id="queryform">
             <div style={{ position: 'relative' }}>
-              <textarea ref="extraVars" className="queryInputBox" rows="5" cols="140" onKeyDown={this.keyPress}></textarea></div>
+              <textarea ref="extraVars" className="queryInputBox" rows="5" cols="130" onKeyDown={this.keyPress}></textarea></div>
 
             <div style={{ position: 'relative' }}>
-              <textarea className="queryInputBox" rows="20" cols="140" value={this.state.value} onChange={(e) => { this.handleChange(e) }} onKeyDown={this.keyPress} ref={(input) => { this.input = input; }} />
+              <textarea className="queryInputBox" rows="20" cols="130" value={this.state.value} onChange={(e) => { this.handleChange(e) }} onKeyDown={this.keyPress} ref={(input) => { this.input = input; }} />
               {suggestionsPopUp}
             </div>
             <input type="submit" value="submit" />
