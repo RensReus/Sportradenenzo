@@ -28,7 +28,7 @@ scrape.setCurrentStage(current_race.id)
     require('./server/api/stageresults')(app, current_race);
     require('./server/api/teamselection')(app, current_race, current_stage);
     require('./server/api/userparticipation')(app, current_race);
-    startSchedule("* * * * * *",current_race,current_stage)
+    startSchedule("* * * * *",current_race,current_stage)
   })
   .catch((res) => {
     console.log(res);

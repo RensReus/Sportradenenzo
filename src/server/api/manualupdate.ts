@@ -59,23 +59,24 @@ module.exports = (app, current_race) => {
   app.post('/api/getresults', (req, res) => {
     if (req.user.admin) {
       const year = parseInt(req.body.year, 10);
-      const raceName = req.body.raceName;
+      const name = req.body.raceName;
+      const race = {name, year}
       const stage = parseInt(req.body.stage, 10);
       if (req.body.stage === 'all') {
         const stages = Array.apply(null, { length: 22 }).map(Number.call, Number);
         async.eachSeries(stages, (stage, callback) => {
-          scrape.getResult(raceName, year, stage + 1, (err, arg) => {
+          scrape.getResult(race, stage + 1, (err, arg) => {
             if (err) { res.send('error'); }
-            console.log('Got results %s year %s stage %s', raceName, year, stage + 1);
+            console.log('Got results %s year %s stage %s', race, stage + 1);
             callback(null, !err);
           }, (err, result) => {
             res.send('completed');
           });
         });
       } else {
-        scrape.getResult(raceName, year, stage, (err, arg) => {
+        scrape.getResult(race, stage, (err, arg) => {
           if (err) { res.send('error'); }
-          console.log('Got results %s year %s stage %s', raceName, year, stage);
+          console.log('Got results %s year %s stage %s', race, stage);
           res.send('completed')
         });
       }

@@ -146,11 +146,12 @@ var startlistProcessRiders = function (raceString, prices, year, race_id, callba
   });
 }
 
-var getResult = function (race_id, et, callback) {
-  var stageQuery = `SELECT * FROM stage race_id = ${race_id}`;
+var getResult = function (race, et, callback) {
+  var race_id = `(SELECT race_id FROM race WHERE year = ${race.year} AND name = '${race.name}')`
+  var stageQuery = `SELECT * FROM stage INNER JOIN race USING(race_id) WHERE stagenr = ${et} AND race_id = ${race_id}`;
   sqlDB.query(stageQuery, (err, stageResults) => {
     var raceString = "";
-    switch (raceName) {
+    switch (race.name) {
       case "giro":
         raceString = "giro-d-italia";
         break;
@@ -169,7 +170,6 @@ var getResult = function (race_id, et, callback) {
     // set stage info
     var stage = stageResults.rows[0];
     var stage_id = stage.stage_id;
-    var race_id = stage.race_id;
     var stageType = stage.type;
     var stageWeight = stage.weight;
 
@@ -178,7 +178,7 @@ var getResult = function (race_id, et, callback) {
     }
 
     request({
-      url: `https://www.procyclingstats.com/race/${raceString}/${year}/stage-${etLink}`,
+      url: `https://www.procyclingstats.com/race/${raceString}/${race.year}/stage-${etLink}`,
       headers: { "Connection": "keep-alive" }
     }, function (error, response, html) {
       if (error) console.log(error);
@@ -195,7 +195,7 @@ var getResult = function (race_id, et, callback) {
 
         if (stageType === 'TTT') { // remove stage if TTT
           classifications.shift()
-        } else if (raceName === 'classics') {// only stage results if classics
+        } else if (race.name === 'classics') {// only stage results if classics
           classifications = ['Stage'];
         }
 
@@ -223,6 +223,7 @@ var getResult = function (race_id, et, callback) {
               var rider = resultsProcessRiders(classification, columns, $(this))
               if (rider.DNF) {//doesn't add rider if pos==0
                 ridersResults['dnf'].push(rider);
+                return
                 // return false;// skip to next
               } else if (getIndex(ridersResults['all'], 'pcs_id', rider.pcs_id) === -1) {// add if not already in list
                 ridersResults['all'].push({ pcs_id: rider.pcs_id, team: rider.team })
@@ -271,7 +272,6 @@ var getResult = function (race_id, et, callback) {
           var sprintComp = (ridersResults['Points'].length + ridersResults['dnf'].length) >= pointsprevlength;
           var bergComp = (ridersResults['KOM'].length + ridersResults['dnf'].length) >= komprevlength;
           var jongComp = (ridersResults['Youth'].length + ridersResults['dnf'].length) >= youngprevlength;
-          console.log("completeness",akComp , sprintComp , bergComp , jongComp , ridersResults['GC'].length === ridersResults['Stage'].length)
           if (akComp && sprintComp && bergComp && jongComp && ridersResults['GC'].length === ridersResults['Stage'].length) {
             uitslagCompleet = true;
           }
@@ -343,11 +343,11 @@ var getResult = function (race_id, et, callback) {
             if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
             else {
               console.log("Processed results stage", et, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
-              calculateUserScores(raceName, year, et, callback)
+              calculateUserScores(race.name, race.year, et, callback)
             }
           })
         } else {
-          calculateUserScores(raceName, year, et, callback)
+          calculateUserScores(race.name, race.year, et, callback)
         }
       }
     })
@@ -368,7 +368,7 @@ var resultsProcessRiders = function (classification, columns, row) {
   var prevCol = columns.indexOf('Prev');
   if (classification === 'Stage') {
     var pos = row.children().first().text();
-    if (pos === 'DF' || !isNaN(parseInt(pos))) {
+    if (!isNaN(parseInt(pos))) {
       return { pcs_id, team, result, DNF: false }
     } else {
       return { pcs_id, team, result, DNF: true };
@@ -395,10 +395,6 @@ var getIndex = function (array, attr, value) {
   }
   return -1;
 }
-
-// in SQL zetten
-var raceNames = ['omloop-het-nieuwsblad', 'kuurne-brussel-kuurne', 'strade-bianchi', 'milano-sanremo', 'e3-harelbeke', 'gent-wevelgem', 'dwars-door-vlaanderen', 'ronde-van-vlaanderen', 'Scheldeprijs', 'paris-roubaix', 'amstel-gold-race', 'la-fleche-wallone', 'liege-bastogne-liege', 'Eschborn-Frankfurt'];
-var raceWeight = [1.25, 1, 1.25, 2, 1.5, 1.5, 1.25, 2, 1, 2, 1.5, 1.5, 2, 1.25];
 
 var getPunten = function (stageType, kl, pos, finalStandings, stageWeight = 1) {
   if (finalStandings) {
@@ -647,14 +643,14 @@ var startSchedule = (rule, race, current_stage) => {
           }
           var stage = results.rows[0];
           if (!stage.finished) {
-            getTimetoFinish(race.racename, function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
+            getTimetoFinish(race.name, function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
               if (stageFinished) {
                 var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
                 sqlDB.query(updateStageQuery, function (err, results) {
                   if (err) { console.log("WRONG QUERY:", updateStageQuery); throw err; }
                   else console.log("Stage %s finished", stage.stagenr)
                 });
-                getResult(race_id, stage.stagenr, function (err, response) {
+                getResult(race, stage.stagenr, function (err, response) {
                   if (err) throw err;
                   else console.log(response, "stage", stage.stagenr, "\n");
                 })
@@ -662,7 +658,7 @@ var startSchedule = (rule, race, current_stage) => {
               scrapeResults.reschedule(newResultsRule);  //update new schedule
             })
           } else if (!stage.complete) {//get results if not complete
-            getResult(race_id, stage.stagenr, function (err, response) {
+            getResult(race, stage.stagenr, function (err, response) {
               if (err) throw err;
               else console.log(response, "stage", stage.stagenr, "\n");
             })
@@ -699,36 +695,34 @@ var getTimetoFinish = function (racename,callback) {
   }, function (error, response, html) {
     var $ = cheerio.load(html);
     var rule = '';
-    var finished = false;
     var racebeschikbaar = false;
     $(".home1").first().children('.homeTbl1').first().children().first().children().first().children().eq(1).children().each(function () {
       var startString = ''
       switch (racename) {
-        case 'giro': startString = 'Giro d\'Italia'; break;
-        case 'tour': startString = 'Tour de France'; break;
-        case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
+        case 'giro': startString = ' Giro d\'Italia'; break;
+        case 'tour': startString = ' Tour de France'; break;
+        case 'vuelta': startString = ' La Vuelta ciclista a España'; break;
       }
-      if ($(this).children().eq(2).text().startsWith(startString)) {
+      if ($(this).children().eq(3).text().startsWith(startString)) {
         racebeschikbaar = true;
-        if ($(this).children().eq(0).text() != 'finished' && $(this).children().eq(0).text() != '-') {
-          var timeRemaining = $(this).children().eq(0).text();
-          console.log("Time Remaining: ", timeRemaining);
-          if (timeRemaining[timeRemaining.length - 1] === 'm' || timeRemaining[0] === 1) { // als nog een uur of minder
+        if ($(this).children().eq(2).text() != 'finished') {
+          var finish = $(this).children().eq(1).text().split(':').map(x => parseInt(x));
+          var now = new Date();
+          if (finish[0] - now.getHours() <= 1) { // als nog een uur of minder
             rule = '*/5 * * * *';// iedere 5 min checken 
             console.log("next run in 5 min")
-            callback(finished, rule);
+            callback(false, rule);
             return;
           } else {
             rule = '15 * * * *';// ieder uur op XX:15
             console.log("next run in 1 hour")
-            callback(finished, rule);
+            callback(false, rule);
             return;
           }
 
         } else {//als gefinisht
           rule = '* * * * *';// iedere 1 min checken 
-          finished = true;
-          callback(finished, rule);
+          callback(true, rule);
           return;
         }
       }
@@ -736,7 +730,7 @@ var getTimetoFinish = function (racename,callback) {
     if (!racebeschikbaar) {
       console.log("Race not available");
       rule = '0 0 10 * *'; // check at 10am
-      callback(finished, rule);
+      callback(true, rule);
       return;
     }
   });
