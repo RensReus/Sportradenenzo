@@ -109,9 +109,13 @@ module.exports = function (app) {
   })
 
   app.post('/api/chartriderpercentage', function (req, res) {
+    var totalscore = 'totalscore';
+    if (req.body.budgetparticipation){
+      totalscore = 'totalscore - teamscore AS totalscore'
+    }
     var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
     var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
-    var query = `SELECT totalscore, lastname, stagenr FROM results_points
+    var query = `SELECT ${totalscore}, lastname, stagenr FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
             INNER JOIN rider USING (rider_id)
             INNER JOIN stage USING (stage_id)
@@ -120,7 +124,6 @@ module.exports = function (app) {
     sqlDB.query(query, (err, results) => {
       if (err) { console.log("WRONG QUERY:", query); throw err; }
       if (results.rows.length === 0) {
-        console.log("results", results.rows)
         res.send({ mode: '404' })
         return
       }
@@ -216,7 +219,7 @@ module.exports = function (app) {
                     INNER JOIN account_participation USING(account_participation_id)
                     INNER JOIN account USING(account_id)
                     INNER JOIN stage USING(stage_id)
-                    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
+                    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation} AND stage.finished
                     ORDER BY stagescore DESC;\n`
 
     var avgQuery = `SELECT ROUND(AVG(stagescore),2), stagenr FROM stage_selection

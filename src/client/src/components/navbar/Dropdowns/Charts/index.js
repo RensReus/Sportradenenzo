@@ -44,7 +44,7 @@ class StatistiekenDropdown extends Component {
                     <Link className='navbar_dropdown_item h9' to='/charts/userscores'>Relatief Scoreverloop</Link>
                     <Link className='navbar_dropdown_item h9' to='/charts/userrank'>Ranking</Link>
                     <Link className='navbar_dropdown_item h9' to='/charts/riderpercentage'>Puntenaandeel Renner per Etappe</Link>
-                    <Link className='navbar_dropdown_item h9' to='/charts/riderpercentagetotal'>Puntenaandeel Renner totaal</Link>
+                    {/* <Link className='navbar_dropdown_item h9' to='/charts/riderpercentagetotal'>Puntenaandeel Renner totaal</Link> */}
                     <Link className='navbar_dropdown_item h9' to='/charts/scorespread'>Score verdeling</Link>
                     <Link className='navbar_dropdown_item h9' to='/charts/totalscorespread'>Score verdeling Totaal</Link>
                 </div>

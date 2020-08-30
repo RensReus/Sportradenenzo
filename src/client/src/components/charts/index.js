@@ -94,6 +94,7 @@ class charts extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.changeTheme = this.changeTheme.bind(this);
+    this.budgetSwitch = this.budgetSwitch.bind(this);
   }
 
   componentDidMount() {
@@ -395,7 +396,7 @@ class charts extends Component {
 
   budgetSwitch() {
     this.setState({ budget: !this.state.budget }, () => {
-      this.renderPage()
+      this.initialRender()
     })
   }
 
