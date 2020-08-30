@@ -261,7 +261,7 @@ var getResult = function (race, et, callback) {
                         SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT pointspos = 0;
                         SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT kompos = 0;
                         SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT yocpos = 0;
-                        SELECT complete FROM stage WHERE stage_id = ${prevstage_id}`
+                        SELECT complete as count FROM stage WHERE stage_id = ${prevstage_id}`
         sqlDB.query(prevQuery, function (err, prevRes) {
           if (err) { console.log("WRONG QUERY:", prevQuery); throw err; }
           if (et != 1) {

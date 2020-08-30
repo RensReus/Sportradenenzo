@@ -251,7 +251,6 @@ module.exports = function (app, current_race) {
     var query = `SELECT starttime FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
     sqlDB.query(query, (err, results) => {
       if (err) { console.log("WRONG QUERY:", query); throw err; }
-      // console.log(results)
       if (!results.rows.length) {
         res.send({ mode: '404' })
       } else {
@@ -278,19 +277,27 @@ module.exports = function (app, current_race) {
           var link = `CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link"`
           var team = `team AS "Team"`
           var i = req.body.classificationIndex;
+          var resultsLengthQuery = `SELECT SUM(CASE WHEN stagepos != 0 THEN 1 ELSE 0 END) AS stage, 
+          SUM(CASE WHEN gcpos != 0 THEN 1 ELSE 0 END) AS gc,
+          SUM(CASE WHEN pointspos != 0 THEN 1 ELSE 0 END) AS points,
+          SUM(CASE WHEN kompos != 0 THEN 1 ELSE 0 END) AS kom,
+          SUM(CASE WHEN yocpos != 0 THEN 1 ELSE 0 END) AS yoc
+          FROM results_points 
+          WHERE stage_id = ${stage_id};\n `
           var resultsQuery = `SELECT ${classifications[i].pos} AS " " ${classifications[i].change}, ${link}, ${ridername}, ${team}, ${classifications[i].result}, ${rowClassName}
                             FROM results_points
                             INNER JOIN rider_participation USING(rider_participation_id)
                             INNER JOIN rider USING(rider_id)
                             WHERE stage_id=${stage_id} AND ${classifications[i].pos} > 0 
                             ORDER BY " " ASC;\n `;
-
-          sqlDB.query(resultsQuery, (err, stageresults) => {
+          var totalQuery = resultsQuery + resultsLengthQuery;
+          sqlDB.query(totalQuery, (err, stageresults) => {
             if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
-
-            budgetParticipation = budgetParticipation ? 1 : 0;
+            var lengths = stageresults[1].rows[0];
+            var stageResultsLengths = [lengths.stage,lengths.gc,lengths.points,lengths.kom,lengths.yoc];
             res.send({
-              stageResults: stageresults.rows,
+              stageResults: stageresults[0].rows,
+              stageResultsLengths
             })
           })
         }

@@ -4,58 +4,12 @@ import './index.css';
 import ModalButton from '../shared/modal'
 import Table from '../shared/table'
 import StageSelectionPage from './stageselection'
+import StageResultsTables from './stageresultstables'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
 import LoadingDiv from '../shared/loadingDiv'
 import _ from "lodash"
-
-class StageResults extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      classificationIndex: 0
-    }
-  }
-
-  componentDidMount() {
-    if (this.props.stage === 22) {
-      this.setState({
-        classificationIndex: 1
-      })
-    }
-  }
-  showResult(i) {
-    this.props.changedClassificationDisplay(i);
-    this.setState({ classificationIndex: i });
-  }
-  render() {
-    var klassementen = [];
-    for (var i = 0; i < 5; i++) {
-      if (this.props.data[i]) {
-        klassementen.push(this.props.data[i]);
-      } else {
-        klassementen.push([])
-      }
-    }
-    var classificationNamesButtons = ['Etappe', 'Algemeen', 'Punten', 'Bergen', 'Jong'];
-    var classificationNames = ['Etappe', 'Algemeen Klassement', 'Punten Klassement', 'Bergen Klassement', 'Jongeren Klassement'];
-    return (
-      <div className="classificationsContainer">
-        <div style={{ display: 'flex' }}>
-          {classificationNamesButtons.map((element, index) => {
-            var buttonclassname = "klassementButton ";
-            buttonclassname += index === this.state.classificationIndex ? 'block' : 'none';
-            return <button style={{ display: 'block' }} disabled={klassementen[this.state.classificationIndex].length === 0} className={buttonclassname} key={element} onClick={this.showResult.bind(this, index)}>{element}</button>
-          })}
-        </div>
-        <div className="classification">
-          <Table data={klassementen[this.state.classificationIndex]} title={classificationNames[this.state.classificationIndex]} maxRows={20} classNames="classification" />
-        </div>
-      </div>
-    )
-  }
-}
 
 class Stage extends Component {
 
@@ -76,6 +30,7 @@ class Stage extends Component {
       stageSelectionResults: [[], []],
       userScores: [[], []],
       stageResults: [[], []],
+      stageResultsLengths: [0,0,0,0,0],
       lastStage: false,
       raceStarted: false,
       starttime: '',
@@ -269,6 +224,7 @@ class Stage extends Component {
           this.setState({
             loadingStageres: false,
             stageResults: newResults,
+            stageResultsLengths: res.data.stageResultsLengths
           })
         })
     }
@@ -462,7 +418,7 @@ class Stage extends Component {
           </div>
           <div className="stage">
             <LoadingDiv loading={this.state.loadingStageres} />
-            <StageResults data={this.state.stageResults[budget]} stage={this.state.stage} changedClassificationDisplay={this.changedClassificationDisplay} />
+            <StageResultsTables data={this.state.stageResults[budget]} stageResultsLengths={this.state.stageResultsLengths} stage={this.state.stage} changedClassificationDisplay={this.changedClassificationDisplay} />
           </div>
           <LoadingDiv loading={this.state.loadingAll} />
         </div>}
