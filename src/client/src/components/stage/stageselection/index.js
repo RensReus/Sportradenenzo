@@ -1,84 +1,37 @@
 import React, { Component } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserMinus, faUserPlus, faCheckCircle as solFaCheckCircle } from "@fortawesome/free-solid-svg-icons"; // add/remove riders
-import { faCheckCircle as regFaCheckCircle } from "@fortawesome/free-regular-svg-icons"; // add/remove riders
+import Table from '../../shared/table'
 import LoadingDiv from '../../shared/loadingDiv'
+import SelecTable from './SelecTable'
 
-class SelecTableRow extends Component {
+class stageSelectionPage extends Component {
   render() {
-    let addRemoveButton
-    let setKopmanButton
-    if (this.props.selected === 'selected') {
-      addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID, 'remove')}><FontAwesomeIcon icon={faUserMinus} /></button>
-      if (this.props.kopman === this.props.riderID) {
-        setKopmanButton = <button className="selectbutton" onClick={() => this.props.removeKopman(this.props.riderID)}><FontAwesomeIcon icon={solFaCheckCircle} /></button>
-      } else {
-        setKopmanButton = <button className="selectbutton" onClick={() => this.props.setKopman(this.props.riderID)}><FontAwesomeIcon icon={regFaCheckCircle} /></button>
-      }
-    } else if (this.props.selected === 'unselected') {
-      addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID, 'add')}><FontAwesomeIcon icon={faUserPlus} /></button>
-    }
+    const prevClassifications = this.props.prevClassifications;
+    var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    var starttimeString = dayArray[this.props.starttime.getDay()] + " " + this.props.starttime.getHours() + ":" + this.props.starttime.getMinutes();
     return (
-      <tr className={this.props.selected}>
-        <td className="selectbutton">{setKopmanButton}</td>
-        <td>{this.props.name}</td>
-        <td>{this.props.team}</td>
-        <td className="selectbutton">{addRemoveButton}</td>
-      </tr>
-    )
-  }
-}
-
-class SelecTable extends Component {
-  render() {
-    const selectionIDs = this.props.selectionIDs;
-    const selectionLength = selectionIDs.length;
-    const teamSelectionSorted = this.props.teamSelection.sort(function (a, b) {//put selected on top
-      var aSelected = selectionIDs.includes(a.rider_participation_id);
-      var bSelected = selectionIDs.includes(b.rider_participation_id);
-      if (aSelected === bSelected) return 0;
-      if (aSelected) return -1;
-      return 1;
-    })
-
-    const rows = teamSelectionSorted.map(({ firstname, lastname, team, rider_participation_id, dnf }) => {
-      var name = firstname + " " + lastname;
-      var selected = 'unselected';
-      if (selectionIDs.includes(rider_participation_id)) {
-        selected = 'selected'
-      }
-      if (dnf) {
-        return <SelecTableRow name={name} team={team} selected='dnf' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />
-      } else if ((selectionLength >= 9 && selected !== 'selected')) {
-        return <SelecTableRow name={name} team={team} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />
-      } else {
-        if (selected === 'selected') {
-          return <SelecTableRow name={name} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} setKopman={this.props.setKopman} removeKopman={this.props.removeKopman} />
-        } else {
-          return <SelecTableRow name={name} team={team} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />
-        }
-      }
-    })
-    return (
-      <div className="selecTable" style={{ position: 'relative' }}>
-        <LoadingDiv loading={this.props.loading} />
-        <table>
-          <caption>{selectionLength}/9</caption>
-          <thead>
-            <tr>
-              <th>Kopman</th>
-              <th>Name</th>
-              <th>Team</th>
-              <th>   </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows}
-          </tbody>
-        </table>
+      <div className="stageContainer"> {/* TODO? fix css divs/ move to stage selection file */}
+        <div className='stagetext'>
+          <div className='stagestarttime h7 bold'> {/* TODO move to stage selection file? */}
+            {starttimeString}
+          </div>
+          <div className={"completeContainer " + ((this.props.selectionsComplete[0] + this.props.selectionsComplete[1]) === 20 ? "allCompleet" : "")}>Compleet:
+        <div className="gewoonCompleet"><div style={{ width: this.props.selectionsComplete[0] + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
+            <div className="budgetCompleet"><div style={{ width: this.props.selectionsComplete[1] + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
+          </div>
+        </div>
+        <SelecTable
+          teamSelection={this.props.teamSelection} selectionIDs={this.props.stageSelection.map(rider => rider.rider_participation_id)}
+          kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} setKopman={this.props.setKopman} removeKopman={this.props.removeKopman} loading={this.props.loadingSelection} />
+        <div className="prevClassifications"> {/* TODO maak eigen component */}
+          <LoadingDiv loading={this.props.loadingSelection} />
+          <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0]} title="AK" /></div>
+          <div style={{ display: prevClassifications[1].length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1]} title="Punten" /></div>
+          <div style={{ display: prevClassifications[2].length ? 'block' : 'none', float: "left" }} className="KOM"><Table data={prevClassifications[2]} title="Berg" /></div>
+          <div style={{ display: prevClassifications[3].length ? 'block' : 'none', float: "left" }} className="Youth"><Table data={prevClassifications[3]} title="Jong" /></div>
+        </div>
       </div>
     )
   }
 }
 
-export default SelecTable
+export default stageSelectionPage

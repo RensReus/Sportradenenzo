@@ -3,7 +3,7 @@ import axios from 'axios';
 import './index.css';
 import ModalButton from '../shared/modal'
 import Table from '../shared/table'
-import SelecTable from './stageselection'
+import StageSelectionPage from './stageselection'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
@@ -46,7 +46,7 @@ class StageResults extends Component {
           {classificationNamesButtons.map((element, index) => {
             var buttonclassname = "klassementButton ";
             buttonclassname += index === this.state.classificationIndex ? 'block' : 'none';
-            return <button style={{ display: 'block' }} className={buttonclassname} key={element} onClick={this.showResult.bind(this, index)}>{element}</button>
+            return <button style={{ display: 'block' }} disabled={klassementen[this.state.classificationIndex].length === 0} className={buttonclassname} key={element} onClick={this.showResult.bind(this, index)}>{element}</button>
           })}
         </div>
         <div className="classification">
@@ -193,7 +193,6 @@ class Stage extends Component {
   }
 
   updateData(stage) {
-    console.log("update data mode", this.state.mode)
     if (stage > 22 || stage < 1) {
       this.props.history.push('/');
     }
@@ -253,7 +252,6 @@ class Stage extends Component {
   }
 
   getStageResults() {
-    console.log("getresults mode", this.state.mode)
     const racename = this.state.racename;
     const year = this.state.year;
     const stage = this.state.stage;
@@ -325,7 +323,6 @@ class Stage extends Component {
     const budget = this.state.budget
     axios.post('/api/setkopman', { racename, year, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
-        console.log(res)
         let kopman = _.cloneDeep(this.state.kopman);
         kopman[budget] = res.data.kopman;
         this.setState({
@@ -382,7 +379,6 @@ class Stage extends Component {
   render() {
     const mode = this.state.mode
     const budget = this.state.budget;
-    let starttimeString
     let allSelectionsPopup
     let selectionsCompleteDiv
     // always
@@ -397,23 +393,9 @@ class Stage extends Component {
       </div>
     }
     //selection
-    let teamSelection = this.state.teamSelection[budget];
-    let kopman = this.state.kopman[budget];
-    let prevClassifications = this.state.prevClassifications[budget];
-    let stageSelection = this.state.stageSelection[budget];
-    let allSelections = this.state.allSelections[budget];
-    let notSelected = this.state.notSelected[budget];
-    if (mode === 'selection') {
-      var gewoonCompleet = this.state.selectionsComplete[0] * 10;
-      var budgetCompleet = this.state.selectionsComplete[1] * 10;
-      selectionsCompleteDiv = <div className={"completeContainer " + ((gewoonCompleet + budgetCompleet) === 200 ? "allCompleet" : "")}>Compleet:
-                                    <div className="gewoonCompleet"><div style={{ width: gewoonCompleet + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
-        <div className="budgetCompleet"><div style={{ width: budgetCompleet + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
-      </div>
-      var starttime = new Date(this.state.starttime);
-      var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-      starttimeString = dayArray[starttime.getDay()] + " " + starttime.getHours() + ":" + starttime.getMinutes();
-    } else if (mode === 'results') {
+    if (mode === 'results') {
+      let allSelections = this.state.allSelections[budget];
+      let notSelected = this.state.notSelected[budget];
       var allSelectionsPopupContent = [];
       var index = 0;
       for (var i in allSelections) {
@@ -460,22 +442,15 @@ class Stage extends Component {
               modalContent={stageProfile}
             />
             {/* Selection */}
-            <div className='stagestarttime h7 bold'> {/* TODO move to stage selection file? */}
-              {starttimeString}
-            </div>
             {selectionsCompleteDiv}
           </div>
         </div>
-        {mode === 'selection' && <div className="stageContainer"> {/* TODO? fix css divs/ move to stage selection file */}
-          <SelecTable teamSelection={teamSelection} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} removeKopman={this.removeKopman} loading={this.state.loadingSelection} />
-          <div className="prevClassifications"> {/* TODO maak eigen component */}
-            <LoadingDiv loading={this.state.loadingSelection} />
-            <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0]} title="AK" /></div>
-            <div style={{ display: prevClassifications[1].length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1]} title="Punten" /></div>
-            <div style={{ display: prevClassifications[2].length ? 'block' : 'none', float: "left" }} className="KOM"><Table data={prevClassifications[2]} title="Berg" /></div>
-            <div style={{ display: prevClassifications[3].length ? 'block' : 'none', float: "left" }} className="Youth"><Table data={prevClassifications[3]} title="Jong" /></div>
-          </div>
-        </div>}
+        {mode === 'selection' && <StageSelectionPage
+          teamSelection={this.state.teamSelection[budget]} kopman={this.state.kopman[budget]}
+          prevClassifications={this.state.prevClassifications[budget]} stageSelection={this.state.stageSelection[budget]}
+          loadingSelection={this.state.loadingSelection} starttime = {new Date(this.state.starttime)} selectionsComplete = {this.state.selectionsComplete}
+          addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} removeKopman={this.removeKopman}
+        />}
 
         {/* Results TODO merge into one div*/}
         {mode === 'results' && <div className="stageContainer">
