@@ -22,7 +22,6 @@ module.exports = (app) => {
             const token = req.headers.authorization;
             // if no token found
             if (token === 'null') {
-                console.log('no token')
                 return res.status(401).send('Access denied. No token provided.');
             } else {
                 // if can verify the token, set req.user and pass to next middleware
