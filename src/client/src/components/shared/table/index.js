@@ -55,6 +55,7 @@ class Rows extends Component {
                     var tdClassname = property;
                     if(tdClassname === ' ') tdClassname = 'rank'
                     if(tdClassname === '  ' && tdContent !== undefined && tdContent.length) tdClassname = 'change' + tdContent[0];
+                    if(typeof tdContent === "number") tdContent = tdContent.toLocaleString('nl', {useGrouping:true});
                     row.push(<td key={i + property} className={tdClassname}>{tdContent}</td>);
                 } else {
                     className = data[i][property];

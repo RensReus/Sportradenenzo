@@ -4,6 +4,7 @@ import LoadingDiv from '../../shared/loadingDiv'
 import SelecTable from './SelecTable'
 
 class stageSelectionPage extends Component {
+
   render() {
     const prevClassifications = this.props.prevClassifications;
     var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -15,8 +16,8 @@ class stageSelectionPage extends Component {
             {starttimeString}
           </div>
           <div className={"completeContainer " + ((this.props.selectionsComplete[0] + this.props.selectionsComplete[1]) === 20 ? "allCompleet" : "")}>Compleet:
-        <div className="gewoonCompleet"><div style={{ width: this.props.selectionsComplete[0] + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
-            <div className="budgetCompleet"><div style={{ width: this.props.selectionsComplete[1] + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
+        <div className="gewoonCompleet"><div style={{ width: this.props.selectionsComplete[0]*10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
+            <div className="budgetCompleet"><div style={{ width: this.props.selectionsComplete[1]*10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
           </div>
         </div>
         <SelecTable

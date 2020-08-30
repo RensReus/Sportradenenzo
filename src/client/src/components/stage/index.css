@@ -225,8 +225,9 @@ div.classification {
     div.completeContainer{
         text-align: center;
         height: 64px;
+        color: lightgray;
         border: gray 2px solid;
-        background: rgb(120,0,0);
+        background: rgb(160,0,0);
     }
     div.gewoonCompleet {
         position: relative;
@@ -241,12 +242,12 @@ div.classification {
     }
 
     div.allCompleet{
-        background: rgb(0,40,0);
+        background: rgb(0,60,0);
     }
 
     div.backgroundCompleet{
         position: absolute;
-        background: rgb(0,40,0);
+        background: rgb(0,60,0);
         left: 0;
         top: 0;
         height: 21px

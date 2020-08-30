@@ -212,7 +212,6 @@ module.exports = (app) => {
         var tables = []
         tables.push({ tableData: rankTable, title: "Ronde Uitslagen" })
         tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
-        console.log(results[2].rows)
         tables.push({ tableData: results[2].rows, title: "Score verdelingen" })
         callback(err, { tables, title: "Ronde Winsten Overzicht" })
       }

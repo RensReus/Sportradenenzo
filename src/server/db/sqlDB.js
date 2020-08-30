@@ -7,6 +7,11 @@ if (fs.existsSync('./src/server/db/sqlDBlink.js')) {
 
 const { Pool } = require('pg')
 
+var types = require('pg').types
+types.setTypeParser(20, function(val) {
+  return parseInt(val)
+})
+
 const pool = new Pool({
     connectionString: sqlDBstring,  
     ssl: true

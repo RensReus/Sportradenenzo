@@ -1,9 +1,7 @@
 //In dit bestand staan alle calls die betrekking hebben tot de resultaten van een stage
-const async = require('async')
 const sqlDB = require('../db/sqlDB')
-const SQLread = require('../db/SQLread')
 
-module.exports = function (app, current_race) {
+module.exports = function (app) {
 
   app.post('/api/setkopman', function (req, res) {
     var budgetParticipation = req.body.budgetParticipation == 1;
