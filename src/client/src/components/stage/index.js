@@ -71,7 +71,7 @@ class Stage extends Component {
       budget: 0,
       stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
       stageSelection: [[], []],
-      userTeam: [[], []],
+      teamSelection: [[], []],
       kopman: [null, null],
       stageSelectionResults: [[], []],
       userScores: [[], []],
@@ -85,7 +85,7 @@ class Stage extends Component {
       oldracelink: '',
       classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
       pouleTeamResultDownloaded: [false, false],
-      selectionsComplete: [0,0],
+      selectionsComplete: [0, 0],
       classificationIndex: 0,
     }
     this.setKopman = this.setKopman.bind(this)
@@ -142,9 +142,10 @@ class Stage extends Component {
         classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
         pouleTeamResultDownloaded: [false, false],
         stage: currentstage - 1
+      }, () => {
+        this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
+        this.updateData(currentstage - 1)
       })
-      this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
-      this.updateData(currentstage - 1)
     } else {
       this.props.history.push('/teamselection')
     }
@@ -161,8 +162,9 @@ class Stage extends Component {
         classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
         pouleTeamResultDownloaded: [false, false],
         stage: currentstage + 1
+      }, () => {
+        this.updateData(currentstage + 1)
       })
-      this.updateData(currentstage + 1)
     }
   }
 
@@ -191,6 +193,7 @@ class Stage extends Component {
   }
 
   updateData(stage) {
+    console.log("update data mode", this.state.mode)
     if (stage > 22 || stage < 1) {
       this.props.history.push('/');
     }
@@ -209,8 +212,8 @@ class Stage extends Component {
               mode: '404',
             })
           } else if (res.data.mode === 'selection') {
-            let userTeam = _.cloneDeep(this.state.userTeam)
-            userTeam[budget] = res.data.userTeam;
+            let teamSelection = _.cloneDeep(this.state.teamSelection)
+            teamSelection[budget] = res.data.teamSelection;
             let stageSelection = _.cloneDeep(this.state.stageSelection)
             stageSelection[budget] = res.data.stageSelection;
             let kopman = _.cloneDeep(this.state.kopman)
@@ -219,7 +222,7 @@ class Stage extends Component {
             prevClassifications[budget] = res.data.prevClassifications;
             this.setState({
               mode: 'selection',
-              userTeam,
+              teamSelection,
               stageSelection,
               kopman,
               starttime: res.data.starttime,
@@ -240,15 +243,17 @@ class Stage extends Component {
               stageSelectionResults,
               userScores: userScores,
               pouleTeamResultDownloaded
+            }, () => {
+              this.getStageResults()
             })
           }
           this.setLoaders(false);
         })
     }
-    this.getStageResults()
   }
 
   getStageResults() {
+    console.log("getresults mode", this.state.mode)
     const racename = this.state.racename;
     const year = this.state.year;
     const stage = this.state.stage;
@@ -323,7 +328,7 @@ class Stage extends Component {
         console.log(res)
         let kopman = _.cloneDeep(this.state.kopman);
         kopman[budget] = res.data.kopman;
-        this.setState({ 
+        this.setState({
           kopman,
           selectionsComplete: res.data.selectionsComplete
         })
@@ -339,7 +344,7 @@ class Stage extends Component {
       .then((res) => {
         let kopman = _.cloneDeep(this.state.kopman);
         kopman[budget] = res.data.kopman;
-        this.setState({ 
+        this.setState({
           kopman,
           selectionsComplete: res.data.selectionsComplete
         })
@@ -392,7 +397,7 @@ class Stage extends Component {
       </div>
     }
     //selection
-    let userTeam = this.state.userTeam[budget];
+    let teamSelection = this.state.teamSelection[budget];
     let kopman = this.state.kopman[budget];
     let prevClassifications = this.state.prevClassifications[budget];
     let stageSelection = this.state.stageSelection[budget];
@@ -462,8 +467,8 @@ class Stage extends Component {
           </div>
         </div>
         {mode === 'selection' && <div className="stageContainer"> {/* TODO? fix css divs/ move to stage selection file */}
-          <SelecTable userTeam={userTeam} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} removeKopman={this.removeKopman} loading={this.state.loadingSelection} />
-          <div className="prevClassifications"> {/* TODO check in etappe 2 of dit een beetje werkt */}
+          <SelecTable teamSelection={teamSelection} selectionIDs={stageSelection.map(rider => rider.rider_participation_id)} kopman={kopman} addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} removeKopman={this.removeKopman} loading={this.state.loadingSelection} />
+          <div className="prevClassifications"> {/* TODO maak eigen component */}
             <LoadingDiv loading={this.state.loadingSelection} />
             <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0]} title="AK" /></div>
             <div style={{ display: prevClassifications[1].length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1]} title="Punten" /></div>

@@ -38,42 +38,6 @@ module.exports = {
         })
     },
 
-    /** Returns all riders for a given account/race/year
-     * @param {String} account_id
-     * @param {String} raceName giro/tour/vuelta
-     * @param {number} year 
-     * @param {function} callback
-     * @returns {Array} array of riders [{ name: , price: , team: ,rider_participation: },...]
-     */
-    getStageSelection: function(account_id, budgetParticipation, raceName, year, stagenr, callback){
-        var values = [account_id, raceName, year, budgetParticipation];//$1,$2,$3,$4
-        var race_id = `(SELECT race_id FROM race WHERE name = $2 AND year = $3)`;
-        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id} AND budgetParticipation = $4)`;
-        var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${stagenr} AND race_id=${race_id})`
-        var query = `SELECT * FROM stage_selection_rider
-                INNER JOIN stage_selection USING (stage_selection_id)
-                INNER JOIN rider_participation USING (rider_participation_id)
-                INNER JOIN rider USING (rider_id)
-                WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id}`;
-        sqlDB.query(query, values, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows)
-        })
-    },
-
-    getKopman: function(account_id, budgetParticipation, raceName, year, stagenr, callback){
-        var values = [account_id, raceName, year, budgetParticipation, stagenr];
-        var race_id = `(SELECT race_id FROM race WHERE name = $2 AND year = $3)`;
-        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id} AND budgetParticipation = $4)`;
-        var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=$5 AND race_id=${race_id})`
-        var query = `SELECT kopman_id FROM stage_selection
-                    WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id}`;
-        sqlDB.query(query, values, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows[0])
-        })
-    },
-
     /** Returns all riders for a given race/year
      * @param {String} raceName giro/tour/vuelta
      * @param {number} year 
@@ -147,21 +111,6 @@ module.exports = {
                 WHERE finished='false'`;
 
         sqlDB.query(query, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows[0])
-        })
-    },
-
-    /**Returns the starttime of a requested stage
-     * @param {String} race_id
-     * @param {String} stagenr
-     * @param {Function} callback 
-     */
-    getStageStarttime: function (race_id, stagenr, callback) {
-        var values = [race_id, stagenr];
-        var query = `SELECT starttime FROM stage 
-                WHERE race_id=$1 AND stagenr=$2`;
-        sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows[0])
         })

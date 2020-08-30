@@ -33,7 +33,7 @@ class SelecTable extends Component {
     render() {
         const selectionIDs = this.props.selectionIDs;
         const selectionLength = selectionIDs.length;
-        const userTeamSorted = this.props.userTeam.sort(function (a, b) {//put selected on top
+        const teamSelectionSorted = this.props.teamSelection.sort(function (a, b) {//put selected on top
             var aSelected = selectionIDs.includes(a.rider_participation_id);
             var bSelected = selectionIDs.includes(b.rider_participation_id);
             if (aSelected === bSelected) return 0;
@@ -41,7 +41,7 @@ class SelecTable extends Component {
             return 1;
         })
         
-        const rows = userTeamSorted.map(({ firstname, lastname, team, rider_participation_id, dnf }) => {
+        const rows = teamSelectionSorted.map(({ firstname, lastname, team, rider_participation_id, dnf }) => {
             var name = firstname + " " + lastname;
             var selected = 'unselected';
             if (selectionIDs.includes(rider_participation_id)) {

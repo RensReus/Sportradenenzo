@@ -254,7 +254,7 @@ var getResult = function (race_id, et, callback) {
         // set stage complete
         // TODO classics complete / classics auto scrape
         var uitslagCompleet = false;
-        var [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = [176, 0, 0, 0, true]
+        var [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = [176, 10, 0, 0, true]
         var prevstage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et - 1} AND race_id = ${race_id})`
         var prevQuery = `SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT gcpos = 0;
                         SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT pointspos = 0;
@@ -264,17 +264,14 @@ var getResult = function (race_id, et, callback) {
         sqlDB.query(prevQuery, function (err, prevRes) {
           if (err) { console.log("WRONG QUERY:", prevQuery); throw err; }
           if (et != 1) {
-            GCprevlength = prevRes[0].rows[0].count;
-            pointsprevlength = prevRes[1].rows[0].count;
-            komprevlength = prevRes[2].rows[0].count;
-            youngprevlength = prevRes[3].rows[0].count;
-            prevStageComplete = prevRes[4].rows[0].complete
+            [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = prevRes.map(x => x.rows[0].count)
           }
 
           var akComp = (ridersResults['GC'].length + ridersResults['dnf'].length) == GCprevlength;
           var sprintComp = (ridersResults['Points'].length + ridersResults['dnf'].length) >= pointsprevlength;
           var bergComp = (ridersResults['KOM'].length + ridersResults['dnf'].length) >= komprevlength;
           var jongComp = (ridersResults['Youth'].length + ridersResults['dnf'].length) >= youngprevlength;
+          console.log("completeness",akComp , sprintComp , bergComp , jongComp , ridersResults['GC'].length === ridersResults['Stage'].length)
           if (akComp && sprintComp && bergComp && jongComp && ridersResults['GC'].length === ridersResults['Stage'].length) {
             uitslagCompleet = true;
           }
@@ -287,6 +284,7 @@ var getResult = function (race_id, et, callback) {
             })
           }
         })
+        //processing scores and SQL insert
         var finalStandings = false;
         if (et === 22) finalStandings = true; // laatste etappe
         var resultsQuery = `INSERT INTO results_points(stage_id, rider_participation_id, 
@@ -294,7 +292,6 @@ var getResult = function (race_id, et, callback) {
                 pointspos, pointsscore, pointsresult, pointsprev, pointschange, kompos, komscore, komresult, komprev, komchange,
                 yocpos, yocscore, yocresult, yocprev, yocchange, teamscore, totalscore)
                 VALUES`
-        //processing scores and SQL insert
         classifications = ['Stage', 'GC', 'Points', 'KOM', 'Youth']//reset classifications to hardcoded for sql insert
         for (var i in ridersResults['all']) {
 
@@ -634,7 +631,8 @@ const setCurrentStage = (race_id) => { //TODO misschien ergens anders heen
   return promise;
 }
 
-var startSchedule = (rule, race_id, current_stage) => {
+var startSchedule = (rule, race, current_stage) => {
+  var race_id = race.id;
   var scrapeResults = schedule.scheduleJob(rule, function () {
     var stageQuery = `SELECT * FROM STAGE
     WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
@@ -649,7 +647,7 @@ var startSchedule = (rule, race_id, current_stage) => {
           }
           var stage = results.rows[0];
           if (!stage.finished) {
-            getTimetoFinish(function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
+            getTimetoFinish(race.racename, function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
               if (stageFinished) {
                 var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
                 sqlDB.query(updateStageQuery, function (err, results) {
@@ -694,7 +692,7 @@ var startSchedule = (rule, race_id, current_stage) => {
   })
 }
 
-var getTimetoFinish = function (callback) {
+var getTimetoFinish = function (racename,callback) {
   request({
     url: 'https://www.procyclingstats.com/',
     headers: { "Connection": "keep-alive" }
@@ -702,16 +700,16 @@ var getTimetoFinish = function (callback) {
     var $ = cheerio.load(html);
     var rule = '';
     var finished = false;
-    var girobeschikbaar = false;
+    var racebeschikbaar = false;
     $(".home1").first().children('.homeTbl1').first().children().first().children().first().children().eq(1).children().each(function () {
       var startString = ''
-      switch (current_racename) {
+      switch (racename) {
         case 'giro': startString = 'Giro d\'Italia'; break;
         case 'tour': startString = 'Tour de France'; break;
         case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
       }
       if ($(this).children().eq(2).text().startsWith(startString)) {
-        girobeschikbaar = true;
+        racebeschikbaar = true;
         if ($(this).children().eq(0).text() != 'finished' && $(this).children().eq(0).text() != '-') {
           var timeRemaining = $(this).children().eq(0).text();
           console.log("Time Remaining: ", timeRemaining);
@@ -735,7 +733,7 @@ var getTimetoFinish = function (callback) {
         }
       }
     });
-    if (!girobeschikbaar) {
+    if (!racebeschikbaar) {
       console.log("Race not available");
       rule = '0 0 10 * *'; // check at 10am
       callback(finished, rule);

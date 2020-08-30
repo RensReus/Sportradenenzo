@@ -14,6 +14,7 @@ module.exports = function (app, current_race, currentstage_global) {
       sqlDB.query(`SELECT * FROM account_participation WHERE race_id = ${current_race_id} AND account_id = ${req.user.account_id}`, (err, results) => {
         if (err) { console.log("GET participation error"); throw err };
         if (results.rows.length) {
+          //TODO in een query voor snelheid
           async.auto({
             allRiders: function (callback) {
               SQLread.getAllRiders(req.body.race, req.body.year, callback)
