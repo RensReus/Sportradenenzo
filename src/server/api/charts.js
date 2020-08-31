@@ -232,6 +232,7 @@ module.exports = function (app) {
       if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
       var data = [{
         type: "column",
+        legendText: "Score",
         showInLegend: true,
         dataPoints: []
       }]
@@ -299,6 +300,7 @@ module.exports = function (app) {
       if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
       var data = [{
         type: "column",
+        legendText: "Score",
         showInLegend: true,
         dataPoints: []
       }]
@@ -382,6 +384,72 @@ module.exports = function (app) {
         data[0].dataPoints.push(row);
       }
       res.send(data);
+    })
+  })
+
+  app.post('/api/chartuserracescores', function (req, res) {
+    var query = `SELECT username, CONCAT(name, ' ', year) as stagenr, finalscore FROM account_participation 
+    INNER JOIN account USING (account_id)
+    INNER JOIN race USING(race_id)
+    WHERE race.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT name = 'classics'
+    ORDER BY username, year, name`
+    sqlDB.query(query, (err, results) => {
+      if (err) { console.log("WRONG QUERY:", query); throw err; }
+      if (results.rows.length === 0) {
+        console.log("results", results.rows)
+        res.send({ mode: '404' })
+        return
+      }
+      var username = results.rows[0].username;
+      var userObj = {
+        type: "line",
+        name: username,
+        showInLegend: true,
+        dataPoints: []
+      }
+      var data = [];
+      // userObj.dataPoints.push({ x: 0, y: 0 })
+      var minusi=0;
+      var total = 0
+      for (var i in results.rows) {
+        if (userObj.name == results.rows[i].username) {
+          total += results.rows[i].finalscore
+          userObj.dataPoints.push({ x: i-minusi, y: total })
+        } else {
+          minusi = i;
+
+          data.push(userObj);
+          username = results.rows[i].username;
+          userObj = {
+            type: "line",
+            name: username,
+            showInLegend: true,
+            dataPoints: []
+          }
+          // userObj.dataPoints.push({ x: 0, y: 0 })
+          total = results.rows[i].finalscore
+
+          userObj.dataPoints.push({ x: i-minusi, y: total })
+        }
+      }
+      data.push(userObj)
+      for (i in userObj.dataPoints) {
+        var total = 0;
+        for (user in data) {
+          total += data[user].dataPoints[i].y;
+        }
+        var avg = total / data.length;
+        for (user in data) {
+          data[user].dataPoints[i].y -= avg;
+        }
+      }
+      data.sort(function (a, b) { return b.dataPoints[b.dataPoints.length - 1].y - a.dataPoints[a.dataPoints.length - 1].y })
+      var toolTip = { shared: true }
+      var extraFields = {
+
+      }
+      var options = makeOptions("Scores", "Totaal score na iedere etappe", "Points", toolTip, data, extraFields)
+      res.send({ options, title: "Chart: User Scores" });
     })
   })
 }
