@@ -15,7 +15,7 @@ module.exports = function (app) {
     query += selectionCompleteQuery;
     sqlDB.query(query, (err, sqlres) => {
       if (err) { console.log("WRONG QUERY:", query); throw err; }
-      res.send({ 
+      res.send({
         'kopman': req.body.rider_participation_id,
         selectionsComplete: sqlres[1].rows.map(x => x.complete)
       })
@@ -35,15 +35,15 @@ module.exports = function (app) {
     sqlDB.query(query, (err, sqlres) => {
       if (err) { console.log("WRONG QUERY:", query); throw err; }
 
-      res.send({   
+      res.send({
         kopman: null,
         selectionsComplete: sqlres[1].rows.map(x => x.complete)
-       })
+      })
     })
   });
 
   removekopman = function (account_id, racename, year, budgetParticipation, stage, rider_participation_id, callback) {
-    
+
   }
 
   app.post('/api/removeriderfromstage', function (req, res) {
@@ -168,7 +168,7 @@ module.exports = function (app) {
           var prevClassificationQuery = prevClassificationsQuery(race_id, stagenr, account_id, budgetParticipation);
           var selectionCompleteQuery = selectionsCompleteQuery(race_id, stagenr, account_id)
           var totalQuery = teamSelectionQuery + stageSelectionQuery + kopmanQuery + prevClassificationQuery + selectionCompleteQuery;
-          sqlDB.query(totalQuery,(err,results)=>{
+          sqlDB.query(totalQuery, (err, results) => {
             if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
             res.send({
               'mode': 'selection',
@@ -292,7 +292,7 @@ module.exports = function (app) {
           sqlDB.query(totalQuery, (err, stageresults) => {
             if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
             var lengths = stageresults[1].rows[0];
-            var stageResultsLengths = [lengths.stage,lengths.gc,lengths.points,lengths.kom,lengths.yoc];
+            var stageResultsLengths = [lengths.stage, lengths.gc, lengths.points, lengths.kom, lengths.yoc].map(x => x === null ? 0 : x);
             res.send({
               stageResults: stageresults[0].rows,
               stageResultsLengths
