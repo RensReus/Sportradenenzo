@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import BudgetSwitchButton from '../shared/budgetSwitchButton';
+import StateSwitchButton from '../shared/stateSwitchButton';
 
 
 var CanvasJS = require('./canvasjs.min');
@@ -39,26 +39,9 @@ class CanvasJSChart extends Component {
       this.props.onRef(undefined);
   }
   render() {
-    //return React.createElement('div', { id: this.chartContainerId, style: this.containerProps });		
     return <div id={this.chartContainerId} style={this.containerProps} />
   }
 }
-
-class TypeSelector extends Component {
-  render() {
-    return (
-      <div>
-        <div>ChartType</div>
-        <select value={this.props.chartType} onChange={this.props.handleChange}>
-          <option value="stackedArea100">Relatief</option>
-          <option value="stackedArea">Absoluut</option>
-          <option value="line">Absoluut per renner</option>
-        </select>
-      </div>
-    );
-  }
-}
-
 
 class ThemeSelector extends Component {
   render() {
@@ -77,24 +60,20 @@ class ThemeSelector extends Component {
 }
 
 
-class charts extends Component {
+class Charts extends Component {
   constructor(props) {
     super(props);
     this.state = {
       options: {},
-      chartname: this.props.match.params.chartname,
-      chartType: "",
-      chartTypeOptions: [],
-      data: [],
       racename: '',
       year: '',
       budget: false,
-      budgetSwitchButton: '',
-      theme: "dark1"
+      theme: "dark1",
+      grouped: false
     };
-    this.handleChange = this.handleChange.bind(this);
     this.changeTheme = this.changeTheme.bind(this);
     this.budgetSwitch = this.budgetSwitch.bind(this);
+    this.groupedSwitch = this.groupedSwitch.bind(this);
   }
 
   componentDidMount() {
@@ -105,7 +84,7 @@ class charts extends Component {
         budget: false,
       }, () => {
         this.props.setRace(this.state.racename)
-        this.initialRender()
+        this.renderPage()
       })
     } else if (this.props.racename) { //if racename not ''  {
       this.setState({
@@ -113,52 +92,52 @@ class charts extends Component {
         year: this.props.year,
         budget: false,
       }, () => {
-        this.initialRender()  
+        this.renderPage()  
       })
     }
   }
 
   componentDidUpdate(prevProps) {
     if (this.props !== prevProps) {
-      this.initialRender();
+      this.renderPage();
     }
   }
 
-  initialRender() {
+  renderPage() {
+    var apilink = '/api/'
+    var extraParams = {}
     switch (this.props.match.params.chartname) {
       case "userscores":
-        this.userscores();
-        document.title = "Chart: User Scores";
-        this.setState({ chartType: "line" })
+        apilink += 'chartuserstagescores'
         break;
       case "userrank":
-        this.userranking();
-        document.title = "User Rankings";
-        this.setState({ chartType: "line" })
+        apilink += 'chartuserranking'
         break;
       case "riderpercentage":
-        this.riderpercentage()
-        document.title = "Chart: Renners Punten Aandeel/Relatief";
-        this.setState({ chartType: "stackedColumn" })
-        break;
-      case "riderpercentagetotal":
-        this.riderpercentagetotal()
-        document.title = "Chart: Renners Punten Aandeel/Absoluut";
-        this.setState({ chartType: "stackedArea" })
+        apilink += 'chartriderpercentage'
         break;
       case "scorespread":
-        this.scorespread()
-        document.title = "Chart: Score Spreiding";
-        this.setState({ chartType: "column" })
+        apilink += 'chartscorespread'
+        extraParams = {perStage: this.state.grouped}
+        apilink += this.state.grouped ? 'grouped' : ''
         break;
       case "totalscorespread":
-        this.totalscoresspread()
-        document.title = "Chart: Score Spreiding";
-        this.setState({ chartType: "column" })
+        apilink += 'charttotalscorespread'
+        extraParams = {perRace: this.state.grouped}
+        apilink += this.state.grouped ? 'grouped' : ''
         break;
       default:
-        this.newChart();
+        apilink += 'userscores'
     }
+    axios.post(apilink, { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget, extraParams})
+      .then((res) => {
+        if (res.data.mode !== '404') {
+          this.setState({ options: res.data.options })
+          document.title = res.data.title
+        } else {
+          this.set404()
+        }
+      })
   }
 
   set404() {
@@ -166,244 +145,16 @@ class charts extends Component {
     document.title = "404";
   }
 
-  userscores() {
-    console.log("userscores")
-    axios.post('/api/chartuserstagescores', { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
-      .then((res) => {
-        if (res.data.mode !== '404') {
-          this.setState({ data: res.data }, () => {
-            this.buildUserscores()
-          })
-        } else {
-          this.set404()
-        }
-      })
-  }
-
-  buildUserscores() {
-    var data = this.state.data;
-    for (var i in data) {
-      data[i].type = this.state.chartType
-    }
-    var options = {
-      title: {
-        text: "Scores"
-      },
-      subtitles: [{
-        text: "Totaal score na iedere etappe"
-      }],
-      axisX: {
-        interval: 1,
-        title: "Stage"
-      },
-      axisY: {
-        title: "Points"
-      },
-      toolTip: {
-        shared: true
-      },
-      data: data
-    }
-    this.setState({ options: options })
-  }
-
-  userranking() {
-    axios.post('/api/chartuserranking', { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
-      .then((res) => {
-        if (res.data.mode !== '404') {
-          this.setState({ data: res.data }, () => {
-            this.buildUserranking()
-          })
-        } else {
-          this.set404()
-        }
-      })
-  }
-
-  buildUserranking() {
-    var data = this.state.data;
-    for (var i in data) {
-      data[i].type = this.state.chartType
-    }
-    var options = {
-      title: {
-        text: "Ranking"
-      },
-      subtitles: [{
-        text: "Positie na iedere etappe"
-      }],
-      axisX: {
-        interval: 1,
-        title: "Stage"
-      },
-      axisY: {
-        title: "Rank",
-      },
-      toolTip: {
-        shared: true
-      },
-      data: data
-    }
-    this.setState({ options: options })
-  }
-
-  riderpercentage() {
-    axios.post('/api/chartriderpercentage', { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
-      .then((res) => {
-        if (res) {
-          this.setState({ data: res.data }, () => {
-            this.buildRiderpercentage()
-          })
-        }
-      })
-  }
-
-  buildRiderpercentage() {
-    var data = this.state.data;
-    for (var i in data) {
-      data[i].type = this.state.chartType
-    }
-    var options = {
-      title: {
-        text: "Scores per etappe"
-      },
-      subtitles: [{
-        text: "Punten per renner"
-      }],
-      axisX: {
-        title: "Stage",
-        interval: 1
-      },
-      axisY: {
-        title: "Points"
-      },
-      toolTip: {
-        content: "{name}: {y} ",
-      },
-      data: data
-    }
-    this.setState({ options: options })
-  }
-
-  riderpercentagetotal() {
-    axios.post('/api/chartriderpercentagetotal', { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
-      .then((res) => {
-        if (res) {
-          this.setState({ data: res.data }, () => {
-            this.buildRiderpercentagetotal(this.state.chartType)
-          })
-        } else {
-          this.set404()
-        }
-      })
-  }
-
-  buildRiderpercentagetotal(value) {
-    var data = this.state.data;
-    for (var i in data) {
-      data[i].type = value
-    }
-    var options = {
-      title: {
-        text: "Totaal Scores"
-      },
-      subtitles: [{
-        text: "Punten per renner"
-      }],
-      axisX: {
-        title: "Stage",
-        interval: 1
-      },
-      axisY: {
-        title: "Points"
-      },
-      toolTip: {
-        content: "{name}: {y} "
-      },
-      data: data
-    }
-    this.setState({ options: options })
-  }
-
-  scorespread() {
-    axios.post('/api/chartscorespread', { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget, excludeFinal: true })
-      .then((res) => {
-        if (res) {
-          this.setState({ data: res.data }, () => {
-            this.buildscorespread()
-          })
-        }
-      })
-  }
-
-  totalscoresspread() {
-    axios.post('/api/charttotalscorespread', { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
-      .then((res) => {
-        if (res) {
-          this.setState({ data: res.data }, () => {
-            this.buildscorespread()
-          })
-        }
-      })
-  }
-
-  buildscorespread() {
-    var data = this.state.data;
-    var options = {
-      title: {
-        text: "Scores"
-      },
-      height: 800,
-      axisY: {
-        title: "Points"
-      },
-      toolTip: {
-        backgroundColor: 'black',
-        fontColor: 'white'
-      },
-      data: data
-    }
-
-    this.setState({ options: options })
-  }
-
-  newChart() {
-    axios.post('/api/newchart', { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget })
-      .then((res) => {
-        if (res) {
-          this.setState({ data: res.data }, () => {
-            this.buildNewChart()
-          })
-        }
-      })
-  }
-
-  buildNewChart() {
-    var data = this.state.data;
-    var options = {
-      title: {
-        text: "Scores"
-      },
-      height: 800,
-      axisY: {
-        title: "Points"
-      },
-      data: data
-    }
-
-    this.setState({ options: options })
-  }
-
   budgetSwitch() {
     this.setState({ budget: !this.state.budget }, () => {
-      this.initialRender()
+      this.renderPage()
     })
   }
 
-  handleChange(event) {
-    this.setState({ chartType: event.target.value },()=>{
-      this.buildRiderpercentagetotal(event.target.value)
-    });
+  groupedSwitch() {
+    this.setState({ grouped: !this.state.grouped }, () => {
+      this.renderPage()
+    })
   }
 
   changeTheme(event) {
@@ -411,16 +162,12 @@ class charts extends Component {
   }
 
   render() {
-    let typeSelector = "";
-    if (this.state.chartname === "riderpercentagetotal") {
-      typeSelector = <TypeSelector handleChange={this.handleChange} chartType={this.state.chartType} />
-    }
     var options = this.state.options;
     options.theme = this.state.theme;
     return (
       <div className="overzichtContainer">
-        <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
-        {typeSelector}
+        <StateSwitchButton stateStrings={['Gewoon', 'Budget']} stateVar={this.state.budget} stateVarSwitch={this.budgetSwitch} />
+        <StateSwitchButton stateStrings={['', 'Gegroepeerd']} stateVar={this.state.grouped} stateVarSwitch={this.groupedSwitch} />
         <ThemeSelector changeTheme={this.changeTheme} theme={this.state.theme} />
         <CanvasJSChart options={options} />
       </div>
@@ -429,4 +176,4 @@ class charts extends Component {
 }
 
 
-export default charts;                              
+export default Charts;                              

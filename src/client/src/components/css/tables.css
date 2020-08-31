@@ -45,11 +45,13 @@ tr.bold > :first-child{
     padding: 4px 3px 3px 3px;
 }
 tr.gray > :first-child {
-    border:  2px white dotted;
+    background-color: rgb(219, 219, 219);
+    color: black;
 }
 
 tr.black > :first-child {
-    border:  2px white solid;
+    background-color: rgb(59, 59, 59);
+    color: lightgray;
 }
 
 td.rank{
