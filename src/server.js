@@ -60,13 +60,15 @@ app.use(passport.initialize());
 
 // Express only serves static assets in production
 if (process.env.NODE_ENV === 'production') {
+  console.log('production TRIG')
   app.use(express.static('build/client/build'));
   app.get('*', (req, res) => {
+    console.log('App got TRIG')
     res.sendFile(path.resolve(__dirname, 'build', 'client', 'build', 'index.html'));
   });
 } else {
   app.get('*', (req, res) => {
-    res.sendFile('./src/client/public/index.html', { root: __dirname });
+    res.sendFile('./client/public/index.html', { root: __dirname });
   });
 }
 
