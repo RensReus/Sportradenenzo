@@ -69,7 +69,8 @@ class Charts extends Component {
       year: '',
       budget: false,
       theme: "dark1",
-      grouped: false
+      grouped: false,
+      showGroupedSwitchButton: false
     };
     this.changeTheme = this.changeTheme.bind(this);
     this.budgetSwitch = this.budgetSwitch.bind(this);
@@ -92,7 +93,7 @@ class Charts extends Component {
         year: this.props.year,
         budget: false,
       }, () => {
-        this.renderPage()  
+        this.renderPage()
       })
     }
   }
@@ -106,6 +107,8 @@ class Charts extends Component {
   renderPage() {
     var apilink = '/api/'
     var extraParams = {}
+    var showGroupedSwitchButton = false;
+
     switch (this.props.match.params.chartname) {
       case "userscores":
         apilink += 'chartuserstagescores'
@@ -118,21 +121,23 @@ class Charts extends Component {
         break;
       case "scorespread":
         apilink += 'chartscorespread'
-        extraParams = {perStage: this.state.grouped}
+        extraParams = { perStage: this.state.grouped }
+        showGroupedSwitchButton = true;
         apilink += this.state.grouped ? 'grouped' : ''
         break;
       case "totalscorespread":
         apilink += 'charttotalscorespread'
-        extraParams = {perRace: this.state.grouped}
+        extraParams = { perRace: this.state.grouped }
+        showGroupedSwitchButton = true;
         apilink += this.state.grouped ? 'grouped' : ''
         break;
       default:
         apilink += 'userscores'
     }
-    axios.post(apilink, { racename:this.state.racename, year:this.state.year, budgetparticipation: this.state.budget, extraParams})
+    axios.post(apilink, { racename: this.state.racename, year: this.state.year, budgetparticipation: this.state.budget, extraParams })
       .then((res) => {
         if (res.data.mode !== '404') {
-          this.setState({ options: res.data.options })
+          this.setState({ options: res.data.options, showGroupedSwitchButton })
           document.title = res.data.title
         } else {
           this.set404()
@@ -167,7 +172,9 @@ class Charts extends Component {
     return (
       <div className="overzichtContainer">
         <StateSwitchButton stateStrings={['Gewoon', 'Budget']} stateVar={this.state.budget} stateVarSwitch={this.budgetSwitch} />
-        <StateSwitchButton stateStrings={['', 'Gegroepeerd']} stateVar={this.state.grouped} stateVarSwitch={this.groupedSwitch} />
+        {this.state.showGroupedSwitchButton &&
+          <StateSwitchButton stateStrings={['', 'Gegroepeerd']} stateVar={this.state.grouped} stateVarSwitch={this.groupedSwitch} />
+        }
         <ThemeSelector changeTheme={this.changeTheme} theme={this.state.theme} />
         <CanvasJSChart options={options} />
       </div>
