@@ -103,19 +103,6 @@ module.exports = {
         })
     },
 
-    /**Returns current race
-     * @param {function} callback 
-     */
-    getCurrentRace: function (callback) {
-        var query = `SELECT * FROM race 
-                WHERE finished='false'`;
-
-        sqlDB.query(query, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows[0])
-        })
-    },
-
     /**Returns the participation_id if a user is participating in a race
      * @param {String} account_id
      * @param {String} race_id

@@ -116,11 +116,12 @@ module.exports = (app) => {
 
   app.post('/api/copyTeamIfSelectionEmpty', (req, res) => {
     if (req.user.admin) {
-      const currentStagenr = 0;
+      const race_id = `(SELECT race_id FROM race WHERE name = '${req.body.raceName}' AND year = ${req.body.year})`;
+      const stagenr = req.body.stage;
       const stage_id = `(SELECT stage_id FROM stage
-                          WHERE stagenr = ${currentStagenr} AND race_id = ${race_id})`;
+                          WHERE stagenr = ${stagenr} AND race_id = ${race_id})`;
 
-      const prevStage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${currentStagenr} - 1)`;
+      const prevStage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${stagenr} - 1)`;
       const accountsWithoutSelectionQuery = `SELECT account_participation_id, stage_selection_id FROM stage_selection
                                             LEFT JOIN stage_selection_rider USING (stage_selection_id)
                                             WHERE stage_id = ${stage_id}
@@ -140,7 +141,7 @@ module.exports = (app) => {
         }
 
         if (res.rows.length) {
-          sqlDB.query(totalQuery, (err, results) => {
+          sqlDB.query(totalQuery, (err) => {
             if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
             console.log('Copied selections', res.rowCount);
           });

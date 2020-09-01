@@ -8,31 +8,8 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
-let activeRaces = []; // {id, currentstage}
-// Get current stage
-const scrape = require('./server/scrape');
-scrape.setActiveRaces()
-  .then((res) => {
-    activeRaces = res;
-    // Load the api
-    require('./server/passport')(passport);
-    require('./server/api/authorization')(app); // Belangrijk! Moet bovenaan de lijst staan
-    require('./server/api/admin')(app);
-    require('./server/api/authentication')(app);
-    require('./server/api/manualupdate')(app);
-    require('./server/api/raceprogression')(app);
-    require('./server/api/racestatistics')(app);
-    require('./server/api/charts')(app);
-    require('./server/api/stageresults')(app);
-    require('./server/api/teamselection')(app);
-    require('./server/api/userparticipation')(app);
-    for (var race in activeRaces){
-      startSchedule("* * * * *",activeRaces[race].race_id)
-    }
-  })
-  .catch((res) => {
-    console.log(res);
-  });
+// Get start autoscrape
+startSchedule()
 
 // Mongo
 let configDB;
@@ -75,3 +52,16 @@ app.set('port', process.env.PORT || 3001);
 app.listen(app.get('port'), () => {
   console.log(`Magicka accidit`);
 });
+
+// Load the api
+require('./server/passport')(passport);
+require('./server/api/authorization')(app); // Belangrijk! Moet bovenaan de lijst staan
+require('./server/api/admin')(app);
+require('./server/api/authentication')(app);
+require('./server/api/manualupdate')(app);
+require('./server/api/raceprogression')(app);
+require('./server/api/racestatistics')(app);
+require('./server/api/charts')(app);
+require('./server/api/stageresults')(app);
+require('./server/api/teamselection')(app);
+require('./server/api/userparticipation')(app);

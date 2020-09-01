@@ -2,7 +2,7 @@ const cheerio = require('cheerio');
 const request = require('request');
 const schedule = require('node-schedule');
 const sqlDB = require('./db/sqlDB');
-
+const async = require('async')
 const getStartlist = function (race, callback) {
   const fs = require('fs');
   var raceString = "";
@@ -604,98 +604,74 @@ var getRider = function (pcsid, callback) {
   });
 }
 
-const setActiveRaces = () => { //TODO misschien ergens anders heen
-  let promise = new Promise((resolve) => {
-    setTimeout(() => {
-      const activeRacesQuery = `SELECT race_id FROM race WHERE race.finished`;
-      sqlDB.query(activeRacesQuery, (err, activeRacesResults) => {
-        if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
-        if (activeRacesResults.rows.length) {
-          async.each(activeRacesResults.rows, (race, callback) => {
-            var stageQuery = `SELECT race_id, stagenr, complete FROM STAGE
-            WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race.race_id}
-            ORDER BY stagenr DESC
-            LIMIT 1`;
-            sqlDB.query(stageQuery, (err, stageResults) => {
-              if (err) throw err;
-              if (stageResults.rows.length) {
-                const stagenr = results.rows[0].complete ? results.rows[0].stagenr + 1 : results.rows[0].stagenr;
-                callback({ race_id: race.race_id, current_stage: stagenr })
-              } else {
-                callback({ race_id: race.race_id, current_stage: 0 })
-              }
-            })
-          }, (err, activeRaces) => {
-            if (err) throw err;
-            resolve(activeRaces)
-          });
-        } else {//no active races
-          resolve([]);
-        }
-      });
-    }, 1000);
-  });
-  return promise;
-}
-
-var startSchedule = (rule, race, current_stage) => {
-  var race_id = race.id;
-  var scrapeResults = schedule.scheduleJob(rule, function () {
-    var stageQuery = `SELECT * FROM STAGE
-    WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
-    ORDER BY stagenr DESC
-    LIMIT 1`;
-    sqlDB.query(stageQuery, function (err, results) {//returns the most recent stage that started
-      if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
-      else {
-        if (results.rows.length) {// if some results, so at least after start of stage 1
-          if (current_stage === 0) {// set to 1 to make teamselection inaccessible
-            setCurrentStage(race_id); //todo actually update currentstage and check
-          }
-          var stage = results.rows[0];
-          if (!stage.finished) {
-            getTimetoFinish(race.name, function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
-              if (stageFinished) {
-                var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
-                sqlDB.query(updateStageQuery, function (err, results) {
-                  if (err) { console.log("WRONG QUERY:", updateStageQuery); throw err; }
-                  else console.log("Stage %s finished", stage.stagenr)
-                });
-                getResult(race, stage.stagenr, function (err, response) {
-                  if (err) throw err;
-                  else console.log(response, "stage", stage.stagenr, "\n");
-                })
-              }
-              scrapeResults.reschedule(newResultsRule);  //update new schedule
-            })
-          } else if (!stage.complete) {//get results if not complete
-            getResult(race, stage.stagenr, function (err, response) {
-              if (err) throw err;
-              else console.log(response, "stage", stage.stagenr, "\n");
-            })
-          } else {// if finished and complete set schedule to run again at start of next stage
-            var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage.stagenr + 1}`;
-            sqlDB.query(nextStageQuery, function (err, nextStageResults) {
-              if (err) { console.log("WRONG QUERY:", nextStageQuery); throw err; }
-              else {
+var startSchedule = () => {
+  var activeRacesQuery = `SELECT * FROM race WHERE NOT finished`;
+  sqlDB.query(activeRacesQuery, (err, activeRacesResults) => {
+    if (err) { console.log("WRONG QUERY:", activeRacesQuery); throw err; }
+    async.each(activeRacesResults.rows, (race, callback) => {
+      var scrapeResults = schedule.scheduleJob("* * * * *", function () {
+        var stageQuery = `SELECT * FROM STAGE
+        WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race.race_id}
+        ORDER BY stagenr DESC
+        LIMIT 1`;
+        sqlDB.query(stageQuery, function (err, results) {//returns the most recent stage that started
+          if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
+          if (results.rows.length) {// if some results, so at least after start of stage 1
+            var stage = results.rows[0];
+            if (!stage.finished) {
+              getTimetoFinish(race.name, function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
+                if (stageFinished) {
+                  var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
+                  sqlDB.query(updateStageQuery, function (err) {
+                    if (err) { console.log("WRONG QUERY:", updateStageQuery); throw err; }
+                    else console.log("Race %s Stage %s finished", race.race_id, stage.stagenr)
+                  });
+                  getResult(race, stage.stagenr, function (err, response) {
+                    if (err) throw err;
+                    console.log(response, "stage", stage.stagenr, "\n");
+                    callback(false, race)
+                  })
+                } else {
+                  scrapeResults.reschedule(newResultsRule);  //update new schedule
+                  callback(false, race)
+                }
+              })
+            } else if (!stage.complete) {//get results if not complete
+              getResult(race, stage.stagenr, function (err, response) {
+                if (err) throw err;
+                console.log(response, "stage", stage.stagenr, "\n");
+                callback(false, race)
+              })
+            } else {// if finished and complete set schedule to run again at start of next stage
+              var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race.race_id} AND stagenr = ${stage.stagenr + 1}`;
+              sqlDB.query(nextStageQuery, function (err, nextStageResults) {
+                if (err) { console.log("WRONG QUERY:", nextStageQuery); throw err; }
                 if (stage.stagenr < 21) {
                   var d = nextStageResults.rows[0].starttime;
                   var resultsRule = `${d.getSeconds() + 5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
                   scrapeResults.reschedule(resultsRule);
-                  setCurrentStage(race_id);//todo actually update currentstage and check
-
+                  console.log("wait until next stage")
+                  callback(false, race)
                 } else {// laatste etappe compleet geen scrapes meer nodig
                   scrapeResults.cancel();
+                  console.log("cancel scraperesults")//TODO cancel only one race
+                  callback(false, race)
                 }
-              }
-            })
+              })
+            }
+          } else {
+            scrapeResults.reschedule('0 17 * * *')// als voor een race check dan opnieuw iedere dag om 17:00
+            console.log("Check again at 17:00")
+            callback(false, race)
           }
-        } else {
-          console.log("before stage 1")
-          scrapeResults.reschedule('0 18 * * *')// als voor een race check dan opnieuw iedere dag om 18:00
-        }
-      }
-    })
+        })
+      })
+    }, (err, racesScheduled) => {
+      if (err) { console.log(err); throw err; }
+      // console.log("racesscheduled",racesScheduled)
+      // racesScheduled.forEach(raceScheduled => console.log("raceScheduled started for:", raceScheduled))
+      console.log("started schedules",racesScheduled)
+    });
   })
 }
 
@@ -750,5 +726,4 @@ var getTimetoFinish = function (racename, callback) {
 module.exports.getStartlist = getStartlist;
 module.exports.getResult = getResult;
 module.exports.getRider = getRider;
-module.exports.setActiveRaces = setActiveRaces;
 module.exports.startSchedule = startSchedule;
