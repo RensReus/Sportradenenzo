@@ -8,27 +8,27 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
-// Global vars
-const current_race = { id: 17, name: 'tour', year: 2020 };
-let current_stage = 0;
+let activeRaces = []; // {id, currentstage}
 // Get current stage
 const scrape = require('./server/scrape');
-scrape.setCurrentStage(current_race.id)
+scrape.setActiveRaces()
   .then((res) => {
-    current_stage = res;
+    activeRaces = res;
     // Load the api
     require('./server/passport')(passport);
     require('./server/api/authorization')(app); // Belangrijk! Moet bovenaan de lijst staan
     require('./server/api/admin')(app);
     require('./server/api/authentication')(app);
-    require('./server/api/manualupdate')(app, current_race);
-    require('./server/api/raceprogression')(app, current_race, current_stage);
+    require('./server/api/manualupdate')(app);
+    require('./server/api/raceprogression')(app);
     require('./server/api/racestatistics')(app);
     require('./server/api/charts')(app);
     require('./server/api/stageresults')(app);
-    require('./server/api/teamselection')(app, current_race, current_stage);
-    require('./server/api/userparticipation')(app, current_race);
-    startSchedule("* * * * *",current_race,current_stage)
+    require('./server/api/teamselection')(app);
+    require('./server/api/userparticipation')(app);
+    for (var race in activeRaces){
+      startSchedule("* * * * *",activeRaces[race].race_id)
+    }
   })
   .catch((res) => {
     console.log(res);

@@ -604,22 +604,33 @@ var getRider = function (pcsid, callback) {
   });
 }
 
-const setCurrentStage = (race_id) => { //TODO misschien ergens anders heen
-  let promise = new Promise((resolve, reject) => {
+const setActiveRaces = () => { //TODO misschien ergens anders heen
+  let promise = new Promise((resolve) => {
     setTimeout(() => {
-      const stageQuery = `SELECT * FROM STAGE
-                        WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
-                        ORDER BY stagenr DESC
-                        LIMIT 1`;
-      sqlDB.query(stageQuery, function (err, results) {
+      const activeRacesQuery = `SELECT race_id FROM race WHERE race.finished`;
+      sqlDB.query(activeRacesQuery, (err, activeRacesResults) => {
         if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
-        if (results.rows.length) {// if some results, so at least after start of stage 1
-          const stage = results.rows[0];
-
-          if (stage.complete && stage.stagenr !== 22) { stage.stagenr++; }
-          resolve(stage.stagenr);
-        } else {
-          resolve(0);
+        if (activeRacesResults.rows.length) {
+          async.each(activeRacesResults.rows, (race, callback) => {
+            var stageQuery = `SELECT race_id, stagenr, complete FROM STAGE
+            WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race.race_id}
+            ORDER BY stagenr DESC
+            LIMIT 1`;
+            sqlDB.query(stageQuery, (err, stageResults) => {
+              if (err) throw err;
+              if (stageResults.rows.length) {
+                const stagenr = results.rows[0].complete ? results.rows[0].stagenr + 1 : results.rows[0].stagenr;
+                callback({ race_id: race.race_id, current_stage: stagenr })
+              } else {
+                callback({ race_id: race.race_id, current_stage: 0 })
+              }
+            })
+          }, (err, activeRaces) => {
+            if (err) throw err;
+            resolve(activeRaces)
+          });
+        } else {//no active races
+          resolve([]);
         }
       });
     }, 1000);
@@ -639,7 +650,7 @@ var startSchedule = (rule, race, current_stage) => {
       else {
         if (results.rows.length) {// if some results, so at least after start of stage 1
           if (current_stage === 0) {// set to 1 to make teamselection inaccessible
-            setCurrentStage(race_id);
+            setCurrentStage(race_id); //todo actually update currentstage and check
           }
           var stage = results.rows[0];
           if (!stage.finished) {
@@ -671,7 +682,7 @@ var startSchedule = (rule, race, current_stage) => {
                   var d = nextStageResults.rows[0].starttime;
                   var resultsRule = `${d.getSeconds() + 5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
                   scrapeResults.reschedule(resultsRule);
-                  setCurrentStage(race_id);
+                  setCurrentStage(race_id);//todo actually update currentstage and check
 
                 } else {// laatste etappe compleet geen scrapes meer nodig
                   scrapeResults.cancel();
@@ -688,7 +699,7 @@ var startSchedule = (rule, race, current_stage) => {
   })
 }
 
-var getTimetoFinish = function (racename,callback) {
+var getTimetoFinish = function (racename, callback) {
   request({
     url: 'https://www.procyclingstats.com/',
     headers: { "Connection": "keep-alive" }
@@ -739,5 +750,5 @@ var getTimetoFinish = function (racename,callback) {
 module.exports.getStartlist = getStartlist;
 module.exports.getResult = getResult;
 module.exports.getRider = getRider;
-module.exports.setCurrentStage = setCurrentStage;
+module.exports.setActiveRaces = setActiveRaces;
 module.exports.startSchedule = startSchedule;

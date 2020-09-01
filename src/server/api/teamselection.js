@@ -1,17 +1,20 @@
 // In dit bestand staan alle calls die te maken hebben met het selecteren van het team voor een race
 
-module.exports = function (app, current_race, currentstage_global) {
+module.exports = function (app) {
   const async = require('async')
   const sqlDB = require('../db/sqlDB')
   const SQLread = require('../db/SQLread')
   const SQLwrite = require('../db/SQLwrite')
   const scrape = require('../scrape')
 
-  const current_race_id = current_race.id;
 
   app.post('/api/getridersandteam', function (req, res) {
-    if (currentstage_global === 0) {
-      sqlDB.query(`SELECT * FROM account_participation WHERE race_id = ${current_race_id} AND account_id = ${req.user.account_id}`, (err, results) => {
+    var race_id = req.body.race_id;
+    var current_race = activeRaces.filter(race => race.race_id = race_id);
+    var current_stage = current_race === undefined ? undefined : currentrace.current_stage;
+    //TODO check if before start of stage 1
+    if (current_stage === 0) {
+      sqlDB.query(`SELECT * FROM account_participation WHERE race_id = ${race_id} AND account_id = ${req.user.account_id}`, (err, results) => {
         if (err) { console.log("GET participation error"); throw err };
         if (results.rows.length) {
           //TODO in een query voor snelheid
@@ -58,7 +61,11 @@ module.exports = function (app, current_race, currentstage_global) {
   });
 
   app.post('/api/teamselectionadd', function (req, res) {
-    if (currentstage_global === 0) {
+    var race_id = req.body.race_id;
+    var current_race = activeRaces.filter(race => race.race_id = race_id);
+    var current_stage = current_race === undefined ? undefined : currentrace.current_stage;
+    //TODO check if before start of stage 1
+    if (current_stage === 0) {
       var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = ${req.body.year})`;
       var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${req.body.budgetParticipation})`;
       var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
@@ -117,7 +124,11 @@ module.exports = function (app, current_race, currentstage_global) {
   });
 
   app.post('/api/teamselectionaddclassics', function (req, res) {
-    if (currentstage_global === 0) {
+    var race_id = req.body.race_id;
+    var current_race = activeRaces.filter(race => race.race_id = race_id);
+    var current_stage = current_race === undefined ? undefined : currentrace.current_stage;
+    //TODO check if before start of stage 1
+    if (current_stage === 0) {
       //Scrape de rider opnieuw om foute data te voorkomen
       scrape.getRider(req.body.rider.pcsid.toLowerCase(), function (response) {
         if (response == 404) {
@@ -171,7 +182,11 @@ module.exports = function (app, current_race, currentstage_global) {
   });
 
   app.post('/api/teamselectionremove', function (req, res) {
-    if (currentstage_global === 0) {
+    var race_id = req.body.race_id;
+    var current_race = activeRaces.filter(race => race.race_id = race_id);
+    var current_stage = current_race === undefined ? undefined : currentrace.current_stage;
+    //TODO check if before start of stage 1
+    if (current_stage === 0) {
       var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.race}' AND year = ${req.body.year})`;
       var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${req.body.budgetParticipation})`;
       var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
@@ -212,7 +227,11 @@ module.exports = function (app, current_race, currentstage_global) {
 
   //Voor klassiekerspel:
   app.post('/api/getuserteamselection', function (req, res) {
-    if (currentstage_global === 0) {
+    var race_id = req.body.race_id;
+    var current_race = activeRaces.filter(race => race.race_id = race_id);
+    var current_stage = current_race === undefined ? undefined : currentrace.current_stage;
+    //TODO check if before start of stage 1
+    if (current_stage === 0) {
       async.auto({
         userSelection: function (callback) {
           SQLread.getTeamSelection(req.user.account_id, req.body.race, req.body.year, callback)
@@ -248,9 +267,13 @@ module.exports = function (app, current_race, currentstage_global) {
   });
 
   app.post('/api/addaccountparticipation', function (req, res) {
-    if (currentstage_global === 0) {
+    var race_id = req.body.race_id;
+    var current_race = activeRaces.filter(race => race.race_id = race_id);
+    var current_stage = current_race === undefined ? undefined : currentrace.current_stage;
+    //TODO check if before start of stage 1
+    if (current_stage === 0) {
       var account_participationQuery = `INSERT INTO account_participation(account_id,race_id,budgetparticipation) 
-                VALUES(${req.user.account_id},${current_race_id},false),(${req.user.account_id},${current_race_id},true) 
+                VALUES(${req.user.account_id},${race_id},false),(${req.user.account_id},${race_id},true) 
                 ON CONFLICT (account_id,race_id,budgetparticipation) DO NOTHING
                 RETURNING (account_participation_id);\n`
 
@@ -260,7 +283,7 @@ module.exports = function (app, current_race, currentstage_global) {
         if (results.rows.length = 2) {
           var stage_selectionQuery = `INSERT INTO stage_selection(stage_id,account_participation_id) VALUES`
           for (let stage = 1; stage < 23; stage++) {
-            let stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${current_race_id} AND stagenr = ${stage})`
+            let stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage})`
             stage_selectionQuery += `(${stage_id},${results.rows[0].account_participation_id}),(${stage_id},${results.rows[1].account_participation_id}),`
           }
 

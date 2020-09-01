@@ -1,9 +1,8 @@
 
-module.exports = (app, current_race) => {
+module.exports = (app) => {
   const race_backup = require('../db/Mongo/models/race_backup.js');
   const async = require('async');
   const sqlDB = require('../db/sqlDB');
-  const race_id = current_race.id;
   const scrape = require('../scrape')
 
   // app.post('/api/getstartlistklassiek', function (req, res) { //TODO change to new scrape

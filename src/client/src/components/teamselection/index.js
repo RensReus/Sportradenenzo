@@ -43,7 +43,7 @@ class Teamselection extends Component {
     const year = this.state.year;
     document.title = "Team Keuze " + race;
     if (this.props.redirect === '/teamselection') {
-      axios.post('/api/getridersandteam', { race, year }) //to: teamselection.js
+      axios.post('/api/getridersandteam', { race, year }) //to: teamselection.js TODO add race_id
         .then((res) => {
           if (res.data.noParticipation) {
             this.setState({
@@ -67,7 +67,7 @@ class Teamselection extends Component {
   }
 
   joinRace() {
-    axios.post('/api/addaccountparticipation')
+    axios.post('/api/addaccountparticipation') // TODO add race_id
       .then((res) => {
         if (res) {
           if (res.data.participationAdded) {
