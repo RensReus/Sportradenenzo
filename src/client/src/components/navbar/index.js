@@ -45,7 +45,7 @@ class Navbar extends Component {
           }
           {buttonLog}
         </div>
-        <img className="navbar_racelogo" src="/images/vueltalogo_small.png" alt="vueltalogo_small"></img>
+        <img className="navbar_racelogo" src={`/images/${this.props.racename}.png`} alt="vueltalogo_small"></img>
         {/* TODO Arjen change based on race*/}
       </div>
     )
