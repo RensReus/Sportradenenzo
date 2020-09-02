@@ -7,12 +7,36 @@ module.exports = function (app) {
   const SQLwrite = require('../db/SQLwrite')
   const scrape = require('../scrape')
 
+  app.post('/api/teamselection', function (req, res) {
+    var race_id = req.body.race_id;
+    var beforeStartQuery = `SELECT COUNT(stage_id) FROM stage WHERE race_id = ${race_id} AND starttime > now() AT TIME ZONE 'Europe/Paris'`
+    sqlDB.query(beforeStartQuery,(err,beforeStartResults) =>{
+      if (err) { console.log("WRONG QUERY: ", beforeStartQuery); throw err };
+      if (beforeStartResults.rows[0].count == 21){
+        runTeamSelectionCall(apicall,race_id,budgetParticipation,req.user.account_id,(err,result)=>{
+          if (err) { console.log(err.toString()) }
+          res.send(results);
+        })
+      } else {
+        res.send({redirect: true, redirectLink: '/stage/1'})
+      }
+    })
+  })
+
+  async function runTeamSelectionCall(apicall, race_id, budgetparticipation, account_id, callback) {
+    switch (apicall) {
+      case "getridersandteam": getridersandteam(race_id, budgetparticipation, callback); break;
+      case "teamselectionadd": teamselectionadd(budgetparticipation, callback); break;
+      case "teamselectionremove": teamselectionremove(race_id, budgetparticipation, callback); break;
+      case "addaccountparticipation": addaccountparticipation(race_id, budgetparticipation, account_id, callback); break;
+    }
+  }
 
   app.post('/api/getridersandteam', function (req, res) {
     var race_id = req.body.race_id;
-    var current_race = activeRaces.filter(race => race.race_id = race_id);
-    var current_stage = current_race === undefined ? undefined : currentrace.current_stage;
-    //TODO check if before start of stage 1
+    var beforeStartQuery = `SELECT COUNT(stage_id) FROM stage WHERE race_id = ${race_id} AND starttime > now() AT TIME ZONE 'Europe/Paris'`
+    sqlDB.query(beforeStartQuery,(err,beforeStartResults) =>{
+
     if (current_stage === 0) {
       sqlDB.query(`SELECT * FROM account_participation WHERE race_id = ${race_id} AND account_id = ${req.user.account_id}`, (err, results) => {
         if (err) { console.log("GET participation error"); throw err };
@@ -58,6 +82,7 @@ module.exports = function (app) {
       console.log('redirect in get riders and team')
       res.redirect('/')
     }
+    })
   });
 
   app.post('/api/teamselectionadd', function (req, res) {
@@ -225,6 +250,42 @@ module.exports = function (app) {
     }
   });
 
+  app.post('/api/addaccountparticipation', function (req, res) {
+    var race_id = req.body.race_id;
+    var current_race = activeRaces.filter(race => race.race_id = race_id);
+    var current_stage = current_race === undefined ? undefined : currentrace.current_stage;
+    //TODO check if before start of stage 1
+    if (current_stage === 0) {
+      var account_participationQuery = `INSERT INTO account_participation(account_id,race_id,budgetparticipation) 
+                VALUES(${req.user.account_id},${race_id},false),(${req.user.account_id},${race_id},true) 
+                ON CONFLICT (account_id,race_id,budgetparticipation) DO NOTHING
+                RETURNING (account_participation_id);\n`
+
+      sqlDB.query(account_participationQuery, (err, results) => {
+        if (err) { console.log("WRONG QUERY:", account_participationQuery); res.send({ participationAdded: false }); throw err; }
+
+        if (results.rows.length = 2) {
+          var stage_selectionQuery = `INSERT INTO stage_selection(stage_id,account_participation_id) VALUES`
+          for (let stage = 1; stage < 23; stage++) {
+            let stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage})`
+            stage_selectionQuery += `(${stage_id},${results.rows[0].account_participation_id}),(${stage_id},${results.rows[1].account_participation_id}),`
+          }
+
+          stage_selectionQuery = stage_selectionQuery.slice(0, -1) + `ON CONFLICT (account_participation_id,stage_id) DO NOTHING;\n`
+
+          sqlDB.query(stage_selectionQuery, (err, results2) => {
+            if (err) { console.log("WRONG QUERY:", stage_selectionQuery); res.send({ participationAdded: false }); throw err; }
+            res.send({ participationAdded: true })
+
+          })
+        } else {
+          res.send({ participationAdded: false })
+        }
+
+      })
+    }
+  });
+
   //Voor klassiekerspel:
   app.post('/api/getuserteamselection', function (req, res) {
     var race_id = req.body.race_id;
@@ -264,41 +325,5 @@ module.exports = function (app) {
         res.send({ rider: response })
       }
     });
-  });
-
-  app.post('/api/addaccountparticipation', function (req, res) {
-    var race_id = req.body.race_id;
-    var current_race = activeRaces.filter(race => race.race_id = race_id);
-    var current_stage = current_race === undefined ? undefined : currentrace.current_stage;
-    //TODO check if before start of stage 1
-    if (current_stage === 0) {
-      var account_participationQuery = `INSERT INTO account_participation(account_id,race_id,budgetparticipation) 
-                VALUES(${req.user.account_id},${race_id},false),(${req.user.account_id},${race_id},true) 
-                ON CONFLICT (account_id,race_id,budgetparticipation) DO NOTHING
-                RETURNING (account_participation_id);\n`
-
-      sqlDB.query(account_participationQuery, (err, results) => {
-        if (err) { console.log("WRONG QUERY:", account_participationQuery); res.send({ participationAdded: false }); throw err; }
-
-        if (results.rows.length = 2) {
-          var stage_selectionQuery = `INSERT INTO stage_selection(stage_id,account_participation_id) VALUES`
-          for (let stage = 1; stage < 23; stage++) {
-            let stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage})`
-            stage_selectionQuery += `(${stage_id},${results.rows[0].account_participation_id}),(${stage_id},${results.rows[1].account_participation_id}),`
-          }
-
-          stage_selectionQuery = stage_selectionQuery.slice(0, -1) + `ON CONFLICT (account_participation_id,stage_id) DO NOTHING;\n`
-
-          sqlDB.query(stage_selectionQuery, (err, results2) => {
-            if (err) { console.log("WRONG QUERY:", stage_selectionQuery); res.send({ participationAdded: false }); throw err; }
-            res.send({ participationAdded: true })
-
-          })
-        } else {
-          res.send({ participationAdded: false })
-        }
-
-      })
-    }
   });
 }

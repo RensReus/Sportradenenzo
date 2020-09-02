@@ -714,7 +714,7 @@ var getTimetoFinish = function (racename, callback) {
         }
       }
     });
-    if (!racebeschikbaar) {
+    if (!racebeschikbaar) { // trigger later
       console.log("Race not available");
       rule = '0 0 10 * *'; // check at 10am
       callback(true, rule);
