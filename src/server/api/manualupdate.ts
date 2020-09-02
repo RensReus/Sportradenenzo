@@ -60,7 +60,7 @@ module.exports = (app, current_race) => {
     if (req.user.admin) {
       const year = parseInt(req.body.year, 10);
       const name = req.body.raceName;
-      const race = {name, year}
+      const race = { name, year }
       const stage = parseInt(req.body.stage, 10);
       if (req.body.stage === 'all') {
         const stages = Array.apply(null, { length: 22 }).map(Number.call, Number);
@@ -194,25 +194,25 @@ module.exports = (app, current_race) => {
             stage_selection_riderQuery = stage_selection_riderQuery.slice(0, -1) + ')'
           }
           if (race.stage_selection_rider.length) { stage_selection_riderQuery += 'ON CONFLICT(stage_selection_id,rider_participation_id) DO NOTHING;\n'; }
-          // rider_participation
-          let rider_participationQuery: string;
-          if (race.rider_participation.length) { rider_participationQuery = 'INSERT INTO rider_participation VALUES'; }
-          for (const i of Object.keys(race.rider_participation)) {
-            if (i !== '0') { rider_participationQuery += ','; }
-            rider_participationQuery += '(';
-            for (var prop in race.rider_participation[i]) {
-              if (typeof race.rider_participation[i][prop] === 'string') {
-                rider_participationQuery += `'${race.rider_participation[i][prop]}',`;
+          // team_selection_rider
+          let team_selection_riderQuery: string;
+          if (race.team_selection_rider.length) { team_selection_riderQuery = 'INSERT INTO team_selection_rider VALUES'; }
+          for (const i of Object.keys(race.team_selection_rider)) {
+            if (i !== '0') { team_selection_riderQuery += ','; }
+            team_selection_riderQuery += '(';
+            for (var prop in race.team_selection_rider[i]) {
+              if (typeof race.team_selection_rider[i][prop] === 'string') {
+                team_selection_riderQuery += `'${race.team_selection_rider[i][prop]}',`
               } else {
-                rider_participationQuery += race.rider_participation[i][prop] + ',';
+                team_selection_riderQuery += race.team_selection_rider[i][prop] + ','
               }
             }
-            rider_participationQuery = rider_participationQuery.slice(0, -1) + ')';
+            team_selection_riderQuery = team_selection_riderQuery.slice(0, -1) + ')'
           }
-          if (race.rider_participation.length) { rider_participationQuery += ' ON CONFLICT(race_id,rider_id) DO NOTHING;\n'; }
-          const totalQuery = results_pointsQuery + stage_selection_riderQuery;
+          if (race.team_selection_rider.length) { team_selection_riderQuery += 'ON CONFLICT(account_participation_id,rider_participation_id) DO NOTHING;\n'; }
+          const totalQuery = results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
           sqlDB.query(totalQuery, (err, results2) => {
-            if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
+            if (err) { console.log('WRONG QUERY:', team_selection_riderQuery); throw err; }
             console.log('IMPORTED ', req.body.raceName, req.body.year);
             console.log(results2);
             res.send('Import Succesful');
