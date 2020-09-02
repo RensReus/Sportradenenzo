@@ -5,6 +5,7 @@ import ManualUpdate from './manualupdate'
 import ImportExport from './importExport'
 import Table from '../shared/table'
 import LoadingDiv from '../shared/loadingDiv'
+// import NewDBinterface from './newDBinterface'
 // var getCaretCoordinates = require('textarea-caret');
 
 class Outputtable extends Component {
@@ -143,7 +144,7 @@ class Admin extends Component {
       value: '',
       shownValue: '',
       varRows: [],
-      showTab: ['block', 'none', 'none', 'none'],
+      showTab: ['block', 'none', 'none', 'none','none'],
       DBinfoTables: [],
       autoCompleteSuggestions: [],
       autoCompleteActive: false,
@@ -173,6 +174,7 @@ class Admin extends Component {
       case "dbinfo": this.showTab(1); break;
       case "manualupdate": this.showTab(2); break;
       case "importexport": this.showTab(3); break;
+      case "newdb": this.showTab(4); break;
       default: this.showTab(0);
     }
   }
@@ -345,6 +347,7 @@ class Admin extends Component {
       case 1: this.props.history.push('/admin-dbinfo'); this.getDBinfo(); break;
       case 2: this.props.history.push('/admin-manualupdate'); break;
       case 3: this.props.history.push('/admin-importexport'); break;
+      case 4: this.props.history.push('/admin-newdb'); break;
       default: this.props.history.push('/admin-sqlinterface'); break;
     }
     var showTab = this.state.showTab;
@@ -398,6 +401,7 @@ class Admin extends Component {
     buttons.push(<button className={"klassementButton " + this.state.showTab[1]} key="DBinfo" onClick={this.showTab.bind(this, 1)}>DB Info</button>)
     buttons.push(<button className={"klassementButton " + this.state.showTab[2]} key="manualupdate" onClick={this.showTab.bind(this, 2)}>Manual Update</button>)
     buttons.push(<button className={"klassementButton " + this.state.showTab[3]} key="imexport" onClick={this.showTab.bind(this, 3)}>Import/Export</button>)
+    // buttons.push(<button className={"klassementButton " + this.state.showTab[4]} key="newdb" onClick={this.showTab.bind(this, 4)}>New DB</button>)
     var popupDivs = []
     var popUpStyle = { top: this.state.popUpTop, left: this.state.popUpLeft, display: this.state.autoCompleteActive ? 'block' : 'none' }
     for (var i in this.state.currentSuggestions) {
@@ -437,6 +441,9 @@ class Admin extends Component {
         <div style={{ display: this.state.showTab[3] }}>
           <ImportExport />
         </div>
+        {/* <div style={{ display: this.state.showTab[4] }}>
+          <NewDBinterface />
+        </div> */}
       </div>
     )
   }
