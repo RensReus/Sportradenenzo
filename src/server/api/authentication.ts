@@ -118,6 +118,34 @@ module.exports = (app) => {
     })(req, res, next);
   });
 
+  app.post('/api/getlogin', (req, res) => {
+    const token = req.body.token;
+    const expiredToken = jwt.decode(token); // Lees de info uit de expired token
+    jwt.verify(token, getSecret(), (err, decoded) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          refreshtoken.find({ account_id: expiredToken.account_id }, (err2, result) => {
+            if (err2) { throw err; }
+            if (!result) {
+              return res.send({ isLoggedIn: false, admin: false });
+            } else {
+              // Maak de authtoken aan met juiste string
+              const newToken = jwt.sign({
+                account_id: expiredToken.account_id,
+                email: expiredToken.email,
+                admin: expiredToken.admin,
+                refreshString: result.refreshString,
+              }, getSecret(), { expiresIn: 60 * 60 });
+              return res.send({ isLoggedIn: true, admin: expiredToken.admin });
+            }
+          });
+        }
+      } else {
+        return res.send({ isLoggedIn: true, admin: decoded.admin});
+      }
+    });
+  });
+
   // Logout
   app.post('/api/logout', (req, res) => {
     if (!req.user) {
@@ -127,4 +155,4 @@ module.exports = (app) => {
       res.send(true);
     }
   });
-}
+};

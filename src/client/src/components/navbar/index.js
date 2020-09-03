@@ -20,7 +20,9 @@ class Navbar extends Component {
     let buttonSignUp;
     let currStage;
     let raceOverview;
-    if (this.props.isLoggedIn) {
+    if (this.props.isLoading) {
+      //Do nothing yet
+    } else if (this.props.isLoggedIn) {
       buttonLog = <button className='navbar_item h8' onClick={() => this.logout()}>Logout</button>;
       currStage = <Link className='navbar_item' to='/'><span className="h8">Current stage</span></Link>;
       raceOverview = <button className='navbar_item' ><span className="h8">Race overview</span></button>;
@@ -38,8 +40,12 @@ class Navbar extends Component {
           {buttonSignUp}
           {currStage}
           {raceOverview}
+          {!this.props.isLoading &&
           <ChartsDropdown className="navbar_dropdown" />
+          }
+          {!this.props.isLoading &&
           <StatsDropdown className="navbar_dropdown" />
+          }
           {this.props.isAdmin &&
             <Link className='navbar_item' to='/admin-sqlinterface'><span className="h8 bold"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>
           }

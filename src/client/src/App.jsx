@@ -35,19 +35,40 @@ class App extends Component {
       isLoggedIn: false,
       redirect: '/',
       isAdmin: false,
-      racename: '',
-      year: '',
+      getLogin: true,
       message: ''
     });
-    this.setRace = this.setRace.bind(this);
-
   }
 
   componentDidMount() {
-    axios.post('/api/getinitialdata')
-      .then(res => {
-        this.setState({ redirect: res.data.redirect, racename: res.data.racename, year: res.data.year, loading: false})
+    //Eenmalig controleren of de gebruiker is ingelogd bij het initiele laden van de pagina
+    //Na dit zal de authentication gaan via de interceptor
+    if(localStorage.getItem('authToken') && this.state.getLogin){
+      axios.post('/api/getlogin', {token: localStorage.getItem('authToken')})
+        .then(res => {
+          console.log(res)
+          this.setState({
+            isLoggedIn: res.data.isLoggedIn,
+            isAdmin: res.data.admin, 
+            getLogin: false, 
+            loading: false
+          })
+          if(!res.data){
+            this.setState({
+              getLogin: false,
+              redirect: this.props.history.location.pathname // voor redirect na inloggen
+            })
+            this.props.history.replace('/login')
+          }
+        })
+    } else {
+      this.setState({
+        getLogin: false, 
+        loading: false, 
+        redirect: this.props.history.loacation.pathname
       })
+      this.props.history.replace('/login')
+    }
     //Start de response interceptor
     createAxiosResponseInterceptor();
     //Bind de huidige this voor gebruik in de interceptors
@@ -146,32 +167,20 @@ class App extends Component {
     }
   }
 
-  setRace(racename) {
-    if (this.state.racename !== racename) {
-      this.setState({
-        racename,
-      })
-    }
-  }
-
   render() {
-    if(this.state.loading){
-      return <div />
-    }
     return (
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
       <div className="content">
         <div className="backgroundImage"></div>
-        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} history={this.props.history} racename={this.state.racename} />
+        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} isLoading={this.state.loading} history={this.props.history} racename={this.state.racename} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (
-            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} Signup={false} />)
+            this.state.isLoggedIn ? (<Home history={this.props.history} />) : (<Redirect to={this.state.redirect} />)
           )} />
-          <Route exact path="/signup" render={() => (
+          <Route exact path="/login" render={() => (
             this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} Signup={true} />)
           )} />
-          <ReactRoute path="/home" component={Home} history={this.props.history} />
           <ReactRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} racename={this.state.racename} year={this.state.year} />
           <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} redirect={this.state.redirect} racename={this.state.racename} year={this.state.year} />
           <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />

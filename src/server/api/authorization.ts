@@ -15,7 +15,7 @@ module.exports = (app) => {
 
     app.use( (req, res, next) => {
         // Check whether the page needs authentication
-        if (req.url === '/api/login' || req.url === '/api/signup' || req.url === '/api/getinitialdata') {
+        if (req.url === '/api/login' || req.url === '/api/signup' || req.url === '/api/getinitialdata' || req.url === '/api/getlogin') {
             next();
         } else {
             // get the token from the header if present

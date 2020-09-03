@@ -13,7 +13,8 @@ types.setTypeParser(20, function(val) {
 })
 
 const pool = new Pool({
-    connectionString: sqlDBstring,  
+    connectionString: sqlDBstring,
+    rejectUnauthorized: false,
     ssl: true
 })
 

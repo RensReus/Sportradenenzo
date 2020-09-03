@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 //import './index.css';
 import underConstruction from '../../under_construction.gif'
 
@@ -15,12 +15,25 @@ class Home extends Component{
     constructor(props) {
         super(props);
         this.state = ({
-            
+            participations: [],
+            activeRaces: []
         });
       }
 
     componentDidMount(){
         document.title = "Profiel";
+        axios.post('/api/getracepartcipation')
+            .then(res => {
+                this.setState({
+                    participations: res.data
+                })
+            })
+        axios.post('/api/getactiveraces')
+            .then(res =>{
+                this.setState({
+                    activeRaces: res.data
+                })
+            })
     }
 
        
