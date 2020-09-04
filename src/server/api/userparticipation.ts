@@ -17,37 +17,55 @@ module.exports = (app) => {
   });
 
   app.post('/api/getactiveraces', (req, res) => {
-    let query = `SELECT stagenr, complete,race_id,name,year FROM stage 
-        INNER JOIN race USING(race_id)
-        WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race.finished=false
-        ORDER BY stagenr DESC
-        LIMIT 1`;
-    sqlDB.query(query, (err, results2) => {
+    let activeRacesQuery = `SELECT COUNT(*), race.race_id FROM stage
+    INNER JOIN race USING(race_id)
+    WHERE race.finished = false
+    GROUP BY race.race_id
+    HAVING COUNT(*) = 22`
+
+    sqlDB.query(activeRacesQuery, (err, activeRacesResults) => {
       if (err) {
-        console.log("WRONG QUERY:", query);
+        console.log("WRONG QUERY:", activeRacesQuery);
         throw err;
+      } else if (activeRacesResults.rows.length === 0) { 
+          res.send({activeRaces:[]})
       } else {
-        const activeRaces = results2.rows.map(x => {
-          if (x.complete) {
-            x.stagenr += 1;
+        
+        var currentStagesQuery = activeRacesResults.rows.reduce((query, race) => query + `SELECT stagenr + CASE WHEN complete THEN 1 ELSE 0 END as stagenr,race_id,name,year FROM stage 
+        INNER JOIN race USING(race_id)
+        WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race.race_id=${race.race_id}
+        ORDER BY stagenr DESC
+        LIMIT 1;\n `,'')
+        sqlDB.query(currentStagesQuery, (err, currentStagesResults) => {
+          if (err) {
+            console.log("WRONG QUERY:", activeRacesQuery);
+            throw err;
           }
-          return x;
-        });
-        res.send({ activeRaces });
+          let activeRaces: Array<any>;
+          if (activeRacesResults.rows.length === 1) {
+            activeRaces = currentStagesResults.rows
+          } else {
+             activeRaces = currentStagesResults.map(x => x.rows[0]);
+          }
+          res.send({ activeRaces });
+        })
       }
     });
   })
 
   app.post('/api/getfinishedraces', (req, res) => {
-    let query = `SELECT finalscore, name, year, race_id FROM account_participation
+    // let query = `SELECT finalscore, name, year, race_id FROM account_participation
+    // INNER JOIN race USING(race_id)
+    // WHERE finished AND account_id = ${req.user.account_id}`;
+    let query = `SELECT stagenr, complete,race_id,name,year FROM stage 
     INNER JOIN race USING(race_id)
-    WHERE finished AND account_id = ${req.user.account_id}`;
+    WHERE race.finished AND stagenr = 22`;
     sqlDB.query(query, (err, results2) => {
       if (err) {
         console.log("WRONG QUERY:", query);
         throw err;
       } else {
-        const finishedRaces = results2.rows.map(x => x.race_id);
+        const finishedRaces = results2.rows;
         res.send({ finishedRaces });
       }
     });

@@ -3,14 +3,14 @@ import axios from 'axios';
 //import './index.css';
 import underConstruction from '../../under_construction.gif'
 
-class ActiveRacesTable extends Component {
+class RacesTable extends Component {
   render() {
     let racelinks = this.props.races.map(race => {
-      return <button className={"buttonStandard " + race.name} onClick={() => this.props.goToRace(race)}><span className="h7 bold">Go to {race.name} - {race.year}</span></button>
+      return <button className={"raceButtonHomepage " + race.name} onClick={() => this.props.goToRace(race)}><span className="h7 bold">Go to {race.name.charAt(0).toUpperCase() + race.name.slice(1)} - {race.year}</span></button>
     });
     return (
       <div>
-        Active races:
+        {this.props.title}:
         {racelinks}
       </div>
     )
@@ -23,7 +23,7 @@ class Home extends Component {
     this.state = ({
       participations: [],
       activeRaces: [],
-      finishedRacess: []
+      finishedRaces: []
     });
     this.goToRace = this.goToRace.bind(this)
   }
@@ -38,6 +38,7 @@ class Home extends Component {
       })
     axios.post('/api/getactiveraces')
       .then(res => {
+        console.log(res.data.activeRaces)
         this.setState({
           activeRaces: res.data.activeRaces
         })
@@ -45,7 +46,7 @@ class Home extends Component {
       axios.post('/api/getfinishedraces')
       .then(res => {
         this.setState({
-          finishedRacess: res.data.finishedRacess
+          finishedRaces: res.data.finishedRaces
         })
       })
   }
@@ -60,7 +61,10 @@ class Home extends Component {
     return (
       <div className="standardContainer">
         <div className="activeRaces">
-          <ActiveRacesTable races={this.state.activeRaces} goToRace={this.goToRace}/>
+          <RacesTable races={this.state.activeRaces} goToRace={this.goToRace} title={"Lopende Races"}/>
+        </div>
+        <div className="finishedRace">
+          <RacesTable races={this.state.finishedRaces} goToRace={this.goToRace} title={"Afgelopen Races"}/>
         </div>
         <img src={underConstruction} alt="still building" />
                 Coming Soon meer hier

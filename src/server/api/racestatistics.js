@@ -5,15 +5,16 @@ module.exports = (app) => {
   const async = require('async');
 
   app.post('/api/statistics', function (req, res) {
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var budgetparticipation = req.body.budgetparticipation;
     if (!req.body.alwaysget) {
       var raceHasStartedQuery = `SELECT * FROM STAGE
-      WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race_id}
+      INNER JOIN race USING (race_id)
+      WHERE (starttime < now() AT TIME ZONE 'Europe/Paris' OR race.finished) AND race_id = ${race_id}
       ORDER BY stagenr DESC
       LIMIT 1`;
       sqlDB.query(raceHasStartedQuery, (err, results) => {
-        if (err) { console.log("WRONG QUERY:", query); console.log(err.toString()) }
+        if (err) { console.log("WRONG QUERY:", raceHasStartedQuery); console.log(err.toString()) }
         if (results.rows.length === 0) {
           res.send({ mode: '404' })
         } else {

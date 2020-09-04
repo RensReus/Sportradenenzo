@@ -263,7 +263,8 @@ module.exports = function (app) {
       var totalQuery = userresults.rows.reduce((query, user) => query + `SELECT stagenr AS label, stagescore AS y FROM stage_selection
       INNER JOIN account_participation USING(account_participation_id)
       INNER JOIN stage USING(stage_id)
-      WHERE stage.finished AND account_participation_id = ${user.account_participation_id};\n `,'')
+      WHERE stage.finished AND account_participation_id = ${user.account_participation_id}
+      ORDER BY stagenr;\n `,'')
 
       sqlDB.query(totalQuery, (err, results) => {
         if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }

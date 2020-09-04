@@ -24,7 +24,7 @@ class Navbar extends Component {
       //Do nothing yet
     } else if (this.props.isLoggedIn) {
       buttonLog = <button className='navbar_item h8' onClick={() => this.logout()}>Logout</button>;
-      currStage = <Link className='navbar_item' to='/'><span className="h8">Current stage</span></Link>;
+      currStage = <Link className='navbar_item' to={this.props.currentStageLink}><span className="h8">Current stage</span></Link>;
       raceOverview = <button className='navbar_item' ><span className="h8">Race overview</span></button>;
     } else {
       buttonSignUp = <Link className='navbar_item h8' to="/signup">Sign up</Link>;

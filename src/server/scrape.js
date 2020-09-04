@@ -670,7 +670,7 @@ var startSchedule = () => {
       if (err) { console.log(err); throw err; }
       // console.log("racesscheduled",racesScheduled)
       // racesScheduled.forEach(raceScheduled => console.log("raceScheduled started for:", raceScheduled))
-      console.log("started schedules",racesScheduled)
+      console.log("started schedules")
     });
   })
 }

@@ -71,13 +71,13 @@ html{
     --default-color-light: var(--blue5);
 
     --giro-color: var(--pink4);
-    --giro-color-light: var(--pink5);
+    --giro-color-light: var(--pink6);
 
     --tour-color: var(--yellow4);
-    --tour-color-light: var(--yellow5);
+    --tour-color-light: var(--yellow6);
     
     --vuelta-color: var(--red4);
-    --vuelta-color-light: var(--red5);
+    --vuelta-color-light: var(--red6);
     
     --secondary-color: rgba();
 }

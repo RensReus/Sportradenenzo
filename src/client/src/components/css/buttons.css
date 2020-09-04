@@ -11,6 +11,8 @@ button.buttonStandard {
   background-color: var(--background-color-lighter);
   color: var(--default-color);
 }
+
+
 /* praktisch overbodig ?? */
 button.buttonStandard.blue{
   background-color: var(--default-color);
@@ -37,6 +39,51 @@ button.buttonStandard.tour{
 button.buttonStandard.vuelta{
   color: var(--vuelta-color);
 } */
+
+button.raceButtonHomepage {
+  border-radius: 6px;
+  border-style: none;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  min-height: 5vh;
+  border: 2px solid;
+  background-color: var(--background-color-lighter);
+  color: black;
+}
+
+button.raceButtonHomepage:hover{
+  background-color: var(--default-color-light);
+  -webkit-transition: .4s;
+  transition: .4s;
+  cursor: pointer;
+}
+
+button.raceButtonHomepage.giro{ 
+  background-color: var(--giro-color);
+}
+
+button.raceButtonHomepage.tour{
+  background-color: var(--tour-color);
+}
+
+button.raceButtonHomepage.vuelta{
+  background-color: var(--vuelta-color);
+}
+
+button.raceButtonHomepage.giro:hover{ 
+  background-color: var(--giro-color-light);
+}
+
+button.raceButtonHomepage.tour:hover{
+  background-color: var(--tour-color-light);
+}
+
+button.raceButtonHomepage.vuelta:hover{
+  background-color: var(--vuelta-color-light);
+}
 
 button.buttonStandard:hover{
   background-color: #ddd;

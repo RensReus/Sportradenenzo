@@ -27,28 +27,16 @@ class overzicht extends Component {
   }
 
   stateUpdateAndRender() {
-    if (this.props.match.params.selection !== this.state.currlink) {
-      if (this.props.match.params.racename && this.props.match.params.year) {
-        this.setState({
-          racename: this.props.match.params.racename,
-          year: this.props.match.params.year,
-          oldracelink: '/' + this.props.match.params.racename + '-' + this.props.match.params.year,
-          budget: false,
-          budgetSwitchButton: '',
+    if (this.props.race_id === undefined) { // TODO add cookie
+      this.props.history.push('/home')
+    } else{
+      this.setState({
+        race_id: this.props.race_id,
+        budget: false,
+        budgetSwitchButton: ''
         }, () => {
-          this.props.setRace(this.state.racename)
-          this.renderPage()
-        })
-      } else if (this.props.racename) { //if racename not ''  {
-        this.setState({
-          racename: this.props.racename,
-          year: this.props.year,
-          budget: false,
-          budgetSwitchButton: '',
-        }, () => {
-          this.renderPage()
-        })
-      }
+        this.renderPage()
+      })
     }
   }
 
@@ -99,7 +87,7 @@ class overzicht extends Component {
   }
 
   getDataAndRender(selection, alwaysget) {
-    axios.post('/api/statistics', { selection, alwaysget, racename: this.state.racename, year: this.state.year, budgetparticipation: this.state.budget })
+    axios.post('/api/statistics', { selection, alwaysget, race_id: this.state.race_id, budgetparticipation: this.state.budget })
       .then((res) => {
         if (res.data.mode !== '404') {
           document.title = res.data.title;

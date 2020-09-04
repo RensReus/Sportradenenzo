@@ -37,6 +37,7 @@ class App extends Component {
       isAdmin: false,
       getLogin: true,
       message: '',
+      currentStageLink: '/home',
       race_id: undefined
     });
     this.setRace = this.setRace.bind(this)
@@ -171,7 +172,8 @@ class App extends Component {
   setRace(race){
     this.setState({
       race_id: race.race_id,
-      racename: race.racename
+      racename: race.racename,
+      currentStageLink: "/stage/" + race.stagenr
     })
   }
 
@@ -181,7 +183,7 @@ class App extends Component {
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
       <div className="content">
         <div className="backgroundImage"></div>
-        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} isLoading={this.state.loading} history={this.props.history} racename={this.state.racename} />
+        <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} isLoading={this.state.loading} history={this.props.history} racename={this.state.racename} currentStageLink={this.state.currentStageLink} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (
             this.state.isLoggedIn ? (<Redirect to="/home" />) : (<Redirect to="/login"/>)
