@@ -27,7 +27,7 @@ module.exports = function (app) {
 
 
   app.post('/api/chartuserstagescores', function (req, res) {
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var query = `SELECT username, stagenr, totalscore FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
@@ -92,7 +92,7 @@ module.exports = function (app) {
   })
 
   app.post('/api/chartuserranking', function (req, res) {
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var query = `SELECT username, stagenr, rank() over (PARTITION BY stagenr ORDER BY totalscore desc) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
@@ -151,7 +151,7 @@ module.exports = function (app) {
     if (req.body.budgetparticipation) {
       totalscore = 'totalscore - teamscore AS totalscore'
     }
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation})`
     var query = `SELECT ${totalscore}, lastname, stagenr FROM results_points
             INNER JOIN rider_participation USING (rider_participation_id)
@@ -204,7 +204,7 @@ module.exports = function (app) {
   })
 
   app.post('/api/chartscorespread', function (req, res) {
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var excludeFinalStr = ''
     if (req.body.extraParams.excludeFinal) excludeFinalStr = `AND NOT stagenr = 22`
     var budgetparticipation = req.body.budgetparticipation;
@@ -253,7 +253,7 @@ module.exports = function (app) {
 
   app.post('/api/chartscorespreadgrouped', function (req, res) {
     var budgetparticipation = req.body.budgetparticipation;
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
                 WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
@@ -351,7 +351,7 @@ module.exports = function (app) {
   })
 
   app.post('/api/newchart', function (req, res) {
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var budgetparticipation = req.body.budgetparticipation;
 
     var barQuery = `SELECT username as label, finalscore as y, race_id FROM account_participation

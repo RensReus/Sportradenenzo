@@ -57,11 +57,7 @@ class Stage extends Component {
   }
 
   componentDidMount() {
-    this.initialSetState();
-  }
-
-  initialSetState() {
-    if (this.props.race_id === undefined) {
+    if (this.props.race_id === undefined) { // TODO add cookie
       this.props.history.push('/home')
     } else{
       let classificationIndex = 0;

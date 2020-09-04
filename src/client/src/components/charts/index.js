@@ -65,8 +65,7 @@ class Charts extends Component {
     super(props);
     this.state = {
       options: {},
-      racename: '',
-      year: '',
+      race_id: '',
       budget: false,
       theme: "dark1",
       grouped: false,
@@ -78,19 +77,11 @@ class Charts extends Component {
   }
 
   componentDidMount() {
-    if (this.props.match.params.racename && this.props.match.params.year) {
+    if (this.props.race_id === undefined) { // TODO add cookie
+      this.props.history.push('/home')
+    } else{
       this.setState({
-        racename: this.props.match.params.racename,
-        year: this.props.match.params.year,
-        budget: false,
-      }, () => {
-        this.props.setRace(this.state.racename)
-        this.renderPage()
-      })
-    } else if (this.props.racename) { //if racename not ''  {
-      this.setState({
-        racename: this.props.racename,
-        year: this.props.year,
+        race_id: this.props.race_id,
         budget: false,
       }, () => {
         this.renderPage()
@@ -134,7 +125,7 @@ class Charts extends Component {
       default:
         apilink += 'userscores'
     }
-    axios.post(apilink, { racename: this.state.racename, year: this.state.year, budgetparticipation: this.state.budget, extraParams })
+    axios.post(apilink, { race_id: this.state.race_id, budgetparticipation: this.state.budget, extraParams })
       .then((res) => {
         if (res.data.mode !== '404') {
           this.setState({ options: res.data.options, showGroupedSwitchButton })
