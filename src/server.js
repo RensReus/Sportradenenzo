@@ -63,5 +63,6 @@ require('./server/api/raceprogression')(app);
 require('./server/api/racestatistics')(app);
 require('./server/api/charts')(app);
 require('./server/api/stageresults')(app);
+require('./server/api/stageselection')(app);
 require('./server/api/teamselection')(app);
 require('./server/api/userparticipation')(app);

@@ -33,11 +33,13 @@ class App extends Component {
     this.state = ({
       loading: true,
       isLoggedIn: false,
-      redirect: '/',
+      redirect: '/home',
       isAdmin: false,
       getLogin: true,
-      message: ''
+      message: '',
+      race_id: undefined
     });
+    this.setRace = this.setRace.bind(this)
   }
 
   componentDidMount() {
@@ -46,7 +48,6 @@ class App extends Component {
     if(localStorage.getItem('authToken') && this.state.getLogin){
       axios.post('/api/getlogin', {token: localStorage.getItem('authToken')})
         .then(res => {
-          console.log(res)
           this.setState({
             isLoggedIn: res.data.isLoggedIn,
             isAdmin: res.data.admin, 
@@ -167,6 +168,13 @@ class App extends Component {
     }
   }
 
+  setRace(race){
+    this.setState({
+      race_id: race.race_id,
+      racename: race.racename
+    })
+  }
+
   render() {
     return (
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
@@ -176,26 +184,22 @@ class App extends Component {
         <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} isLoading={this.state.loading} history={this.props.history} racename={this.state.racename} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (
-            this.state.isLoggedIn ? (<Home history={this.props.history} />) : (<Redirect to={this.state.redirect} />)
+            this.state.isLoggedIn ? (<Redirect to="/home" />) : (<Redirect to="/login"/>)
           )} />
           <Route exact path="/login" render={() => (
-            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} Signup={true} />)
+            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} Signup={false} />)
           )} />
-          <ReactRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} racename={this.state.racename} year={this.state.year} />
-          <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} redirect={this.state.redirect} racename={this.state.racename} year={this.state.year} />
+          <ReactRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
+          <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} race_id={this.state.race_id} />
           <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
           <ReactRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
-          <ReactRoute exact path="/overzicht/:selection" component={Overzicht} history={this.props.history} racename={this.state.racename} year={this.state.year} redirect={this.state.redirect} />
+          <ReactRoute exact path="/overzicht/:selection" component={Overzicht} history={this.props.history} race_id={this.state.race_id} />
           <ReactRoute path="/profile/id/:account_id" component={Profile} history={this.props.history} />
           <ReactRoute exact path="/profile/:username" component={Profile} history={this.props.history} />
           <ReactRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} /> {/* TODO per rider_id en dan verschillende participations tonen, pas als vorige races in de DB staan */}
-          <ReactRoute exact path="/charts/:chartname" component={Charts} history={this.props.history} racename={this.state.racename} year={this.state.year} />
+          <ReactRoute exact path="/charts/:chartname" component={Charts} history={this.props.history} race_id={this.state.race_id} />
+          <ReactRoute path="/home" component={Home} history={this.props.history} setRace={this.setRace}/>
           <ReactRoute path="/404" component={Fourofour} history={this.props.history} message={this.state.message} />
-
-          {/* alle paginas voor vorige races */}
-          <ReactRoute exact path="/:racename-:year/stage/:stagenumber" component={Stage} history={this.props.history} setRace={this.setRace} />
-          <ReactRoute exact path="/:racename-:year/overzicht/:selection" component={Overzicht} history={this.props.history} setRace={this.setRace} />
-          <ReactRoute exact path="/:racename-:year/charts/:chartname" component={Charts} history={this.props.history} setRace={this.setRace} />
         </div>
       </div>
     );

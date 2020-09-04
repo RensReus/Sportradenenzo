@@ -61,30 +61,18 @@ class Stage extends Component {
   }
 
   initialSetState() {
-    if (this.props.match.params.racename && this.props.match.params.year) {//not current race
+    if (this.props.race_id === undefined) {
+      this.props.history.push('/home')
+    } else{
       let classificationIndex = 0;
       if (this.state.stage === 22) classificationIndex += 1;
       this.setState({
-        racename: this.props.match.params.racename,
-        year: this.props.match.params.year,
-        oldracelink: '/' + this.props.match.params.racename + '-' + this.props.match.params.year,
+        racename: this.props.racename,
+        race_id: this.props.race_id,
         classificationIndex
       }, () => {
         this.updateData(this.state.stage)
-        this.props.setRace(this.state.racename)
       })
-    } else {
-      if (this.props.racename) { //if racename not ''
-        let classificationIndex = 0;
-        if (this.state.stage === 22) classificationIndex += 1;
-        this.setState({
-          racename: this.props.racename,
-          year: this.props.year,
-          classificationIndex
-        }, () => {
-          this.updateData(this.state.stage)
-        })
-      }
     }
   }
 
@@ -154,12 +142,11 @@ class Stage extends Component {
     if (isNaN(stage)) { //related to currentstage error TODO remove when fixed
       return;
     }
-    const racename = this.state.racename;
-    const year = this.state.year;
+    const race_id = this.state.race_id;
     const budget = this.state.budget;
     document.title = "Etappe " + stage;
     if (!this.state.pouleTeamResultDownloaded[budget]) {
-      axios.post('/api/getstage', { racename, year, stage, budgetParticipation: budget })
+      axios.post('/api/getstage', { race_id, stage, budgetParticipation: budget })
         .then((res) => {
           if (res.data.mode === '404') {
             this.setState({
@@ -207,8 +194,7 @@ class Stage extends Component {
   }
 
   getStageResults() {
-    const racename = this.state.racename;
-    const year = this.state.year;
+    const race_id = this.state.race_id;
     const stage = this.state.stage;
     const budget = this.state.budget;
     const classificationIndex = this.state.classificationIndex;
@@ -216,7 +202,7 @@ class Stage extends Component {
       this.setState({
         loadingStageres: true,
       })
-      axios.post('/api/getStageResults', { racename, year, stage, budgetParticipation: budget, classificationIndex })
+      axios.post('/api/getStageResults', { race_id, stage, budgetParticipation: budget, classificationIndex })
         .then((res) => {
           this.setDownloadedTrue(budget, classificationIndex);
           let newResults = _.cloneDeep(this.state.stageResults);
@@ -231,11 +217,10 @@ class Stage extends Component {
   }
 
   getAllSelections() { //TODO add loader
-    const racename = this.state.racename;
-    const year = this.state.year;
+    const race_id = this.state.race_id;
     const stage = this.state.stage;
     const budget = this.state.budget;
-    axios.post('/api/getAllSelections', { racename, year, stage, budgetParticipation: budget })
+    axios.post('/api/getAllSelections', { race_id, stage, budgetParticipation: budget })
       .then((res) => {
         let newAllSelections = _.cloneDeep(this.state.allSelections);
         newAllSelections[budget] = res.data.allSelections;
@@ -274,10 +259,9 @@ class Stage extends Component {
 
   setKopman(rider_participation_id) {
     const stage = this.state.stage
-    const racename = this.state.racename
-    const year = this.state.year
+    const race_id = this.state.race_id
     const budget = this.state.budget
-    axios.post('/api/setkopman', { racename, year, stage, rider_participation_id, budgetParticipation: budget })
+    axios.post('/api/setkopman', { race_id, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
         let kopman = _.cloneDeep(this.state.kopman);
         kopman[budget] = res.data.kopman;
@@ -289,11 +273,11 @@ class Stage extends Component {
   }
 
   removeKopman(rider_participation_id) {
+    console.log("removekopman")
     const stage = this.state.stage
-    const racename = this.state.racename
-    const year = this.state.year
+    const race_id = this.state.race_id
     const budget = this.state.budget
-    axios.post('/api/removekopman', { racename, year, stage, rider_participation_id, budgetParticipation: budget })
+    axios.post('/api/removekopman', { race_id, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
         let kopman = _.cloneDeep(this.state.kopman);
         kopman[budget] = res.data.kopman;
@@ -307,15 +291,14 @@ class Stage extends Component {
   addRemoveRider(rider_participation_id, addRemove) {
     var link = '';
     const stage = this.state.stage
-    const racename = this.state.racename
-    const year = this.state.year
+    const race_id = this.state.race_id
     const budget = this.state.budget
     if (addRemove === 'add') {
       link = '/api/addridertostage';
     } else if (addRemove === 'remove') {
       link = '/api/removeriderfromstage';
     }
-    axios.post(link, { racename, year, stage, rider_participation_id, budgetParticipation: budget })
+    axios.post(link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
         let kopman = _.cloneDeep(this.state.kopman)
         kopman[budget] = res.data.kopman;
@@ -339,13 +322,13 @@ class Stage extends Component {
     let selectionsCompleteDiv
     // always
     var stageProfile = '';
-    if (this.state.racename && this.state.year) {//TODO netter, check if file exists
+    if (this.state.race_id === 17) {//TODO netter, check if file/folder exists
       stageProfile = <div>
-        <img className='profileImage' src={require(`../../stageProfiles/${this.state.racename}/${this.state.year}/etappe-${this.state.stage}.jpg`)} alt="profile" />
+        <img className='profileImage' src={require(`../../stageProfiles/${this.state.race_id}/etappe-${this.state.stage}.jpg`)} alt="profile" />
         <br></br>
         finish
         <br></br>
-        <img className='profileImage' src={require(`../../stageProfiles/${this.state.racename}/${this.state.year}/etappe-${this.state.stage}-finish.jpg`)} alt="profile" />
+        <img className='profileImage' src={require(`../../stageProfiles/${this.state.race_id}/etappe-${this.state.stage}-finish.jpg`)} alt="profile" />
       </div>
     }
     //selection

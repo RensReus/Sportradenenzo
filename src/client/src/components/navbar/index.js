@@ -33,7 +33,7 @@ class Navbar extends Component {
     }
     return (
       <div className={"navbar " + this.props.racename}>
-        <Link className='navbar_itemhome' to='/home'>
+        <Link className='navbar_itemhome' to='/'>
           <SRELogo className={'navbar_homelogo ' + this.props.racename} />
         </Link>
         <div className='navbar_itemcontainer'>

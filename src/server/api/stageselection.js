@@ -4,7 +4,7 @@ const sqlDB = require('../db/sqlDB')
 module.exports = function (app) {
   app.post('/api/setkopman', function (req, res) {
     var budgetParticipation = req.body.budgetParticipation == 1;
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
     var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${req.body.stage} AND race_id=${race_id})`
     var selectionCompleteQuery = selectionsCompleteQuery(race_id, req.body.stage, req.user.account_id);
@@ -19,12 +19,12 @@ module.exports = function (app) {
         selectionsComplete: sqlres[1].rows.map(x => x.complete)
       })
     })
-
   });
 
   app.post('/api/removekopman', function (req, res) {
+    console.log('called removekopman')
     var budgetParticipation = req.body.budgetParticipation == 1;
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${req.body.stage} AND race_id=${race_id})`
     var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
     var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE stage_id = ${stage_id} AND account_participation_id = ${account_participation_id})`
@@ -43,7 +43,7 @@ module.exports = function (app) {
 
   app.post('/api/removeriderfromstage', function (req, res) {
     var budgetParticipation = req.body.budgetParticipation == 1;
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
     var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${req.body.stage} AND race_id=${race_id})`
     var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id})`
@@ -54,7 +54,7 @@ module.exports = function (app) {
     query += removeKopmanQuery;
     sqlDB.query(query, (err, sqlres) => {
       if (err) { console.log("WRONG QUERY:", query); throw err; }
-      var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+      var race_id = req.body.race_id;
       var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
       var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${req.body.stage} AND race_id=${race_id})`
       var stage_selection_riderQuery = `SELECT * FROM stage_selection_rider
@@ -82,10 +82,10 @@ module.exports = function (app) {
 
   app.post('/api/addridertostage', function (req, res) {
     var budgetParticipation = req.body.budgetParticipation == 1;
-    var values = [req.user.account_id, req.body.racename, req.body.year, budgetParticipation, req.body.stage];
-    var race_id = `(SELECT race_id FROM race WHERE name = $2 AND year = $3)`;
-    var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id} AND budgetParticipation = $4)`;
-    var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=$5 AND race_id=${race_id})`
+    var values = [req.user.account_id, budgetParticipation, req.body.stage];
+    var race_id = req.body.race_id;
+    var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id} AND budgetParticipation = $2)`;
+    var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=$3 AND race_id=${race_id})`
     var query = `SELECT * FROM stage_selection_rider
                             INNER JOIN stage_selection USING (stage_selection_id)
                             INNER JOIN rider_participation USING (rider_participation_id)
@@ -96,14 +96,14 @@ module.exports = function (app) {
       if (result.rows.length === 9) {
         res.send(false)
       } else {
-        var values = [req.user.account_id, req.body.racename, req.body.year, budgetParticipation, req.body.stage, req.body.rider_participation_id];
+        var values = [req.user.account_id, budgetParticipation, req.body.stage, req.body.rider_participation_id];
         var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id})`
         var query = `INSERT INTO stage_selection_rider (stage_selection_id, rider_participation_id)
-                                            VALUES (${stage_selection_id},$6)
+                                            VALUES (${stage_selection_id},$4)
                                             ON CONFLICT (rider_participation_id,stage_selection_id) DO NOTHING`
         sqlDB.query(query, values, (err, sqlres) => {
           if (err) throw err;
-          var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+          var race_id = req.body.race_id;
           var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
           var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${req.body.stage} AND race_id=${race_id})`
           var stage_selection_riderQuery = `SELECT * FROM stage_selection_rider

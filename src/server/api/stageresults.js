@@ -3,7 +3,7 @@ const sqlDB = require('../db/sqlDB')
 
 module.exports = function (app) {
   app.post('/api/getstage', function (req, res) {
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var now = new Date();
     var stagenr = req.body.stage;
     var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${stagenr})`;
@@ -108,7 +108,7 @@ module.exports = function (app) {
   });
 
   app.post('/api/getStageResults', function (req, res) {
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var now = new Date();
     var query = `SELECT starttime FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
     sqlDB.query(query, (err, results) => {
@@ -168,7 +168,7 @@ module.exports = function (app) {
   });
 
   app.post('/api/getAllSelections', function (req, res) {
-    var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+    var race_id = req.body.race_id;
     var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
     var budgetParticipation = req.body.budgetParticipation == 1;
     var budgetscore = '';
@@ -260,7 +260,7 @@ module.exports = function (app) {
         lastStage = true;
       }
 
-      var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
+      var race_id = req.body.race_id;
       var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stageNumber})`;
       var account_participation_id = `(SELECT account_participation_id FROM account_participation 
                 WHERE account_id=${req.user.account_id} AND race_id=${race_id})`;
