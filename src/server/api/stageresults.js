@@ -191,20 +191,20 @@ module.exports = function (app) {
           var totalscore = `CASE ${kopman} THEN totalscore + stagescore * .5 ELSE totalscore END`
           var name = `CASE ${kopman} THEN CONCAT('*', firstname, ' ', lastname) ELSE CONCAT(firstname, ' ', lastname) END  AS "Name"`
           var teampoints = ` COALESCE(teamscore,0) as "Team",`;
-          if (budgetParticipation === 'true') teampoints = '';
+          if (budgetParticipation) teampoints = '';
           var teamresultQuery = `SELECT ${name}, COALESCE(${stagescore},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", ${teampoints} COALESCE(${totalscore},0) as "Total"
-                                FROM stage_selection_rider 
-                                INNER JOIN rider_participation USING(rider_participation_id)
-                                LEFT JOIN results_points ON results_points.rider_participation_id = rider_participation.rider_participation_id  AND results_points.stage_id = ${stage_id}
-                                INNER JOIN rider USING(rider_id)
-                                WHERE stage_selection_id = ${stage_selection_id}
-                                ORDER BY "Total" DESC, "Stage" DESC; `;
+          FROM stage_selection_rider 
+          INNER JOIN rider_participation USING(rider_participation_id)
+          LEFT JOIN results_points ON results_points.rider_participation_id = rider_participation.rider_participation_id  AND results_points.stage_id = ${stage_id}
+          INNER JOIN rider USING(rider_id)
+          WHERE stage_selection_id = ${stage_selection_id}
+          ORDER BY "Total" DESC, "Stage" DESC; `;
 
           var userscoresQuery = `SELECT RANK() OVER(ORDER by totalscore DESC) AS " ", CONCAT('/profile/',account_id) AS "User_link", username AS "User", stagescore AS "Stage", totalscore AS "Total" FROM stage_selection
-                                            INNER JOIN account_participation USING(account_participation_id)
-                                            INNER JOIN account USING(account_id)
-                                            WHERE stage_id=${stage_id} AND budgetparticipation = ${budgetParticipation}
-                                            ORDER BY "Total" DESC; `;
+          INNER JOIN account_participation USING(account_participation_id)
+          INNER JOIN account USING(account_id)
+          WHERE stage_id=${stage_id} AND budgetparticipation = ${budgetParticipation}
+          ORDER BY "Total" DESC; `;
 
           var resultsCompleteQuery = `SELECT complete FROM stage WHERE stage_id = ${stage_id}`
           var totalQuery = teamresultQuery + userscoresQuery + resultsCompleteQuery;
@@ -307,8 +307,8 @@ module.exports = function (app) {
     var race_id = `(SELECT race_id FROM race WHERE name = '${req.body.racename}' AND year = ${req.body.year})`;
     var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
     var budgetParticipation = req.body.budgetParticipation == 1;
-    var budgetscore = '';
-    if (budgetParticipation === 'true') { budgetscore = ' - teamscore ' }
+    var minusTeampoints = '';
+    if (budgetParticipation) { minusTeampoints = ' - teamscore ' }
     var account_participation_id = `(SELECT account_participation_id FROM account_participation 
             WHERE account_id=${req.user.account_id} AND race_id=${race_id} AND budgetparticipation = ${budgetParticipation})`;
     var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
@@ -316,47 +316,47 @@ module.exports = function (app) {
     var inteam = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'bold gray' ELSE '' END`
     var inSelection = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'bold black' ELSE ${inteam} END`
     var rowClassName = `${inSelection} AS "rowClassName"`;
-    var selectionsQuery = `SELECT username, ARRAY_AGG(json_build_object('Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score',CASE WHEN kopman THEN totalscore ${budgetscore} + 0.5*stagescore ELSE totalscore ${budgetscore} END,'rowClassName',"rowClassName")) AS riders FROM
-                (SELECT username,CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, results_points.teamscore, kopman_id = rider_participation.rider_participation_id as kopman, ${rowClassName}  FROM  stage_selection_rider
-                INNER JOIN rider_participation USING (rider_participation_id)
-                INNER JOIN rider USING (rider_id)
-                INNER JOIN stage_selection USING(stage_selection_id)
-                INNER JOIN account_participation USING(account_participation_id)
-                INNER JOIN account USING(account_id)
-                LEFT JOIN results_points ON results_points.rider_participation_id = rider_participation.rider_participation_id  AND results_points.stage_id = ${stage_id}
-                WHERE stage_selection.stage_id = ${stage_id} AND budgetparticipation = ${budgetParticipation}
-                ) a
-                GROUP BY username;\n`;
+    var selectionsQuery = `SELECT username, ARRAY_AGG(json_build_object('Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score',CASE WHEN kopman THEN totalscore ${minusTeampoints} + 0.5*stagescore ELSE totalscore ${minusTeampoints} END,'rowClassName',"rowClassName")) AS riders FROM
+    (SELECT username,CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, results_points.teamscore, kopman_id = rider_participation.rider_participation_id as kopman, ${rowClassName}  FROM  stage_selection_rider
+    INNER JOIN rider_participation USING (rider_participation_id)
+    INNER JOIN rider USING (rider_id)
+    INNER JOIN stage_selection USING(stage_selection_id)
+    INNER JOIN account_participation USING(account_participation_id)
+    INNER JOIN account USING(account_id)
+    LEFT JOIN results_points ON results_points.rider_participation_id = rider_participation.rider_participation_id  AND results_points.stage_id = ${stage_id}
+    WHERE stage_selection.stage_id = ${stage_id} AND budgetparticipation = ${budgetParticipation}
+    ) a
+    GROUP BY username;\n`;
 
     var allnotselected = `(
-                SELECT rider_participation_id, account_participation_id FROM team_selection_rider
-                INNER JOIN account_participation USING(account_participation_id )
-                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetParticipation} 
-                EXCEPT
-                SELECT rider_participation_id, account_participation_id FROM stage_selection_rider 
-                INNER JOIN stage_selection USING(stage_selection_id)
-                INNER JOIN account_participation USING(account_participation_id)
-                WHERE stage_id = ${stage_id} AND budgetparticipation = ${budgetParticipation}
-                ) a`
+    SELECT rider_participation_id, account_participation_id FROM team_selection_rider
+    INNER JOIN account_participation USING(account_participation_id )
+    WHERE race_id = ${race_id} AND budgetparticipation = ${budgetParticipation} 
+    EXCEPT
+    SELECT rider_participation_id, account_participation_id FROM stage_selection_rider 
+    INNER JOIN stage_selection USING(stage_selection_id)
+    INNER JOIN account_participation USING(account_participation_id)
+    WHERE stage_id = ${stage_id} AND budgetparticipation = ${budgetParticipation}
+    ) a`
 
     var allselectedriders = `(SELECT rider_participation_id FROM stage_selection_rider 
-                INNER JOIN stage_selection USING(stage_selection_id)
-                INNER JOIN account_participation USING(account_participation_id)
-                WHERE stage_id = ${stage_id} AND budgetparticipation = ${budgetParticipation} 
-                GROUP BY rider_participation_id
-                UNION
-                SELECT rider_participation_id FROM rider_participation
-                INNER JOIN results_points USING(rider_participation_id)
-                WHERE totalscore > 0 AND stage_id = ${stage_id})`
+    INNER JOIN stage_selection USING(stage_selection_id)
+    INNER JOIN account_participation USING(account_participation_id)
+    WHERE stage_id = ${stage_id} AND budgetparticipation = ${budgetParticipation} 
+    GROUP BY rider_participation_id
+    UNION
+    SELECT rider_participation_id FROM rider_participation
+    INNER JOIN results_points USING(rider_participation_id)
+    WHERE totalscore > 0 AND stage_id = ${stage_id})`
 
-    var notSelectedQuery = `SELECT username, ARRAY_AGG(json_build_object('Name', CONCAT(firstname, ' ', lastname), 'Score',totalscore ${budgetscore})) AS riders FROM ${allnotselected} 
-                INNER JOIN account_participation USING(account_participation_id)
-                INNER JOIN account USING(account_id)
-                INNER JOIN rider_participation USING(rider_participation_id)
-                INNER JOIN rider USING(rider_id)
-                LEFT JOIN results_points ON results_points.rider_participation_id = a.rider_participation_id AND results_points.stage_id = ${stage_id} 
-                WHERE a.rider_participation_id in ${allselectedriders} 
-                GROUP BY username; \n`
+    var notSelectedQuery = `SELECT username, ARRAY_AGG(json_build_object('Name', CONCAT(firstname, ' ', lastname), 'Score',totalscore ${minusTeampoints})) AS riders FROM ${allnotselected} 
+    INNER JOIN account_participation USING(account_participation_id)
+    INNER JOIN account USING(account_id)
+    INNER JOIN rider_participation USING(rider_participation_id)
+    INNER JOIN rider USING(rider_id)
+    LEFT JOIN results_points ON results_points.rider_participation_id = a.rider_participation_id AND results_points.stage_id = ${stage_id} 
+    WHERE a.rider_participation_id in ${allselectedriders} 
+    GROUP BY username; \n`
     var query = selectionsQuery + notSelectedQuery;
     sqlDB.query(query, (err, allSelectionsResults) => {
       if (err) { console.log("WRONG QUERY:", query); throw err; }

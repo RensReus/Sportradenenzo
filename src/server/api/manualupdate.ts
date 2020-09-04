@@ -117,33 +117,34 @@ module.exports = (app, current_race) => {
 
   app.post('/api/copyTeamIfSelectionEmpty', (req, res) => {
     if (req.user.admin) {
-      const currentStagenr = 0;
+      console.log(req.body)
+      const stagenr = 6;
+      const race_id = `(SELECT race_id FROM race WHERE name = '${req.body.raceName}' AND year = ${req.body.year})`;
       const stage_id = `(SELECT stage_id FROM stage
-                          WHERE stagenr = ${currentStagenr} AND race_id = ${race_id})`;
+                          WHERE stagenr = ${stagenr} AND race_id = ${race_id})`;
 
-      const prevStage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${currentStagenr} - 1)`;
+      const prevStage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${stagenr} - 1)`;
       const accountsWithoutSelectionQuery = `SELECT account_participation_id, stage_selection_id FROM stage_selection
                                             LEFT JOIN stage_selection_rider USING (stage_selection_id)
                                             WHERE stage_id = ${stage_id}
                                             GROUP BY account_participation_id, stage_selection_id
                                             HAVING COUNT(rider_participation_id) = 0`;
-      sqlDB.query(accountsWithoutSelectionQuery, (err, res) => {
+      sqlDB.query(accountsWithoutSelectionQuery, (err, noSelectionResults) => {
         if (err) { console.log('WRONG QUERY:', accountsWithoutSelectionQuery); throw err; }
-        let totalQuery: string;
-        for (const i of Object.keys(res.rows)) {// for each account_participation with an empty stage_selection for the stage that just started
-          const prevStage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE stage_id = ${prevStage_id} AND account_participation_id = ${res.rows[i].account_participation_id})`;
+        let totalQuery: string = '';
+        for (const i of Object.keys(noSelectionResults.rows)) {// for each account_participation with an empty stage_selection for the stage that just started
+          const prevStage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE stage_id = ${prevStage_id} AND account_participation_id = ${noSelectionResults.rows[i].account_participation_id})`;
           // SELECT all riders from previous stage selection and insert into current stage
           const insertPrevSelection = `INSERT INTO stage_selection_rider(stage_selection_id, rider_participation_id)
-              SELECT ${res.rows[i].stage_selection_id}, rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${prevStage_selection_id};\n`;
+              SELECT ${noSelectionResults.rows[i].stage_selection_id}, rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${prevStage_selection_id};\n`;
           const prevKopman_id = `(SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${prevStage_selection_id})`;
-          const insertPrevKopman = `UPDATE stage_selection SET kopman_id = ${prevKopman_id} WHERE stage_selection_id = ${res.rows[i].stage_selection_id};\n`;
+          const insertPrevKopman = `UPDATE stage_selection SET kopman_id = ${prevKopman_id} WHERE stage_selection_id = ${noSelectionResults.rows[i].stage_selection_id};\n`;
           totalQuery += insertPrevSelection + insertPrevKopman;
         }
-
-        if (res.rows.length) {
+        if (noSelectionResults.rows.length) {
           sqlDB.query(totalQuery, (err, results) => {
             if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
-            console.log('Copied selections', res.rowCount);
+            console.log('Copied selections', noSelectionResults.rowCount);
           });
         }
       });

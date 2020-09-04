@@ -150,8 +150,10 @@ class manualupdate extends Component {
       })
   }
 
-  copyTeamIfSelectionEmpty() {
-    axios.post('/api/copyTeamIfSelectionEmpty', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken') })
+  copyTeamIfSelectionEmpty(e) {
+    e.preventDefault();
+    var stage = Number(this.state.grStage);
+    axios.post('/api/copyTeamIfSelectionEmpty', { raceName: this.state.raceName, year: this.state.year, stage })
       .then((res) => {
         this.setState({ grStage: res.data })
       })
@@ -211,9 +213,11 @@ class manualupdate extends Component {
             <button>Submit</button>
           </form>
 
-          <div className="row">
-            <button onClick={this.copyTeamIfSelectionEmpty}>Opstelling vergeten Copy.</button>
-          </div>
+          <form className="row" action="" onSubmit={this.copyTeamIfSelectionEmpty}>
+            <div className="discription">Opstelling vergeten Copy. </div>
+            <input className={"inputfield "} id="gr" ref="gr" placeholder="Stage #" value={this.state.grStage} onChange={this.changeGRText} />
+            <button>Submit</button>
+          </form>
 
           <div className="row">
             <button onClick={this.copyTeamSelectionsFinalStage}>Copy Teamselections for final points</button>
