@@ -6,7 +6,7 @@ import underConstruction from '../../under_construction.gif'
 class RacesTable extends Component {
   render() {
     let racelinks = this.props.races.map(race => {
-      return <button className={"raceButtonHomepage " + race.name} onClick={() => this.props.goToRace(race)}><span className="h7 bold">Go to {race.name.charAt(0).toUpperCase() + race.name.slice(1)} - {race.year}</span></button>
+      return <button className={"raceButtonHomepage " + race.name} key={race.name + race.year} onClick={() => this.props.goToRace(race)}><span className="h7 bold">Go to {race.name.charAt(0).toUpperCase() + race.name.slice(1)} - {race.year}</span></button>
     });
     return (
       <div>
@@ -42,7 +42,7 @@ class Home extends Component {
           activeRaces: res.data.activeRaces
         })
       })
-      axios.post('/api/getfinishedraces')
+    axios.post('/api/getfinishedraces')
       .then(res => {
         this.setState({
           finishedRaces: res.data.finishedRaces
@@ -52,7 +52,7 @@ class Home extends Component {
 
   goToRace(race) {
     this.props.setRace(race)
-    this.props.history.push('/stage/'+race.stagenr)
+    this.props.history.push('/stage/' + race.stagenr)
   }
 
 
@@ -60,10 +60,10 @@ class Home extends Component {
     return (
       <div className="standardContainer">
         <div className="activeRaces">
-          <RacesTable races={this.state.activeRaces} goToRace={this.goToRace} title={"Lopende Races"}/>
+          <RacesTable races={this.state.activeRaces} goToRace={this.goToRace} title={"Lopende Races"} />
         </div>
         <div className="finishedRace">
-          <RacesTable races={this.state.finishedRaces} goToRace={this.goToRace} title={"Afgelopen Races"}/>
+          <RacesTable races={this.state.finishedRaces} goToRace={this.goToRace} title={"Afgelopen Races"} />
         </div>
         <img src={underConstruction} alt="still building" />
                 Coming Soon meer hier

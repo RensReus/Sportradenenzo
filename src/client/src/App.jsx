@@ -30,66 +30,8 @@ const jwtDecode = require('jwt-decode');
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = ({
-      loading: true,
-      isLoggedIn: false,
-      redirect: '/home',
-      isAdmin: false,
-      getLogin: true,
-      message: '',
-      currentStageLink: '/home',
-      race_id: undefined,
-      racename: ''
-    });
-    this.setRace = this.setRace.bind(this)
-  }
-
-  componentWillMount() {
-    let race_id = sessionStorage.getItem('race_id')
-    let racename = sessionStorage.getItem('racename')
-    let currentStageLink = sessionStorage.getItem('currentStageLink')
-    if (race_id !== null){
-      console.log("set state using session storage")
-      this.setState({
-        race_id,
-        racename,
-        currentStageLink
-      })
-    }
-  }
-
-  componentDidMount() {
-    //Eenmalig controleren of de gebruiker is ingelogd bij het initiele laden van de pagina
-    //Na dit zal de authentication gaan via de interceptor
-    if(localStorage.getItem('authToken') && this.state.getLogin){
-      axios.post('/api/getlogin', {token: localStorage.getItem('authToken')})
-        .then(res => {
-          this.setState({
-            isLoggedIn: res.data.isLoggedIn,
-            isAdmin: res.data.admin, 
-            getLogin: false, 
-            loading: false
-          })
-          if(!res.data){
-            this.setState({
-              getLogin: false,
-              redirect: this.props.history.location.pathname // voor redirect na inloggen
-            })
-            this.props.history.replace('/login')
-          }
-        })
-    } else {
-      this.setState({
-        getLogin: false, 
-        loading: false, 
-        redirect: this.props.history.loacation.pathname
-      })
-      this.props.history.replace('/login')
-    }
     //Start de response interceptor
-    createAxiosResponseInterceptor();
-    //Bind de huidige this voor gebruik in de interceptors
-    const self = this;
+    this.createAxiosResponseInterceptor();
     //De request interceptor voegt aan elke response naar de server de authtoken toe aan de request header
     axios.interceptors.request.use(
       reqConfig => {
@@ -113,75 +55,119 @@ class App extends Component {
         return Promise.reject(error);
       }
     );
-    //Maak een function van de response interceptor zodat deze uitgeschakeld kan worden      
-    function createAxiosResponseInterceptor() {
-      const interceptor = axios.interceptors.response.use(
-        response => {
-          if (!self.state.isLoggedIn) {
-            if (response.headers.authorization) {
-              self.setState({
-                isLoggedIn: true,
-                isAdmin: jwtDecode(response.headers.authorization).admin
-              });
-            } else {
-              self.setState({
-                isLoggedIn: true,
-                isAdmin: jwtDecode(localStorage.getItem('authToken')).admin
-              });
-            }
+    // check voor huidige race
+    let race_id = sessionStorage.getItem('race_id')
+    let racename = sessionStorage.getItem('racename')
+    let currentStageLink = sessionStorage.getItem('currentStageLink')
+    if (currentStageLink === null) currentStageLink = '/home'
+    this.state = ({
+      loading: true,
+      isLoggedIn: false,
+      redirect: '/home',
+      isAdmin: false,
+      message: '',
+      currentStageLink,
+      race_id,
+      racename
+    });
+    this.setRace = this.setRace.bind(this)
+    this.createAxiosResponseInterceptor = this.createAxiosResponseInterceptor.bind(this)
+  }
+
+  componentDidMount() {
+    //Eenmalig controleren of de gebruiker is ingelogd bij het initiele laden van de pagina
+    //Na dit zal de authentication gaan via de interceptor
+    if(localStorage.getItem('authToken')){
+      axios.post('/api/getlogin', {token: localStorage.getItem('authToken')})
+        .then(res => {
+          this.setState({
+            isLoggedIn: res.data.isLoggedIn,
+            isAdmin: res.data.admin, 
+            loading: false
+          })
+          if(!res.data){
+            this.setState({
+              redirect: this.props.history.location.pathname // voor redirect na inloggen
+            })
+            this.props.history.replace('/login')
           }
-          return response
-        }, (error) => {
-          console.log("error:" + error)
-          switch (error.response.status) {
-            case 401: //Geen token gevonden
-              console.log('Not authorized');
-              if (self.state.isLoggedIn) {
-                self.setState({
-                  isLoggedIn: false,
-                  isAdmin: false
-                })
-              }                
-              //Redirect als uitgelogd en niet op de main pagina
-              if (self.props.history.location.pathname !== '/') {
-                console.log('redir')
-                self.setState({
-                  redirect: self.props.history.location.pathname // voor redirect na inloggen
-                })
-                self.props.history.replace('/')
-              }
-              break;
-            case 404:
-              self.setState({
-                redirect: self.props.history.location.pathname // voor redirect na inloggen
-              })
-              self.setState({
-                message: error.response.data
-              })
-              self.props.history.replace('/404')
-              break;
-            case 498: //Refresh token aangemaakt, stuur request opnieuw
-              return new Promise((resolve) => {
-                //Eject de interceptor voor de retry om loop te voorkomen
-                axios.interceptors.response.eject(interceptor);
-                //Sla de teruggestuurde token op in de local storage
-                localStorage.setItem('authToken', error.response.headers.authorization)
-                //Voeg de token toe aan de headers
-                error.config.headers.authorization = error.response.headers.authorization;
-                //Retry de request
-                axios(error.config).then(resolve);
-                //Reinstate interceptor
-                createAxiosResponseInterceptor();
-              })
-            default:
-              console.log("Unknown response error")
-              console.log(error)
-              break;
+        })
+    } else {
+      this.setState({
+        loading: false, 
+        redirect: this.props.history.loacation.pathname
+      })
+      this.props.history.replace('/login')
+    } 
+  }
+  
+  createAxiosResponseInterceptor() {
+    const interceptor = axios.interceptors.response.use(
+      response => {
+        if (!this.state.isLoggedIn) {
+          if (response.headers.authorization) {
+            this.setState({
+              isLoggedIn: true,
+              isAdmin: jwtDecode(response.headers.authorization).admin
+            });
+          } else {
+            this.setState({
+              isLoggedIn: true,
+              isAdmin: jwtDecode(localStorage.getItem('authToken')).admin
+            });
           }
-          return Promise.reject(error);
         }
-      );
-    }
+        return response
+      }, (error) => {
+        console.log("error:" + error)
+        switch (error.response.status) {
+          case 401: //Geen token gevonden
+            console.log('Not authorized');
+            if (this.state.isLoggedIn) {
+              this.setState({
+                isLoggedIn: false,
+                isAdmin: false
+              })
+            }                
+            //Redirect als uitgelogd en niet op de main pagina
+            if (this.props.history.location.pathname !== '/') {
+              console.log('redir')
+              this.setState({
+                redirect: this.props.history.location.pathname // voor redirect na inloggen
+              })
+              this.props.history.replace('/')
+            }
+            break;
+          case 404:
+            this.setState({
+              redirect: this.props.history.location.pathname // voor redirect na inloggen
+            })
+            this.setState({
+              message: error.response.data
+            })
+            this.props.history.replace('/404')
+            break;
+          case 498: //Refresh token aangemaakt, stuur request opnieuw
+            return new Promise((resolve) => {
+              //Eject de interceptor voor de retry om loop te voorkomen
+              axios.interceptors.response.eject(interceptor);
+              //Sla de teruggestuurde token op in de local storage
+              localStorage.setItem('authToken', error.response.headers.authorization)
+              //Voeg de token toe aan de headers
+              error.config.headers.authorization = error.response.headers.authorization;
+              //Retry de request
+              axios(error.config).then(resolve);
+              //Reinstate interceptor
+              this.createAxiosResponseInterceptor();
+            })
+          default:
+            console.log("Unknown response error")
+            console.log(error)
+            break;
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
   setRace(race){
