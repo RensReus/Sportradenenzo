@@ -286,7 +286,7 @@ module.exports = function (app) {
           SUM(CASE WHEN yocpos != 0 THEN 1 ELSE 0 END) AS yoc
           FROM results_points 
           WHERE stage_id = ${stage_id};\n `
-          var resultsQuery = `SELECT ${classifications[i].pos} AS " " ${classifications[i].change}, ${link}, ${ridername}, ${team}, ${classifications[i].result}, ${rowClassName}
+          var resultsQuery = `SELECT ${classifications[i].pos} AS " " ${classifications[i].change}, country, ${link}, ${ridername}, ${team}, ${classifications[i].result}, ${rowClassName}
                             FROM results_points
                             INNER JOIN rider_participation USING(rider_participation_id)
                             INNER JOIN rider USING(rider_id)
