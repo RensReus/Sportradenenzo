@@ -154,7 +154,7 @@ module.exports = function (app) {
       } else {
         if (now < starttimeResults.rows[0].starttime && stagenr != 22) { // if before deadline and not stage '22' (finalstandings)
           var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
-          var teamSelectionQuery = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id, dnf FROM rider_participation
+          var teamSelectionQuery = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id, dnf, country FROM rider_participation
           INNER JOIN rider using(rider_id)
           WHERE rider_participation_id IN ${teamselection}
           ORDER BY dnf, price DESC;\n `;
