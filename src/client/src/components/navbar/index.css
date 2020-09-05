@@ -69,7 +69,7 @@
 }
 
 .navbar_homelogo:hover {
-  fill: var(--vuelta-color-light); /* TODO different logo colors  */
+  fill: var(--vuelta-color-light);
   transition: 0.3s;
   cursor: pointer;
 }

@@ -40,7 +40,7 @@ class StatistiekenDropdown extends Component {
         {
           this.state.showMenu
             ? (
-              <div className="navbar_dropdown-content"> {/* TODO add /racename-year/ oid to link */}
+              <div className="navbar_dropdown-content">
                 <Link className='navbar_dropdown_item h9' to='/overzicht/etappewinsten'>Uitslagen per etappe</Link>
                 <Link className='navbar_dropdown_item h9' to='/overzicht/rondewinsten'>Uitslagen per ronde</Link>
                 <Link className='navbar_dropdown_item h9' to='/overzicht/all'>Alle renners</Link>

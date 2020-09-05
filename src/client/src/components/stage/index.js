@@ -133,9 +133,6 @@ class Stage extends Component {
     if (stage > 22 || stage < 1) {
       this.props.history.push('/');
     }
-    if (isNaN(stage)) { //related to currentstage error TODO remove when fixed
-      return;
-    }
     const race_id = this.props.race_id;
     const budget = this.state.budget;
     document.title = "Etappe " + stage;

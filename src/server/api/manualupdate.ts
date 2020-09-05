@@ -153,7 +153,6 @@ module.exports = (app) => {
   });
 
   app.post('/api/import', (req, res) => {
-    // TODO Rens remove rider participation and add team selection rider
     if (req.user.admin) {
       const race_idQuery = `SELECT race_id FROM race
           WHERE year = ${req.body.year} AND name = '${req.body.raceName}';\n`;
