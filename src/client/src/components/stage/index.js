@@ -57,7 +57,7 @@ class Stage extends Component {
   }
 
   componentDidMount() {
-    if (this.props.race_id === undefined) { // TODO add cookie
+    if (this.props.race_id === undefined) {
       this.props.history.push('/home')
     } else{
       let classificationIndex = 0;

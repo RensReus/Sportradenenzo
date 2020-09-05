@@ -64,7 +64,6 @@ class LogInSignUp extends Component{
         }
     }
     render() {
-        console.log(this.props)
         let submit;
         let usernamefield;
         let buttontext;

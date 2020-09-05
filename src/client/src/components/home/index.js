@@ -38,7 +38,6 @@ class Home extends Component {
       })
     axios.post('/api/getactiveraces')
       .then(res => {
-        console.log(res.data.activeRaces)
         this.setState({
           activeRaces: res.data.activeRaces
         })

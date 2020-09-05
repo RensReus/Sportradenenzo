@@ -38,9 +38,24 @@ class App extends Component {
       getLogin: true,
       message: '',
       currentStageLink: '/home',
-      race_id: undefined
+      race_id: undefined,
+      racename: ''
     });
     this.setRace = this.setRace.bind(this)
+  }
+
+  componentWillMount() {
+    let race_id = sessionStorage.getItem('race_id')
+    let racename = sessionStorage.getItem('racename')
+    let currentStageLink = sessionStorage.getItem('currentStageLink')
+    if (race_id !== null){
+      console.log("set state using session storage")
+      this.setState({
+        race_id,
+        racename,
+        currentStageLink
+      })
+    }
   }
 
   componentDidMount() {
@@ -172,9 +187,12 @@ class App extends Component {
   setRace(race){
     this.setState({
       race_id: race.race_id,
-      racename: race.racename,
+      racename: race.name,
       currentStageLink: "/stage/" + race.stagenr
     })
+    sessionStorage.setItem('race_id',race.race_id)
+    sessionStorage.setItem('racename',race.name)
+    sessionStorage.setItem('currentStageLink',"/stage/" + race.stagenr)
   }
 
   render() {
