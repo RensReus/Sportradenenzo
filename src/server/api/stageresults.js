@@ -136,7 +136,7 @@ module.exports = function (app) {
           var inSelection = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'bold black' ELSE ${inteam} END`
           var rowClassName = `${inSelection} AS "rowClassName"`;
           var ridername = `CONCAT(initials, ' ', lastname) AS "Name"`
-          var link = `CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link"`
+          var link = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link"`
           var team = `team AS "Team"`
           var i = req.body.classificationIndex;
           var resultsLengthQuery = `SELECT SUM(CASE WHEN stagepos != 0 THEN 1 ELSE 0 END) AS stage, 
@@ -533,7 +533,7 @@ module.exports = function (app) {
     var rowClassName = `CONCAT(${inSelection},' ', ${inteam}) AS "rowClassName"`;
     var stage_idPrev = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${stagenr - 1})`;
     var name = `CONCAT(firstname, ' ', lastname) AS "Name"`
-    var link = `CONCAT('/rider/',rider_participation.rider_participation_id) AS "Name_link"`
+    var link = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link"`
     var team = `team AS "Team"`
 
     var classifications = [

@@ -57,7 +57,7 @@ module.exports = (app) => {
     // let query = `SELECT finalscore, name, year, race_id FROM account_participation
     // INNER JOIN race USING(race_id)
     // WHERE finished AND account_id = ${req.user.account_id}`;
-    let query = `SELECT stagenr, complete,race_id,name,year FROM stage 
+    let query = `SELECT stagenr, complete,race_id,name,year, race.finished FROM stage 
     INNER JOIN race USING(race_id)
     WHERE race.finished AND stagenr = 22`;
     sqlDB.query(query, (err, results2) => {

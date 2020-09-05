@@ -202,7 +202,7 @@ class App extends Component {
           <ReactRoute exact path="/overzicht/:selection" component={Overzicht} history={this.props.history} race_id={this.state.race_id} />
           <ReactRoute path="/profile/id/:account_id" component={Profile} history={this.props.history} />
           <ReactRoute exact path="/profile/:username" component={Profile} history={this.props.history} />
-          <ReactRoute path="/rider/:rider_participation_id" component={Rider} history={this.props.history} /> {/* TODO per rider_id en dan verschillende participations tonen, pas als vorige races in de DB staan */}
+          <ReactRoute path="/rider/:rider_id" component={Rider} history={this.props.history} />
           <ReactRoute exact path="/charts/:chartname" component={Charts} history={this.props.history} race_id={this.state.race_id} />
           <ReactRoute path="/home" component={Home} history={this.props.history} setRace={this.setRace}/>
           <ReactRoute path="/404" component={Fourofour} history={this.props.history} message={this.state.message} />

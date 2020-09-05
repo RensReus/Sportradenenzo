@@ -1,4 +1,4 @@
-button.buttonStandard {
+button.buttonStandard, button.raceButton {
   border-radius: 6px;
   border-style: none;
   font-weight: bold;
@@ -25,64 +25,52 @@ button.buttonStandard.blue:hover{
   transition: .4s;
   cursor: pointer;
 }
-/*  */
 
-
-/* button.buttonStandard.giro{ TODO figure out a better solution
-  color: var(--giro-color);
-}
-
-button.buttonStandard.tour{
-  color: var(--tour-color);
-}
-
-button.buttonStandard.vuelta{
-  color: var(--vuelta-color);
-} */
-
-button.raceButtonHomepage {
-  border-radius: 6px;
-  border-style: none;
-  font-weight: bold;
-  font-size: 15px;
-  padding: 2px;
-  padding-left: 5px;
-  padding-right: 5px;
-  min-height: 5vh;
-  border: 2px solid;
-  background-color: var(--background-color-lighter);
+button.raceButton {
   color: black;
 }
 
-button.raceButtonHomepage:hover{
+button.raceButton:hover{
   background-color: var(--default-color-light);
   -webkit-transition: .4s;
   transition: .4s;
   cursor: pointer;
 }
 
-button.raceButtonHomepage.giro{ 
+button.raceButton.giro{ 
   background-color: var(--giro-color);
 }
 
-button.raceButtonHomepage.tour{
+button.raceButton.tour{
   background-color: var(--tour-color);
 }
 
-button.raceButtonHomepage.vuelta{
+button.raceButton.vuelta{
   background-color: var(--vuelta-color);
 }
 
-button.raceButtonHomepage.giro:hover{ 
+button.raceButton.classics{
+  background-color: var(--default-color);
+}
+
+button.raceButton.giro:hover{ 
   background-color: var(--giro-color-light);
 }
 
-button.raceButtonHomepage.tour:hover{
+button.raceButton.tour:hover{
   background-color: var(--tour-color-light);
 }
 
-button.raceButtonHomepage.vuelta:hover{
+button.raceButton.vuelta:hover{
   background-color: var(--vuelta-color-light);
+}
+
+button.raceButton.classics:hover{
+  background-color: var(--default-color-light);
+}
+
+button.raceButton:disabled{
+  background-color: gray;
 }
 
 button.buttonStandard:hover{

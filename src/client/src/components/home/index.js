@@ -6,7 +6,7 @@ import underConstruction from '../../under_construction.gif'
 class RacesTable extends Component {
   render() {
     let racelinks = this.props.races.map(race => {
-      return <button className={"raceButtonHomepage " + race.name} key={race.name + race.year} onClick={() => this.props.goToRace(race)}><span className="h7 bold">Go to {race.name.charAt(0).toUpperCase() + race.name.slice(1)} - {race.year}</span></button>
+      return <button className={"raceButton " + race.name} key={race.name + race.year} onClick={() => this.props.goToRace(race)}><span className="h7 bold">Go to {race.name.charAt(0).toUpperCase() + race.name.slice(1)} - {race.year}</span></button>
     });
     return (
       <div>
@@ -57,7 +57,11 @@ class Home extends Component {
 
   goToRace(race) {
     this.props.setRace(race)
-    this.props.history.push('/stage/' + race.stagenr)
+    // if (race.finished){
+    //   this.props.history.push('/raceoverview')
+    // } else {
+      this.props.history.push('/stage/' + race.stagenr)
+    // }
   }
 
 
