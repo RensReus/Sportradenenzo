@@ -139,6 +139,10 @@ module.exports = function (app) {
         axisX: {
           interval: 1,
           title: "Stage"
+        },
+        axisY:{
+          reversed:  true,
+          title: "Rank"
         }
       }
       var options = makeOptions("Ranking", "Positie na iedere etappe", "Rank", toolTip, data, extraFields)

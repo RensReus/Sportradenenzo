@@ -12,7 +12,7 @@
   position: fixed;
   width: 100vw;
   display: grid;
-  grid-template-columns: 210px auto 150px;
+  grid-template-columns: 210px auto 180px;
 }
 
 .navbar.dark {
@@ -68,8 +68,36 @@
   stroke: var(--vuelta-color);
 }
 
+.navbar_homelogo.tour{
+  fill: var(--tour-color);
+  stroke: var(--tour-color);
+}
+
+.navbar_homelogo.giro{
+  fill: var(--giro-color);
+  stroke: var(--giro-color);
+}
+
+.navbar_homelogo.vuelta:hover {
+  fill: var(--vuelta-color-light); 
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.navbar_homelogo.tour:hover {
+  fill: var(--tour-color-light); 
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.navbar_homelogo.giro:hover {
+  fill: var(--giro-color-light); 
+  transition: 0.3s;
+  cursor: pointer;
+}
+
 .navbar_homelogo:hover {
-  fill: var(--vuelta-color-light);
+  fill: var(--default-color-light); 
   transition: 0.3s;
   cursor: pointer;
 }
@@ -81,7 +109,7 @@
   float: right;
   padding-top: 4px;
   padding-right: 10px;
-  grid-column: 3 / 4;
+  /* grid-column: 3 / 4; */
 }
 
 .navbar_itemcontainer {

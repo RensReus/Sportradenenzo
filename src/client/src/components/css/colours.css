@@ -70,11 +70,11 @@ html{
     --default-color: var(--blue4);
     --default-color-light: var(--blue5);
 
-    --giro-color: var(--pink4);
+    --giro-color: var(--pink5);
     --giro-color-light: var(--pink6);
 
     --tour-color: var(--yellow4);
-    --tour-color-light: var(--yellow6);
+    --tour-color-light: var(--yellow3);
     
     --vuelta-color: var(--red4);
     --vuelta-color-light: var(--red6);

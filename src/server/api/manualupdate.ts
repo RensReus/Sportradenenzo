@@ -59,7 +59,7 @@ module.exports = (app) => {
     if (req.user.admin) {
       const year = parseInt(req.body.year, 10);
       const name = req.body.raceName;
-      const race = {name, year}
+      const race = { name, year }
       const stage = parseInt(req.body.stage, 10);
       if (req.body.stage === 'all') {
         const stages = Array.apply(null, { length: 22 }).map(Number.call, Number);
@@ -127,23 +127,22 @@ module.exports = (app) => {
                                             WHERE stage_id = ${stage_id}
                                             GROUP BY account_participation_id, stage_selection_id
                                             HAVING COUNT(rider_participation_id) = 0`;
-      sqlDB.query(accountsWithoutSelectionQuery, (err, res) => {
+      sqlDB.query(accountsWithoutSelectionQuery, (err, noSelectionResults) => {
         if (err) { console.log('WRONG QUERY:', accountsWithoutSelectionQuery); throw err; }
-        let totalQuery: string;
-        for (const i of Object.keys(res.rows)) {// for each account_participation with an empty stage_selection for the stage that just started
-          const prevStage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE stage_id = ${prevStage_id} AND account_participation_id = ${res.rows[i].account_participation_id})`;
+        let totalQuery: string = '';
+        for (const i of Object.keys(noSelectionResults.rows)) {// for each account_participation with an empty stage_selection for the stage that just started
+          const prevStage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE stage_id = ${prevStage_id} AND account_participation_id = ${noSelectionResults.rows[i].account_participation_id})`;
           // SELECT all riders from previous stage selection and insert into current stage
           const insertPrevSelection = `INSERT INTO stage_selection_rider(stage_selection_id, rider_participation_id)
-              SELECT ${res.rows[i].stage_selection_id}, rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${prevStage_selection_id};\n`;
+              SELECT ${noSelectionResults.rows[i].stage_selection_id}, rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${prevStage_selection_id};\n`;
           const prevKopman_id = `(SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${prevStage_selection_id})`;
-          const insertPrevKopman = `UPDATE stage_selection SET kopman_id = ${prevKopman_id} WHERE stage_selection_id = ${res.rows[i].stage_selection_id};\n`;
+          const insertPrevKopman = `UPDATE stage_selection SET kopman_id = ${prevKopman_id} WHERE stage_selection_id = ${noSelectionResults.rows[i].stage_selection_id};\n`;
           totalQuery += insertPrevSelection + insertPrevKopman;
         }
-
-        if (res.rows.length) {
-          sqlDB.query(totalQuery, (err) => {
+        if (noSelectionResults.rows.length) {
+          sqlDB.query(totalQuery, (err, results) => {
             if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
-            console.log('Copied selections', res.rowCount);
+            console.log('Copied selections', noSelectionResults.rowCount);
           });
         }
       });
@@ -193,25 +192,25 @@ module.exports = (app) => {
             stage_selection_riderQuery = stage_selection_riderQuery.slice(0, -1) + ')'
           }
           if (race.stage_selection_rider.length) { stage_selection_riderQuery += 'ON CONFLICT(stage_selection_id,rider_participation_id) DO NOTHING;\n'; }
-          // rider_participation
-          let rider_participationQuery: string;
-          if (race.rider_participation.length) { rider_participationQuery = 'INSERT INTO rider_participation VALUES'; }
-          for (const i of Object.keys(race.rider_participation)) {
-            if (i !== '0') { rider_participationQuery += ','; }
-            rider_participationQuery += '(';
-            for (var prop in race.rider_participation[i]) {
-              if (typeof race.rider_participation[i][prop] === 'string') {
-                rider_participationQuery += `'${race.rider_participation[i][prop]}',`;
+          // team_selection_rider
+          let team_selection_riderQuery: string;
+          if (race.team_selection_rider.length) { team_selection_riderQuery = 'INSERT INTO team_selection_rider VALUES'; }
+          for (const i of Object.keys(race.team_selection_rider)) {
+            if (i !== '0') { team_selection_riderQuery += ','; }
+            team_selection_riderQuery += '(';
+            for (var prop in race.team_selection_rider[i]) {
+              if (typeof race.team_selection_rider[i][prop] === 'string') {
+                team_selection_riderQuery += `'${race.team_selection_rider[i][prop]}',`
               } else {
-                rider_participationQuery += race.rider_participation[i][prop] + ',';
+                team_selection_riderQuery += race.team_selection_rider[i][prop] + ','
               }
             }
-            rider_participationQuery = rider_participationQuery.slice(0, -1) + ')';
+            team_selection_riderQuery = team_selection_riderQuery.slice(0, -1) + ')'
           }
-          if (race.rider_participation.length) { rider_participationQuery += ' ON CONFLICT(race_id,rider_id) DO NOTHING;\n'; }
-          const totalQuery = results_pointsQuery + stage_selection_riderQuery;
+          if (race.team_selection_rider.length) { team_selection_riderQuery += 'ON CONFLICT(account_participation_id,rider_participation_id) DO NOTHING;\n'; }
+          const totalQuery = results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
           sqlDB.query(totalQuery, (err, results2) => {
-            if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
+            if (err) { console.log('WRONG QUERY:', team_selection_riderQuery); throw err; }
             console.log('IMPORTED ', req.body.raceName, req.body.year);
             console.log(results2);
             res.send('Import Succesful');

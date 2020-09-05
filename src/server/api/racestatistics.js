@@ -297,7 +297,8 @@ module.exports = (app) => {
   function missedpointsall (race_id, budgetparticipation, callback){
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)
-                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation};`
+                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
+                ORDER BY account_id;`
     sqlDB.query(usersQuery, (err, results) => {
       if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
       async.map(results.rows, function (account, done) {
@@ -391,8 +392,9 @@ module.exports = (app) => {
   function teamoverzichtall (race_id, budgetparticipation, callback){
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
-                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation};`
-    sqlDB.query(usersQuery, (err, results) => {
+                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
+                ORDER BY account_id;`
+                sqlDB.query(usersQuery, (err, results) => {
       if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
       async.map(results.rows, function (account, done) {
         teamoverzichtuser(account.account_participation_id, budgetparticipation, false, function (err, teamoverzicht) {
@@ -408,8 +410,9 @@ module.exports = (app) => {
   function teamoverzichtallsimple (race_id, budgetparticipation, callback){
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
-                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation};`
-    sqlDB.query(usersQuery, (err, results) => {
+                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
+                ORDER BY account_id;`
+                sqlDB.query(usersQuery, (err, results) => {
       if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
       async.map(results.rows, function (account, done) {
         teamoverzichtuser(account.account_participation_id, budgetparticipation, true, function (err, teamoverzicht) {
