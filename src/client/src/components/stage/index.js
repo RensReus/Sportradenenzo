@@ -20,7 +20,6 @@ class Stage extends Component {
       loadingAll: true,
       loadingStageres: false,
       loadingSelection: false,
-      racename: '',
       year: '',
       budget: 0,
       stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
@@ -64,7 +63,6 @@ class Stage extends Component {
       if (this.state.stage === 22) classificationIndex += 1;
       this.setState({
         racename: this.props.racename,
-        race_id: this.props.race_id,
         classificationIndex
       }, () => {
         this.updateData(this.state.stage)
@@ -138,16 +136,14 @@ class Stage extends Component {
     if (isNaN(stage)) { //related to currentstage error TODO remove when fixed
       return;
     }
-    const race_id = this.state.race_id;
+    const race_id = this.props.race_id;
     const budget = this.state.budget;
     document.title = "Etappe " + stage;
     if (!this.state.pouleTeamResultDownloaded[budget]) {
       axios.post('/api/getstage', { race_id, stage, budgetParticipation: budget })
         .then((res) => {
           if (res.data.mode === '404') {
-            this.setState({
-              mode: '404',
-            })
+            this.props.history.push('/');
           } else if (res.data.mode === 'selection') {
             let teamSelection = _.cloneDeep(this.state.teamSelection)
             teamSelection[budget] = res.data.teamSelection;
@@ -190,7 +186,7 @@ class Stage extends Component {
   }
 
   getStageResults() {
-    const race_id = this.state.race_id;
+    const race_id = this.props.race_id;
     const stage = this.state.stage;
     const budget = this.state.budget;
     const classificationIndex = this.state.classificationIndex;
@@ -213,7 +209,7 @@ class Stage extends Component {
   }
 
   getAllSelections() { //TODO add loader
-    const race_id = this.state.race_id;
+    const race_id = this.props.race_id;
     const stage = this.state.stage;
     const budget = this.state.budget;
     axios.post('/api/getAllSelections', { race_id, stage, budgetParticipation: budget })
@@ -255,7 +251,7 @@ class Stage extends Component {
 
   setKopman(rider_participation_id) {
     const stage = this.state.stage
-    const race_id = this.state.race_id
+    const race_id = this.props.race_id
     const budget = this.state.budget
     axios.post('/api/setkopman', { race_id, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
@@ -269,9 +265,8 @@ class Stage extends Component {
   }
 
   removeKopman(rider_participation_id) {
-    console.log("removekopman")
     const stage = this.state.stage
-    const race_id = this.state.race_id
+    const race_id = this.props.race_id
     const budget = this.state.budget
     axios.post('/api/removekopman', { race_id, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
@@ -287,7 +282,7 @@ class Stage extends Component {
   addRemoveRider(rider_participation_id, addRemove) {
     var link = '';
     const stage = this.state.stage
-    const race_id = this.state.race_id
+    const race_id = this.props.race_id
     const budget = this.state.budget
     if (addRemove === 'add') {
       link = '/api/addridertostage';
@@ -318,13 +313,13 @@ class Stage extends Component {
     let selectionsCompleteDiv
     // always
     var stageProfile = '';
-    if (this.state.race_id === 17) {//TODO netter, check if file/folder exists
+    if (this.props.race_id === 17) {//TODO netter, check if file/folder exists
       stageProfile = <div>
-        <img className='profileImage' src={require(`../../stageProfiles/${this.state.race_id}/etappe-${this.state.stage}.jpg`)} alt="profile" />
+        <img className='profileImage' src={require(`../../stageProfiles/${this.props.race_id}/etappe-${this.state.stage}.jpg`)} alt="profile" />
         <br></br>
         finish
         <br></br>
-        <img className='profileImage' src={require(`../../stageProfiles/${this.state.race_id}/etappe-${this.state.stage}-finish.jpg`)} alt="profile" />
+        <img className='profileImage' src={require(`../../stageProfiles/${this.props.race_id}/etappe-${this.state.stage}-finish.jpg`)} alt="profile" />
       </div>
     }
     //selection
@@ -347,7 +342,7 @@ class Stage extends Component {
         allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections[i].tableData} title={allSelections[i].title + totalRiders} coltype={allSelections[i].coltype} />{notSelectedTable}</div>)
       }
       allSelectionsPopup = <ModalButton
-        cssClassButton={"buttonStandard " + this.state.racename}
+        cssClassButton={"buttonStandard " + this.props.racename}
         content="Alle opstellingen "
         modalContent={allSelectionsPopupContent}
         callback={this.getAllSelections}
@@ -362,16 +357,16 @@ class Stage extends Component {
           <div className="stageInfo">
             <div className='stagetext'>
               <div id="prevStageButton">
-                <button className={"buttonStandard " + this.state.racename} onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
+                <button className={"buttonStandard " + this.props.racename} onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
               </div>
               <span className="bold black h7">Stage: {this.state.stage}</span>
               <div id="nextStageButton">
-                <button className={"buttonStandard " + this.state.racename} onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
+                <button className={"buttonStandard " + this.props.racename} onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
               </div>
             </div>
             <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
             <ModalButton
-              cssClassButton={"buttonStandard " + this.state.racename}
+              cssClassButton={"buttonStandard " + this.props.racename}
               content="Profile "
               contentIcon={<FontAwesomeIcon icon={faMountain} />}
               modalContent={stageProfile}

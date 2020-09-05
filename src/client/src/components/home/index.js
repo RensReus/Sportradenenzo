@@ -38,8 +38,13 @@ class Home extends Component {
       })
     axios.post('/api/getactiveraces')
       .then(res => {
+        let activeRaces = res.data.activeRaces;
         this.setState({
-          activeRaces: res.data.activeRaces
+          activeRaces
+        },()=>{
+          if (activeRaces.length && localStorage.getItem('autoRedirectOnHomepage') === 'true'){
+            this.goToRace(activeRaces[0])
+          }
         })
       })
     axios.post('/api/getfinishedraces')
