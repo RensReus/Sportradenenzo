@@ -191,7 +191,10 @@ module.exports = function (app) {
           var totalscore = `CASE ${kopman} THEN totalscore + stagescore * .5 ELSE totalscore END`
           var name = `CASE ${kopman} THEN CONCAT('*', firstname, ' ', lastname) ELSE CONCAT(firstname, ' ', lastname) END  AS "Name"`
           var teampoints = ` COALESCE(teamscore,0) as "Team",`;
-          if (budgetParticipation) teampoints = '';
+          if (budgetParticipation) {
+            teampoints = '';
+            totalscore = `CASE ${kopman} THEN totalscore - teamscore + stagescore * .5 ELSE totalscore - teamscore END`
+          }
           var teamresultQuery = `SELECT ${name}, COALESCE(${stagescore},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", ${teampoints} COALESCE(${totalscore},0) as "Total"
           FROM stage_selection_rider 
           INNER JOIN rider_participation USING(rider_participation_id)
@@ -218,13 +221,14 @@ module.exports = function (app) {
             if (uitslagresults[0].rowCount) {
               teamresult = uitslagresults[0].rows;
               var totalteam = { "Name": "Totaal", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Team": 0, "Total": 0 }
+              if (budgetParticipation) totalteam = { "Name": "Totaal", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Total": 0 };
               for (var i in teamresult) {
                 totalteam.Stage += parseInt(teamresult[i].Stage);
                 totalteam.AK += teamresult[i].AK;
                 totalteam.Punten += teamresult[i].Punten;
                 totalteam.Berg += teamresult[i].Berg;
                 totalteam.Jong += teamresult[i].Jong;
-                totalteam.Team += teamresult[i].Team;
+                if(!budgetParticipation) totalteam.Team += teamresult[i].Team;
                 totalteam.Total += parseInt(teamresult[i].Total);
               }
               teamresult.push(totalteam);
