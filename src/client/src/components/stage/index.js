@@ -312,11 +312,11 @@ class Stage extends Component {
     var stageProfile = '';
     if (this.props.race_id === 17) {//TODO netter, check if file/folder exists
       stageProfile = <div>
-        <img className='profileImage' src={require(`../../stageProfiles/${this.props.race_id}/etappe-${this.state.stage}.jpg`)} alt="profile" />
+        <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '.jpg'} alt="profile" />
         <br></br>
         finish
         <br></br>
-        <img className='profileImage' src={require(`../../stageProfiles/${this.props.race_id}/etappe-${this.state.stage}-finish.jpg`)} alt="profile" />
+        <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '-finish.jpg'} alt="profile" />
       </div>
     }
     //selection
