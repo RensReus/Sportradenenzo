@@ -20,16 +20,19 @@ class Navbar extends Component {
     let buttonSignUp;
     let currStage;
     let raceOverview;
+    let settings;
     if (this.props.isLoading) {
       //Do nothing yet
     } else if (this.props.isLoggedIn) {
       buttonLog = <button className='navbar_item h8' onClick={() => this.logout()}>Logout</button>;
       currStage = <Link className='navbar_item' to={this.props.currentStageLink}><span className="h8">Current stage</span></Link>;
       raceOverview = <button className='navbar_item' ><span className="h8">Race overview</span></button>;
+      settings = <Link className='navbar_item' to="/settings"><span className="h8">Settings</span></Link>;
     } else {
       buttonSignUp = <Link className='navbar_item h8' to="/signup">Sign up</Link>;
       buttonLog = <Link className='navbar_item h8' to="/">Log in</Link>;
       currStage = '';
+      settings = '';
     }
     return (
       <div className={"navbar " + this.props.racename}>
@@ -49,6 +52,7 @@ class Navbar extends Component {
           {this.props.isAdmin &&
             <Link className='navbar_item' to='/admin-sqlinterface'><span className="h8 bold"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>
           }
+          {settings}
           {buttonLog}
         </div>
         <img className="navbar_racelogo" src={`/images/${this.props.racename}.png`} alt="vueltalogo_small"></img>

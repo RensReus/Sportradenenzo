@@ -5,7 +5,7 @@ class stateSwitchButton extends Component {
             <div className='budgettext h7'>
             <span className={this.props.stateVar ? 'bold grayedOut' : 'bold'}>{this.props.stateStrings[0]} </span>
             <label className="switch">
-                <input type="checkbox" onClick={this.props.stateVarSwitch}></input>
+                <input type="checkbox" onClick={this.props.stateVarSwitch} defaultChecked={this.props.stateVar}></input>
                 <span className="slider round"></span>
             </label>
             <span className={this.props.stateVar ? 'bold' : 'bold grayedOut'}> {this.props.stateStrings[1]}</span>

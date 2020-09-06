@@ -18,6 +18,7 @@ import Rider from './components/rider';
 import Rulesandpoints from './components/rulesandpoints';
 import Profile from './components/profile'
 import Fourofour from './components/fourofour'
+import Settings from './components/settings'
 
 //Import de standaard css stukken
 import './components/css/buttons.css'
@@ -206,6 +207,7 @@ class App extends Component {
           <ReactRoute exact path="/charts/:chartname" component={Charts} history={this.props.history} race_id={this.state.race_id} />
           <ReactRoute path="/home" component={Home} history={this.props.history} setRace={this.setRace}/>
           <ReactRoute path="/404" component={Fourofour} history={this.props.history} message={this.state.message} />
+          <ReactRoute path="/settings" component={Settings} history={this.props.history} />
         </div>
       </div>
     );
