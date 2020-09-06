@@ -30,6 +30,7 @@ class Home extends Component {
 
   componentDidMount() {
     document.title = "Home";
+    // TODO in een getHomePageInfo call? dan ook redirect zonder rendering
     axios.post('/api/getracepartcipation')
       .then(res => {
         this.setState({

@@ -29,7 +29,7 @@ class Stage extends Component {
       stageSelectionResults: [[], []],
       userScores: [[], []],
       stageResults: [[], []],
-      stageResultsLengths: [0,0,0,0,0],
+      stageResultsLengths: [0, 0, 0, 0, 0],
       lastStage: false,
       raceStarted: false,
       starttime: '',
@@ -58,7 +58,7 @@ class Stage extends Component {
   componentDidMount() {
     if (this.props.race_id === undefined) {
       this.props.history.push('/home')
-    } else{
+    } else {
       let classificationIndex = 0;
       if (this.state.stage === 22) classificationIndex += 1;
       this.setState({
@@ -310,15 +310,13 @@ class Stage extends Component {
     let selectionsCompleteDiv
     // always
     var stageProfile = '';
-    if (this.props.race_id === 17) {//TODO netter, check if file/folder exists
-      stageProfile = <div>
-        <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '.jpg'} alt="profile" />
-        <br></br>
+    stageProfile = <div>
+      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '.jpg'} alt="profile" />
+      <br></br>
         finish
         <br></br>
-        <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '-finish.jpg'} alt="profile" />
-      </div>
-    }
+      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '-finish.jpg'} alt="profile" />
+    </div>
     //selection
     if (mode === 'results') {
       let allSelections = this.state.allSelections[budget];
@@ -375,7 +373,7 @@ class Stage extends Component {
         {mode === 'selection' && <StageSelectionPage
           teamSelection={this.state.teamSelection[budget]} kopman={this.state.kopman[budget]}
           prevClassifications={this.state.prevClassifications[budget]} stageSelection={this.state.stageSelection[budget]}
-          loadingSelection={this.state.loadingSelection} starttime = {new Date(this.state.starttime)} selectionsComplete = {this.state.selectionsComplete}
+          loadingSelection={this.state.loadingSelection} starttime={new Date(this.state.starttime)} selectionsComplete={this.state.selectionsComplete}
           addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} removeKopman={this.removeKopman}
         />}
 
