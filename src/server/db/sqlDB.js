@@ -15,7 +15,8 @@ types.setTypeParser(20, function(val) {
 const pool = new Pool({
     connectionString: sqlDBstring,
     rejectUnauthorized: false,
-    ssl: true
+    ssl: true,
+    max: 5
 })
 
 module.exports = {
