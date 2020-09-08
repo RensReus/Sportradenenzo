@@ -96,7 +96,7 @@ class App extends Component {
     } else {
       this.setState({
         loading: false, 
-        redirect: this.props.history.loacation.pathname
+        redirect: this.props.history.location.pathname
       })
       this.props.history.replace('/login')
     } 
@@ -183,6 +183,7 @@ class App extends Component {
   }
 
   render() {
+    console.log('history')
     return (
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
