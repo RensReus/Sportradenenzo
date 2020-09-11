@@ -307,7 +307,6 @@ class Stage extends Component {
     const mode = this.state.mode
     const budget = this.state.budget;
     let allSelectionsPopup
-    let selectionsCompleteDiv
     // always
     var stageProfile = '';
     stageProfile = <div>
@@ -366,8 +365,6 @@ class Stage extends Component {
               contentIcon={<FontAwesomeIcon icon={faMountain} />}
               modalContent={stageProfile}
             />
-            {/* Selection */}
-            {selectionsCompleteDiv}
           </div>
         </div>
         {mode === 'selection' && <StageSelectionPage

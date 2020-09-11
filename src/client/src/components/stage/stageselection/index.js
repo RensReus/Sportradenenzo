@@ -8,7 +8,9 @@ class stageSelectionPage extends Component {
   render() {
     const prevClassifications = this.props.prevClassifications;
     var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    var starttimeString = dayArray[this.props.starttime.getDay()] + " " + this.props.starttime.getHours() + ":" + this.props.starttime.getMinutes();
+    var minutes = this.props.starttime.getMinutes();
+    var minutesString = minutes < 10 ? "0" + minutes : minutes;
+    var starttimeString = dayArray[this.props.starttime.getDay()] + " " + this.props.starttime.getHours() + ":" + minutesString;
     return (
       <div className="stageContainer"> {/* TODO? fix css divs/ move to stage selection file */}
         <div className='stagetext'>
