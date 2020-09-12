@@ -251,13 +251,13 @@ module.exports = (app) => {
 
   function getriderpointsselected (race_id, budgetparticipation, callback) {
     var teamscore = ` SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Team",`
-    var totalscore = `SUM(totalscore)/GREATEST(count(DISTINCT username),1) `
+    var totalscore = `totalscore `
     if (budgetparticipation) {
       teamscore = '';
-      totalscore = `SUM(totalscore - teamscore)/GREATEST(count(DISTINCT username),1) `
+      totalscore = `totalscore - teamscore `
     }
     var query = `SELECT  CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team ",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Etappe",  
-    SUM(gcscore)/GREATEST(count(DISTINCT username),1) AS "AK", SUM(pointsscore)/GREATEST(count(DISTINCT username),1) AS "Punten", SUM(komscore)/GREATEST(count(DISTINCT username),1) AS "Berg", SUM(yocscore)/GREATEST(count(DISTINCT username),1) AS "Jong", ${teamscore} ${totalscore}AS "Total", 
+    SUM(gcscore)/GREATEST(count(DISTINCT username),1) AS "AK", SUM(pointsscore)/GREATEST(count(DISTINCT username),1) AS "Punten", SUM(komscore)/GREATEST(count(DISTINCT username),1) AS "Berg", SUM(yocscore)/GREATEST(count(DISTINCT username),1) AS "Jong", ${teamscore} SUM(${totalscore})/GREATEST(count(DISTINCT username),1) AS "Total", 
     ROUND(SUM(${totalscore})/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "Points per Million",  
     count(DISTINCT username) AS "Usercount", string_agg(DISTINCT username, ', ') AS "Users" FROM rider_participation
     LEFT JOIN results_points USING (rider_participation_id)
