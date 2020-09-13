@@ -1,5 +1,4 @@
 import { startSchedule } from "./server/scrape";
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
@@ -47,7 +46,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.set('port', process.env.PORT || 3002);
+app.set('port', process.env.PORT || 3001);
 
 app.listen(app.get('port'), () => {
   console.log(`Magicka accidit`);
