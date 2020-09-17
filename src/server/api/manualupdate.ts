@@ -1,4 +1,4 @@
-import { startSchedule } from "./server/scrape";
+import { startSchedule } from "../scrape";
 
 module.exports = (app) => {
   const race_backup = require('../db/Mongo/models/race_backup.js');
