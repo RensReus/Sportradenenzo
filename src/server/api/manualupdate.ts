@@ -1,3 +1,4 @@
+import { startSchedule } from "./server/scrape";
 
 module.exports = (app) => {
   const race_backup = require('../db/Mongo/models/race_backup.js');
@@ -54,7 +55,6 @@ module.exports = (app) => {
       return res.status(401).send('Access denied. No admin');
     }
   });
-
   app.post('/api/getresults', (req, res) => {
     if (req.user.admin) {
       const year = parseInt(req.body.year, 10);
@@ -76,6 +76,7 @@ module.exports = (app) => {
         scrape.getResult(race, stage, (err, arg) => {
           if (err) { res.send('error'); }
           console.log('Got results %s year %s stage %s', race, stage);
+          startSchedule()
           res.send('completed')
         });
       }
