@@ -283,6 +283,12 @@ var getResult = function (race, et, callback) {
               console.log("Stage %s Complete", et)
             })
           }
+          if (ridersResults['Stage'].length > 0){
+            var stageFinishedQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage_id}`
+            sqlDB.query(stageFinishedQuery, function (err, completeRes) {
+              if (err) { console.log("WRONG QUERY:", stageFinishedQuery); throw err; }
+            })
+          }
         })
         //processing scores and SQL insert
         var finalStandings = false;
