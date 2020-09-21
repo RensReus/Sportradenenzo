@@ -11,7 +11,7 @@ class manualupdate extends Component {
     this.getResultsKlassiek = this.getResultsKlassiek.bind(this);
     this.getStartlist = this.getStartlist.bind(this);
     this.getResults = this.getResults.bind(this);
-    this.copyTeamSelectionsFinalStage = this.copyTeamSelectionsFinalStage.bind(this);
+    this.endRaceActions = this.endRaceActions.bind(this);
     this.copyTeamIfSelectionEmpty = this.copyTeamIfSelectionEmpty.bind(this);
 
     this.changeGSKText = this.changeGSKText.bind(this);
@@ -143,8 +143,8 @@ class manualupdate extends Component {
     this.setState({ raceName: event.target.value });
   }
 
-  copyTeamSelectionsFinalStage() {
-    axios.post('/api/copyTeamSelectionsFinalStage', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken') })
+  endRaceActions() {
+    axios.post('/api/endRaceActions', { raceName: this.state.raceName, year: this.state.year})
       .then((res) => {
         this.setState({ grStage: res.data })
       })
@@ -220,7 +220,7 @@ class manualupdate extends Component {
           </form>
 
           <div className="row">
-            <button onClick={this.copyTeamSelectionsFinalStage}>Copy Teamselections for final points</button>
+            <button onClick={this.endRaceActions}>Race Finished/ Copy Scores</button>
           </div>
 
         </div>

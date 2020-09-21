@@ -85,29 +85,30 @@ module.exports = (app) => {
     }
   });
 
-  app.post('/api/copyTeamSelectionsFinalStage', (req, res) => {
+  app.post('/api/endRaceActions', (req, res) => {
     if (req.user.admin) {
       const race_id = `(SELECT race_id FROM race WHERE name = '${req.body.raceName}' AND year = ${req.body.year})`;
       const accountParticipationsQuery = `SELECT * FROM account_participation WHERE race_id = ${race_id}`;
-      const stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} AND stagenr = 22)`;
       sqlDB.query(accountParticipationsQuery, (err, participations) => {
         if (err) { console.log('WRONG QUERY:', accountParticipationsQuery); throw err; }
-        var copyTeamQuery = `DELETE FROM stage_selection_rider
-          WHERE stage_selection_id IN (SELECT stage_selection_id FROM stage_selection WHERE stage_id = ${stage_id});`;
-        for (const i of Object.keys(participations.rows)) {
-          const account_participation_id = participations.rows[i].account_participation_id;
-          const stage_selection_id = `(SELECT stage_selection_id FROM stage_selection
-              WHERE stage_id = ${stage_id} AND account_participation_id = ${account_participation_id})`;
-          const copyQuery = `INSERT INTO stage_selection_rider(stage_selection_id,rider_participation_id)
-              SELECT ${stage_selection_id}, rider_participation_id FROM team_selection_rider
-              INNER JOIN rider_participation USING (rider_participation_id)
-              WHERE account_participation_id = ${account_participation_id} AND NOT dnf
-              ON CONFLICT DO NOTHING;`;
-          copyTeamQuery += copyQuery;
+        var totalQuery = `UPDATE race set finished = true WHERE race_id = ${race_id};\n `
+        for (var part of participations.rows){
+          var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection 
+            INNER JOIN stage USING(stage_id)
+            WHERE account_participation_id = ${part.account_participation_id} AND type = 'FinalStandings')`
+          var finalscore = `(SELECT totalscore FROM stage_selection 
+            WHERE stage_selection_id = ${stage_selection_id})`;
+
+          var updateAccountScore = `UPDATE account_participation 
+          SET finalscore = ${finalscore} 
+          WHERE account_participation_id = ${part.account_participation_id};\n `
+
+          totalQuery += updateAccountScore;
         }
-        sqlDB.query(copyTeamQuery, (err, results) => {
-          if (err) { console.log('WRONG QUERY:', copyTeamQuery); throw err; }
-          res.send('Copied Teams');
+        sqlDB.query(totalQuery, (err, _) => {
+          if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }~
+          console.log(`Copied ${participations.rows.length} finalscores AND ${req.body.raceName} ${req.body.year} set to finished` )
+          res.send(`${req.body.raceName} ${req.body.year} finished And scores copied`);
         });
       });
     } else {
