@@ -10,7 +10,7 @@ class StageResultsTables extends Component {
   }
 
   componentDidMount() {
-    if (this.props.stage === 22) {
+    if (this.props.stage === 22) { //TODO if Finalstandings
       this.setState({
         classificationIndex: 1
       })

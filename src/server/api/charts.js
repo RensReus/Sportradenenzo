@@ -210,7 +210,7 @@ module.exports = function (app) {
   app.post('/api/chartscorespread', function (req, res) {
     var race_id = req.body.race_id;
     var excludeFinalStr = ''
-    if (req.body.extraParams.excludeFinal) excludeFinalStr = `AND NOT stagenr = 22`
+    if (req.body.extraParams.excludeFinal) excludeFinalStr = `AND NOT type = 'FinalStandings'`
     var budgetparticipation = req.body.budgetparticipation;
 
     var barQuery = `SELECT username as colorlabel, CONCAT(username, ' etappe ', stagenr) as label, stagescore as y FROM stage_selection

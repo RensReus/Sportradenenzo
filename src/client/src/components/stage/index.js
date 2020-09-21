@@ -60,7 +60,7 @@ class Stage extends Component {
       this.props.history.push('/home')
     } else {
       let classificationIndex = 0;
-      if (this.state.stage === 22) classificationIndex += 1;
+      if (this.state.stage === 22) classificationIndex += 1; //TODO change to if stagetype === FinalStandings
       this.setState({
         racename: this.props.racename,
         classificationIndex
@@ -90,7 +90,7 @@ class Stage extends Component {
 
   nextStage() {
     const currentstage = parseInt(this.state.stage)
-    if (currentstage < 22) {
+    if (currentstage < 22) {  //TODO remove next button if FinalStandings
       const currentstage = parseInt(this.state.stage)
       this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage + 1).toString())
       this.setState({
@@ -130,7 +130,7 @@ class Stage extends Component {
   }
 
   updateData(stage) {
-    if (stage > 22 || stage < 1) {
+    if (stage > 22 || stage < 1) { //TODO if FinalStandings/ redirect via backend
       this.props.history.push('/');
     }
     const race_id = this.props.race_id;
@@ -350,11 +350,11 @@ class Stage extends Component {
         <div className="stageContainer">
           <div className="stageInfo">
             <div className='stagetext'>
-              <div id="prevStageButton">
+              <div id="prevStageButton"> {/* TODO hide if stage 1 and race started */}
                 <button className={"buttonStandard " + this.props.racename} onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
               </div>
               <span className="bold black h7">Stage: {this.state.stage}</span>
-              <div id="nextStageButton">
+              <div id="nextStageButton"> {/* TODO hide if Finalstandings  */}
                 <button className={"buttonStandard " + this.props.racename} onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
               </div>
             </div>
