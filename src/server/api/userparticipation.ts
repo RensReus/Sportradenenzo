@@ -17,11 +17,8 @@ module.exports = (app) => {
   });
 
   app.post('/api/getactiveraces', (req, res) => {
-    let activeRacesQuery = `SELECT COUNT(*), race.race_id FROM stage
-    INNER JOIN race USING(race_id)
-    WHERE race.finished = false
-    GROUP BY race.race_id
-    HAVING COUNT(*) = 22`
+    let activeRacesQuery = `SELECT race_id FROM race
+    WHERE race.finished = false AND name IN ('giro','tour','vuelta');`
 
     sqlDB.query(activeRacesQuery, (err, activeRacesResults) => {
       if (err) {
@@ -59,7 +56,7 @@ module.exports = (app) => {
     // WHERE finished AND account_id = ${req.user.account_id}`;
     let query = `SELECT stagenr, complete,race_id,name,year, race.finished FROM stage 
     INNER JOIN race USING(race_id)
-    WHERE race.finished AND stagenr = 22`;
+    WHERE race.finished AND type = 'FinalStandings'`;
     sqlDB.query(query, (err, results2) => {
       if (err) {
         console.log("WRONG QUERY:", query);
