@@ -36,19 +36,19 @@ module.exports = function (app) {
     sqlDB.query(`SELECT * FROM account_participation WHERE race_id = ${race_id} AND account_id = ${account_id}`, (err, results) => {
       if (err) { console.log("GET participation error"); throw err };
       if (results.rows.length) {
-        //TODO in een query voor snelheid
+        //TODO in een query voor snelheid ipv losse functies nu
         async.auto({
           allRiders: function (callback) {
-            SQLread.getAllRiders(race_id, callback) //TODO fix function
+            SQLread.getAllRiders(race_id, callback)
           },
           userSelectionGewoon: function (callback) {
-            SQLread.getTeamSelection(account_id, false, race_id, callback) //TODO fix function
+            SQLread.getTeamSelection(account_id, false, race_id, callback)
           },
           userSelectionBudget: function (callback) {
-            SQLread.getTeamSelection(account_id, true, race_id, callback) //TODO fix function
+            SQLread.getTeamSelection(account_id, true, race_id, callback)
           },
           race: function (callback) {
-            SQLread.getRace(race_id, callback) //TODO fix function
+            SQLread.getRace(race_id, callback)
           }
         }, function (err, results) {
           if (err) throw err;
@@ -159,15 +159,16 @@ module.exports = function (app) {
                 VALUES(${account_id},${race_id},false),(${account_id},${race_id},true) 
                 ON CONFLICT (account_id,race_id,budgetparticipation) DO NOTHING
                 RETURNING (account_participation_id);\n`
+    account_participationQuery += `SELECT COUNT(*) FROM stage WHERE race_id = S${race_id};\n `
 
     sqlDB.query(account_participationQuery, (err, results) => {
       if (err) { console.log("WRONG QUERY:", account_participationQuery); res.send({ participationAdded: false }); throw err; }
 
-      if (results.rows.length === 2) {
+      if (results[0].rows.length === 2) {
         var stage_selectionQuery = `INSERT INTO stage_selection(stage_id,account_participation_id) VALUES`
-        for (let stage = 1; stage < 23; stage++) {
+        for (let stage = 1; stage < results[1].rows[0].count + 1; stage++) {
           let stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage})`
-          stage_selectionQuery += `(${stage_id},${results.rows[0].account_participation_id}),(${stage_id},${results.rows[1].account_participation_id}),`
+          stage_selectionQuery += `(${stage_id},${results[0].rows[0].account_participation_id}),(${stage_id},${results[0].rows[1].account_participation_id}),`
         }
 
         stage_selectionQuery = stage_selectionQuery.slice(0, -1) + `ON CONFLICT (account_participation_id,stage_id) DO NOTHING;\n`
