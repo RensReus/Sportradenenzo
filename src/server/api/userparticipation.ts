@@ -17,8 +17,10 @@ module.exports = (app) => {
   });
 
   app.post('/api/getactiveraces', (req, res) => {
-    let activeRacesQuery = `SELECT race_id FROM race
-    WHERE race.finished = false AND name IN ('giro','tour','vuelta');`
+    let activeRacesQuery = `SELECT race_id, COUNT(stage_id) FROM race
+    INNER JOIN stage USING(race_id)
+    WHERE race.finished = false AND name IN ('giro','tour','vuelta')
+    GROUP BY race_id;`
 
     sqlDB.query(activeRacesQuery, (err, activeRacesResults) => {
       if (err) {
