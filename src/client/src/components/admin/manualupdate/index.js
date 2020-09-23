@@ -38,52 +38,30 @@ class manualupdate extends Component {
   getStartlistKlassiek(e) {
     e.preventDefault();
     this.setState({ gskStage: "In Progress", gskStatus: "inprogress" })
-    var stage = Number(this.state.gskStage);
-    if (Number.isInteger(stage)) {
-      stage = parseInt(stage);
-      if (stage > 0 && stage < 15) {
-        console.log("stage:", stage);
-        axios.post('/api/getstartlistklassiek', { year: 2019, stage: stage, token: localStorage.getItem('authToken') })
-          .then((res) => {
-            this.setState({
-              gskStage: "",
-              gskStatus: res.data
-            })
-          })
-      } else {
-        console.log("not in range", stage)
-      }
-    } else {
-      console.log("not an int:", stage)
-    }
+    axios.post('/api/getstartlistklassiek', { year: 2019, stage: this.state.gskStage })
+      .then((res) => {
+        this.setState({
+          gskStage: "",
+          gskStatus: res.data
+        })
+      })
   }
 
   getResultsKlassiek(e) {
     e.preventDefault();
     this.setState({ grkStage: "In Progress", grkStatus: "inprogress" })
-    var stage = Number(this.state.grkStage);
-    if (Number.isInteger(stage)) {
-      stage = parseInt(stage);
-      if (stage > 0 && stage < 15) {
-        console.log("stage:", stage);
-        axios.post('/api/getresultsklassiek', { year: 2019, stage: stage, token: localStorage.getItem('authToken') })
-          .then((res) => {
-            this.setState({ grkStage: res.data })
-            this.setState({
-              grkStage: "",
-              grkStatus: res.data
-            })
-          })
-      } else {
-        console.log("not in range", stage)
-      }
-    } else {
-      console.log("not an int:", stage)
-    }
+    axios.post('/api/getresultsklassiek', { year: 2019, stage: this.state.grkStage })
+      .then((res) => {
+        this.setState({ grkStage: res.data })
+        this.setState({
+          grkStage: "",
+          grkStatus: res.data
+        })
+      })
   }
 
   getStartlist() {
-    axios.post('/api/getstartlist', { raceName: this.state.raceName, year: this.state.year, token: localStorage.getItem('authToken') })
+    axios.post('/api/getstartlist', { raceName: this.state.raceName, year: this.state.year })
       .then((res) => {
         this.setState({ grStage: res.data })
       })
@@ -92,27 +70,16 @@ class manualupdate extends Component {
   getResults(e) {
     e.preventDefault();
     this.setState({ grStage: "In Progress", grstatus: "inprogress" })
-    var stage = Number(this.state.grStage);
-    if (this.state.grStage === 'all' || Number.isInteger(stage)) {
-      stage = parseInt(stage);
-      if (this.state.grStage === 'all' || (stage > 0 && stage < 23)) {
-        axios({
-          method: 'post',
-          url: '/api/getresults',
-          data: { raceName: this.state.raceName, year: this.state.year, stage: this.state.grStage, token: localStorage.getItem('authToken') },
-          responseType: 'stream'
-        })
-          .then((res) => {
-            console.log(res.data)
-            this.setState({ grStage: res.data })
-          })
-      } else {
-        console.log("not in range", stage)
-      }
-      // axios.post('/api/getresults', { raceName: this.state.raceName, year: this.state.year, stage:  this.state.grStage, token: localStorage.getItem('authToken') })
-    } else {
-      console.log("not an int:", stage)
-    }
+    axios({
+      method: 'post',
+      url: '/api/getresults',
+      data: { raceName: this.state.raceName, year: this.state.year, stage: this.state.grStage },
+      responseType: 'stream'
+    })
+      .then((res) => {
+        console.log(res.data)
+        this.setState({ grStage: res.data })
+      })
   }
 
   //textfield value handlers
@@ -144,7 +111,7 @@ class manualupdate extends Component {
   }
 
   endRaceActions() {
-    axios.post('/api/endRaceActions', { raceName: this.state.raceName, year: this.state.year})
+    axios.post('/api/endRaceActions', { raceName: this.state.raceName, year: this.state.year })
       .then((res) => {
         this.setState({ grStage: res.data })
       })

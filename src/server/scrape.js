@@ -341,11 +341,11 @@ var getResult = function (race, et, callback) {
             if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
             else {
               console.log("Processed results stage", et, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
-              calculateUserScores(race.name, race.year, et, callback)
+              calculateUserScores(race_id, et, callback)
             }
           })
         } else {
-          calculateUserScores(race.name, race.year, et, callback)
+          calculateUserScores(race_id, et, callback)
         }
       }
     })
@@ -475,8 +475,7 @@ var getEindPunten = function (kl, pos) {
   return 0;
 }
 
-var calculateUserScores = function (name, year, stage, callback) {
-  var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = '${name}')`
+var calculateUserScores = function (race_id, stage, callback) {
   var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id};\n`
   var TTTstageQuery = `SELECT stagenr FROM stage WHERE race_id = ${race_id} AND type ='TTT';\n`
   var totalQuery = participantsQuery + TTTstageQuery;
@@ -486,25 +485,34 @@ var calculateUserScores = function (name, year, stage, callback) {
     var TTTstages = res[1].rows.map(stage => stage.stagenr);
     for (var i in res[0].rows) {// voor iedere gewone user
 
-      for (var j = stage; j < 23; j++) {// to show correct totalscores for later stages
+      for (var j = stage; j < 23; j++) {// to show correct totalscores for later stages 
+         //TODO remove 23
         var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
         var account_participation_id = res[0].rows[i].account_participation_id;
         var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
-        var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id = ${stage_id})`
-        var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM stage_selection_rider 
+        var selection_id_val = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id = ${stage_id})`
+        var selection = `stage_selection_rider`
+        var selection_id = `stage_selection_id`
+        var kopmanScore = ` + (COALESCE ((SELECT 0.5 * stagescore FROM results_points
+          WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${selection_id_val}) AND stage_id = ${stage_id}),0))`
+        if (stageType === "FinalStandings"){ //TODO get stageType
+          kopmanScore = ''
+          selection_id = `account_participation_id`
+          selection = 'team_selection_rider'
+          selection_id_val = account_participation_id;
+        }
+        var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM ${selection} 
                                 INNER JOIN results_points USING (rider_participation_id)
-                                WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}),0) `;
+                                WHERE ${selection_id} = ${selection_id_val} AND results_points.stage_id = ${stage_id}),0) `;
         if (res[0].rows[i].budgetparticipation) {// andere stage score voor budget
           var divide2 = "";
           if (TTTstages.includes(j)) {
             divide2 = "/2";
           }
-          stagescore = `COALESCE((SELECT SUM(results_points.totalscore - results_points.teamscore) FROM stage_selection_rider 
+          stagescore = `COALESCE((SELECT SUM(results_points.totalscore - results_points.teamscore) FROM ${selection} 
                     INNER JOIN results_points USING (rider_participation_id)
-                    WHERE stage_selection_id = ${stage_selection_id} AND results_points.stage_id = ${stage_id}),0)${divide2} `;
+                    WHERE ${selection_id} = ${selection_id_val} AND results_points.stage_id = ${stage_id}),0)${divide2} `;
         }
-        var kopmanScore = ` + (COALESCE ((SELECT 0.5 * stagescore FROM results_points
-                                    WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${stage_selection_id}) AND stage_id = ${stage_id}),0))`
         stagescore += kopmanScore;
         var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
         var prevstagesScore = `COALESCE((SELECT SUM(stagescore) FROM stage_selection
