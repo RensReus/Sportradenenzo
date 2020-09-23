@@ -446,44 +446,41 @@ module.exports = (app) => {
     var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
         INNER JOIN stage_selection USING(stage_selection_id)
         WHERE account_participation_id = ${account_participation_id}) a`
-    var race_id = `(SELECT race_id FROM account_participation WHERE account_participation_id = ${account_participation_id})`
     var inteam = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${main_account_participation_id}) THEN 'bold black' ELSE '' END`
     var rowClassName = `${inteam} AS "rowClassName"`;
     var totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 ELSE totalscore END`
     var stagescore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN stagescore * 1.5 ELSE stagescore END`
-    var teamscore = `,  SUM(teamscore) AS "Team"`;
+    var teamscore = `,  COALESCE(SUM(teamscore),0) AS "Team"`;
     var notSelectedteamscore = `,  0 AS "Team"`;
     if (budgetparticipation) {
       totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 - teamscore ELSE totalscore - teamscore END`
       teamscore = '';
       notSelectedteamscore = '';
     }
-    var columns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", SUM(${stagescore}) AS "Stage", SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong" ${teamscore}, SUM(${totalscore}) AS "Total", COUNT(rider_participation_id) AS "Selected", ROUND(SUM(${totalscore})/COUNT(rider_participation_id),0) AS "Per Etappe"`
+    var columns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", COALESCE(SUM(${stagescore}),0) AS "Stage", COALESCE(SUM(gcscore),0) AS "AK", COALESCE(SUM(pointsscore),0) AS "Punten", COALESCE(SUM(komscore),0) AS "Berg", COALESCE(SUM(yocscore),0) AS "Jong" ${teamscore}, COALESCE(SUM(${totalscore}),0) AS "Total", COALESCE(COUNT(rider_participation_id),0) AS "Selected", COALESCE(ROUND(SUM(${totalscore})/COUNT(rider_participation_id),0),0) AS "Per Etappe"`
     var notSelectedColumns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", 0 AS "Stage", 0 AS "AK", 0 AS "Punten", 0 AS "Berg", 0 AS "Jong" ${notSelectedteamscore}, 0 AS "Total", 0 AS "Selected", 0 AS "Per Etappe"`
     var coltype = { "Name": 0, "Stage": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Selected": 1, "Per Etappe": 1 };
     var orderBy = `"Total"`
     if (simple) {
       orderBy = `"Score"`
       coltype = {};
-      columns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", SUM(${totalscore}) AS "Score"`
+      columns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", COALESCE(SUM(${totalscore}),0) AS "Score"`
       notSelectedColumns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", 0 AS "Score"`
     }
-    var finishedAnyStage = `(SELECT rider_participation_id FROM results_points 
-    INNER JOIN stage USING(stage_id) 
-    WHERE race_id = ${race_id})`
-    var selected_riders_stages_ids = `(SELECT rider_participation_id FROM stage_selection_rider
-      INNER JOIN stage_selection USING(stage_selection_id)
-      WHERE account_participation_id = ${account_participation_id})`
+    var alreadyFound = `SELECT rider_participation_id FROM rider
+      INNER JOIN rider_participation USING(rider_id)
+      RIGHT JOIN ${selected_riders_stages} USING (rider_participation_id)
+      LEFT JOIN results_points USING(stage_id,rider_participation_id)`
     var query = `SELECT ${columns}, ${rowClassName} FROM rider
       INNER JOIN rider_participation USING(rider_id)
       RIGHT JOIN ${selected_riders_stages} USING (rider_participation_id)
       LEFT JOIN results_points USING(stage_id,rider_participation_id)
       GROUP BY "Name", "Name_link", "rowClassName"
-      UNION 
+      UNION
       SELECT ${notSelectedColumns}, ${rowClassName} from team_selection_rider 
       INNER JOIN rider_participation USING(rider_participation_id)
       INNER JOIN rider USING(rider_id)
-      WHERE account_participation_id = ${account_participation_id} AND (rider_participation_id NOT IN ${selected_riders_stages_ids} OR rider_participation_id NOT IN ${finishedAnyStage})
+      WHERE rider_participation_id NOT IN (${alreadyFound}) AND account_participation_id = ${account_participation_id}
       ORDER BY ${orderBy} DESC`
 
     sqlDB.query(query, (err, results) => {
