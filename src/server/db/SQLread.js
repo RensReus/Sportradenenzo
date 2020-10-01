@@ -22,15 +22,14 @@ module.exports = {
      * @param {function} callback
      * @returns {Array} array of riders [{ name: , price: , team: ,rider_participation: },...]
      */
-    getTeamSelection: function (account_id, budgetParticipation, raceName, year, callback) {
-        var values = [account_id, raceName, year, budgetParticipation];//$1,$2,$3
-        var race_id = `(SELECT race_id FROM race WHERE name = $2 AND year = $3)`;
-        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = ${race_id} AND budgetParticipation = $4)`;
+    getTeamSelection: function (account_id, budgetParticipation, race_id, callback) {
+        var values = [account_id, race_id, budgetParticipation];//$1,$2,$3
+        var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = $2 AND budgetParticipation = $3)`;
         var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
         var query = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id, dnf FROM rider_participation
-                INNER JOIN rider using(rider_id)
-                WHERE rider_participation_id IN ${teamselection}
-                ORDER BY dnf, price DESC`;
+        INNER JOIN rider using(rider_id)
+        WHERE rider_participation_id IN ${teamselection}
+        ORDER BY dnf, price DESC`;
 
         sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
@@ -44,12 +43,11 @@ module.exports = {
      * @param {function} callback
      * @returns {Array} array of riders [{ name: , price: , team: ,rider_participation: },...]
      */
-    getAllRiders: function (raceName, year, callback) {
-        var values = [raceName, year];
-        var race_id = `(SELECT race_id FROM race WHERE name = $1 AND year = $2)`;
+    getAllRiders: function (race_id, callback) {
+        var values = [race_id];
         var query = `SELECT rider.firstname || ' ' || rider.lastname as name, price, team, rider_participation_id FROM rider_participation
                 INNER JOIN rider using(rider_id)
-                WHERE race_id = ${race_id}
+                WHERE race_id = $1
                 ORDER BY price DESC`;
 
         sqlDB.query(query, values, (err, res) => {
@@ -93,10 +91,11 @@ module.exports = {
      * @param {int} year 
      * @param {function} callback 
      */
-    getRace: function (raceName, year, callback) {
-        var values = [raceName, year];
+    getRace: function (race_id, callback) {
+        var values = [race_id];
         var query = `SELECT * FROM race 
-                WHERE name = $1 AND year = $2`;
+                WHERE race_id = $1`;
+
         sqlDB.query(query, values, (err, res) => {
             if (err) throw err;
             else callback(err, res.rows[0])

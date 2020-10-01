@@ -28,7 +28,7 @@ const getStartlist = function (race, callback) {
     switch (race.raceName) {
       case "giro":
         raceString = "giro-d-italia";
-        prijzenfile = "./src/server/Giroprijzen.txt";
+        prijzenfile = "./startlist_scorito_giro.txt";
         break;
       case "tour":
         raceString = "tour-de-france";
@@ -41,13 +41,14 @@ const getStartlist = function (race, callback) {
     }
     fs.readFile(prijzenfile, function (err, file) {
       if (err) console.log(err);
-      var data = file.toString().split("\n");
+      let riders = JSON.parse(file).Content;
       var riderprices = []
-      for (var i in data) {
-        var rider = data[i].split(" ");
-        var pcs_id = rider[0];
-        var price = parseFloat(rider[1]);
-        riderprices.push({ pcs_id, price })
+      for (let i in riders) {
+        let rider = riders[i];
+        let firstName = rider.Name.FirstName;
+        let lastName = rider.Name.LastName;
+        let price = parseFloat(rider.Price);
+        riderprices.push({ firstName, lastName, price })
       }
       startlistProcessRiders(raceString, riderprices, race.year, race_id, callback)
     })
@@ -89,8 +90,8 @@ var startlistProcessRiders = function (raceString, prices, year, race_id, callba
           } else {// voor grote ronde zijn de prijzen ingelezen
             var prijs = 66666666;
             for (let j in prices) {
-              if (prices[j].pcs_id === pcs_id) {
-                prijs = parseFloat(prices[j].price) * 1000000;
+              if (voornaam.toLowerCase().includes(prices[j].firstName.toLowerCase()) && lastname.toLowerCase().includes(prices[j].lastName.toLowerCase())) {
+                prijs = parseFloat(prices[j].price);  
               }
             }
             if (prijs === 66666666)//rider not in prices file

@@ -346,7 +346,7 @@ class Stage extends Component {
       <div>
         {/* 404 */}
         {mode === '404' && <span className="h6">404: Data not found</span>}
-        {/* Always TODO merge into one clean div */}
+        {/* Always renders TODO merge into one clean div */}
         <div className="stageContainer">
           <div className="stageInfo">
             <div className='stagetext'>

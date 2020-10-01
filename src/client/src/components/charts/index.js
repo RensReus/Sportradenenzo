@@ -67,12 +67,14 @@ class Charts extends Component {
       options: {},
       race_id: '',
       budget: false,
+      showEind: false,
       theme: "dark1",
       grouped: false,
       showGroupedSwitchButton: false
     };
     this.changeTheme = this.changeTheme.bind(this);
     this.budgetSwitch = this.budgetSwitch.bind(this);
+    this.showEindSwitch = this.showEindSwitch.bind(this);
     this.groupedSwitch = this.groupedSwitch.bind(this);
   }
 
@@ -127,22 +129,19 @@ class Charts extends Component {
     }
     axios.post(apilink, { race_id: this.state.race_id, budgetparticipation: this.state.budget, extraParams })
       .then((res) => {
-        if (res.data.mode !== '404') {
           this.setState({ options: res.data.options, showGroupedSwitchButton })
           document.title = res.data.title
-        } else {
-          this.set404()
-        }
       })
-  }
-
-  set404() {
-    console.log('error 404')
-    document.title = "404";
   }
 
   budgetSwitch() {
     this.setState({ budget: !this.state.budget }, () => {
+      this.renderPage()
+    })
+  }
+
+  showEindSwitch() {
+    this.setState({ showEind: !this.state.showEind }, () => {
       this.renderPage()
     })
   }
@@ -163,6 +162,7 @@ class Charts extends Component {
     return (
       <div className="overzichtContainer">
         <StateSwitchButton stateStrings={['Gewoon', 'Budget']} stateVar={this.state.budget} stateVarSwitch={this.budgetSwitch} />
+        <StateSwitchButton stateStrings={['Zonder', 'Met Eindklassement']} stateVar={this.state.showEind} stateVarSwitch={this.showEindSwitch} />
         {this.state.showGroupedSwitchButton &&
           <StateSwitchButton stateStrings={['', 'Gegroepeerd']} stateVar={this.state.grouped} stateVarSwitch={this.groupedSwitch} />
         }

@@ -172,18 +172,21 @@ class App extends Component {
   }
 
   setRace(race){
+    var currentStageLink = "/stage/" + race.stagenr;
+    if (race.stagenr === 0) {
+      currentStageLink = "/teamselection";
+    }
     this.setState({
       race_id: race.race_id,
       racename: race.name,
-      currentStageLink: "/stage/" + race.stagenr
+      currentStageLink
     })
     sessionStorage.setItem('race_id',race.race_id)
     sessionStorage.setItem('racename',race.name)
-    sessionStorage.setItem('currentStageLink',"/stage/" + race.stagenr)
+    sessionStorage.setItem('currentStageLink',currentStageLink)
   }
 
   render() {
-    console.log('history')
     return (
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
@@ -198,7 +201,7 @@ class App extends Component {
             this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} Signup={false} />)
           )} />
           <ReactRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
-          <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} race_id={this.state.race_id} />
+          <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
           <ReactRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
           <ReactRoute exact path="/overzicht/:selection" component={Overzicht} history={this.props.history} race_id={this.state.race_id} />

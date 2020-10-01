@@ -30,11 +30,15 @@ module.exports = (app) => {
           res.send({activeRaces:[]})
       } else {
         
-        var currentStagesQuery = activeRacesResults.rows.reduce((query, race) => query + `SELECT stagenr + CASE WHEN complete THEN 1 ELSE 0 END as stagenr,race_id,name,year FROM stage 
+        var currentStagesQuery = activeRacesResults.rows.reduce((query, race) => query + `SELECT stagenr + CASE WHEN complete THEN 1 ELSE 0 END AS stagenr,race_id,name,year FROM stage 
         INNER JOIN race USING(race_id)
-        WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race.race_id=${race.race_id}
+        WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race.race_id = ${race.race_id}
+        UNION 
+        SELECT 0 AS stagenr,race_id,name,year FROM stage
+        INNER JOIN race USING(race_id)
+        WHERE stagenr = 1 AND race.race_id = ${race.race_id}
         ORDER BY stagenr DESC
-        LIMIT 1;\n `,'')
+        LIMIT 1;;\n `,'')
         sqlDB.query(currentStagesQuery, (err, currentStagesResults) => {
           if (err) {
             console.log("WRONG QUERY:", activeRacesQuery);
@@ -58,7 +62,8 @@ module.exports = (app) => {
     // WHERE finished AND account_id = ${req.user.account_id}`;
     let query = `SELECT stagenr, complete,race_id,name,year, race.finished FROM stage 
     INNER JOIN race USING(race_id)
-    WHERE race.finished AND type = 'FinalStandings'`;
+    WHERE race.finished AND type = 'FinalStandings'
+    ORDER BY year, name`;
     sqlDB.query(query, (err, results2) => {
       if (err) {
         console.log("WRONG QUERY:", query);

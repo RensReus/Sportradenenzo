@@ -1,7 +1,3 @@
-//In dit bestand staan alle calls die betrekking hebben tot de resultaten van een stage
-
-const { ETXTBSY } = require('constants');
-
 module.exports = function (app) {
   const sqlDB = require('../db/sqlDB');
 
@@ -244,8 +240,6 @@ module.exports = function (app) {
       for (var i in results[0].rows) {
         var row = results[0].rows[i];
         row.color = colors[row.colorlabel];
-        // console.log(results[1].rows)
-        // row.x = results[1].rows[row.stagenr-1].round;
         data[0].dataPoints.push(row);
       }
       var toolTip = { backgroundColor: 'black', fontColor: 'white' }
@@ -313,8 +307,6 @@ module.exports = function (app) {
       for (var i in results[0].rows) {
         var row = results[0].rows[i];
         row.color = colors[row.colorlabel];
-        // console.log(results[1].rows)
-        // row.x = results[1].rows[row.stagenr-1].round;
         data[0].dataPoints.push(row);
       }
       var toolTip = { backgroundColor: 'black', fontColor: 'white' }
@@ -413,7 +405,6 @@ module.exports = function (app) {
         dataPoints: []
       }
       var data = [];
-      // userObj.dataPoints.push({ x: 0, y: 0 })
       var minusi=0;
       var total = 0
       for (var i in results.rows) {
@@ -431,7 +422,6 @@ module.exports = function (app) {
             showInLegend: true,
             dataPoints: []
           }
-          // userObj.dataPoints.push({ x: 0, y: 0 })
           total = results.rows[i].finalscore
 
           userObj.dataPoints.push({ x: i-minusi, y: total })

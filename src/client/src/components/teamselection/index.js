@@ -4,6 +4,7 @@ import Userselectiontable from './userselectiontable'
 import axios from 'axios';
 import './index.css';
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
+import _ from "lodash"
 
 class Teamselection extends Component {
   constructor(props) {
@@ -12,10 +13,10 @@ class Teamselection extends Component {
       allRiders: [],
       filteredRiders: [],
       userSelection: [[], []],
-      budgetLeft: 0,
+      budgetLeft: [0, 0],
       joinButton: ' ',
       filtervalue: '',
-      budget: 0
+      showBudget: 0
     }
     this.addRemoveRider = this.addRemoveRider.bind(this);
     this.updatePage = this.updatePage.bind(this);
@@ -27,18 +28,17 @@ class Teamselection extends Component {
   componentDidMount() {
     this.setState({
       racename: this.props.racename,
-      year: this.props.year
+      race_id: this.props.race_id
     }, () => {
       this.initialRender()
     })
   }
 
   initialRender() {
-    const race = this.state.racename
-    const year = this.state.year;
-    document.title = "Team Keuze " + race;
-    if (this.props.redirect === '/teamselection') {
-      axios.post('/api/getridersandteam', { race, year }) //to: teamselection.js TODO add race_id
+    const race_id = this.state.race_id;
+    document.title = "Team Keuze " + this.state.racename.charAt(0).toUpperCase() + this.state.racename.slice(1);
+    if (sessionStorage.getItem('currentStageLink') === '/teamselection') {
+      axios.post('/api/teamselection', { apilink: 'getridersandteam', race_id })
         .then((res) => {
           if (res.data.noParticipation) {
             this.setState({
@@ -49,10 +49,8 @@ class Teamselection extends Component {
               joinButton: '',
               allRiders: res.data.allRiders,
               filteredRiders: res.data.allRiders,
-              userSelectionGewoon: res.data.userSelectionGewoon,
-              budgetGewoon: res.data.budgetGewoon,
-              userSelectionBudget: res.data.userSelectionBudget,
-              budgetBudget: res.data.budgetBudget
+              userSelection: [res.data.userSelectionGewoon, res.data.userSelectionBudget],
+              budgetLeft: [res.data.budgetGewoon, res.data.budgetBudget],
             })
           }
         })
@@ -64,7 +62,7 @@ class Teamselection extends Component {
 
 
   joinRace() {
-    axios.post('/api/addaccountparticipation') // TODO add race_id
+    axios.post('/api/teamselection', { apilink: 'addaccountparticipation', race_id: this.state.race_id })
       .then((res) => {
         if (res) {
           if (res.data.participationAdded) {
@@ -90,22 +88,19 @@ class Teamselection extends Component {
 
   updatePage(data, showBudget) {
     if (data) {
-      if (showBudget) {
-        this.setState({
-          userSelectionBudget: data.userSelection,
-          budgetBudget: data.budget
-        })
-      } else {
-        this.setState({
-          userSelectionGewoon: data.userSelection,
-          budgetGewoon: data.budget
-        })
-      }
+      let userSelection = _.cloneDeep(this.state.userSelection)
+      userSelection[showBudget] = data.userSelection;
+      let budgetLeft = _.cloneDeep(this.state.budgetLeft)
+      budgetLeft[showBudget] = data.budgetLeft;
+      this.setState({
+        userSelection,
+        budgetLeft
+      })
     }
   }
 
   budgetSwitch() {
-    this.setState({ showBudget: !this.state.showBudget }, () => {
+    this.setState({ showBudget: (this.state.showBudget - 1) * -1 }, () => {
       this.filter({ target: { value: this.state.filtervalue } })
     })
   }
@@ -130,31 +125,28 @@ class Teamselection extends Component {
 
   render() {
     const allRiders = this.state.filteredRiders
-    const userSelection = this.state.userSelection[this.state.budget]
-    const budgetLeft = this.state.budgetLeft
-    //TODO pass along changed add remove
-    // TODO change how userselection gets returned / selected
-    // TODO fix how budget gets passed along to backend
+    const userSelection = this.state.userSelection[this.state.showBudget]
+    const budgetLeft = this.state.budgetLeft[this.state.showBudget]
     return (
       <div>
         {this.state.joinButton === '' &&
           <div className="containerTeamselection">
             <div className="switchAndSearch">
-              <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
+              <BudgetSwitchButton budget={this.state.showBudget} budgetSwitch={this.budgetSwitch} />
               Search for a rider: <textarea className="filterField" value={this.state.filtervalue} onChange={(e) => { this.filter(e) }} />
             </div>
 
-            <div className="ridertablecontainer" style={{ display: this.state.showBudget ? 'none' : 'block' }}>
+            <div className="ridertablecontainer">
               <div className="teamindicator">
                 Team Selectie
                     </div>
-              <Riderselectiontable riders={allRiders} selectionIDs={userSelection.map(rider => rider.rider_participation_id)} selectionTeams={userSelection.map(rider => rider.team)} budget={budgetLeft} addRider={this.addRider} budgetParticipation={false} />
+              <Riderselectiontable riders={allRiders} selectionIDs={userSelection.map(rider => rider.rider_participation_id)} selectionTeams={userSelection.map(rider => rider.team)} budget={budgetLeft} addRemoveRider={this.addRemoveRider} budgetParticipation={this.state.showBudget} />
             </div>
-            <div className="usertablecontainer" style={{ display: this.state.showBudget ? 'none' : 'block' }}>
+            <div className="usertablecontainer">
               <div className="budget">
-                Budget Left: {this.state.budgetLeft.toLocaleString('nl', { useGrouping: true })} Renners {userSelection.length}/20
+                Budget over: {budgetLeft.toLocaleString('nl', { useGrouping: true })} Renners {userSelection.length}/20
                     </div>
-              <Userselectiontable selection={userSelection} removeRider={this.removeRider} budgetParticipation={this.state.budget} />
+              <Userselectiontable selection={userSelection} addRemoveRider={this.addRemoveRider} budgetParticipation={this.state.showBudget} />
             </div>
             <div id="stage1button">
               <button onClick={() => this.redirect('/stage/1')}>To stages </button>

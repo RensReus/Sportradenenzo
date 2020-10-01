@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
 class Deselectionbutton extends Component{
-    removeRider=()=> {
-        this.props.removeRider(this.props.riderID, this.props.budgetParticipation);
+    addRemoveRider=()=> {
+        this.props.addRemoveRider('removeRider',this.props.riderID, this.props.budgetParticipation);
     }
     render(){
         return(
-            <button className={this.props.selected} onClick={() => this.removeRider(this.props.riderID, this.props.budgetParticipation)}>Remove Rider</button>
+            <button className={this.props.selected} onClick={() => this.addRemoveRider(this.props.riderID, this.props.budgetParticipation)}>Remove Rider</button>
         )
     }
 }
@@ -20,7 +20,7 @@ class UserRiderrow extends Component{
                 <td>{rider.lastname}</td>
                 <td>{rider.team}</td>
                 <td>{rider.price.toLocaleString('nl', {useGrouping:true})}</td>
-                <td><Deselectionbutton removeRider={this.props.removeRider} riderID={this.props.riderID} budgetParticipation={this.props.budgetParticipation}/></td>
+                <td><Deselectionbutton addRemoveRider={this.props.addRemoveRider} riderID={this.props.riderID} budgetParticipation={this.props.budgetParticipation}/></td>
             </tr>
         )
     }
@@ -28,7 +28,7 @@ class UserRiderrow extends Component{
 class Userselectiontable extends Component{
     render(){
         const rows = this.props.selection.map(({firstname,lastname,team,price,rider_participation_id})=>{
-            return <UserRiderrow firstname={firstname} lastname={lastname} team={team} price={price} key={rider_participation_id} riderID={rider_participation_id} budgetParticipation={this.props.budgetParticipation} removeRider={this.props.removeRider}/>;
+            return <UserRiderrow firstname={firstname} lastname={lastname} team={team} price={price} key={rider_participation_id} riderID={rider_participation_id} budgetParticipation={this.props.budgetParticipation} addRemoveRider={this.props.addRemoveRider}/>;
         });
         return(
             <table>

@@ -42,8 +42,8 @@ class Home extends Component {
         let activeRaces = res.data.activeRaces;
         this.setState({
           activeRaces
-        },()=>{
-          if (activeRaces.length && localStorage.getItem('autoRedirectOnHomepage') === 'true'){
+        }, () => {
+          if (activeRaces.length === 1 && localStorage.getItem('autoRedirectOnHomepage') === 'true') {
             this.goToRace(activeRaces[0])
           }
         })
@@ -61,7 +61,11 @@ class Home extends Component {
     // if (race.finished){
     //   this.props.history.push('/raceoverview')
     // } else {
+    if (race.stagenr === 0) {// before start
+      this.props.history.push('/teamselection')
+    } else {
       this.props.history.push('/stage/' + race.stagenr)
+    }
     // }
   }
 
