@@ -58,7 +58,6 @@ require('./server/api/authorization')(app); // Belangrijk! Moet bovenaan de lijs
 require('./server/api/admin')(app);
 require('./server/api/authentication')(app);
 require('./server/api/manualupdate')(app);
-require('./server/api/raceprogression')(app);
 require('./server/api/racestatistics')(app);
 require('./server/api/charts')(app);
 require('./server/api/stageresults')(app);
