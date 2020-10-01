@@ -90,12 +90,12 @@ var startlistProcessRiders = function (raceString, prices, year, race_id, callba
           } else {// voor grote ronde zijn de prijzen ingelezen
             var prijs = 66666666;
             for (let j in prices) {
-              if (voornaam.toLowerCase().includes(prices[j].firstName.toLowerCase()) && lastname.toLowerCase().includes(prices[j].lastName.toLowerCase())) {
+              if (voornaam.toLowerCase().replace("ł","l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(prices[j].firstName.toLowerCase().replace("ł","l").normalize("NFD").replace(/[\u0300-\u036f]/g, "")) && lastname.toLowerCase().replace("ł","l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(prices[j].lastName.toLowerCase().replace("ł","l").normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) {
                 prijs = parseFloat(prices[j].price);  
               }
             }
             if (prijs === 66666666)//rider not in prices file
-              console.log("To add: ", pcs_id);
+              console.log("To add: ", pcs_id, voornaam.replace("ł","l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace("ł","l"), lastname);
           }
 
           // if name contains '
