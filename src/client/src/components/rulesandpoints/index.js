@@ -74,6 +74,7 @@ class Rulesandpoints extends Component {
         </li>
         <li>Bij TTT punten voor alle finishende renners</li>
         <li>Geen team dag punten bij ITT en TTT wel voor klassementen</li>
+        <li>Het is verboden om Campenaerts te selecteren. Indien dit gedaan wordt krijgt de overtreder 500 punten in mindering.</li>
         </ul>
           <div className="tableDiv">
           <Table data={dagPunten} title="Per Etappe" />

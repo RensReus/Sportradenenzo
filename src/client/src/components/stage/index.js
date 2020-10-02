@@ -314,7 +314,11 @@ class Stage extends Component {
       <br></br>
         finish
         <br></br>
-      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '-finish.jpg'} alt="profile" />
+      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '-finish.jpg'} alt="" />
+      <br></br>
+      extra
+        <br></br>
+      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '-extra.jpg'} alt="" />
     </div>
     //selection
     if (mode === 'results') {
