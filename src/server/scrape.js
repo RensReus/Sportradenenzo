@@ -342,11 +342,11 @@ var getResult = function (race, et, callback) {
             if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
             else {
               console.log("Processed results stage", et, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
-              calculateUserScores(race_id, et, callback)
+              calculateUserScores(race_id, et, stageType, callback)
             }
           })
         } else {
-          calculateUserScores(race_id, et, callback)
+          calculateUserScores(race_id, et, stageType, callback)
         }
       }
     })
@@ -476,7 +476,7 @@ var getEindPunten = function (kl, pos) {
   return 0;
 }
 
-var calculateUserScores = function (race_id, stage, callback) {
+var calculateUserScores = function (race_id, stage, stageType, callback) {
   var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id};\n`
   var TTTstageQuery = `SELECT stagenr FROM stage WHERE race_id = ${race_id} AND type ='TTT';\n`
   var totalQuery = participantsQuery + TTTstageQuery;
