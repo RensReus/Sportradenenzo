@@ -7,6 +7,7 @@ module.exports = (app) => {
   app.post('/api/statistics', function (req, res) {
     var race_id = req.body.race_id;
     var budgetparticipation = req.body.budgetparticipation;
+    console.log(req.body)
     if (!req.body.alwaysget) {
       var raceHasStartedQuery = `SELECT * FROM STAGE
       INNER JOIN race USING (race_id)
@@ -18,21 +19,22 @@ module.exports = (app) => {
         if (results.rows.length === 0) {
           res.send({ mode: '404' })
         } else {
-          getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, function (err, results) {
+          getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, function (err, results) {
             if (err) { console.log(err.toString()) }
+            console.log("results",results)
             res.send(results);
           })
         }
       })
     } else {
-      getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, function (err, results) {
+      getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, function (err, results) {
         if (err) { console.log(err.toString()) }
         res.send(results);
       })
     }
   })
 
-  async function getData(selection, race_id, budgetparticipation, account_id, callback) {
+  async function getData(selection, race_id, budgetparticipation, account_id, details, callback) {
     switch (selection) {
       case "getstagevictories": getstagevictories(race_id, budgetparticipation, callback); break;
       case "gettourvictories": gettourvictories(budgetparticipation, callback); break;
@@ -40,9 +42,7 @@ module.exports = (app) => {
       case "getriderpointsselected": getriderpointsselected(race_id, budgetparticipation, callback); break;
       case "missedpoints": missedpoints(race_id, budgetparticipation, account_id, callback); break;
       case "missedpointsall": missedpointsall(race_id, budgetparticipation, callback); break;
-      case "teamoverzicht": teamoverzicht(race_id, budgetparticipation, account_id, callback); break;
-      case "teamoverzichtall": teamoverzichtall(race_id, budgetparticipation, account_id, callback); break;
-      case "teamoverzichtallsimple": teamoverzichtallsimple(race_id, budgetparticipation, account_id, callback); break;
+      case "teams": teams(race_id, budgetparticipation, account_id, details, callback); break;
       case "teamcomparisons": teamcomparisons(race_id, budgetparticipation, callback); break;
       case "getadditionalstats": getadditionalstats(race_id, budgetparticipation, callback); break;
     }
@@ -386,22 +386,8 @@ module.exports = (app) => {
     }
     return -1;
   }
-  function teamoverzicht(race_id, budgetparticipation, account_id, callback) {
-    var account_participation_id = `(SELECT account_participation_id FROM account_participation
-                    WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation} AND account_id = ${account_id})`
-    var main_account_participation_id = 0
-    teamoverzichtuser(main_account_participation_id, account_participation_id, budgetparticipation, false, function (err, results) {
-      if (err) throw err;
-      let tables = [{
-        tableData: results.tableData,
-        title: "",
-        coltype: results.coltype
-      }]
-      callback(err, { tables, title: "Team Overzicht" })
-    })
-  }
 
-  function teamoverzichtall(race_id, budgetparticipation, account_id, callback) {
+  function teams(race_id, budgetparticipation, account_id, details, callback) {
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
                 WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
@@ -411,38 +397,24 @@ module.exports = (app) => {
     sqlDB.query(usersQuery, (err, results) => {
       if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
       async.map(results.rows, function (account, done) {
-        teamoverzichtuser(main_account_participation_id, account.account_participation_id, budgetparticipation, false, function (err, teamoverzicht) {
-          done(err, { tableData: teamoverzicht.tableData, title: account.username, coltype: teamoverzicht.coltype })
+        teamoverzichtuser(main_account_participation_id, account.account_participation_id, budgetparticipation, details, function (err, teamoverzicht) {
+          if (details){
+            done(err, { tableData: teamoverzicht.tableData, title: account.username, coltype: teamoverzicht.coltype })
+          }else{
+            done(err, { riders: teamoverzicht.tableData, username: account.username, coltype: teamoverzicht.coltype })
+          }
         })
       }, function (err, tables) {
         if (err) throw err;
+        if (!details){
+          tables = selectionsPopUp(tables)
+        }
         callback(err, { tables, title: "Team Overzicht Iedereen" })
       })
     })
   }
 
-  function teamoverzichtallsimple(race_id, budgetparticipation, account_id, callback) {
-    var usersQuery = `SELECT account_participation_id, username FROM account_participation 
-                INNER JOIN account USING (account_id)   
-                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
-                ORDER BY account_id;`
-    var main_account_participation_id = `(SELECT account_participation_id FROM account_participation 
-      WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation} AND account_id = ${account_id})`
-    sqlDB.query(usersQuery, (err, results) => {
-      if (err) { console.log("WRONG QUERY:", usersQuery); throw err; }
-      async.map(results.rows, function (account, done) {
-        teamoverzichtuser(main_account_participation_id, account.account_participation_id, budgetparticipation, true, function (err, teamoverzicht) {
-          done(err, { riders: teamoverzicht.tableData, username: account.username, coltype: teamoverzicht.coltype })
-        })
-      }, function (err, tables) {
-        if (err) throw err;
-        tables = selectionsPopUp(tables)
-        callback(err, { tables, title: "Team Overzicht Iedereen" })
-      })
-    })
-  }
-
-  function teamoverzichtuser(main_account_participation_id, account_participation_id, budgetparticipation, simple, callback) {
+  function teamoverzichtuser(main_account_participation_id, account_participation_id, budgetparticipation, details, callback) {
     var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
         INNER JOIN stage_selection USING(stage_selection_id)
         WHERE account_participation_id = ${account_participation_id}) a`
@@ -461,7 +433,7 @@ module.exports = (app) => {
     var notSelectedColumns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", 0 AS "Stage", 0 AS "AK", 0 AS "Punten", 0 AS "Berg", 0 AS "Jong" ${notSelectedteamscore}, 0 AS "Total", 0 AS "Selected", 0 AS "Per Etappe"`
     var coltype = { "Name": 0, "Stage": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Selected": 1, "Per Etappe": 1 };
     var orderBy = `"Total"`
-    if (simple) {
+    if (!details) {
       orderBy = `"Score"`
       coltype = {};
       columns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", COALESCE(SUM(${totalscore}),0) AS "Score"`

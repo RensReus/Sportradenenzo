@@ -3,8 +3,9 @@ import './index.css';
 import axios from 'axios';
 import Table from '../shared/table'
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
+import StateSwitchButton from '../shared/stateSwitchButton';
 
-class overzicht extends Component {
+class statistics extends Component {
   constructor(props) {
     super(props);
     this.state = ({
@@ -12,8 +13,10 @@ class overzicht extends Component {
       budget: false,
       budgetSwitchButton: '',
       currlink: '',
+      details: false
     });
     this.budgetSwitch = this.budgetSwitch.bind(this);
+    this.detailsSwitch = this.detailsSwitch.bind(this);
   }
 
   componentDidMount() {
@@ -29,12 +32,12 @@ class overzicht extends Component {
   stateUpdateAndRender() {
     if (this.props.race_id === undefined) {
       this.props.history.push('/home')
-    } else{
+    } else {
       this.setState({
         race_id: this.props.race_id,
         budget: false,
         budgetSwitchButton: ''
-        }, () => {
+      }, () => {
         this.renderPage()
       })
     }
@@ -42,13 +45,11 @@ class overzicht extends Component {
 
   renderPage() {
     var apilinks = {
-      "all": "getriderpointsall",
-      "selected": "getriderpointsselected",
+      "allriders": "getriderpointsall",
+      "selectedriders": "getriderpointsselected",
       "missedpoints": "missedpoints",
       "missedpointsall": "missedpointsall",
-      "team": "teamoverzicht",
-      "teamall": "teamoverzichtall",
-      "teamallsimple": "teamoverzichtallsimple",
+      "teams": "teams",
       "etappewinsten": "getstagevictories",
       "rondewinsten": "gettourvictories",
       "teamcomparisons": "teamcomparisons",
@@ -61,19 +62,17 @@ class overzicht extends Component {
       var pageref = this.state.currlink;
       switch (pageref) {
         case "rondewinsten":
-        this.getDataAndRender(apilinks[pageref],true)
-        break;        
+          this.getDataAndRender(apilinks[pageref], true)
+          break;
         case "all":
         case "selected":
         case "missedpoints":
         case "missedpointsall":
-        case "team":
-        case "teamall":
-        case "teamallsimple":
+        case "teams":
         case "etappewinsten":
         case "overigestats":
         case "teamcomparisons":
-          this.getDataAndRender(apilinks[pageref],false)
+          this.getDataAndRender(apilinks[pageref], false)
           break;
         default: this.props.history.push(this.props.redirect); break;
       }
@@ -87,11 +86,12 @@ class overzicht extends Component {
   }
 
   getDataAndRender(selection, alwaysget) {
-    axios.post('/api/statistics', { selection, alwaysget, race_id: this.state.race_id, budgetparticipation: this.state.budget })
+    axios.post('/api/statistics', { selection, alwaysget, race_id: this.state.race_id, budgetparticipation: this.state.budget, details: this.state.details })
       .then((res) => {
         if (res.data.mode !== '404') {
           document.title = res.data.title;
           var tables = []
+          console.log(res)
           for (var i in res.data.tables) {
             tables.push(<div className="tableDiv" ><Table data={res.data.tables[i].tableData} title={res.data.tables[i].title} coltype={res.data.tables[i].coltype} /></div>)
           }
@@ -109,10 +109,19 @@ class overzicht extends Component {
       })
   }
 
+  detailsSwitch() {
+    this.setState({
+      details: !this.state.details
+    }, () => {
+      this.renderPage()
+    })
+  }
+
   render() {
     return (
-      <div className="overzichtContainer">
+      <div className="statisticsContainer">
         {this.state.budgetSwitchButton}
+        {this.state.currlink === "teams" && <StateSwitchButton stateStrings={['Simpel', 'Details']} stateVar={this.state.details} stateVarSwitch={this.detailsSwitch} />}
         {this.state.tables}
       </div>
 
@@ -121,4 +130,4 @@ class overzicht extends Component {
 
 }
 
-export default overzicht
+export default statistics

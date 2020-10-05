@@ -12,7 +12,7 @@ import Home from './components/home';
 import Stage from './components/stage'
 import Teamselection from './components/teamselection';
 import Admin from './components/admin';
-import Overzicht from './components/overzicht';
+import Statistics from './components/statistics';
 import Charts from './components/charts';
 import Rider from './components/rider';
 import Rulesandpoints from './components/rulesandpoints';
@@ -204,7 +204,7 @@ class App extends Component {
           <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
           <ReactRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
-          <ReactRoute exact path="/overzicht/:selection" component={Overzicht} history={this.props.history} race_id={this.state.race_id} />
+          <ReactRoute exact path="/statistics/:selection" component={Statistics} history={this.props.history} race_id={this.state.race_id} />
           <ReactRoute path="/profile/id/:account_id" component={Profile} history={this.props.history} />
           <ReactRoute exact path="/profile/:username" component={Profile} history={this.props.history} />
           <ReactRoute path="/rider/:rider_id" component={Rider} history={this.props.history} />

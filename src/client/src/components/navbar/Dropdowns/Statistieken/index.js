@@ -41,17 +41,15 @@ class StatistiekenDropdown extends Component {
           this.state.showMenu
             ? (
               <div className="navbar_dropdown-content">
-                <Link className='navbar_dropdown_item h9' to='/overzicht/etappewinsten'>Uitslagen per etappe</Link>
-                <Link className='navbar_dropdown_item h9' to='/overzicht/rondewinsten'>Uitslagen per ronde</Link>
-                <Link className='navbar_dropdown_item h9' to='/overzicht/all'>Alle renners</Link>
-                <Link className='navbar_dropdown_item h9' to='/overzicht/selected'>Geselecteerde renners</Link>
-                <Link className='navbar_dropdown_item h9' to='/overzicht/missedpointsall'>Gemiste punten iedereen</Link>
-                <Link className='navbar_dropdown_item h9' to='/overzicht/team'>Team overzicht</Link>
-                <Link className='navbar_dropdown_item h9' to='/overzicht/teamall'>Team overzicht iedereen</Link>
-                <Link className='navbar_dropdown_item h9' to='/overzicht/teamallsimple'>Team overzicht iedereen Simpel</Link>
+                <Link className='navbar_dropdown_item h9' to='/statistics/etappewinsten'>Uitslagen per etappe</Link>
+                <Link className='navbar_dropdown_item h9' to='/statistics/rondewinsten'>Uitslagen per ronde</Link>
+                <Link className='navbar_dropdown_item h9' to='/statistics/allriders'>Alle renners</Link>
+                <Link className='navbar_dropdown_item h9' to='/statistics/selectedriders'>Geselecteerde renners</Link>
+                <Link className='navbar_dropdown_item h9' to='/statistics/missedpointsall'>Gemiste punten iedereen</Link>
+                <Link className='navbar_dropdown_item h9' to='/statistics/teams'>Team overzichten</Link>
                 <Link className='navbar_dropdown_item h9' to='/rulesandpoints'>Regels en Punten uitleg</Link>
-                <Link className='navbar_dropdown_item h9' to='/overzicht/teamcomparisons'>Selectie vergelijking</Link>
-                <Link className='navbar_dropdown_item h9' to='/overzicht/overigestats'>Overige Statistieken</Link>
+                <Link className='navbar_dropdown_item h9' to='/statistics/teamcomparisons'>Selectie vergelijking</Link>
+                <Link className='navbar_dropdown_item h9' to='/statistics/overigestats'>Overige Statistieken</Link>
               </div>
             )
             : (

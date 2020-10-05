@@ -44,7 +44,7 @@ class Rider extends Component {
     });
     let selectedRaceInfo = this.state.races[selectedRace] === undefined ? {team:'', name: '', year: ''} : this.state.races[selectedRace]
     return (
-      <div className="overzichtContainer">
+      <div className="statisticsContainer">
         {racelinks}
         <div className="h3">{this.state.riderName} <FlagIcon code={this.state.country}/> - {selectedRaceInfo.team} </div>
         <div className="h4">{selectedRaceInfo.name.charAt(0).toUpperCase() + selectedRaceInfo.name.slice(1)} - {selectedRaceInfo.year} </div>

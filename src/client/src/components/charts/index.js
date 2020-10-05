@@ -160,7 +160,7 @@ class Charts extends Component {
     var options = this.state.options;
     options.theme = this.state.theme;
     return (
-      <div className="overzichtContainer">
+      <div className="statisticsContainer">
         <StateSwitchButton stateStrings={['Gewoon', 'Budget']} stateVar={this.state.budget} stateVarSwitch={this.budgetSwitch} />
         <StateSwitchButton stateStrings={['Zonder', 'Met Eindklassement']} stateVar={this.state.showEind} stateVarSwitch={this.showEindSwitch} />
         {this.state.showGroupedSwitchButton &&

@@ -5,7 +5,7 @@ import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons"; //Pi
 
 
 
-class StatistiekenDropdown extends Component {
+class ChartsDropdown extends Component {
     constructor() {
       super();
       
@@ -58,4 +58,4 @@ class StatistiekenDropdown extends Component {
     }
   }
 
-export default StatistiekenDropdown
+export default ChartsDropdown
