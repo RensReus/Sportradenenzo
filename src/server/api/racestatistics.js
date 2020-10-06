@@ -7,7 +7,6 @@ module.exports = (app) => {
   app.post('/api/statistics', function (req, res) {
     var race_id = req.body.race_id;
     var budgetparticipation = req.body.budgetparticipation;
-    console.log(req.body)
     if (!req.body.alwaysget) {
       var raceHasStartedQuery = `SELECT * FROM STAGE
       INNER JOIN race USING (race_id)
