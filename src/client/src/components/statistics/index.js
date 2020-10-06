@@ -121,7 +121,7 @@ class statistics extends Component {
     return (
       <div className="statisticsContainer">
         {this.state.budgetSwitchButton}
-        {this.state.currlink === "teams" && <StateSwitchButton stateStrings={['Simpel', 'Details']} stateVar={this.state.details} stateVarSwitch={this.detailsSwitch} />}
+        {this.state.currlink === "teams" && this.state.tables.length > 0 && <StateSwitchButton stateStrings={['Simpel', 'Details']} stateVar={this.state.details} stateVarSwitch={this.detailsSwitch} />}
         {this.state.tables}
       </div>
 
