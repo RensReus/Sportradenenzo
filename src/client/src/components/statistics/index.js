@@ -64,8 +64,8 @@ class statistics extends Component {
         case "rondewinsten":
           this.getDataAndRender(apilinks[pageref], true)
           break;
-        case "all":
-        case "selected":
+        case "allriders":
+        case "selectedriders":
         case "missedpoints":
         case "missedpointsall":
         case "teams":
