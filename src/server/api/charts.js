@@ -31,6 +31,7 @@ module.exports = function (app) {
             WHERE stage.race_id = ${race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester'
             ORDER BY username, stagenr`
     sqlDB.query(query, (err, results) => {
+
       if (err) { console.log("WRONG QUERY:", query); throw err; }
       if (results.rows.length === 0) {
         console.log("results", results.rows)
@@ -74,7 +75,6 @@ module.exports = function (app) {
           data[user].dataPoints[i].y -= avg;
         }
       }
-      data.sort(function (a, b) { return b.dataPoints[b.dataPoints.length - 1].y - a.dataPoints[a.dataPoints.length - 1].y })
       var toolTip = { shared: true }
       var extraFields = {
         axisX: {
@@ -129,7 +129,6 @@ module.exports = function (app) {
       }
       data.push(userObj)
 
-      data.sort(function (a, b) { return b.dataPoints[b.dataPoints.length - 1].y - a.dataPoints[a.dataPoints.length - 1].y })
       var toolTip = { shared: true }
       var extraFields = {
         axisX: {
@@ -284,9 +283,6 @@ module.exports = function (app) {
 
   app.post('/api/charttotalscorespread', function (req, res) {
     var budgetparticipation = req.body.budgetparticipation;
-    if (req.body.extraParams.perRace) {
-
-    }
     var racePointsQuery = `SELECT username as colorlabel, CONCAT(username, ' ', name, ' ', year) as label, finalscore as y FROM account_participation
                 INNER JOIN account USING(account_id)
                 INNER JOIN race USING(race_id)

@@ -68,6 +68,7 @@ class Charts extends Component {
       race_id: '',
       budget: false,
       showEind: false,
+      showEindButton: false,
       theme: "dark1",
       grouped: false,
       showGroupedSwitchButton: false
@@ -101,7 +102,7 @@ class Charts extends Component {
     var apilink = '/api/'
     var extraParams = {}
     var showGroupedSwitchButton = false;
-
+    var showEindButton = false;
     switch (this.props.match.params.chartname) {
       case "userscores":
         apilink += 'chartuserstagescores'
@@ -114,8 +115,9 @@ class Charts extends Component {
         break;
       case "scorespread":
         apilink += 'chartscorespread'
-        extraParams = { perStage: this.state.grouped }
+        extraParams = { perStage: this.state.grouped, excludeFinal: !this.state.showEind }
         showGroupedSwitchButton = true;
+        showEindButton = true;
         apilink += this.state.grouped ? 'grouped' : ''
         break;
       case "totalscorespread":
@@ -129,7 +131,7 @@ class Charts extends Component {
     }
     axios.post(apilink, { race_id: this.state.race_id, budgetparticipation: this.state.budget, extraParams })
       .then((res) => {
-          this.setState({ options: res.data.options, showGroupedSwitchButton })
+          this.setState({ options: res.data.options, showGroupedSwitchButton, showEindButton })
           document.title = res.data.title
       })
   }
@@ -162,7 +164,9 @@ class Charts extends Component {
     return (
       <div className="statisticsContainer">
         <StateSwitchButton stateStrings={['Gewoon', 'Budget']} stateVar={this.state.budget} stateVarSwitch={this.budgetSwitch} />
-        <StateSwitchButton stateStrings={['Zonder', 'Met Eindklassement']} stateVar={this.state.showEind} stateVarSwitch={this.showEindSwitch} />
+        {this.state.showEindButton &&
+          <StateSwitchButton stateStrings={['Zonder', 'Met Eindklassement']} stateVar={this.state.showEind} stateVarSwitch={this.showEindSwitch} />
+        }
         {this.state.showGroupedSwitchButton &&
           <StateSwitchButton stateStrings={['', 'Gegroepeerd']} stateVar={this.state.grouped} stateVarSwitch={this.groupedSwitch} />
         }
