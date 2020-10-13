@@ -91,7 +91,6 @@ class statistics extends Component {
         if (res.data.mode !== '404') {
           document.title = res.data.title;
           var tables = []
-          console.log(res)
           for (var i in res.data.tables) {
             tables.push(<div className="tableDiv" ><Table data={res.data.tables[i].tableData} title={res.data.tables[i].title} coltype={res.data.tables[i].coltype} /></div>)
           }

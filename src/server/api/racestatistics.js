@@ -20,7 +20,6 @@ module.exports = (app) => {
         } else {
           getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, function (err, results) {
             if (err) { console.log(err.toString()) }
-            console.log("results",results)
             res.send(results);
           })
         }
@@ -234,20 +233,20 @@ module.exports = (app) => {
       WHERE race_id = ${race_id})`
     var query = `SELECT  CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team ", price AS "Price", SUM(stagescore) AS "Etappe",
       SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong", 
-      ${teamscore} ${totalscore} AS "Total", ROUND(${totalscore}*1e6/price,0) AS "Points per Million" FROM results_points
+      ${teamscore} ${totalscore} AS "Total", ROUND(${totalscore}*1e6/price,0) AS "PPM", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf" FROM results_points
       INNER JOIN rider_participation USING (rider_participation_id)
       INNER JOIN rider USING(rider_id)
       WHERE rider_participation.race_id = ${race_id} ${budgetFilter}
-      GROUP BY "Name", "Name_link", "Team ", "Price"
+      GROUP BY "Name", "Name_link", "Team ", "Price", dnf
       UNION
       SELECT CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team ", price AS "Price", 0 AS "Etappe",
       0 AS "AK", 0 AS "Punten", 0 AS "Berg", 0 AS "Jong", 
-      ${teamscoreNotFinished} 0 AS "Total", 0 AS "Points per Million" FROM rider_participation
+      ${teamscoreNotFinished} 0 AS "Total", 0 AS "PPM", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf" FROM rider_participation
       INNER JOIN rider USING(rider_id)
       WHERE rider_participation.race_id = ${race_id} ${budgetFilter} AND rider_participation_id NOT IN ${finishedAnyStage}
       ORDER BY "Total" DESC`
     //0 for string 1 for number
-    var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Points per Million": 1 };
+    var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "PPM": 1, "dnf": 0 };
     sqlDB.query(query, (err, results) => {
       if (err) { console.log("WRONG QUERY:", query); throw err; }
       let tables = [{
@@ -268,7 +267,7 @@ module.exports = (app) => {
     }
     var query = `SELECT  CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team ",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Etappe",  
     SUM(gcscore)/GREATEST(count(DISTINCT username),1) AS "AK", SUM(pointsscore)/GREATEST(count(DISTINCT username),1) AS "Punten", SUM(komscore)/GREATEST(count(DISTINCT username),1) AS "Berg", SUM(yocscore)/GREATEST(count(DISTINCT username),1) AS "Jong", ${teamscore} SUM(${totalscore})/GREATEST(count(DISTINCT username),1) AS "Total", 
-    ROUND(SUM(${totalscore})/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "Points per Million",  
+    ROUND(SUM(${totalscore})/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "PPM", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf",
     count(DISTINCT username) AS "Usercount", string_agg(DISTINCT username, ', ') AS "Users" FROM rider_participation
     LEFT JOIN results_points USING (rider_participation_id)
     INNER JOIN rider USING(rider_id)
@@ -276,10 +275,10 @@ module.exports = (app) => {
     INNER JOIN account_participation USING(account_participation_id)
     INNER JOIN account USING (account_id)
     WHERE rider_participation.race_id = ${race_id} AND rider_participation.rider_participation_id in (select rider_participation_id from team_selection_rider) AND budgetparticipation = ${budgetparticipation}
-    GROUP BY "Name", "Name_link", "Team ", "Price"
+    GROUP BY "Name", "Name_link", "Team ", "Price", dnf
     ORDER BY "Total" DESC`
     //0 for string 1 for number
-    var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Points per Million": 1, "Usercount": 1 };
+    var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "PPM": 1, "Usercount": 1 };
     sqlDB.query(query, (err, results) => {
       if (err) { console.log("WRONG QUERY:", query); throw err; }
       let tables = [{
@@ -428,9 +427,9 @@ module.exports = (app) => {
       teamscore = '';
       notSelectedteamscore = '';
     }
-    var columns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", COALESCE(SUM(${stagescore}),0) AS "Stage", COALESCE(SUM(gcscore),0) AS "AK", COALESCE(SUM(pointsscore),0) AS "Punten", COALESCE(SUM(komscore),0) AS "Berg", COALESCE(SUM(yocscore),0) AS "Jong" ${teamscore}, COALESCE(SUM(${totalscore}),0) AS "Total", COALESCE(COUNT(rider_participation_id),0) AS "Selected", COALESCE(ROUND(SUM(${totalscore})/COUNT(rider_participation_id),0),0) AS "Per Etappe"`
-    var notSelectedColumns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", 0 AS "Stage", 0 AS "AK", 0 AS "Punten", 0 AS "Berg", 0 AS "Jong" ${notSelectedteamscore}, 0 AS "Total", 0 AS "Selected", 0 AS "Per Etappe"`
-    var coltype = { "Name": 0, "Stage": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Selected": 1, "Per Etappe": 1 };
+    var columns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", COALESCE(SUM(${stagescore}),0) AS "Stage", COALESCE(SUM(gcscore),0) AS "AK", COALESCE(SUM(pointsscore),0) AS "Punten", COALESCE(SUM(komscore),0) AS "Berg", COALESCE(SUM(yocscore),0) AS "Jong" ${teamscore}, COALESCE(SUM(${totalscore}),0) AS "Total", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf", COALESCE(COUNT(rider_participation_id),0) AS "Selected", COALESCE(ROUND(SUM(${totalscore})/COUNT(rider_participation_id),0),0) AS "Per Etappe"`
+    var notSelectedColumns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", 0 AS "Stage", 0 AS "AK", 0 AS "Punten", 0 AS "Berg", 0 AS "Jong" ${notSelectedteamscore}, 0 AS "Total", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf", 0 AS "Selected", 0 AS "Per Etappe"`
+    var coltype = { "Name": 0, "Stage": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Selected": 1, "Per Etappe": 1, "dnf": 0 };
     var orderBy = `"Total"`
     if (!details) {
       orderBy = `"Score"`
@@ -446,7 +445,7 @@ module.exports = (app) => {
       INNER JOIN rider_participation USING(rider_id)
       RIGHT JOIN ${selected_riders_stages} USING (rider_participation_id)
       LEFT JOIN results_points USING(stage_id,rider_participation_id)
-      GROUP BY "Name", "Name_link", "rowClassName"
+      GROUP BY "Name", "Name_link", "rowClassName", dnf
       UNION
       SELECT ${notSelectedColumns}, ${rowClassName} from team_selection_rider 
       INNER JOIN rider_participation USING(rider_participation_id)
@@ -496,7 +495,7 @@ module.exports = (app) => {
 
     var totalQuery = selectedRidersQuery + uitgevallenQuery + betereUniekheidsQuery;
     var titles = ['Verschillende Gekozen Renners', 'Uitgevallen Renners', `Uniekste team`, `Uniekste team(beter)`]
-    var coltypes = [{}, { "Uitvallers": 1, "Prijs": 1 }, {}, { "Uniekheid": 1, "Uniekheid (Geld)": 1 }]
+    var coltypes = [{}, { "Uitvallers": 1, "Waarde": 1 }, {}, { "Uniekheid": 1, "Uniekheid (Geld)": 1 }]
     sqlDB.query(totalQuery, (err, results) => {
       if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
       var tables = [];
