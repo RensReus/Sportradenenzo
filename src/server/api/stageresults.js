@@ -179,7 +179,7 @@ module.exports = function (app) {
     })
   });
 
-  app.post('/api/getAllSelections', function (req, res) { // TODO echt goed naar kijken nu nog een puinhoop
+  app.post('/api/getAllSelections', function (req, res) {
     var race_id = req.body.race_id;
     var typeQuery = `SELECT type FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
     sqlDB.query(typeQuery, (err, typeResults) => {

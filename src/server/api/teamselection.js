@@ -9,10 +9,10 @@ module.exports = function (app) {
 
   app.post('/api/teamselection', function (req, res) {
     var race_id = req.body.race_id;
-    var beforeStartQuery = `SELECT COUNT(stage_id) FROM stage WHERE race_id = ${race_id} AND starttime > now() AT TIME ZONE 'Europe/Paris'`
+    var beforeStartQuery = `SELECT COUNT(stage_id) FROM stage WHERE race_id = ${race_id} AND starttime < now() AT TIME ZONE 'Europe/Paris'`
     sqlDB.query(beforeStartQuery, (err, beforeStartResults) => {
       if (err) { console.log("WRONG QUERY: ", beforeStartQuery); throw err };
-      if (beforeStartResults.rows[0].count == 21) { //TODO fix for vuelta
+      if (beforeStartResults.rows[0].count === 0) {
         runTeamSelectionCall(req.body.apilink, race_id, req.body.budgetParticipation, req.user.account_id, req.body.rider_participation_id, (err, results) => {
           if (err) { console.log(err.toString()) }
           res.send(results);
@@ -37,7 +37,6 @@ module.exports = function (app) {
     sqlDB.query(`SELECT * FROM account_participation WHERE race_id = ${race_id} AND account_id = ${account_id}`, (err, participationResults) => {
       if (err) { console.log("GET participation error"); throw err };
       if (participationResults.rows.length) {
-        //TODO in een query voor snelheid ipv losse functies nu
         async.auto({
           allRiders: function (innerCallback) {
             SQLread.getAllRiders(race_id, innerCallback)
