@@ -3177,10 +3177,10 @@
 			"Name": {
 				"FirstName": "Georg",
 				"Infix": null,
-				"LastName": "Zimmerman",
-				"FullName": "Georg Zimmerman",
-				"NameShort": "G. Zimmerman",
-				"InfixLastName": "Zimmerman"
+				"LastName": "Zimmermann",
+				"FullName": "Georg Zimmermann",
+				"NameShort": "G. Zimmermann",
+				"InfixLastName": "Zimmermann"
 			},
 			"Id": 5463,
 			"TeamId": 32,

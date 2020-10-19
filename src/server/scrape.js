@@ -90,12 +90,12 @@ var startlistProcessRiders = function (raceString, prices, year, race_id, callba
           } else {// voor grote ronde zijn de prijzen ingelezen
             var prijs = 66666666;
             for (let j in prices) {
-              if (voornaam.toLowerCase().replace("ł","l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(prices[j].firstName.toLowerCase().replace("ł","l").normalize("NFD").replace(/[\u0300-\u036f]/g, "")) && lastname.toLowerCase().replace("ł","l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(prices[j].lastName.toLowerCase().replace("ł","l").normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) {
-                prijs = parseFloat(prices[j].price);  
+              if (voornaam.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(prices[j].firstName.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "")) && lastname.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "") === prices[j].lastName.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "")) {
+                prijs = parseFloat(prices[j].price);
               }
             }
             if (prijs === 66666666)//rider not in prices file
-              console.log("To add: ", pcs_id, voornaam.replace("ł","l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace("ł","l"), lastname);
+              console.log("To add: ", pcs_id, voornaam.replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace("ł", "l"), lastname);
           }
 
           // if name contains '
@@ -477,17 +477,17 @@ var getEindPunten = function (kl, pos) {
 }
 
 var calculateUserScores = function (race_id, stage, stageType, callback) {
-  var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id};\n`
-  var TTTstageQuery = `SELECT stagenr FROM stage WHERE race_id = ${race_id} AND type ='TTT';\n`
-  var totalQuery = participantsQuery + TTTstageQuery;
+  let participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id};\n `
+  let TTTstageQuery = `SELECT stagenr FROM stage WHERE race_id = ${race_id} AND type ='TTT';\n `
+  let raceLengthQuery = `SELECT stage_id FROM stage WHERE race_id = ${race_id};\n `
+  let totalQuery = participantsQuery + TTTstageQuery + raceLengthQuery;
   sqlDB.query(totalQuery, function (err, res) {
     if (err) throw err;
     var totalQuery = '';
     var TTTstages = res[1].rows.map(stage => stage.stagenr);
     for (var i in res[0].rows) {// voor iedere gewone user
 
-      for (var j = stage; j < 23; j++) {// to show correct totalscores for later stages 
-         //TODO remove 23
+      for (var j = stage; j < res[2].rowCount + 1; j++) {// to show correct totalscores for later stages 
         var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
         var account_participation_id = res[0].rows[i].account_participation_id;
         var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
@@ -496,7 +496,7 @@ var calculateUserScores = function (race_id, stage, stageType, callback) {
         var selection_id = `stage_selection_id`
         var kopmanScore = ` + (COALESCE ((SELECT 0.5 * stagescore FROM results_points
           WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${selection_id_val}) AND stage_id = ${stage_id}),0))`
-        if (stageType === "FinalStandings"){ //TODO get stageType
+        if (stageType === "FinalStandings") {
           kopmanScore = ''
           selection_id = `account_participation_id`
           selection = 'team_selection_rider'
@@ -651,7 +651,7 @@ var startSchedule = () => {
               var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race.race_id} AND stagenr = ${stage.stagenr + 1}`;
               sqlDB.query(nextStageQuery, function (err, nextStageResults) {
                 if (err) { console.log("WRONG QUERY:", nextStageQuery); throw err; }
-                if (nextStageResults.rows[0].type !== "FinalStandings"){
+                if (nextStageResults.rows[0].type !== "FinalStandings") {
                   var d = nextStageResults.rows[0].starttime;
                   var resultsRule = `${d.getSeconds() + 5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
                   scrapeResults.reschedule(resultsRule);

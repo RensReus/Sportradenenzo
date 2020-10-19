@@ -62,7 +62,7 @@ module.exports = (app) => {
       const race = { name, year }
       const stage = parseInt(req.body.stage, 10);
       if (req.body.stage === 'all') {
-        const stages = Array.apply(null, { length: 22 }).map(Number.call, Number); //TODO remove 22 get length from SQL
+        const stages = Array.apply(null, { length: 22 }).map(Number.call, Number); //TODO fix for vuelta 2020 remove 22 get length from SQL
         async.eachSeries(stages, (stage, callback) => {
           scrape.getResult(race, stage + 1, (err, arg) => {
             if (err) { res.send('error'); }
@@ -73,7 +73,6 @@ module.exports = (app) => {
           });
         });
       } else {
-        
         scrape.getResult(race, stage, (err, arg) => {
           if (err) { res.send('error'); }
           console.log('Got results %s year %s stage %s', race, stage);

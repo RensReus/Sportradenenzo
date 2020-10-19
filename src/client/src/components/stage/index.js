@@ -41,6 +41,7 @@ class Stage extends Component {
       pouleTeamResultDownloaded: [false, false],
       selectionsComplete: [0, 0],
       classificationIndex: 0,
+      stageType: ''
     }
     this.setKopman = this.setKopman.bind(this)
     this.removeKopman = this.removeKopman.bind(this)
@@ -59,11 +60,8 @@ class Stage extends Component {
     if (this.props.race_id === undefined) {
       this.props.history.push('/home')
     } else {
-      let classificationIndex = 0;
-      if (this.state.stage === 22) classificationIndex += 1; //TODO change to if stagetype === FinalStandings
       this.setState({
         racename: this.props.racename,
-        classificationIndex
       }, () => {
         this.updateData(this.state.stage)
       })
@@ -89,20 +87,17 @@ class Stage extends Component {
   }
 
   nextStage() {
-    const currentstage = parseInt(this.state.stage)
-    if (currentstage < 22) {  //TODO remove next button if FinalStandings
-      const currentstage = parseInt(this.state.stage)
-      this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage + 1).toString())
-      this.setState({
-        loadingStageres: true,
-        loadingSelection: true,
-        classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
-        pouleTeamResultDownloaded: [false, false],
-        stage: currentstage + 1
-      }, () => {
-        this.updateData(currentstage + 1)
-      })
-    }
+    const stagenr = parseInt(this.state.stage)
+    this.props.history.push(this.state.oldracelink + '/stage/' + (stagenr + 1).toString())
+    this.setState({
+      loadingStageres: true,
+      loadingSelection: true,
+      classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
+      pouleTeamResultDownloaded: [false, false],
+      stage: stagenr + 1
+    }, () => {
+      this.updateData(stagenr + 1)
+    })
   }
 
   changedClassificationDisplay(classificationIndex) {
@@ -130,7 +125,7 @@ class Stage extends Component {
   }
 
   updateData(stage) {
-    if (stage > 22 || stage < 1) { //TODO if FinalStandings/ redirect via backend
+    if (this.state.stageType === "FinalStandings" || stage < 1) { //TODO redirect via backend
       this.props.history.push('/');
     }
     const race_id = this.props.race_id;
@@ -160,6 +155,9 @@ class Stage extends Component {
               selectionsComplete: res.data.selectionsComplete
             })
           } else if (res.data.mode === 'results') {
+            let classificationIndex = 0;
+            let stageType = res.data.stageType;
+            if (stageType === "FinalStandings") classificationIndex = 1;
             let stageSelectionResults = _.cloneDeep(this.state.stageSelectionResults)
             stageSelectionResults[budget] = res.data.teamresult;
             let userScores = _.cloneDeep(this.state.userScores)
@@ -172,7 +170,9 @@ class Stage extends Component {
               userScoresColtype: res.data.userScoresColtype,
               stageSelectionResults,
               userScores: userScores,
-              pouleTeamResultDownloaded
+              pouleTeamResultDownloaded,
+              classificationIndex,
+              stageType
             }, () => {
               this.getStageResults()
             })
@@ -358,9 +358,11 @@ class Stage extends Component {
                 <button className={"buttonStandard " + this.props.racename} onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
               </div>
               <span className="bold black h7">Stage: {this.state.stage}</span>
-              <div id="nextStageButton"> {/* TODO hide if Finalstandings  */}
-                <button className={"buttonStandard " + this.props.racename} onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
-              </div>
+              {(this.state.stageType !== "FinalStandings" && this.state.stageType !== "" || mode === 'selection') && 
+                <div id="nextStageButton">
+                  <button className={"buttonStandard " + this.props.racename} onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
+                </div>
+              }
             </div>
             <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
             <ModalButton
@@ -388,7 +390,7 @@ class Stage extends Component {
           </div>
           <div className="stage">
             <LoadingDiv loading={this.state.loadingStageres} />
-            <StageResultsTables data={this.state.stageResults[budget]} stageResultsLengths={this.state.stageResultsLengths} stage={this.state.stage} changedClassificationDisplay={this.changedClassificationDisplay} />
+            <StageResultsTables data={this.state.stageResults[budget]} stageResultsLengths={this.state.stageResultsLengths} stageType={this.state.stageType} changedClassificationDisplay={this.changedClassificationDisplay} />
           </div>
           <LoadingDiv loading={this.state.loadingAll} />
         </div>}

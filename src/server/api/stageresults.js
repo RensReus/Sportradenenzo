@@ -109,6 +109,7 @@ module.exports = function (app) {
               userscores,
               resultsComplete: uitslagresults[2].rows[0].complete,
               userScoresColtype: userScoresColtype,
+              stageType: stageInfo.type
             })
           })
         }
