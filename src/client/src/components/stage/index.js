@@ -320,6 +320,10 @@ class Stage extends Component {
         <br></br>
       <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '-extra.jpg'} alt="" />
     </div>
+    if (this.state.racename === 'vuelta'){
+      let link = 
+      stageProfile = <iframe width="1800" height="900" title='profielen' src={`https://www.procyclingstats.com/race/vuelta-a-espana/2020/stage-${this.state.stage}/today/profiles`}></iframe>
+    }
     //selection
     if (mode === 'results') {
       let allSelections = this.state.allSelections[budget];
