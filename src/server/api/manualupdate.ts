@@ -92,7 +92,7 @@ module.exports = (app) => {
       sqlDB.query(accountParticipationsQuery, (err, participations) => {
         if (err) { console.log('WRONG QUERY:', accountParticipationsQuery); throw err; }
         var totalQuery = `UPDATE race set finished = true WHERE race_id = ${race_id};\n `
-        for (var part of participations.rows){
+        for (var part of participations.rows) {
           var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection 
             INNER JOIN stage USING(stage_id)
             WHERE account_participation_id = ${part.account_participation_id} AND type = 'FinalStandings')`
@@ -106,8 +106,8 @@ module.exports = (app) => {
           totalQuery += updateAccountScore;
         }
         sqlDB.query(totalQuery, (err, _) => {
-          if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }~
-          console.log(`Copied ${participations.rows.length} finalscores AND ${req.body.raceName} ${req.body.year} set to finished` )
+          if (err) { console.log('WRONG QUERY:', totalQuery); throw err; } ~
+            console.log(`Copied ${participations.rows.length} finalscores AND ${req.body.raceName} ${req.body.year} set to finished`)
           res.send(`${req.body.raceName} ${req.body.year} finished And scores copied`);
         });
       });
@@ -118,6 +118,7 @@ module.exports = (app) => {
 
   app.post('/api/copyTeamIfSelectionEmpty', (req, res) => {
     if (req.user.admin) {
+      console.log("req", req.body)
       const race_id = `(SELECT race_id FROM race WHERE name = '${req.body.raceName}' AND year = ${req.body.year})`;
       const stagenr = req.body.stage;
       const stage_id = `(SELECT stage_id FROM stage
@@ -131,6 +132,7 @@ module.exports = (app) => {
                                             HAVING COUNT(rider_participation_id) = 0`;
       sqlDB.query(accountsWithoutSelectionQuery, (err, noSelectionResults) => {
         if (err) { console.log('WRONG QUERY:', accountsWithoutSelectionQuery); throw err; }
+        console.log("noslectionresults", noSelectionResults)
         let totalQuery: string = '';
         for (const i of Object.keys(noSelectionResults.rows)) {// for each account_participation with an empty stage_selection for the stage that just started
           const prevStage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE stage_id = ${prevStage_id} AND account_participation_id = ${noSelectionResults.rows[i].account_participation_id})`;
@@ -141,11 +143,14 @@ module.exports = (app) => {
           const insertPrevKopman = `UPDATE stage_selection SET kopman_id = ${prevKopman_id} WHERE stage_selection_id = ${noSelectionResults.rows[i].stage_selection_id};\n`;
           totalQuery += insertPrevSelection + insertPrevKopman;
         }
+        let message = `Copied ${noSelectionResults.rowCount} selections`;
         if (noSelectionResults.rows.length) {
           sqlDB.query(totalQuery, (err, results) => {
             if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
-            console.log('Copied selections', noSelectionResults.rowCount);
+            res.send(message);
           });
+        } else {
+          res.send(message);
         }
       });
     } else {

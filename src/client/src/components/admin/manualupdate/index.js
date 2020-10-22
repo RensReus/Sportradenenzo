@@ -17,6 +17,7 @@ class manualupdate extends Component {
     this.changeGSKText = this.changeGSKText.bind(this);
     this.changeGRKText = this.changeGRKText.bind(this);
     this.changeGRText = this.changeGRText.bind(this);
+    this.changeGRTextCopy = this.changeGRTextCopy.bind(this);
 
     this.handleChangeYear = this.handleChangeYear.bind(this);
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -101,6 +102,12 @@ class manualupdate extends Component {
     });
   }
 
+  changeGRTextCopy(event) {
+    this.setState({
+      grStageCopy: event.target.value
+    });
+  }
+
   //dropdown select handlers
   handleChangeYear(event) {
     this.setState({ year: event.target.value });
@@ -119,10 +126,10 @@ class manualupdate extends Component {
 
   copyTeamIfSelectionEmpty(e) {
     e.preventDefault();
-    var stage = Number(this.state.grStage);
+    var stage = Number(this.state.grStageCopy);
     axios.post('/api/copyTeamIfSelectionEmpty', { raceName: this.state.raceName, year: this.state.year, stage })
       .then((res) => {
-        this.setState({ grStage: res.data })
+        this.setState({ grStageCopy: res.data })
       })
   }
 
@@ -182,7 +189,7 @@ class manualupdate extends Component {
 
           <form className="row" action="" onSubmit={this.copyTeamIfSelectionEmpty}>
             <div className="discription">Opstelling vergeten Copy. </div>
-            <input className={"inputfield "} id="gr" ref="gr" placeholder="Stage #" value={this.state.grStage} onChange={this.changeGRText} />
+            <input className={"inputfield "} id="gr" ref="gr" placeholder="Stage #" value={this.state.grStageCopy} onChange={this.changeGRTextCopy} />
             <button>Submit</button>
           </form>
 
