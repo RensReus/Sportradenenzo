@@ -28,7 +28,7 @@ class Stage extends Component {
       kopman: [null, null],
       stageSelectionResults: [[], []],
       userScores: [[], []],
-      stageResults: [[], []],
+      stageResults: [[[], [], [], [], []], [[], [], [], [], []]],
       stageResultsLengths: [0, 0, 0, 0, 0],
       lastStage: false,
       raceStarted: false,
@@ -76,6 +76,7 @@ class Stage extends Component {
         loadingSelection: true,
         classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
         pouleTeamResultDownloaded: [false, false],
+        stageResults: [[[], [], [], [], []], [[], [], [], [], []]],
         stage: currentstage - 1
       }, () => {
         this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
@@ -94,6 +95,7 @@ class Stage extends Component {
       loadingSelection: true,
       classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
       pouleTeamResultDownloaded: [false, false],
+      stageResults: [[[], [], [], [], []], [[], [], [], [], []]],
       stage: stagenr + 1
     }, () => {
       this.updateData(stagenr + 1)
@@ -155,7 +157,7 @@ class Stage extends Component {
               selectionsComplete: res.data.selectionsComplete
             })
           } else if (res.data.mode === 'results') {
-            let classificationIndex = 0;
+            let classificationIndex = this.state.classificationIndex;
             let stageType = res.data.stageType;
             if (stageType === "FinalStandings") classificationIndex = 1;
             let stageSelectionResults = _.cloneDeep(this.state.stageSelectionResults)
@@ -304,6 +306,7 @@ class Stage extends Component {
   }
 
   render() {
+    console.log(this.state.stage,'length',this.state.stageResultsLengths)
     const mode = this.state.mode
     const budget = this.state.budget;
     let allSelectionsPopup
