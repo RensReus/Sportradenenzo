@@ -247,6 +247,7 @@ module.exports = (app) => {
       ORDER BY "Total" DESC`
     //0 for string 1 for number
     var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "PPM": 1, "dnf": 0 };
+    console.log(query)
     sqlDB.query(query, (err, results) => {
       if (err) { console.log("WRONG QUERY:", query); throw err; }
       let tables = [{

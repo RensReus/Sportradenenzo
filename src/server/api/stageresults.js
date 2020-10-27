@@ -202,7 +202,7 @@ module.exports = function (app) {
         var selection_id = `stage_selection.stage_id = ${stage_id}`
         var kopman = `results_points.teamscore, kopman_id = rider_participation.rider_participation_id`
         var stage_selection_join = `INNER JOIN stage_selection USING(stage_selection_id)`
-        if (typeResults.rows[0].type === "FinalStandings"){
+        if (typeResults.rows[0].type === "FinalStandings"){ //TODO update to new version
           stage_selection_join = ``
           kopman = `FALSE`
           selection = `team_selection_rider`
