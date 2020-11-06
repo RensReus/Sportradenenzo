@@ -1,0 +1,8 @@
+label.toggleColLabel{
+    font-size: 10pt;
+}
+
+.toggleDiv{
+    display: block;
+    float: left;
+}

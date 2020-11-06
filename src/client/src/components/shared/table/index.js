@@ -1,17 +1,20 @@
+import { builtinModules } from 'module';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import FlagIcon from '../flagIcon'
+import './index.css';
 
 class Headers extends Component {
   render() {
     var data = this.props.data;
+    var displayCols = this.props.displayCols;
     var coltype = this.props.coltype;
     var colNames = this.props.colNames;
     const headers = []
     if (data.length > 0) {
       const properties = Object.keys(data[0])
       properties.forEach(function (property) {
-        if (property !== "rowClassName" && !property.endsWith("_link")) {
+        if (property !== "rowClassName" && !property.endsWith("_link") && (displayCols == null || displayCols[property])) {
           var headerText = property;
           if (property === 'country') headerText = '';
           if (colNames != null && colNames[property] != null) {
@@ -38,12 +41,14 @@ class Headers extends Component {
 class Rows extends Component {
   render() {
     var data = this.props.data;
+    var displayCols = this.props.displayCols;
     var rows = [];
     var row = [];
     for (var i = 0; i < data.length; i++) {
       var className = "";
       var link = "";
       for (var property in data[i]) {
+        if (displayCols != null && !displayCols[property]) continue;
         if (property.endsWith("_link")) {//if link store for next column
           link = data[i][property];
           continue;
@@ -56,7 +61,7 @@ class Rows extends Component {
         if (property === "rowClassName") {
           className = data[i][property];
         } else if (property === "country") {
-          row.push(<td><FlagIcon code={tdContent}/></td>);
+          row.push(<td><FlagIcon code={tdContent} /></td>);
         } else {
           var tdClassname = property;
           if (tdClassname === ' ') tdClassname = 'rank'
@@ -81,12 +86,14 @@ class Table extends Component {
     this.state = ({
       data: [],//required the rest of the parameter are optional
       coltype: [], // only the name/type of the sortable colums need to be provided unsortable column is the default
+      displayCols: null, // only the hidden cols need to be passed as an argument
       desc: [],
       classNames: '',
       scrollShow: [],
     });
     this.onSort = this.onSort.bind(this);
     this.scrollClick = this.scrollClick.bind(this);
+    this.buildColSelector = this.buildColSelector.bind(this);
   }
   componentDidMount() {
     this.initialSetState();
@@ -99,6 +106,7 @@ class Table extends Component {
   }
 
   initialSetState() {
+    this.buildColSelector();
     this.setState({
       data: this.props.data,
       classNames: this.props.classNames,
@@ -117,6 +125,35 @@ class Table extends Component {
         scrollShow,
       })
     }
+  }
+
+  buildColSelector() {
+    var displayCols = null;
+    if (this.props.hiddenCols != null) {
+      displayCols = {};
+      const columns = Object.keys(this.props.data[0])
+      columns.forEach(function (column) {
+        if (column !== "rowClassName" && !column.endsWith("_link")) {
+          if (this.props.hiddenCols.includes(column)) {
+            displayCols[column] = false;
+          } else {
+            displayCols[column] = true;
+          }
+        }
+      }, this)
+    }
+
+    this.setState({
+      displayCols
+    })
+  }
+
+  toggleColumn(columnName) {
+    var displayCols = this.state.displayCols;
+    displayCols[columnName] = !displayCols[columnName];
+    this.setState({
+      displayCols
+    })
   }
 
   onSort(sortKey) {
@@ -179,7 +216,18 @@ class Table extends Component {
     var tables = [];
     var scrollButtons = "";
     var scrollCount = 1;
-
+    var columnSelector = "";
+    if (this.state.displayCols != null) {
+      var checkboxes = [];
+      for (var name in this.state.displayCols) {
+        var newBox = <div className="toggleDiv">
+          <input type="checkbox" id={name} name={name} checked={this.state.displayCols[name]} onClick={(e) => this.toggleColumn(e.target.name)} />
+          <label className="toggleColLabel" for={name}>{name}</label>
+        </div>
+        checkboxes.push(newBox)
+      }
+      columnSelector = <div className="toggleColumsDiv"> {checkboxes} </div>
+    }
     if (this.props.maxRows < this.state.data.length) { //if more rows than allows spread over multiple tabs
       scrollCount = Math.ceil(this.state.data.length / this.props.maxRows);
       var buttons = [];
@@ -188,8 +236,8 @@ class Table extends Component {
       for (var i = 0; i < scrollCount; i++) {//build tabs
         var classNames = "scrollButton " + this.state.scrollShow[i];
         buttons.push(<button className={classNames} key={i} onClick={this.scrollClick.bind(this, i, 0)} >{i + 1}</button>)
-        var begin = 20 * i;
-        var end = Math.min(20 * (i + 1), this.state.data.length)
+        var begin = this.props.maxRows * i;
+        var end = Math.min(this.props.maxRows * (i + 1), this.state.data.length)
         tables.push(<table key={i} className={this.state.classNames} style={{ display: this.state.scrollShow[i] }}>
           <caption>{this.props.title}</caption>
           <Headers data={this.state.data} colNames={this.props.colNames} coltype={this.state.coltype} onSort={this.onSort} />
@@ -205,13 +253,14 @@ class Table extends Component {
     } else {
       tables = <table className={this.state.classNames} style={{ display: 'table' }}>
         <caption>{this.props.title}</caption>
-        <Headers data={this.state.data} colNames={this.props.colNames} coltype={this.state.coltype} onSort={this.onSort} />
-        <Rows data={this.state.data} />
+        <Headers data={this.state.data} colNames={this.props.colNames} coltype={this.state.coltype} onSort={this.onSort} displayCols={this.state.displayCols} />
+        <Rows data={this.state.data} displayCols={this.state.displayCols} />
       </table>
     }
     return (
       <div className="tableContainer">
         {scrollButtons}
+        {columnSelector}
         {tables}
       </div>
 
