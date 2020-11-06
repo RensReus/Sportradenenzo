@@ -420,7 +420,8 @@ module.exports = (app) => {
   function teamoverzichtuser(main_account_participation_id, account_participation_id, budgetparticipation, details, callback) {
     var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
         INNER JOIN stage_selection USING(stage_selection_id)
-        WHERE account_participation_id = ${account_participation_id}) a`
+        INNER JOIN stage USING (stage_id)
+        WHERE account_participation_id = ${account_participation_id} AND NOW() > starttime) a`
     var inteam = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${main_account_participation_id}) THEN 'bold black' ELSE '' END`
     var rowClassName = `${inteam} AS "rowClassName"`;
     var totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 ELSE totalscore END`
