@@ -200,7 +200,7 @@ module.exports = function (app) {
         var inSelection = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'bold black' ELSE ${inteam} END`
         var selection = `stage_selection_rider`
         var selection_id = `stage_selection.stage_id = ${stage_id}`
-        var kopman = `results_points.teamscore, kopman_id = rider_participation.rider_participation_id`
+        var kopman = `kopman_id = rider_participation.rider_participation_id`
         var stage_selection_join = `INNER JOIN stage_selection USING(stage_selection_id)`
         if (typeResults.rows[0].type === "FinalStandings"){ //TODO update to new version
           stage_selection_join = ``
@@ -212,7 +212,7 @@ module.exports = function (app) {
         var rowClassName = `${inSelection} AS "rowClassName"`;
         var rider_score = `CASE WHEN kopman THEN totalscore ${minusTeampoints} + 0.5*stagescore ELSE totalscore ${minusTeampoints} END`
         var selectionsQuery = `SELECT username, ARRAY_AGG(json_build_object('Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score', COALESCE(${rider_score},0),'rowClassName',"rowClassName")) AS riders FROM
-        (SELECT username, CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, ${kopman} as kopman, ${rowClassName} FROM  ${selection}
+        (SELECT username, CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, results_points.teamscore, ${kopman} as kopman, ${rowClassName} FROM  ${selection}
           INNER JOIN rider_participation USING (rider_participation_id)
           INNER JOIN rider USING (rider_id)
           ${stage_selection_join}
@@ -222,7 +222,7 @@ module.exports = function (app) {
           WHERE ${selection_id} AND budgetparticipation = ${budgetParticipation}
           ) a
           GROUP BY username;\n`;
-
+        console.log(selectionsQuery);
         var allnotselected = `(
           SELECT rider_participation_id, account_participation_id FROM team_selection_rider
           INNER JOIN account_participation USING(account_participation_id )

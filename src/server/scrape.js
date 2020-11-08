@@ -487,7 +487,7 @@ var calculateUserScores = function (race_id, stage, stageType, callback) {
     var TTTstages = res[1].rows.map(stage => stage.stagenr);
     for (var i in res[0].rows) {// voor iedere gewone user
 
-      for (var j = stage; j < res[2].rowCount + 1; j++) {// to show correct totalscores for later stages 
+      for (var j = stage; j < res[2].rowCount; j++) {// to show correct totalscores for later stages 
         var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
         var account_participation_id = res[0].rows[i].account_participation_id;
         var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
