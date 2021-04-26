@@ -1,7 +1,6 @@
 import { startSchedule } from "./server/scrape";
 const express = require('express');
 const morgan = require('morgan');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
@@ -28,10 +27,10 @@ mongoose.connection.on('error', (err) => {
 const passport = require('passport');
 app.use(morgan('dev'));
 app.use(cookieParser()); // read cookies (needed for auth)
-app.use(bodyParser.urlencoded({
+app.use(express.urlencoded({
   extended: true,
 })); // get information from html forms
-app.use(bodyParser.json());       // to support JSON-encoded bodies
+app.use(express.json());       // to support JSON-encoded bodies
 app.use(passport.initialize());
 
 // Express only serves static assets in production
