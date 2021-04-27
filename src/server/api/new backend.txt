@@ -1,0 +1,66 @@
+// admin
+post query
+get getinfo
+
+// authentication
+post signup
+post login
+post getlogin
+post logout
+
+// charts
+chartuserstagescores
+chartuserranking
+chartriderpercentage
+chartscorespread
+chartscorespreadgrouped
+charttotalscorespread
+charttotalscorespreadgrouped
+chartuserracescores
+
+refactor ideas 
+/chart/name/race/year/budget-etc
+
+// manualupdate
+getstartlist
+getresults
+endRaceActions
+copyTeamIfSelectionEmpty
+import
+export
+
+// racestatistics
+statistics
+case "getstagevictories"
+case "gettourvictories"
+case "getriderpointsall"
+case "getriderpointsselected"
+case "missedpoints"
+case "missedpointsall"
+case "teams"
+case "teamcomparisons"
+case "getadditionalstats"
+
+//stageresults
+getstage
+getStageResults
+getAllSelections
+getstageresultsclassics
+getfinalclassics
+
+//stageselection
+setkopman
+removekopman
+removeriderfromstage
+addridertostage
+
+// teamselection
+case "getridersandteam"
+case "addRider"
+case "removeRider"
+case "addaccountparticipation"
+
+// user participation
+getracepartcipation
+getactiveraces
+getfinishedraces
