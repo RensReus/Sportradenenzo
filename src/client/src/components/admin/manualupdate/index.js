@@ -30,8 +30,8 @@ class manualupdate extends Component {
       grStage: "",
       grstatus: "",
       gsStatus: "",
-      year: "2020",
-      raceName: "vuelta"
+      year: "2021",
+      raceName: "tour"
     }
   }
 
@@ -164,9 +164,7 @@ class manualupdate extends Component {
           <div className="grMainRow">
             <div>year</div>
             <select value={this.state.year} onChange={this.handleChangeYear}>
-              <option value="2018">2018</option>
-              <option value="2019">2019</option>
-              <option value="2020">2020</option>
+              <option value="2021">2021</option>
             </select>
 
             <div>Name</div>

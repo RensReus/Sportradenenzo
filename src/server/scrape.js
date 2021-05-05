@@ -45,8 +45,8 @@ const getStartlist = function (race, callback) {
       var riderprices = []
       for (let i in riders) {
         let rider = riders[i];
-        let firstName = rider.Name.FirstName;
-        let lastName = rider.Name.LastName;
+        let firstName = rider.FirstName;
+        let lastName = rider.LastName;
         let price = parseFloat(rider.Price);
         riderprices.push({ firstName, lastName, price })
       }
@@ -55,7 +55,7 @@ const getStartlist = function (race, callback) {
   }
 }
 
-var startlistProcessRiders = function (raceString, prices, year, race_id, callback) {
+var startlistProcessRiders = function (raceString, scoritoPrices, year, race_id, callback) {
   request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, function (error, response, html) {
     var stage_id = 0; //Placeholder
     if (!error && response.statusCode === 200) {
@@ -67,35 +67,42 @@ var startlistProcessRiders = function (raceString, prices, year, race_id, callba
 
       $(".team").each(function (index, element) { //gaat ieder team af
         var teamName = $(this).children().first().children().last().text();
-        $(this).children().eq(2).children(".rider").each(function (index, element) { //gaat iedere renner af
-
-          var name = $(this).children().first().text();
+        $(this).children().eq(3).children().eq(0).children().each(function (index, element) { //gaat iedere renner af
+          var name_link_div = $(this).children().eq(1);
+          var name = name_link_div.text();
+          var pcs_id = name_link_div.attr('href').substring(6);
+          var country = $(this).children().eq(0).attr("class").split(' ')[1];
+          
           // sla achternaam voor naam en voorletters op
-          var lastname = $(this).children().first().children().first().text().toLowerCase();
-          lastname = lastname.charAt(0).toUpperCase() + lastname.slice(1);
-          var voornaam = name.substring(lastname.length + 1);
+          var i=0
+          while (i <= name.length){
+              character = name.charAt(i);
+              if (character != character.toUpperCase() && character != ' ') {
+                break;
+              }		
+              i++;
+          }
+          var firstLastSplit = name.substring(0,i).lastIndexOf(' ');
+          var lastname = name.substring(0,firstLastSplit);
+          var voornaam = name.substring(firstLastSplit + 1, name.length);
           var voornamen = voornaam.split(' ').filter(x => x);
           var voorletters = "";
           for (var i = 0; i < voornamen.length; i++) {
             voorletters += voornamen[i].substring(0, 1) + ".";
           }
 
-          //add pcs_id and country 
-          var pcs_id = $(this).attr('href').substring(6);
-          if ($(this).siblings().eq(4 * index + 1).attr("class") != null) {
-            var country = $(this).siblings().eq(4 * index + 1).attr("class").split(' ')[1];
-          }
-          if (prices === 'classics') {//voor klassiekers zijn de prijzen te veel werk om in te voeren
+          if (scoritoPrices === 'classics') {//voor klassiekers zijn de prijzen te veel werk om in te voeren
             var prijs = 500000;
           } else {// voor grote ronde zijn de prijzen ingelezen
             var prijs = 66666666;
-            for (let j in prices) {
-              if (voornaam.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(prices[j].firstName.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "")) && lastname.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "") === prices[j].lastName.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "")) {
-                prijs = parseFloat(prices[j].price);
+            for (let j in scoritoPrices) {
+              if (voornaam.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(scoritoPrices[j].firstName.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "")) && lastname.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "") === scoritoPrices[j].lastName.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "")) {
+                prijs = parseFloat(scoritoPrices[j].price);
               }
             }
-            if (prijs === 66666666)//rider not in prices file
+            if (prijs === 66666666){//rider not in prices file
               console.log("To add: ", pcs_id, voornaam.replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace("ł", "l"), lastname);
+            }
           }
 
           // if name contains '
@@ -125,7 +132,7 @@ var startlistProcessRiders = function (raceString, prices, year, race_id, callba
       participationQuery = participationQuery.slice(0, -1) + ` ON CONFLICT (race_id,rider_id) 
                     DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team, price = EXCLUDED.price;\n `;
 
-      if (prices === 'classics') {
+      if (scoritoPrices === 'classics') {
         var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id} AND rider_participation_id NOT IN ${startlist_IDs}; `;// to remove riders no longer on startlist
         results_pointsQuery = results_pointsQuery.slice(0, -1) + `ON CONFLICT (stage_id, rider_participation_id) DO NOTHING; `;
         var totalQuery = deleteQuery + riderQuery + participationQuery + results_pointsQuery;
