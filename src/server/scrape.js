@@ -193,7 +193,7 @@ var getResult = function (race, et, callback) {
       if (!error && response.statusCode === 200) {
         var $ = cheerio.load(html);
         var classifications = [];// list of available classifications
-        $(".tabnav").each(function (index, element) {
+        $(".restabs").children().each(function (index, element) {
           classifications.push($(this).text());
         })
 
@@ -218,16 +218,18 @@ var getResult = function (race, et, callback) {
             })
           })
         }
-        $(".basic").each(function (index, element) {
-          var end = $(this).children().eq(1).children().first().children().length;
-          if (end && classifications[index] !== 'Teams' && $(this).parent().attr("data-id") !== 'bonifications' && $(this).parent().attr("data-id") !== 'today') {//prevent crashes
+        let tableWrapper = $(".w68.left.mb_w100");
+        tableWrapper.children().each(function (index, element) {
+          var end = classifications.length;
+          //if (end && classifications[index] !== 'Teams' && $(this).parent().attr("data-id") !== 'bonifications' && $(this).parent().attr("data-id") !== 'today') {//prevent crashes
+          if (end && classifications[index] !== 'Teams') {// maybe doesnt prevent crashes
             var classification = classifications[index];
             var columns = [];
-            $(this).children().first().children().first().children().each(function (classindex, element) {
+            let currentClassificationTable = tableWrapper.children().eq(index+3);
+            currentClassificationTable.children().first().children().first().children().first().children().each(function (classindex, element) {
               columns.push($(this).text());
             })
-
-            $(this).children().eq(1).children().each(function (riderindex, element) {//voor iedere renner in de uitslag
+            currentClassificationTable.children().first().children().eq(1).children().each(function (riderindex, element) {//voor iedere renner in de uitslag
               var rider = resultsProcessRiders(classification, columns, $(this))
               if (rider.DNF) {//doesn't add rider if pos==0
                 ridersResults['dnf'].push(rider);
