@@ -313,15 +313,15 @@ class Stage extends Component {
     // always
     var stageProfile = '';
     stageProfile = <div>
-      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '.jpg'} alt="profile" />
+      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/stage-' + this.state.stage + '-profile.jpg'} alt="profile" />
       <br></br>
         finish
         <br></br>
-      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '-finish.jpg'} alt="" />
+      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/stage-' + this.state.stage + '-finish.jpg'} alt="" />
       <br></br>
       extra
         <br></br>
-      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/etappe-' + this.state.stage + '-extra.jpg'} alt="" />
+      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/stage-' + this.state.stage + '-extra.jpg'} alt="" />
     </div>
     if (this.state.racename === 'vuelta'){
       stageProfile = <iframe width="1800" height="900" title='profielen' src={`https://www.procyclingstats.com/race/vuelta-a-espana/2020/stage-${this.state.stage}/today/profiles`}></iframe>
