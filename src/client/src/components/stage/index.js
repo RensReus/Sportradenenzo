@@ -364,7 +364,7 @@ class Stage extends Component {
                 <button className={"buttonStandard " + this.props.racename} onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
               </div>
               <span className="bold black h7">Stage: {this.state.stage}</span>
-              {(this.state.stageType !== "FinalStandings" && this.state.stageType !== "" || mode === 'selection') && 
+              {((this.state.stageType !== "FinalStandings" && this.state.stageType !== "") || mode === 'selection') && 
                 <div id="nextStageButton">
                   <button className={"buttonStandard " + this.props.racename} onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
                 </div>
