@@ -222,7 +222,6 @@ module.exports = function (app) {
           WHERE ${selection_id} AND budgetparticipation = ${budgetParticipation}
           ) a
           GROUP BY username;\n`;
-        console.log(selectionsQuery);
         var allnotselected = `(
           SELECT rider_participation_id, account_participation_id FROM team_selection_rider
           INNER JOIN account_participation USING(account_participation_id )

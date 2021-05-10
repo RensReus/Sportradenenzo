@@ -66,7 +66,7 @@ module.exports = (app) => {
         async.eachSeries(stages, (stage, callback) => {
           scrape.getResult(race, stage + 1, (err, arg) => {
             if (err) { res.send('error'); }
-            console.log('Got results %s year %s stage %s', race, stage + 1);
+            console.log('Got results %s %s stage %s', name, year, stage + 1);
             callback(null, !err);
           }, (err, result) => {
             res.send('completed');
@@ -75,7 +75,7 @@ module.exports = (app) => {
       } else {
         scrape.getResult(race, stage, (err, arg) => {
           if (err) { res.send('error'); }
-          console.log('Got results %s year %s stage %s', race, stage);
+          console.log('Got results %s %s stage %s', name, year, stage + 1);
           startSchedule()
           res.send('completed')
         });
