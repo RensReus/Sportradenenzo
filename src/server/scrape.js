@@ -206,7 +206,6 @@ var getResult = function (race, et, callback) {
         } else if (race.name === 'classics') {// only stage results if classics
           classifications = ['Stage'];
         }
-
         // define uitslagen arrays
         var ridersResults = { 'all': [], 'Stage': [], 'GC': [], 'Points': [], 'Youth': [], 'KOM': [], 'dnf': [] };
         var teamWinners = [];
@@ -220,9 +219,9 @@ var getResult = function (race, et, callback) {
         }
         let tableWrapper = $(".w68.left.mb_w100");
         tableWrapper.children().each(function (index, element) {
-          var end = classifications.length;
+          var rowCount = classifications.length;
           //if (end && classifications[index] !== 'Teams' && $(this).parent().attr("data-id") !== 'bonifications' && $(this).parent().attr("data-id") !== 'today') {//prevent crashes
-          if (end && classifications[index] !== 'Teams') {// maybe doesnt prevent crashes
+          if (rowCount > 0 && classifications[index] !== 'Teams') {// maybe doesnt prevent crashes
             var classification = classifications[index];
             var columns = [];
             let currentClassificationTable = tableWrapper.children().eq(index+3);
@@ -285,7 +284,7 @@ var getResult = function (race, et, callback) {
           if (akComp && sprintComp && bergComp && jongComp && ridersResults['GC'].length === ridersResults['Stage'].length) {
             uitslagCompleet = true;
           }
-          
+
           var stageCompleteQuery = `UPDATE stage SET complete = TRUE, finished = TRUE WHERE stage_id = ${stage_id}`
           if (uitslagCompleet && prevStageComplete) {
             sqlDB.query(stageCompleteQuery, function (err, completeRes) {
@@ -370,8 +369,9 @@ var resultsProcessRiders = function (classification, columns, row) {
   var team = row.children().eq(teamCol).children().eq(0).text();
 
   var timeCol = columns.indexOf('Time');
-  var pntCol = columns.indexOf('Pnt');
+  var pntCol = columns.indexOf('Points');
   var result = timeCol + 1 ? row.children().eq(timeCol).children().eq(0).text() : row.children().eq(pntCol).text();
+  if (result == '' && timeCol != -1) result = row.children().eq(timeCol).text();
 
   var prevCol = columns.indexOf('Prev');
   if (classification === 'Stage') {
@@ -385,7 +385,7 @@ var resultsProcessRiders = function (classification, columns, row) {
     var prev = '';
     var change = '-'
     if (prevCol > 0) {
-      prev = row.children().eq(prevCol).children().first().text()
+      prev = row.children().eq(prevCol).text()
       change = row.children().eq(prevCol + 1).text();
       if (prev === '') {
         change = '*'
@@ -635,8 +635,7 @@ var startSchedule = () => {
           if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
           if (results.rows.length) {// if some results, so at least after start of stage 1
             var stage = results.rows[0];
-            if (true) {
-              // if (!stage.finished) {
+            if (!stage.finished) {
               getTimetoFinish(race.name, function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
                 if (stageFinished) {
                   var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
