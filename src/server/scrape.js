@@ -2,7 +2,8 @@ const cheerio = require('cheerio');
 const request = require('request');
 const schedule = require('node-schedule');
 const sqlDB = require('./db/sqlDB');
-const async = require('async')
+const async = require('async');
+const stageresults = require('./api/stageresults');
 const getStartlist = function (race, callback) {
   const fs = require('fs');
   var raceString = "";
@@ -72,18 +73,18 @@ var startlistProcessRiders = function (raceString, scoritoPrices, year, race_id,
           var name = name_link_div.text();
           var pcs_id = name_link_div.attr('href').substring(6);
           var country = $(this).children().eq(0).attr("class").split(' ')[1];
-          
+
           // sla achternaam voor naam en voorletters op
-          var i=0
-          while (i <= name.length){
-              character = name.charAt(i);
-              if (character != character.toUpperCase() && character != ' ') {
-                break;
-              }		
-              i++;
+          var i = 0
+          while (i <= name.length) {
+            character = name.charAt(i);
+            if (character != character.toUpperCase() && character != ' ') {
+              break;
+            }
+            i++;
           }
-          var firstLastSplit = name.substring(0,i).lastIndexOf(' ');
-          var lastname = name.substring(0,firstLastSplit);
+          var firstLastSplit = name.substring(0, i).lastIndexOf(' ');
+          var lastname = name.substring(0, firstLastSplit);
           var voornaam = name.substring(firstLastSplit + 1, name.length);
           var voornamen = voornaam.split(' ').filter(x => x);
           var voorletters = "";
@@ -100,7 +101,7 @@ var startlistProcessRiders = function (raceString, scoritoPrices, year, race_id,
                 prijs = parseFloat(scoritoPrices[j].price);
               }
             }
-            if (prijs === 66666666){//rider not in prices file
+            if (prijs === 66666666) {//rider not in prices file
               console.log("To add: ", pcs_id, voornaam.replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace("ł", "l"), lastname);
             }
           }
@@ -154,37 +155,18 @@ var startlistProcessRiders = function (raceString, scoritoPrices, year, race_id,
   });
 }
 
-var getResult = function (race, et, callback) {
+var getResult = function (race, stagenr, callback) {
   var race_id = `(SELECT race_id FROM race WHERE year = ${race.year} AND name = '${race.name}')`
-  var stageQuery = `SELECT * FROM stage INNER JOIN race USING(race_id) WHERE stagenr = ${et} AND race_id = ${race_id}`;
+  var stageQuery = `SELECT * FROM stage INNER JOIN race USING(race_id) WHERE stagenr = ${stagenr} AND race_id = ${race_id}`;
+  //Get info about current stage
   sqlDB.query(stageQuery, (err, stageResults) => {
     if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
-    var raceString = "";
-    switch (race.name) {
-      case "giro":
-        raceString = "giro-d-italia";
-        break;
-      case "tour":
-        raceString = "tour-de-france";
-        break;
-      case "vuelta":
-        raceString = "vuelta-a-espana";
-        break;
-    }
-    // set stage info
     var stage = stageResults.rows[0];
+    var raceString = getRaceString(race.name, stage.stagename);
     var stage_id = stage.stage_id;
-    var stageType = stage.type;
-    var stageWeight = stage.weight;
-    var etLink = et;
-    if (stageType === 'FinalStandings') {
-      etLink = et - 1;
-    }
+    var etLink = stage.type === 'FinalStandings' ? stagenr - 1: stagenr;
 
-    if (raceString === "") {//set if not GT
-      raceString = stage.stagename;
-    }
-
+    //get results from PCS
     request({
       url: `https://www.procyclingstats.com/race/${raceString}/${race.year}/stage-${etLink}`,
       headers: { "Connection": "keep-alive" }
@@ -192,175 +174,215 @@ var getResult = function (race, et, callback) {
       if (error) console.log(error);
       if (!error && response.statusCode === 200) {
         var $ = cheerio.load(html);
-        var classifications = [];// list of available classifications
-        $(".restabs").children().each(function (index, element) {
-          classifications.push($(this).text());
-        })
-
-        if (!classifications.length || classifications[0] !== 'Stage') {
-          classifications[0] = 'Stage';
-        }
-
-        if (stageType === 'TTT') { // remove stage if TTT
-          classifications.shift()
-        } else if (race.name === 'classics') {// only stage results if classics
-          classifications = ['Stage'];
-        }
-        // define uitslagen arrays
-        var ridersResults = { 'all': [], 'Stage': [], 'GC': [], 'Points': [], 'Youth': [], 'KOM': [], 'dnf': [] };
-        var teamWinners = [];
-        var TTTresult = [];
-        if (stageType === 'TTT') {// TTTresults is teamnames
+       
+        var TTTresult = []; // TODO clean up TTT code
+        if (stage.type === 'TTT') {// TTTresults is teamnames
           $(".resTTTh").first().parent(function () {
             $(this).children('.tttRidersCont').each(function () {
               TTTresult.push($(this).children().eq(0).children().eq(1).children().eq(1).text());
             })
           })
         }
-        let tableWrapper = $(".w68.left.mb_w100");
-        tableWrapper.children().each(function (index, element) {
-          var rowCount = classifications.length;
-          //if (end && classifications[index] !== 'Teams' && $(this).parent().attr("data-id") !== 'bonifications' && $(this).parent().attr("data-id") !== 'today') {//prevent crashes
-          if (rowCount > 0 && classifications[index] !== 'Teams') {// maybe doesnt prevent crashes
-            var classification = classifications[index];
-            var columns = [];
-            let currentClassificationTable = tableWrapper.children().eq(index+3);
-            currentClassificationTable.children().first().children().first().children().first().children().each(function (classindex, element) {
-              columns.push($(this).text());
-            })
-            currentClassificationTable.children().first().children().eq(1).children().each(function (riderindex, element) {//voor iedere renner in de uitslag
-              var rider = resultsProcessRiders(classification, columns, $(this))
-              if (rider.DNF) {//doesn't add rider if pos==0
-                ridersResults['dnf'].push(rider);
-                return
-                // return false;// skip to next
-              } else if (getIndex(ridersResults['all'], 'pcs_id', rider.pcs_id) === -1) {// add if not already in list
-                ridersResults['all'].push({ pcs_id: rider.pcs_id, team: rider.team })
-              }
-              if (stageType === 'CLA') {
-                if (riderindex < 3 && classification === 'Stage') {
-                  teamWinners[classification + riderindex] = rider.team;
-                }
-              } else if (riderindex === 0) {//GT
-                teamWinners[classification] = rider.team;
-              }
-              ridersResults[classification].push(rider);//push riders to each classification list
-            })
-          }
-        })
-        // change DNF to true for ridersResults[6]
-        var dnfquery = `UPDATE rider_participation SET dnf = TRUE 
-                    WHERE race_id = ${race_id} AND rider_id IN ( `
-        for (var rider in ridersResults['dnf']) {
-          dnfquery += `(SELECT rider_id FROM rider WHERE pcs_id = '${ridersResults['dnf'][rider].pcs_id}'),`
-        }
-        dnfquery = dnfquery.slice(0, -1) + ")";
-        if (ridersResults['dnf'].length) { //only submit if > 0
-          sqlDB.query(dnfquery, (err, dnfres) => {
-            if (err) { console.log("WRONG QUERY:", dnfquery); throw err; }
-          });
-        }
 
-        // set stage complete
-        // TODO classics complete / classics auto scrape
-        var uitslagCompleet = false;
-        var [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = [176, 10, 0, 1, true]
-        var prevstage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${et - 1} AND race_id = ${race_id})`
-        var prevQuery = `SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT gcpos = 0;
-                        SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT pointspos = 0;
-                        SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT kompos = 0;
-                        SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT yocpos = 0;
-                        SELECT complete as count FROM stage WHERE stage_id = ${prevstage_id}`
-        sqlDB.query(prevQuery, function (err, prevRes) {
-          if (err) { console.log("WRONG QUERY:", prevQuery); throw err; }
-          if (et != 1) {
-            [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = prevRes.map(x => x.rows[0].count)
-          }
+        var [ridersResults, teamWinners] = processPCSresults($, stage.type);
 
-          var akComp = (ridersResults['GC'].length + ridersResults['dnf'].length) >= GCprevlength;
-          var sprintComp = (ridersResults['Points'].length + ridersResults['dnf'].length) >= pointsprevlength;
-          var bergComp = (ridersResults['KOM'].length + ridersResults['dnf'].length) >= komprevlength;
-          var jongComp = (ridersResults['Youth'].length + ridersResults['dnf'].length) >= youngprevlength;
-          if (akComp && sprintComp && bergComp && jongComp && ridersResults['GC'].length === ridersResults['Stage'].length) {
-            uitslagCompleet = true;
-          }
+        updateDNFriders(ridersResults['dnf']);
 
-          var stageCompleteQuery = `UPDATE stage SET complete = TRUE, finished = TRUE WHERE stage_id = ${stage_id}`
-          if (uitslagCompleet && prevStageComplete) {
-            sqlDB.query(stageCompleteQuery, function (err, completeRes) {
-              if (err) { console.log("WRONG QUERY:", stageCompleteQuery); throw err; }
-              console.log("Stage %s Complete", et)
-            })
-          }
-        })
-        //processing scores and SQL insert
-        var resultsQuery = `INSERT INTO results_points(stage_id, rider_participation_id, 
-                stagepos, stagescore, stageresult, gcpos, gcscore, gcresult, gcprev, gcchange,
-                pointspos, pointsscore, pointsresult, pointsprev, pointschange, kompos, komscore, komresult, komprev, komchange,
-                yocpos, yocscore, yocresult, yocprev, yocchange, teamscore, totalscore)
-                VALUES`
-        classifications = ['Stage', 'GC', 'Points', 'KOM', 'Youth']//reset classifications to hardcoded for sql insert
-        for (var i in ridersResults['all']) {
+        setStageToComplete(ridersResults, stage.stagenr, race_id);
 
-          var pcs_id = ridersResults['all'][i].pcs_id;
-          var teamRider = ridersResults['all'][i].team;
-          var teamscore = 0;
-          var totalscore = 0;
-          var rider_id = `(SELECT rider_id FROM rider WHERE pcs_id = '${pcs_id}')`;
-          var rider_participation_id = `(SELECT rider_participation_id FROM rider_participation WHERE race_id = ${race_id} AND rider_id = ${rider_id})`;
-          var riderInsert = `(${stage_id},${rider_participation_id},`
-          for (var j in classifications) {
-            var classification = classifications[j];
-            //set initial values
-            var [pos, score, result, prev, change] = [0, 0, "", "", ""];
-            if (classification === 'Stage') {
-              if (stageType === 'TTT') {
-                pos = TTTresult.indexOf(teamRider) + 1; // positie in de uitslag
-              } else {// REG, ITT or CLA
-                pos = getIndex(ridersResults[classification], 'pcs_id', pcs_id) + 1;
-                if (pos > 0) {
-                  result = ridersResults[classification][pos - 1].result;
-                }
-              }
-              score = getPunten(stageType, classification, pos, stageWeight)
-              totalscore += score;
-              teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, stageType, stageWeight)
-              riderInsert += `${pos},${score},'${result}'`;
-            } else {// non 'Stage' Results
-              pos = getIndex(ridersResults[classification], 'pcs_id', pcs_id) + 1;
-              score = getPunten(stageType, classification, pos, stageWeight)
-              totalscore += score;
-              if (pos > 0) {
-                result = ridersResults[classification][pos - 1].result;
-                prev = ridersResults[classification][pos - 1].prev;
-                change = ridersResults[classification][pos - 1].change;
-              }
-              teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, stageType, stageWeight)
-              riderInsert += `,${pos},${score},'${result}','${prev}','${change}'`;
-            }
-          }
-          totalscore += teamscore;
-          resultsQuery += riderInsert + ',' + teamscore + ',' + totalscore + '),';
-        }
+        var resultsQuery = buildResultsQuery(ridersResults, teamWinners, stage);
         var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
-        resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO NOTHING';
+        
         var totalQuery = deleteQuery + resultsQuery;
+        
         if (ridersResults['all'].length) {// don't send if no results
           sqlDB.query(totalQuery, (err, res) => {
             if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
             else {
-              console.log("Processed results stage", et, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
-              calculateUserScores(race_id, et, stageType, callback)
+              console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
+              calculateUserScores(race_id, stagenr, stage.type, callback)
             }
           })
         } else {
-          calculateUserScores(race_id, et, stageType, callback)
+          calculateUserScores(race_id, stagenr, stage.type, callback)
         }
       }
     })
   })
 }
 
+var getRaceString = function (raceName, stageName) {
+  switch (raceName) {
+    case "giro":
+      return "giro-d-italia";
+    case "tour":
+      return "tour-de-france";
+    case "vuelta":
+      return "vuelta-a-espana";
+  }
+  return stageName;
+}
+
+var processPCSresults = function($, stageType) {
+  var ridersResults = { 'all': [], 'Stage': [], 'GC': [], 'Points': [], 'Youth': [], 'KOM': [], 'dnf': [] };
+  var teamWinners = [];
+
+  var classifications = getClassifications($, stageType);// list of available classifications
+
+  let tableWrapper = $(".w68.left.mb_w100");
+  tableWrapper.children().each(function (index, element) {
+    var hasResults = classifications.length;
+    if (hasResults > 0 && classifications[index] !== 'Teams') {// maybe doesnt prevent crashes
+      var classification = classifications[index];
+      var columns = [];
+      let currentClassificationTable = tableWrapper.children().eq(index + 3);
+      currentClassificationTable.children().first().children().first().children().first().children().each(function (classindex, element) {
+        columns.push($(this).text());
+      })
+      currentClassificationTable.children().first().children().eq(1).children().each(function (riderindex, element) {//voor iedere renner in de uitslag
+        var rider = resultsProcessRiders(classification, columns, $(this))
+        if (rider.DNF) {//doesn't add rider if pos==0
+          ridersResults['dnf'].push(rider);
+          return
+          // return false;// skip to next
+        } else if (getIndex(ridersResults['all'], 'pcs_id', rider.pcs_id) === -1) {// add if not already in list
+          ridersResults['all'].push({ pcs_id: rider.pcs_id, team: rider.team })
+        }
+        if (stageType === 'CLA') {
+          if (riderindex < 3 && classification === 'Stage') {
+            teamWinners[classification + riderindex] = rider.team;
+          }
+        } else if (riderindex === 0) {//GT
+          teamWinners[classification] = rider.team;
+        }
+        ridersResults[classification].push(rider);//push riders to each classification list
+      })
+    }
+  })
+  return [ridersResults, teamWinners];
+}
+
+var getClassifications = function($, stageType) {
+  var classifications = [];
+  $(".restabs").children().each(function (index, element) {
+    classifications.push($(this).text());
+  })
+
+  if (!classifications.length || classifications[0] !== 'Stage') {
+    classifications[0] = 'Stage';
+  }
+
+  if (stageType === 'TTT') { // remove stage if TTT
+    classifications.shift()
+  } else if (stageType === 'CLA') {// only stage results if classics
+    classifications = ['Stage'];
+  }
+  return classifications;
+}
+
+var updateDNFriders = function(dnfRiders) {
+  if (dnfRiders.length) { //only submit if > 0
+    var dnfquery = `UPDATE rider_participation SET dnf = TRUE 
+                WHERE race_id = ${race_id} AND rider_id IN ( `
+    for (var rider in dnfRiders) {
+      dnfquery += `(SELECT rider_id FROM rider WHERE pcs_id = '${dnfRiders[rider].pcs_id}'),`
+    }
+    dnfquery = dnfquery.slice(0, -1) + ")";
+    sqlDB.query(dnfquery, (err, dnfres) => {
+      if (err) { console.log("WRONG QUERY:", dnfquery); throw err; }
+    });
+  }
+}
+
+var setStageToComplete = function(ridersResults, stagenr, race_id) {
+  // TODO classics complete / classics auto scrape
+  var uitslagCompleet = false;
+  var [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = [176, 10, 0, 1, true]
+  var prevstage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${stagenr - 1} AND race_id = ${race_id})`
+  var stage_id = `(SELECT stage_id FROM stage WHERE stagenr = ${stagenr} AND race_id = ${race_id})`
+  var prevQuery = `SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT gcpos = 0;
+                  SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT pointspos = 0;
+                  SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT kompos = 0;
+                  SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT yocpos = 0;
+                  SELECT complete as count FROM stage WHERE stage_id = ${prevstage_id}`;
+
+  sqlDB.query(prevQuery, function (err, prevRes) {
+    if (err) { console.log("WRONG QUERY:", prevQuery); throw err; }
+    if (stagenr != 1) {
+      [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = prevRes.map(x => x.rows[0].count)
+    }
+
+    var akComp = (ridersResults['GC'].length + ridersResults['dnf'].length) >= GCprevlength;
+    var sprintComp = (ridersResults['Points'].length + ridersResults['dnf'].length) >= pointsprevlength;
+    var bergComp = (ridersResults['KOM'].length + ridersResults['dnf'].length) >= komprevlength;
+    var jongComp = (ridersResults['Youth'].length + ridersResults['dnf'].length) >= youngprevlength;
+    if (akComp && sprintComp && bergComp && jongComp && ridersResults['GC'].length === ridersResults['Stage'].length) {
+      uitslagCompleet = true;
+    }
+
+    var stageCompleteQuery = `UPDATE stage SET complete = TRUE, finished = TRUE WHERE stage_id = ${stage_id}`
+    if (uitslagCompleet && prevStageComplete) {
+      sqlDB.query(stageCompleteQuery, function (err, completeRes) {
+        if (err) { console.log("WRONG QUERY:", stageCompleteQuery); throw err; }
+        console.log("Stage %s Complete", stagenr)
+      })
+    }
+  })
+}
+
+var buildResultsQuery = function(ridersResults, teamWinners, stage) {
+    //processing scores and SQL insert
+    var resultsQuery = `INSERT INTO results_points(stage_id, rider_participation_id, 
+      stagepos, stagescore, stageresult, gcpos, gcscore, gcresult, gcprev, gcchange,
+      pointspos, pointsscore, pointsresult, pointsprev, pointschange, kompos, komscore, komresult, komprev, komchange,
+      yocpos, yocscore, yocresult, yocprev, yocchange, teamscore, totalscore)
+      VALUES`
+    var classifications = ['Stage', 'GC', 'Points', 'KOM', 'Youth']
+    for (var i in ridersResults['all']) {
+
+      var pcs_id = ridersResults['all'][i].pcs_id;
+      var teamRider = ridersResults['all'][i].team;
+      var teamscore = 0;
+      var totalscore = 0;
+      var rider_id = `(SELECT rider_id FROM rider WHERE pcs_id = '${pcs_id}')`;
+      var rider_participation_id = `(SELECT rider_participation_id FROM rider_participation WHERE race_id = ${stage.race_id} AND rider_id = ${rider_id})`;
+      var riderInsert = `(${stage.stage_id},${rider_participation_id},`
+      for (var j in classifications) {
+        var classification = classifications[j];
+        //set initial values
+        var [pos, score, result, prev, change] = [0, 0, "", "", ""];
+        if (classification === 'Stage') {
+          if (stage.type === 'TTT') {
+            pos = TTTresult.indexOf(teamRider) + 1; // positie in de uitslag
+          } else {// REG, ITT or CLA
+            pos = getIndex(ridersResults[classification], 'pcs_id', pcs_id) + 1;
+            if (pos > 0) {
+              result = ridersResults[classification][pos - 1].result;
+            }
+          }
+          score = getPunten(stage.type, classification, pos, stage.type)
+          totalscore += score;
+          teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, stage.type, stage.type)
+          riderInsert += `${pos},${score},'${result}'`;
+        } else {// non 'Stage' Results
+          pos = getIndex(ridersResults[classification], 'pcs_id', pcs_id) + 1;
+          score = getPunten(stage.type, classification, pos, stage.type)
+          totalscore += score;
+          if (pos > 0) {
+            result = ridersResults[classification][pos - 1].result;
+            prev = ridersResults[classification][pos - 1].prev;
+            change = ridersResults[classification][pos - 1].change;
+          }
+          teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, stage.type, stage.type)
+          riderInsert += `,${pos},${score},'${result}','${prev}','${change}'`;
+        }
+      }
+      totalscore += teamscore;
+      resultsQuery += riderInsert + ',' + teamscore + ',' + totalscore + '),';
+    }
+    resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO NOTHING';
+    return resultsQuery;
+}
 
 var resultsProcessRiders = function (classification, columns, row) {
   var renCol = columns.indexOf("Rider");
