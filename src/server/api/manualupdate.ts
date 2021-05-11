@@ -62,23 +62,20 @@ module.exports = (app) => {
       const race = { name, year }
       const stage = parseInt(req.body.stage, 10);
       if (req.body.stage === 'all') {
-        const stages = Array.apply(null, { length: 22 }).map(Number.call, Number); //TODO fix for vuelta 2020 remove 22 get length from SQL
-        async.eachSeries(stages, (stage, callback) => {
-          scrape.getResult(race, stage + 1, (err, arg) => {
-            if (err) { res.send('error'); }
-            console.log('Got results %s %s stage %s', name, year, stage + 1);
-            callback(null, !err);
-          }, (err, result) => {
-            res.send('completed');
-          });
-        });
+        res.send('Tijdelijk geen all mogelijk door async await refactor info')
+
+        // const stages = Array.apply(null, { length: 22 }).map(Number.call, Number);
+        // async.eachSeries(stages, (stage) => {
+        //   scrape.getResult(race, stage + 1, () => {
+        //     res.send('Tijdelijk geen callback info')
+        //   });
+        // });
       } else {
-        scrape.getResult(race, stage, (err, arg) => {
+        scrape.getResult(race, stage, (err) => {
           if (err) { res.send('error'); }
-          console.log('Got results %s %s stage %s', name, year, stage + 1);
-          startSchedule()
-          res.send('completed')
         });
+        startSchedule()
+        res.send('Tijdelijk geen callback info')
       }
     } else {
       return res.status(401).send('Access denied. No admin');

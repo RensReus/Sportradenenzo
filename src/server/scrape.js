@@ -155,7 +155,7 @@ var startlistProcessRiders = function (raceString, scoritoPrices, year, race_id,
   });
 }
 
-var getResult = function (race, stagenr, callback) {
+var getResult = function (race, stagenr) {
   var race_id = `(SELECT race_id FROM race WHERE year = ${race.year} AND name = '${race.name}')`
   var stageQuery = `SELECT * FROM stage INNER JOIN race USING(race_id) WHERE stagenr = ${stagenr} AND race_id = ${race_id}`;
   //Get info about current stage
@@ -200,11 +200,11 @@ var getResult = function (race, stagenr, callback) {
             if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
             else {
               console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
-              calculateUserScores(race_id, stagenr, stage.type, callback)
+              calculateUserScores(race_id, stagenr, stage.type)
             }
           })
         } else {
-          calculateUserScores(race_id, stagenr, stage.type, callback)
+          calculateUserScores(race_id, stagenr, stage.type)
         }
       }
     })
@@ -507,7 +507,7 @@ var getEindPunten = function (kl, pos) {
   return 0;
 }
 
-var calculateUserScores = function (race_id, stage, stageType, callback) {
+var calculateUserScores = function (race_id, stage, stageType) {
   let participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id};\n `
   let TTTstageQuery = `SELECT stagenr FROM stage WHERE race_id = ${race_id} AND type ='TTT';\n `
   let raceLengthQuery = `SELECT stage_id FROM stage WHERE race_id = ${race_id};\n `
@@ -559,7 +559,6 @@ var calculateUserScores = function (race_id, stage, stageType, callback) {
     }
     sqlDB.query(totalQuery, (err, res) => {
       if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
-      callback(err, 'Calculated User Scores');
     })
   })
 }
