@@ -186,7 +186,7 @@ var getResult = function (race, stagenr) {
 
         var [ridersResults, teamWinners] = processPCSresults($, stage.type);
 
-        updateDNFriders(ridersResults['dnf']);
+        updateDNFriders(ridersResults['dnf'], stage.race_id);
 
         setStageToComplete(ridersResults, stage.stagenr, race_id);
 
@@ -280,7 +280,7 @@ var getClassifications = function($, stageType) {
   return classifications;
 }
 
-var updateDNFriders = function(dnfRiders) {
+var updateDNFriders = function(dnfRiders, race_id) {
   if (dnfRiders.length) { //only submit if > 0
     var dnfquery = `UPDATE rider_participation SET dnf = TRUE 
                 WHERE race_id = ${race_id} AND rider_id IN ( `
