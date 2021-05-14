@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /*CSS RESET*/
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
     margin: 0;
@@ -46,13 +50,6 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   /*Probeerscale voor breedte en hoogte*/
   /*4,8,12,16,24,32,48,64,96,128,192,256,384,512,640,768,896,1024*/
   /*4,8,10,15,20,30,40,60,80,120,160,240,320,480,640,760,960,1280*/
-  
-  @media screen and ( max-width: 1279px) {
-    html {
-      font-size: 62.5%;
-      /* 12.5px */
-    }
-  }
   
   body {
     margin: 0;
