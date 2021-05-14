@@ -39,18 +39,6 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     text-align: left;
   }
   
-  blockquote:before, blockquote:after, q:before, q:after {
-    content: "";
-  }
-  
-  blockquote, q {
-    quotes: "" "";
-  }
-  
-  /*Probeerscale voor breedte en hoogte*/
-  /*4,8,12,16,24,32,48,64,96,128,192,256,384,512,640,768,896,1024*/
-  /*4,8,10,15,20,30,40,60,80,120,160,240,320,480,640,760,960,1280*/
-  
   body {
     margin: 0;
     font-family: arial;
@@ -59,44 +47,22 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   }
     
   .content {
-    background-color: var(--background-color-lighter);
+    background-color: #EFF6FF; /*blue-50*/
   }
 
   .content.dark {
-    background-color: var(--background-color-dark);
+    background-color: #374151; /*gray-700*/
+    color: white;
   }
 
   div.pageContainer {
     box-sizing: border-box;
     min-height: 100vh;
     overflow: auto;
-    background-color: var(--background-color-light);
+    max-width: 1280px;
     margin: auto;
     padding-top: 70px;
-    color: var(--text-color);
   }
-  
-  div.pageContainer.dark{
-    background-color: var(--background-color);
-    color: var(--text-color);
-  }
-
-  @media only screen and (min-width: 1280px) {
-    div.pageContainer {
-      box-sizing: border-box;
-      min-height: 100vh;
-      overflow: auto;
-      background-color: var(--background-color-lighter);
-      margin: auto;
-      padding-top: 70px;
-      width: 1280px;
-    }
-
-    div.pageContainer.dark{
-      background-color: var(--background-color);
-    }
-  }
-  
   
   img.loadingGif {
     height: 20%;

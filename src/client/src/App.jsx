@@ -60,6 +60,11 @@ class App extends Component {
     let race_id = sessionStorage.getItem('race_id')
     let racename = sessionStorage.getItem('racename')
     let currentStageLink = sessionStorage.getItem('currentStageLink')
+    let contentclass = 'content dark:bg-gray-600';
+    const darkMode = localStorage.getItem('darkMode'); //"dark" | "light"
+    if (darkMode === 'dark' || (!(darkMode) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      contentclass = contentclass + ' dark';
+    }
     if (currentStageLink === null) currentStageLink = '/home'
     this.state = ({
       loading: true,
@@ -69,7 +74,8 @@ class App extends Component {
       message: '',
       currentStageLink,
       race_id,
-      racename
+      racename,
+      contentclass
     });
     this.setRace = this.setRace.bind(this)
     this.createAxiosResponseInterceptor = this.createAxiosResponseInterceptor.bind(this)
@@ -190,7 +196,7 @@ class App extends Component {
     return (
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
-      <div className="content">
+      <div className={this.state.contentclass}>
         <div className="backgroundImage"></div>
         <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} isLoading={this.state.loading} history={this.props.history} racename={this.state.racename} currentStageLink={this.state.currentStageLink} />
         <div className="pageContainer">
