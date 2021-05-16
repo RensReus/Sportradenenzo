@@ -13,12 +13,8 @@ module.exports = {
     const query = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
               VALUES($1,${account_participation_id})`;
 
-    sqlDB.query(query, values, (err, res) => {
-      if (err) {
-        throw err;
-      } else {
-        callback(err, res.rows);
-      }
+    sqlDB.query(query, values, (_, res) => {
+      callback(res.rows);
     });
   },
 
@@ -36,12 +32,8 @@ module.exports = {
               WHERE account_participation_id = ${account_participation_id}
               AND rider_participation_id = $2`;
 
-    sqlDB.query(query, values, (err, res) => {
-      if (err) {
-        throw err;
-      } else {
-        callback(err, res.rows);
-      }
+    sqlDB.query(query, values, (_, res) => {
+      callback(res.rows);
     });
   },
 
@@ -60,13 +52,9 @@ module.exports = {
   ON CONFLICT (pcs_id)
   DO UPDATE SET pcs_id = EXCLUDED.pcs_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials
   RETURNING rider_id`;
-    sqlDB.query(query, values, (err, res) => {
-      if (err) {
-        throw err;
-      } else {
-        console.log("%s %s INSERTED INTO rider", res.rows[0].rider_id, pcs_id);
-        callback(err, res.rows[0].rider_id);
-      }
+    sqlDB.query(query, values, (_, res) => {
+      console.log("%s %s INSERTED INTO rider", res.rows[0].rider_id, pcs_id);
+      callback(res.rows[0].rider_id);
     });
   },
 
@@ -84,13 +72,9 @@ module.exports = {
   ON CONFLICT (race_id,rider_id)
   DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, price = EXCLUDED.price, team = EXCLUDED.team
   RETURNING rider_participation_id`;
-    sqlDB.query(query, values, (err, res) => {
-      if (err) {
-        throw err;
-      } else {
-        console.log("%s %s INSERTED INTO rider_participation", res.rows[0].rider_participation_id, rider_id);
-        callback(err, res.rows[0]);
-      }
+    sqlDB.query(query, values, (_, res) => {
+      console.log("%s %s INSERTED INTO rider_participation", res.rows[0].rider_participation_id, rider_id);
+      callback(res.rows[0]);
     });
   },
 
@@ -104,12 +88,8 @@ module.exports = {
     const query = `INSERT INTO account(email, password)
               VALUES($1, $2)
               RETURNING *`;
-    sqlDB.query(query, values, (err, res) => {
-      if (err) {
-        throw err;
-      } else {
-        callback(err, res.rows[0]);
-      }
+    sqlDB.query(query, values, (_, res) => {
+      callback(res.rows[0]);
     });
   },
 
@@ -124,12 +104,8 @@ module.exports = {
               VALUES($1, $2)
               RETURNING *`;
 
-    sqlDB.query(query, values, (err, res) => {
-      if (err) {
-        throw err;
-      } else {
-        callback(err, res.rows);
-      }
+    sqlDB.query(query, values, (_, res) => {
+      callback(res.rows);
     });
   },
 
@@ -138,12 +114,8 @@ module.exports = {
     const values = [parameters];
     const query = ``;
 
-    sqlDB.query(query, values, (err, res) => {
-      if (err) {
-        throw err;
-      } else {
-        callback(err, res.rows);
-      }
+    sqlDB.query(query, values, (_, res) => {
+      callback(res.rows);
     });
   },
 };

@@ -50,8 +50,7 @@ module.exports = function (app) {
           race: function (innerCallback) {
             SQLread.getRace(race_id, innerCallback)
           }
-        }, function (err, results) {
-          if (err) throw err;
+        }, function (results) {
 
           var IDsGewoon = [];
           var IDsBudget = [];
@@ -193,8 +192,7 @@ module.exports = function (app) {
       race: function (callback) {
         SQLread.getRace(req.body.race, req.body.year, callback)
       }
-    }, function (err, results) {
-      if (err) throw err;
+    }, function (results) {
       //Bereken het budget
       var IDs = [];
       var budget = results.race.budget;
@@ -230,21 +228,18 @@ module.exports = function (app) {
               callback
             )
           }
-        }, function (err, results) {
-          if (err) throw err;
+        }, function (results) {
           SQLwrite.addRiderToRace(
             results.race.race_id,
             results.rider_id,
             req.body.price,
             response.team,
-            function (err, reaction) {
-              if (err) throw err;
+            function (reaction) {
               SQLwrite.addRiderToSelection(
                 reaction.rider_participation_id,
                 req.user.account_id,
                 results.race.race_id,
-                function (err, finalResponse) {
-                  if (err) throw err;
+                function (finalResponse) {
                   res.send(finalResponse)
                 }
               )

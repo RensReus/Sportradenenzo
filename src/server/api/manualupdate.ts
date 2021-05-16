@@ -85,8 +85,7 @@ module.exports = (app) => {
     if (req.user.admin) {
       const race_id = `(SELECT race_id FROM race WHERE name = '${req.body.raceName}' AND year = ${req.body.year})`;
       const accountParticipationsQuery = `SELECT * FROM account_participation WHERE race_id = ${race_id}`;
-      sqlDB.query(accountParticipationsQuery, (err, participations) => {
-        if (err) { console.log('WRONG QUERY:', accountParticipationsQuery); throw err; }
+      sqlDB.query(accountParticipationsQuery, (_, participations) => {
         var totalQuery = `UPDATE race set finished = true WHERE race_id = ${race_id};\n `
         for (var part of participations.rows) {
           var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection 
@@ -101,9 +100,8 @@ module.exports = (app) => {
 
           totalQuery += updateAccountScore;
         }
-        sqlDB.query(totalQuery, (err, _) => {
-          if (err) { console.log('WRONG QUERY:', totalQuery); throw err; } ~
-            console.log(`Copied ${participations.rows.length} finalscores AND ${req.body.raceName} ${req.body.year} set to finished`)
+        sqlDB.query(totalQuery, () => {
+          console.log(`Copied ${participations.rows.length} finalscores AND ${req.body.raceName} ${req.body.year} set to finished`)
           res.send(`${req.body.raceName} ${req.body.year} finished And scores copied`);
         });
       });
@@ -126,8 +124,7 @@ module.exports = (app) => {
                                             WHERE stage_id = ${stage_id}
                                             GROUP BY account_participation_id, stage_selection_id
                                             HAVING COUNT(rider_participation_id) = 0`;
-      sqlDB.query(accountsWithoutSelectionQuery, (err, noSelectionResults) => {
-        if (err) { console.log('WRONG QUERY:', accountsWithoutSelectionQuery); throw err; }
+      sqlDB.query(accountsWithoutSelectionQuery, (_, noSelectionResults) => {
         console.log("noslectionresults", noSelectionResults)
         let totalQuery: string = '';
         for (const i of Object.keys(noSelectionResults.rows)) {// for each account_participation with an empty stage_selection for the stage that just started
@@ -141,8 +138,7 @@ module.exports = (app) => {
         }
         let message = `Copied ${noSelectionResults.rowCount} selections`;
         if (noSelectionResults.rows.length) {
-          sqlDB.query(totalQuery, (err, results) => {
-            if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
+          sqlDB.query(totalQuery, (_, results) => {
             res.send(message);
           });
         } else {
@@ -158,11 +154,10 @@ module.exports = (app) => {
     if (req.user.admin) {
       const race_idQuery = `SELECT race_id FROM race
           WHERE year = ${req.body.year} AND name = '${req.body.raceName}';\n`;
-      sqlDB.query(race_idQuery, (err, results) => {
-        if (err) { console.log('WRONG QUERY:', race_idQuery); throw err; }
+      sqlDB.query(race_idQuery, (_, results) => {
         const race_id = results.rows[0].race_id;
 
-        race_backup.findById(race_id, (err, race) => {
+        race_backup.findById(race_id, (_, race) => {
           // result_points
           let results_pointsQuery: string;
           if (race.results_points.length) { results_pointsQuery = 'INSERT INTO results_points VALUES'; }
@@ -212,8 +207,7 @@ module.exports = (app) => {
           }
           if (race.team_selection_rider.length) { team_selection_riderQuery += 'ON CONFLICT(account_participation_id,rider_participation_id) DO NOTHING;\n'; }
           const totalQuery = results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
-          sqlDB.query(totalQuery, (err, results2) => {
-            if (err) { console.log('WRONG QUERY:', team_selection_riderQuery); throw err; }
+          sqlDB.query(totalQuery, (_, results2) => {
             console.log('IMPORTED ', req.body.raceName, req.body.year);
             console.log(results2);
             res.send('Import Succesful');
@@ -244,8 +238,7 @@ module.exports = (app) => {
         WHERE race_id = ${race_id};\n`;
 
       const totalQuery = race_idQuery + results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
-      sqlDB.query(totalQuery, (err, results) => {
-        if (err) { console.log('WRONG QUERY:', totalQuery); throw err; }
+      sqlDB.query(totalQuery, (_, results) => {
         // race_backup.updateOne({_id:results[0].rows[0].race_id},{
         //   $set: {"raceName":req.body.raceName,"year":req.body.year}
         // },
