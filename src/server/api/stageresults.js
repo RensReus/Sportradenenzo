@@ -11,8 +11,7 @@ module.exports = function (app) {
     var budgetParticipation = req.body.budgetParticipation == 1;
     var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
     var stageInfoQuery = `SELECT starttime, type FROM stage WHERE race_id=${race_id} AND stagenr='${stagenr}'`;
-    sqlDB.query(stageInfoQuery, (err, stageInfoResults) => {
-      if (err) { console.log("WRONG QUERY:", stageInfoQuery); throw err; }
+    sqlDB.query(stageInfoQuery, (_, stageInfoResults) => {
       if (!stageInfoResults.rows.length) {
         res.send({ mode: '404' })
       } else {
@@ -33,8 +32,7 @@ module.exports = function (app) {
           var prevClassificationQuery = prevClassificationsQuery(race_id, stagenr, account_id, budgetParticipation);
           var selectionCompleteQuery = selectionsCompleteQuery(race_id, stagenr, account_id)
           var totalQuery = teamSelectionQuery + stageSelectionQuery + kopmanQuery + prevClassificationQuery + selectionCompleteQuery;
-          sqlDB.query(totalQuery, (err, results) => {
-            if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+          sqlDB.query(totalQuery, (_, results) => {
             res.send({
               'mode': 'selection',
               'teamSelection': results[0].rows,
@@ -82,8 +80,7 @@ module.exports = function (app) {
           var totalQuery = teamresultQuery + userscoresQuery + resultsCompleteQuery;
 
           var userScoresColtype = { "Stage": 1, "Total": 1 };
-          sqlDB.query(totalQuery, (err, uitslagresults) => {
-            if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+          sqlDB.query(totalQuery, (_, uitslagresults) => {
             var userscores = uitslagresults[1].rows;
 
             var teamresult = [];
@@ -121,8 +118,7 @@ module.exports = function (app) {
     var race_id = req.body.race_id;
     var now = new Date();
     var query = `SELECT starttime, type FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
-    sqlDB.query(query, (err, results) => {
-      if (err) { console.log("WRONG QUERY:", query); throw err; }
+    sqlDB.query(query, (_, results) => {
       if (!results.rows.length) {
         res.send({ mode: '404' })
       } else {
@@ -166,8 +162,7 @@ module.exports = function (app) {
                             WHERE stage_id=${stage_id} AND ${classifications[i].pos} > 0 
                             ORDER BY " " ASC;\n `;
           var totalQuery = resultsQuery + resultsLengthQuery;
-          sqlDB.query(totalQuery, (err, stageresults) => {
-            if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+          sqlDB.query(totalQuery, (_, stageresults) => {
             var lengths = stageresults[1].rows[0];
             var stageResultsLengths = [lengths.stage, lengths.gc, lengths.points, lengths.kom, lengths.yoc].map(x => x === null ? 0 : x);
             res.send({
@@ -183,8 +178,7 @@ module.exports = function (app) {
   app.post('/api/getAllSelections', function (req, res) {
     var race_id = req.body.race_id;
     var typeQuery = `SELECT type FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
-    sqlDB.query(typeQuery, (err, typeResults) => {
-      if (err) { console.log("WRONG QUERY:", typeQuery); throw err; }
+    sqlDB.query(typeQuery, (_, typeResults) => {
       if (!typeResults.rows.length) {
         res.send({ mode: '404' })
       } else {
@@ -252,8 +246,7 @@ module.exports = function (app) {
           WHERE a.rider_participation_id in ${allselectedriders} 
           GROUP BY username; \n`
         var query = selectionsQuery + notSelectedQuery;
-        sqlDB.query(query, (err, allSelectionsResults) => {
-          if (err) { console.log("WRONG QUERY:", query); throw err; }
+        sqlDB.query(query, (_, allSelectionsResults) => {
 
           var allSelections = selectionsPopUp(allSelectionsResults[0].rows);
           budgetParticipation = budgetParticipation ? 1 : 0;
@@ -346,8 +339,7 @@ module.exports = function (app) {
 
       var userScoresColtype = { stagescore: 1, totalscore: 1 };
 
-      sqlDB.query(totalQuery, (err, results) => {
-        if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+      sqlDB.query(totalQuery, (_, results) => {
         var userscores = results[1].rows;
         var selecties = results[3].rows
         for (var i in userscores) {

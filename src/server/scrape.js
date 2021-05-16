@@ -19,11 +19,8 @@ const getStartlist = function (race, callback) {
   //set racestring
   if (race.raceName === 'classics') {//if classics get name of the stage/race from DB
     raceDataQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${race.racenr}`
-    sqlDB.query(raceDataQuery, (err, results) => {
-      if (err) { console.log("WRONG QUERY:", raceDataQuery); throw err; }
-      else {
-        startlistProcessRiders(results.rows[0].name, 'classics', race.year, race_id, callback)
-      }
+    sqlDB.query(raceDataQuery, (_, results) => {
+      startlistProcessRiders(results.rows[0].name, 'classics', race.year, race_id, callback)
     })
   } else {//if not classics set racestring and load price list
     switch (race.raceName) {
@@ -145,11 +142,8 @@ var startlistProcessRiders = function (raceString, scoritoPrices, year, race_id,
         var deleteStartlistQuery = `DELETE FROM rider_participation WHERE rider_participation_id NOT IN ${startlist_IDs} AND race_id = ${race_id};\n `;
         var totalQuery = deleteStageSelectionQuery + deleteKopmanQuery + deleteTeamSelectionQuery + deleteStartlistQuery + riderQuery + participationQuery;
       }
-      sqlDB.query(totalQuery, (err, res) => {
-        if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
-        else {
-          callback(err, "");
-        }
+      sqlDB.query(totalQuery, () => {
+        callback();
       });
     }
   });
@@ -159,12 +153,11 @@ var getResult = function (race, stagenr) {
   var race_id = `(SELECT race_id FROM race WHERE year = ${race.year} AND name = '${race.name}')`
   var stageQuery = `SELECT * FROM stage INNER JOIN race USING(race_id) WHERE stagenr = ${stagenr} AND race_id = ${race_id}`;
   //Get info about current stage
-  sqlDB.query(stageQuery, (err, stageResults) => {
-    if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
+  sqlDB.query(stageQuery, (_, stageResults) => {
     var stage = stageResults.rows[0];
     var raceString = getRaceString(race.name, stage.stagename);
     var stage_id = stage.stage_id;
-    var etLink = stage.type === 'FinalStandings' ? stagenr - 1: stagenr;
+    var etLink = stage.type === 'FinalStandings' ? stagenr - 1 : stagenr;
 
     //get results from PCS
     request({
@@ -174,7 +167,7 @@ var getResult = function (race, stagenr) {
       if (error) console.log(error);
       if (!error && response.statusCode === 200) {
         var $ = cheerio.load(html);
-       
+
         var TTTresult = []; // TODO clean up TTT code
         if (stage.type === 'TTT') {// TTTresults is teamnames
           $(".resTTTh").first().parent(function () {
@@ -192,16 +185,13 @@ var getResult = function (race, stagenr) {
 
         var resultsQuery = buildResultsQuery(ridersResults, teamWinners, stage);
         var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
-        
+
         var totalQuery = deleteQuery + resultsQuery;
-        
+
         if (ridersResults['all'].length) {// don't send if no results
-          sqlDB.query(totalQuery, (err, res) => {
-            if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
-            else {
-              console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
-              calculateUserScores(race_id, stagenr, stage.type)
-            }
+          sqlDB.query(totalQuery, (_, res) => {
+            console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
+            calculateUserScores(race_id, stagenr, stage.type)
           })
         } else {
           calculateUserScores(race_id, stagenr, stage.type)
@@ -223,7 +213,7 @@ var getRaceString = function (raceName, stageName) {
   return stageName;
 }
 
-var processPCSresults = function($, stageType) {
+var processPCSresults = function ($, stageType) {
   var ridersResults = { 'all': [], 'Stage': [], 'GC': [], 'Points': [], 'Youth': [], 'KOM': [], 'dnf': [] };
   var teamWinners = [];
 
@@ -262,7 +252,7 @@ var processPCSresults = function($, stageType) {
   return [ridersResults, teamWinners];
 }
 
-var getClassifications = function($, stageType) {
+var getClassifications = function ($, stageType) {
   var classifications = [];
   $(".restabs").children().each(function (index, element) {
     classifications.push($(this).text());
@@ -280,7 +270,7 @@ var getClassifications = function($, stageType) {
   return classifications;
 }
 
-var updateDNFriders = function(dnfRiders, race_id) {
+var updateDNFriders = function (dnfRiders, race_id) {
   if (dnfRiders.length) { //only submit if > 0
     var dnfquery = `UPDATE rider_participation SET dnf = TRUE 
                 WHERE race_id = ${race_id} AND rider_id IN ( `
@@ -288,13 +278,12 @@ var updateDNFriders = function(dnfRiders, race_id) {
       dnfquery += `(SELECT rider_id FROM rider WHERE pcs_id = '${dnfRiders[rider].pcs_id}'),`
     }
     dnfquery = dnfquery.slice(0, -1) + ")";
-    sqlDB.query(dnfquery, (err, dnfres) => {
-      if (err) { console.log("WRONG QUERY:", dnfquery); throw err; }
+    sqlDB.query(dnfquery, () => {
     });
   }
 }
 
-var setStageToComplete = function(ridersResults, stagenr, race_id) {
+var setStageToComplete = function (ridersResults, stagenr, race_id) {
   // TODO classics complete / classics auto scrape
   var uitslagCompleet = false;
   var [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = [176, 10, 0, 1, true]
@@ -306,8 +295,7 @@ var setStageToComplete = function(ridersResults, stagenr, race_id) {
                   SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT yocpos = 0;
                   SELECT complete as count FROM stage WHERE stage_id = ${prevstage_id}`;
 
-  sqlDB.query(prevQuery, function (err, prevRes) {
-    if (err) { console.log("WRONG QUERY:", prevQuery); throw err; }
+  sqlDB.query(prevQuery, function (_, prevRes) {
     if (stagenr != 1) {
       [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = prevRes.map(x => x.rows[0].count)
     }
@@ -322,66 +310,65 @@ var setStageToComplete = function(ridersResults, stagenr, race_id) {
 
     var stageCompleteQuery = `UPDATE stage SET complete = TRUE, finished = TRUE WHERE stage_id = ${stage_id}`
     if (uitslagCompleet && prevStageComplete) {
-      sqlDB.query(stageCompleteQuery, function (err, completeRes) {
-        if (err) { console.log("WRONG QUERY:", stageCompleteQuery); throw err; }
+      sqlDB.query(stageCompleteQuery, function () {
         console.log("Stage %s Complete", stagenr)
       })
     }
   })
 }
 
-var buildResultsQuery = function(ridersResults, teamWinners, stage) {
-    //processing scores and SQL insert
-    var resultsQuery = `INSERT INTO results_points(stage_id, rider_participation_id, 
+var buildResultsQuery = function (ridersResults, teamWinners, stage) {
+  //processing scores and SQL insert
+  var resultsQuery = `INSERT INTO results_points(stage_id, rider_participation_id, 
       stagepos, stagescore, stageresult, gcpos, gcscore, gcresult, gcprev, gcchange,
       pointspos, pointsscore, pointsresult, pointsprev, pointschange, kompos, komscore, komresult, komprev, komchange,
       yocpos, yocscore, yocresult, yocprev, yocchange, teamscore, totalscore)
       VALUES`
-    var classifications = ['Stage', 'GC', 'Points', 'KOM', 'Youth']
-    for (var i in ridersResults['all']) {
+  var classifications = ['Stage', 'GC', 'Points', 'KOM', 'Youth']
+  for (var i in ridersResults['all']) {
 
-      var pcs_id = ridersResults['all'][i].pcs_id;
-      var teamRider = ridersResults['all'][i].team;
-      var teamscore = 0;
-      var totalscore = 0;
-      var rider_id = `(SELECT rider_id FROM rider WHERE pcs_id = '${pcs_id}')`;
-      var rider_participation_id = `(SELECT rider_participation_id FROM rider_participation WHERE race_id = ${stage.race_id} AND rider_id = ${rider_id})`;
-      var riderInsert = `(${stage.stage_id},${rider_participation_id},`
-      for (var j in classifications) {
-        var classification = classifications[j];
-        //set initial values
-        var [pos, score, result, prev, change] = [0, 0, "", "", ""];
-        if (classification === 'Stage') {
-          if (stage.type === 'TTT') {
-            pos = TTTresult.indexOf(teamRider) + 1; // positie in de uitslag
-          } else {// REG, ITT or CLA
-            pos = getIndex(ridersResults[classification], 'pcs_id', pcs_id) + 1;
-            if (pos > 0) {
-              result = ridersResults[classification][pos - 1].result;
-            }
-          }
-          score = getPunten(stage.type, classification, pos, stage.type)
-          totalscore += score;
-          teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, stage.type, stage.type)
-          riderInsert += `${pos},${score},'${result}'`;
-        } else {// non 'Stage' Results
+    var pcs_id = ridersResults['all'][i].pcs_id;
+    var teamRider = ridersResults['all'][i].team;
+    var teamscore = 0;
+    var totalscore = 0;
+    var rider_id = `(SELECT rider_id FROM rider WHERE pcs_id = '${pcs_id}')`;
+    var rider_participation_id = `(SELECT rider_participation_id FROM rider_participation WHERE race_id = ${stage.race_id} AND rider_id = ${rider_id})`;
+    var riderInsert = `(${stage.stage_id},${rider_participation_id},`
+    for (var j in classifications) {
+      var classification = classifications[j];
+      //set initial values
+      var [pos, score, result, prev, change] = [0, 0, "", "", ""];
+      if (classification === 'Stage') {
+        if (stage.type === 'TTT') {
+          pos = TTTresult.indexOf(teamRider) + 1; // positie in de uitslag
+        } else {// REG, ITT or CLA
           pos = getIndex(ridersResults[classification], 'pcs_id', pcs_id) + 1;
-          score = getPunten(stage.type, classification, pos, stage.type)
-          totalscore += score;
           if (pos > 0) {
             result = ridersResults[classification][pos - 1].result;
-            prev = ridersResults[classification][pos - 1].prev;
-            change = ridersResults[classification][pos - 1].change;
           }
-          teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, stage.type, stage.type)
-          riderInsert += `,${pos},${score},'${result}','${prev}','${change}'`;
         }
+        score = getPunten(stage.type, classification, pos, stage.type)
+        totalscore += score;
+        teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, stage.type, stage.type)
+        riderInsert += `${pos},${score},'${result}'`;
+      } else {// non 'Stage' Results
+        pos = getIndex(ridersResults[classification], 'pcs_id', pcs_id) + 1;
+        score = getPunten(stage.type, classification, pos, stage.type)
+        totalscore += score;
+        if (pos > 0) {
+          result = ridersResults[classification][pos - 1].result;
+          prev = ridersResults[classification][pos - 1].prev;
+          change = ridersResults[classification][pos - 1].change;
+        }
+        teamscore += getTeamPunten(teamRider, teamWinners, pos, classification, stage.type, stage.type)
+        riderInsert += `,${pos},${score},'${result}','${prev}','${change}'`;
       }
-      totalscore += teamscore;
-      resultsQuery += riderInsert + ',' + teamscore + ',' + totalscore + '),';
     }
-    resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO NOTHING';
-    return resultsQuery;
+    totalscore += teamscore;
+    resultsQuery += riderInsert + ',' + teamscore + ',' + totalscore + '),';
+  }
+  resultsQuery = resultsQuery.slice(0, -1) + ' ON CONFLICT (stage_id,rider_participation_id) DO NOTHING';
+  return resultsQuery;
 }
 
 var resultsProcessRiders = function (classification, columns, row) {
@@ -512,8 +499,7 @@ var calculateUserScores = function (race_id, stage, stageType) {
   let TTTstageQuery = `SELECT stagenr FROM stage WHERE race_id = ${race_id} AND type ='TTT';\n `
   let raceLengthQuery = `SELECT stage_id FROM stage WHERE race_id = ${race_id};\n `
   let totalQuery = participantsQuery + TTTstageQuery + raceLengthQuery;
-  sqlDB.query(totalQuery, function (err, res) {
-    if (err) throw err;
+  sqlDB.query(totalQuery, function (_, res) {
     var totalQuery = '';
     var TTTstages = res[1].rows.map(stage => stage.stagenr);
     for (var i in res[0].rows) {// voor iedere gewone user
@@ -557,8 +543,7 @@ var calculateUserScores = function (race_id, stage, stageType) {
 
       }
     }
-    sqlDB.query(totalQuery, (err, res) => {
-      if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+    sqlDB.query(totalQuery, () => {
     })
   })
 }
@@ -566,8 +551,7 @@ var calculateUserScores = function (race_id, stage, stageType) {
 var calculateUserScoresKlassieker = function (year, stage, callback) { //TODO integreren in voorgaande functie
   var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = 'classics')`
   var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
-  sqlDB.query(participantsQuery, function (err, res) {
-    if (err) throw err;
+  sqlDB.query(participantsQuery, function (_, res) {
     var totalQuery = '';
     for (var i in res.rows) {// voor iedere user
       for (var j = stage; j < 15; j++) {// to show correct totalscores for later stages
@@ -592,8 +576,7 @@ var calculateUserScoresKlassieker = function (year, stage, callback) { //TODO in
 
       }
     }
-    sqlDB.query(totalQuery, (err, res) => {
-      if (err) throw err;
+    sqlDB.query(totalQuery, () => {
     })
   })
   callback(null, 'Calculated User Scores');
@@ -643,8 +626,7 @@ var getRider = function (pcsid, callback) {
 
 var startSchedule = () => {
   var activeRacesQuery = `SELECT * FROM race WHERE NOT finished`;
-  sqlDB.query(activeRacesQuery, (err, activeRacesResults) => {
-    if (err) { console.log("WRONG QUERY:", activeRacesQuery); throw err; }
+  sqlDB.query(activeRacesQuery, (_, activeRacesResults) => {
     // async.each(activeRacesResults.rows, (race, callback) => {
     activeRacesResults.rows.forEach(race => {
       var scrapeResults = schedule.scheduleJob("* * * * *", function () {
@@ -652,17 +634,15 @@ var startSchedule = () => {
         WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race.race_id}
         ORDER BY stagenr DESC
         LIMIT 1`;
-        sqlDB.query(stageQuery, function (err, results) {//returns the most recent stage that started
-          if (err) { console.log("WRONG QUERY:", stageQuery); throw err; }
+        sqlDB.query(stageQuery, function (_, results) {//returns the most recent stage that started
           if (results.rows.length) {// if some results, so at least after start of stage 1
             var stage = results.rows[0];
             if (!stage.finished) {
               getTimetoFinish(race.name, function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
                 if (stageFinished) {
                   var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
-                  sqlDB.query(updateStageQuery, function (err) {
-                    if (err) { console.log("WRONG QUERY:", updateStageQuery); throw err; }
-                    else console.log("Race %s Stage %s finished", race.race_id, stage.stagenr)
+                  sqlDB.query(updateStageQuery, function () {
+                    console.log("Race %s Stage %s finished", race.race_id, stage.stagenr)
                   });
                   getResult(race, stage.stagenr, function (err, response) {
                     if (err) throw err;
@@ -679,8 +659,7 @@ var startSchedule = () => {
               })
             } else {// if finished and complete set schedule to run again at start of next stage
               var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race.race_id} AND stagenr = ${stage.stagenr + 1}`;
-              sqlDB.query(nextStageQuery, function (err, nextStageResults) {
-                if (err) { console.log("WRONG QUERY:", nextStageQuery); throw err; }
+              sqlDB.query(nextStageQuery, function (_, nextStageResults) {
                 if (nextStageResults.rows[0].type !== "FinalStandings") {
                   var d = nextStageResults.rows[0].starttime;
                   var resultsRule = `${d.getSeconds() + 5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`

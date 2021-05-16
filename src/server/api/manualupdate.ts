@@ -46,8 +46,7 @@ module.exports = (app) => {
       const year = parseInt(req.body.year, 10);
       const raceName = req.body.raceName;
       var race = { raceName: raceName, year: year };
-      scrape.getStartlist(race, (err, arg) => {
-        if (err) { res.send('error'); }
+      scrape.getStartlist(race, () => {
         console.log('Got startlist %s year %s', raceName, year);
         res.send('loaded startlist');
       });
