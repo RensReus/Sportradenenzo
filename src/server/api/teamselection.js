@@ -10,11 +10,9 @@ module.exports = function (app) {
   app.post('/api/teamselection', function (req, res) {
     var race_id = req.body.race_id;
     var beforeStartQuery = `SELECT COUNT(stage_id) FROM stage WHERE race_id = ${race_id} AND starttime < now() AT TIME ZONE 'Europe/Paris'`
-    sqlDB.query(beforeStartQuery, (err, beforeStartResults) => {
-      if (err) { console.log("WRONG QUERY: ", beforeStartQuery); throw err };
+    sqlDB.query(beforeStartQuery, (_, beforeStartResults) => {
       if (beforeStartResults.rows[0].count === 0) {
-        runTeamSelectionCall(req.body.apilink, race_id, req.body.budgetParticipation, req.user.account_id, req.body.rider_participation_id, (err, results) => {
-          if (err) { console.log(err.toString()) }
+        runTeamSelectionCall(req.body.apilink, race_id, req.body.budgetParticipation, req.user.account_id, req.body.rider_participation_id, (results) => {
           res.send(results);
         })
       } else {
@@ -26,16 +24,15 @@ module.exports = function (app) {
   async function runTeamSelectionCall(apilink, race_id, budgetParticipation, account_id, rider_participation_id, callback) {
     budgetParticipation = budgetParticipation === 1;
     switch (apilink) {
-      case "getridersandteam": getridersandteam(race_id, budgetParticipation, account_id, callback); break;
+      case "getridersandteam": getridersandteam(race_id, account_id, callback); break;
       case "addRider": addRider(race_id, budgetParticipation, account_id, rider_participation_id, callback); break;
       case "removeRider": removeRider(race_id, budgetParticipation, account_id, rider_participation_id, callback); break;
       case "addaccountparticipation": addaccountparticipation(race_id, account_id, callback); break;
     }
   }
 
-  function getridersandteam(race_id, budgetParticipation, account_id, callback) {
-    sqlDB.query(`SELECT * FROM account_participation WHERE race_id = ${race_id} AND account_id = ${account_id}`, (err, participationResults) => {
-      if (err) { console.log("GET participation error"); throw err };
+  function getridersandteam(race_id, account_id, callback) {
+    sqlDB.query(`SELECT * FROM account_participation WHERE race_id = ${race_id} AND account_id = ${account_id}`, (_, participationResults) => {
       if (participationResults.rows.length) {
         async.auto({
           allRiders: function (innerCallback) {
@@ -65,10 +62,10 @@ module.exports = function (app) {
             IDsBudget.push(results.userSelectionBudget[i].rider_participation_id)
             budgetBudget -= results.userSelectionBudget[i].price
           }
-          callback(err, { allRiders: results.allRiders, userSelectionGewoon: results.userSelectionGewoon, userSelectionBudget: results.userSelectionBudget, budgetGewoon, budgetBudget })
+          callback({ allRiders: results.allRiders, userSelectionGewoon: results.userSelectionGewoon, userSelectionBudget: results.userSelectionBudget, budgetGewoon, budgetBudget })
         });
       } else {
-        callback(err, { noParticipation: true })
+        callback({ noParticipation: true })
       }
     })
   };
@@ -89,8 +86,7 @@ module.exports = function (app) {
 
     var totalQuery = riderQuery + teamselectionQuery + budgetQuery;
 
-    sqlDB.query(totalQuery, function (err, results) {
-      if (err) { console.log("WRONG QUERY: ", totalQuery); throw err };
+    sqlDB.query(totalQuery, function (_, results) {
       if (!budgetParticipation) {
         budget = results[2].rows[0].budget;
       }
@@ -108,14 +104,13 @@ module.exports = function (app) {
                                 VALUES(${rider_participation_id},${account_participation_id}) 
                                 ON CONFLICT (account_participation_id, rider_participation_id) DO NOTHING`;
 
-        sqlDB.query(addQuery, (err, response) => {
-          if (err) { console.log("WRONG QUERY:", addQuery); throw err; }
+        sqlDB.query(addQuery, (_, response) => {
           if (response.rowCount) { //Only add if sql added rider to DB
             results[1].rows.push(results[0].rows[0])
           }
           var budgetLeft = budgetParticipation ? 11250000 : results[2].rows[0].budget;
           budgetLeft -= results[1].rows.reduce((sum, x) => sum + x.price, 0);
-          callback(err, { userSelection: results[1].rows, budgetLeft })
+          callback({ userSelection: results[1].rows, budgetLeft })
         })
       }
     })
@@ -143,12 +138,11 @@ module.exports = function (app) {
 
     var totalQuery = deleteStageSelectionQuery + deleteKopmanQuery + removeTeamSelectionQuery + teamselectionQuery + budgetQuery;
 
-    sqlDB.query(totalQuery, function (err, results) {
-      if (err) { console.log("WRONG QUERY:", totalQuery); throw err; }
+    sqlDB.query(totalQuery, function (_, results) {
       var budgetLeft = budgetParticipation ? 11250000 : results[4].rows[0].budget;
       budgetLeft -= results[3].rows.reduce((sum, x) => sum + x.price, 0);
 
-      callback(err, { userSelection: results[3].rows, budgetLeft })
+      callback({ userSelection: results[3].rows, budgetLeft })
     })
 
   };
@@ -160,9 +154,7 @@ module.exports = function (app) {
                 RETURNING (account_participation_id);\n`
     account_participationQuery += `SELECT COUNT(*) FROM stage WHERE race_id = ${race_id};\n `
 
-    sqlDB.query(account_participationQuery, (err, results) => {
-      if (err) { console.log("WRONG QUERY:", account_participationQuery); callback(err, { participationAdded: false }); throw err; }
-
+    sqlDB.query(account_participationQuery, (_, results) => {
       if (results[0].rows.length === 2) {
         var stage_selectionQuery = `INSERT INTO stage_selection(stage_id,account_participation_id) VALUES`
         for (let stage = 1; stage < results[1].rows[0].count + 1; stage++) {
@@ -172,12 +164,11 @@ module.exports = function (app) {
 
         stage_selectionQuery = stage_selectionQuery.slice(0, -1) + `ON CONFLICT (account_participation_id,stage_id) DO NOTHING;\n`
 
-        sqlDB.query(stage_selectionQuery, (err, results2) => {
-          if (err) { console.log("WRONG QUERY:", stage_selectionQuery); callback(err, { participationAdded: false }); throw err; }
-          callback(err, { participationAdded: true })
+        sqlDB.query(stage_selectionQuery, () => {
+          callback({ participationAdded: true })
         })
       } else {
-        callback(err, { participationAdded: false })
+        callback({ participationAdded: false })
       }
 
     })
