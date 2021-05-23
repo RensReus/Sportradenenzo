@@ -1,144 +1,83 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import './index.css';
-import axios from 'axios';
-import FlagIcon from '../shared/flagIcon'
-import { ReactComponent as HillImage } from '../shared/svg/Hills.svg'
+import LoginForm from './LoginForm';
+import LoginFormModal from './LoginFormModal';
+import { ReactComponent as FakeStageProfile } from '../shared/svg/FakeStageProfile.svg';
+import { ReactComponent as LogoGiro } from '../shared/svg/LogoGiro2021.svg';
+class LogInSignUp extends Component {
+  constructor(props) {
+    super(props);
+    this.state = ({
+      signup: false,
+    });
+    this.signupSwitch = this.signupSwitch.bind(this);
+  };
 
-class Usernamefield extends Component{
-    render(){
-        return(
-            <div className="inputContainer">
-                <input className="form-control" name="username" ref="username" type="username" placeholder="Username"/>
+  signupSwitch(){
+    this.setState({
+      signup: !this.state.signup
+    });
+  };
+  
+  render() {
+    return (
+      <div className="flex flex-col lg:flex-row absolute top-0 left-0 min-h-full w-screen bg-gradient-to-tl from-blue-700 to-blue-500 select-none">
+        <div className="hidden sm:block fixed z-0 -bottom-16 w-screen"><FakeStageProfile/></div>
+        <div className="flex flex-col lg:flex-grow">
+          <div className="text-center min-w-full ml-0 md:min-w-0 sm:text-left sm:ml-6 my-4 text-white font-sans font-bold">
+            <div className="text-4xl md:text-6xl">Sport Raden Enzo</div>
+            <div className="text-lg mt-3 md:text-xl">Create your own fantasy cycling team</div>
+          </div>
+          <div className="flex items-start flex-row-reverse w-full">
+            <div className="hidden self-center mr-12 md:block">
+              <div className="mt-10 mb-4 text-center text-white">
+                {this.state.signup?
+                  <>
+                  <div className="text-2xl font-bold">Already have an account?</div>
+                  <button className="landing_button my-4 shadow-md" onClick={this.signupSwitch}>Log in</button>
+                  </>
+                  :
+                  <>
+                  <div className="text-2xl font-bold">Don't have an account yet?</div>
+                  <button className="landing_button my-4 shadow-md" onClick={this.signupSwitch}>Make one</button>
+                  </>
+                }
+              </div>
             </div>
-        )
-    }
-}
-
-class LogInSignUp extends Component{
-    constructor(props){
-      super(props);
-      this.state = ({
-          Signup: this.props.Signup, 
-          error: ''});
-      this.loginSubmit = this.loginSubmit.bind(this);
-      this.signupSubmit = this.signupSubmit.bind(this);
-      this.formButton = this.formButton.bind(this);
-    }
-    loginSubmit = (e) => {
-        e.preventDefault();
-        const email = e.target.email.value;
-        const password = e.target.password.value;
-        axios.post('api/login',{email: email,password: password}) //Stuur de form naar de server
-        .then((res) => {
-            if(res.data.succes){ 
-                localStorage.setItem('authToken', res.data.token);
-                this.props.history.push('/');
-            }else{
-                this.setState({error: 'Login failed: incorrect email/password combination'})
-            }
-        })
-        .catch(function (error) {
-            throw error
-        });
-    }
-    signupSubmit = (e) => {
-        e.preventDefault();
-        const email = e.target.email.value;
-        const username = e.target.username.value;
-        const password = e.target.password.value;
-        axios.post('api/signup',{email: email, username: username, password: password})
-        .then((res) => {
-            if(res.data.succes){
-                localStorage.setItem('authToken', res.data.token);
-                this.props.history.push('/')
-            }else{
-                this.setState({error: res.data.error})
-            }
-        })
-    }
-    formButton = () => {
-        if(this.state.Signup){
-            this.setState({Signup: false, error: ''});
-        }else{
-            this.setState({Signup: true, error: ''});
-        }
-    }
-    render() {
-        let submit;
-        let usernamefield;
-        let buttontext;
-        if (this.state.Signup) {
-            submit = this.signupSubmit
-            usernamefield = <Usernamefield/>
-            buttontext = "Sign up"
-        }else{
-            submit = this.loginSubmit
-            usernamefield = ''
-            buttontext = "Sign in"
-            
-        }
-        return(
-            <div className="homepageContainer">
-                <div className='home_headers_container'>
-                    <span className='home_header_text h6'>Create your own fantasy cycling team</span>
-                    <span className='home_header_text h6'>Upcoming races</span>
-                </div>
-                <div className="formContainer">
-                    <form action="" onSubmit={submit}>
-                        <div className="inputContainer">
-                            <input className="form-control" name="username" ref="username" type="username" placeholder="Username"/>
-                        </div>
-                        <div className="inputContainer">
-                            <input className="form-control" name="email" type="email" placeholder="Email Address" ref={(input) => { this.input = input; }}/>
-                        </div>
-                        {usernamefield}
-                        <div className="inputContainer">
-                            <input className="form-control" name="password" ref="password" type="password" placeholder="Password"/>
-                        </div>
-                        <div className="formButtonContainer">
-                            <button className="plain blue">{buttontext}</button>
-                        </div>
-                    </form>
-                    <div className="errordiv">{this.state.error}</div>
-                <button className='plain blue'>Sign up</button>
-                </div>
-                <div className='home_news_container'>
-                    <div className='home_news_headerrow'>
-                        <span className='home_news_header h7 bold'>Spring classics 2020</span>
-                        <span className='home_news_header_date h7'>Deadline: 29-2</span>
-                        <div className='home_news_image_container'>
-                            <div className='home_news_image_shadow'></div>
-                            <HillImage/>
-                        </div>
-                    </div>
-                    <div className='home_news_tablerows'>
-                        <span className='home_news_row h8'><FlagIcon code='be'/> Omloop het Nieuwsblad</span>
-                        <span className='home_news_row_date h9'>29-02</span>
-                        <span className='home_news_row h8'><FlagIcon code='it'/> Strade Bianche</span>
-                        <span className='home_news_row_date h9'>07-03</span>
-                        <span className='home_news_row h8'><FlagIcon code='it'/> Milano-Sanremo</span>
-                        <span className='home_news_row_date h9'>21-03</span>
-                        <span className='home_news_row h8'><FlagIcon code='be'/> E3 BinckBank Classic</span>
-                        <span className='home_news_row_date h9'>27-03</span>
-                        <span className='home_news_row h8'><FlagIcon code='be'/> Gent-Wevelgem</span>
-                        <span className='home_news_row_date h9'>29-03</span>
-                        <span className='home_news_row h8'><FlagIcon code='be'/> Dwars door Vlaanderen</span>
-                        <span className='home_news_row_date h9'>01-04</span>
-                        <span className='home_news_row h8'><FlagIcon code='be'/> Ronde van Vlaanderen</span>
-                        <span className='home_news_row_date h9'>05-04</span>
-                        <span className='home_news_row h8'><FlagIcon code='fr'/> Parijs-Roubaix</span>
-                        <span className='home_news_row_date h9'>12-04</span>
-                        <span className='home_news_row h8'><FlagIcon code='nl'/> Amstel Gold Race</span>
-                        <span className='home_news_row_date h9'>19-04</span>
-                        <span className='home_news_row h8'><FlagIcon code='be'/> La Flèche Wallonne</span>
-                        <span className='home_news_row_date h9'>22-04</span>
-                        <span className='home_news_row h8'><FlagIcon code='be'/> Liège-Bastogne-Liège</span>
-                        <span className='home_news_row_date h9'>26-04</span>
-                    </div>
-                </div>
+            <div className={this.state.signup? 'hidden' : 'hidden md:block'}>
+              <LoginForm history={this.props.history} signup={false}/>
             </div>
-        )
-    }
+            <div className={this.state.signup? 'hidden md:block' : 'hidden'}>
+                <LoginForm history={this.props.history} signup={true}/>
+            </div>
+            <div className="flex flex-col m-auto mt-16 mb-16 text-lg md:hidden">
+              <div className="mb-2 font-bold text-white text-center">Log in to manage your team</div>
+              <LoginFormModal signup={false} buttonText='Log in'/>
+              <div className="mt-8 mb-2 font-bold text-white text-center">Don't have an account yet?</div>
+              <LoginFormModal signup={true} buttonText='Make one'/>
+            </div>
+          </div>
+        </div>
+        <div className="self-start z-10 text-xl font-bold mt-10 m-auto md:mx-8">
+          <div className="float-right">
+            <div className="text-white text-center md:text-left lg:text-center mr-4 mb-4">Upcoming events</div>
+            <div className="flex flex-col md:flex-row lg:flex-col">
+              <div className="landing_upcoming_event_card shadow-lg">
+                <LogoGiro/>
+                <div className="mt-4 text-base text-gray-800">Giro d'Italia</div>
+              </div>
+              <div className="landing_upcoming_event_card shadow-lg">
+                <div className="w-24 flex items-center">
+                  <img className="h-full" src="images/logo-tour.png"></img>
+                  </div>
+                <div className="mt-4 text-base text-gray-800">Tour de France</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 }
 
 export default LogInSignUp;
