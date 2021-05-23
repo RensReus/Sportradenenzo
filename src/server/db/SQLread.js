@@ -31,9 +31,8 @@ module.exports = {
         WHERE rider_participation_id IN ${teamselection}
         ORDER BY dnf, price DESC`;
 
-        sqlDB.query(query, values, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows)
+        sqlDB.query(query, values, (_, res) => {
+            callback(res.rows)
         })
     },
 
@@ -50,9 +49,8 @@ module.exports = {
                 WHERE race_id = $1
                 ORDER BY price DESC`;
 
-        sqlDB.query(query, values, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows)
+        sqlDB.query(query, values, (_, res) => {
+            callback(res.rows)
         })
     },
 
@@ -66,9 +64,8 @@ module.exports = {
                 INNER JOIN rider using(rider_id)
                 WHERE rider_participation_id = $1`;
 
-        sqlDB.query(query, values, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows[0])
+        sqlDB.query(query, values, (_, res) => {
+            callback(res.rows[0])
         })
     },
 
@@ -80,9 +77,8 @@ module.exports = {
         var values = [email]
         var query = `SELECT * FROM account WHERE email = $1`;
 
-        sqlDB.query(query, values, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows[0])
+        sqlDB.query(query, values, (_, res) => {
+            callback(res.rows[0])
         })
     },
 
@@ -96,9 +92,8 @@ module.exports = {
         var query = `SELECT * FROM race 
                 WHERE race_id = $1`;
 
-        sqlDB.query(query, values, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows[0])
+        sqlDB.query(query, values, (_, res) => {
+            callback(res.rows[0])
         })
     },
 
@@ -111,9 +106,8 @@ module.exports = {
         var values = [account_id, race_id];
         var query = `SELECT account_participation_id FROM account_participation 
                 WHERE account_id = $1 AND race_id = $2`;
-        sqlDB.query(query, values, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows[0])
+        sqlDB.query(query, values, (_, res) => {
+            callback(res.rows[0])
         })
     },
 
@@ -122,9 +116,8 @@ module.exports = {
         var values = [parameters] // $1, ...
         var query = ``;
 
-        sqlDB.query(query, values, (err, res) => {
-            if (err) throw err;
-            else callback(err, res.rows)
+        sqlDB.query(query, values, (_, res) => {
+            callback(res.rows)
         })
     }
 }

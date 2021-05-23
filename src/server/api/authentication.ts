@@ -45,8 +45,7 @@ module.exports = (app) => {
     // Check for existing username
     const usernameValue = [req.body.username];
     const usernameQuery = 'SELECT * FROM account WHERE username ILIKE $1';
-    sqlDB.query(usernameQuery, usernameValue, (errUsernameExists, sqlres) => {
-      if (errUsernameExists) { throw errUsernameExists; }
+    sqlDB.query(usernameQuery, usernameValue, (_, sqlres) => {
       if (sqlres.rowCount === 0) {
         passport.authenticate('local-signup', (errPassportSignupAuth, user) => {
           if (errPassportSignupAuth) {
@@ -57,8 +56,7 @@ module.exports = (app) => {
           } else {
             const userData = [req.body.email, req.body.username];
             const addUsernameQuery = 'UPDATE account SET username=$2 WHERE email=$1';
-            sqlDB.query(addUsernameQuery, userData, (errAddingUsername) => {
-              if (errAddingUsername) { throw errAddingUsername; }
+            sqlDB.query(addUsernameQuery, userData, () => {
             });
             req.logIn(user, (err) => {
               if (err) {

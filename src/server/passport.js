@@ -50,9 +50,7 @@ module.exports = function(passport) {
                 //still available make new user
                 var passwordToStore = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
                 var emailToStore    = email.toLowerCase();
-                SQLwrite.addAccount(emailToStore,passwordToStore,function(err,account){
-                    if(err)
-                        throw err;
+                SQLwrite.addAccount(emailToStore,passwordToStore,function(_,account){
                     return done(null, account)
                 })
             }

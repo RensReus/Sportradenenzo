@@ -20,8 +20,15 @@ const pool = new Pool({
 })
 
 module.exports = {
-  query: (text, params, callback) => {
-    return pool.query(text, params, callback)
+  query: (queryString, params, callback) => {
+    pool.query(queryString, params, (err, results) => {
+      if (err) {
+        console.log("WRONG QUERY: ", queryString);
+        console.log("Error: ", err.toString());
+      } else {
+        callback(err, results);
+      }
+    })
   },
   getClient: (callback) => {
     pool.connect((err, client, done) => {

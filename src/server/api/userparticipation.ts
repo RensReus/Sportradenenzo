@@ -6,13 +6,8 @@ module.exports = (app) => {
   app.post('/api/getracepartcipation', (req, res) => {
     const query = `SELECT race_id FROM account_participation
         WHERE account_id = ${req.user.account_id} AND finalscore=0 AND budgetparticipation=false`;
-    sqlDB.query(query, (err, results) => {
-      if (err) {
-        console.log("WRONG QUERY:", query);
-        throw err;
-      } else {
-        res.send({ participations: results.rows });
-      }
+    sqlDB.query(query, (_, results) => {
+      res.send({ participations: results.rows });
     });
   });
 
@@ -22,11 +17,8 @@ module.exports = (app) => {
     WHERE race.finished = false AND name IN ('giro','tour','vuelta')
     GROUP BY race_id;`
 
-    sqlDB.query(activeRacesQuery, (err, activeRacesResults) => {
-      if (err) {
-        console.log("WRONG QUERY:", activeRacesQuery);
-        throw err;
-      } else if (activeRacesResults.rows.length === 0) { 
+    sqlDB.query(activeRacesQuery, (_, activeRacesResults) => {
+      if (activeRacesResults.rows.length === 0) { 
           res.send({activeRaces:[]})
       } else {
         
@@ -39,11 +31,7 @@ module.exports = (app) => {
         WHERE stagenr = 1 AND race.race_id = ${race.race_id}
         ORDER BY stagenr DESC
         LIMIT 1;;\n `,'')
-        sqlDB.query(currentStagesQuery, (err, currentStagesResults) => {
-          if (err) {
-            console.log("WRONG QUERY:", activeRacesQuery);
-            throw err;
-          }
+        sqlDB.query(currentStagesQuery, (_, currentStagesResults) => {
           let activeRaces: Array<any>;
           if (activeRacesResults.rows.length === 1) {
             activeRaces = currentStagesResults.rows
@@ -64,14 +52,9 @@ module.exports = (app) => {
     INNER JOIN race USING(race_id)
     WHERE race.finished AND type = 'FinalStandings'
     ORDER BY year, name`;
-    sqlDB.query(query, (err, results2) => {
-      if (err) {
-        console.log("WRONG QUERY:", query);
-        throw err;
-      } else {
-        const finishedRaces = results2.rows;
-        res.send({ finishedRaces });
-      }
+    sqlDB.query(query, (_, results2) => {
+      const finishedRaces = results2.rows;
+      res.send({ finishedRaces });
     });
   })
 

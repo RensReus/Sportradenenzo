@@ -13,9 +13,11 @@ class statistics extends Component {
       budget: false,
       budgetSwitchButton: '',
       currlink: '',
-      details: false
+      details: false,
+      showClassifications: false
     });
     this.budgetSwitch = this.budgetSwitch.bind(this);
+    this.classificationsPointsSwitch = this.classificationsPointsSwitch.bind(this);
     this.detailsSwitch = this.detailsSwitch.bind(this);
   }
 
@@ -44,17 +46,7 @@ class statistics extends Component {
   }
 
   renderPage() {
-    var apilinks = {
-      "allriders": "getriderpointsall",
-      "selectedriders": "getriderpointsselected",
-      "missedpoints": "missedpoints",
-      "missedpointsall": "missedpointsall",
-      "teams": "teams",
-      "etappewinsten": "getstagevictories",
-      "rondewinsten": "gettourvictories",
-      "teamcomparisons": "teamcomparisons",
-      "overigestats": "getadditionalstats",
-    }
+
     this.setState({
       currlink: this.props.match.params.selection,
       tables: '',
@@ -62,7 +54,7 @@ class statistics extends Component {
       var pageref = this.state.currlink;
       switch (pageref) {
         case "rondewinsten":
-          this.getDataAndRender(apilinks[pageref], true)
+          this.getDataAndRender(pageref, true)
           break;
         case "allriders":
         case "selectedriders":
@@ -72,7 +64,7 @@ class statistics extends Component {
         case "etappewinsten":
         case "overigestats":
         case "teamcomparisons":
-          this.getDataAndRender(apilinks[pageref], false)
+          this.getDataAndRender(pageref, false)
           break;
         default: this.props.history.push(this.props.redirect); break;
       }
@@ -85,8 +77,22 @@ class statistics extends Component {
     })
   }
 
+  detailsSwitch() {
+    this.setState({
+      details: !this.state.details
+    }, () => {
+      this.renderPage()
+    })
+  }
+
+  classificationsPointsSwitch() {
+    this.setState({ showClassifications: !this.state.showClassifications }, () => {
+      this.renderPage()
+    })
+  }
+
   getDataAndRender(selection, alwaysget) {
-    axios.post('/api/statistics', { selection, alwaysget, race_id: this.state.race_id, budgetparticipation: this.state.budget, details: this.state.details })
+    axios.post('/api/statistics', { selection, alwaysget, race_id: this.state.race_id, budgetparticipation: this.state.budget, details: this.state.details, showClassifications: this.state.showClassifications })
       .then((res) => {
         if (res.data.mode !== '404') {
           document.title = res.data.title;
@@ -108,18 +114,11 @@ class statistics extends Component {
       })
   }
 
-  detailsSwitch() {
-    this.setState({
-      details: !this.state.details
-    }, () => {
-      this.renderPage()
-    })
-  }
-
   render() {
     return (
       <div className="statisticsContainer">
         {this.state.budgetSwitchButton}
+        {this.state.currlink === "selectedriders" && <StateSwitchButton stateStrings={['Punten', 'Klassementen']} stateVar={this.state.showPoints} stateVarSwitch={this.classificationsPointsSwitch}  />}
         {this.state.currlink === "teams" && this.state.tables.length > 0 && <StateSwitchButton stateStrings={['Simpel', 'Details']} stateVar={this.state.details} stateVarSwitch={this.detailsSwitch} />}
         {this.state.tables}
       </div>

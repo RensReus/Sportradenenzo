@@ -12,8 +12,7 @@ module.exports = function (app) {
                             SET kopman_id=${req.body.rider_participation_id}
                             WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id};\n `;
     query += selectionCompleteQuery;
-    sqlDB.query(query, (err, sqlres) => {
-      if (err) { console.log("WRONG QUERY:", query); throw err; }
+    sqlDB.query(query, (_, sqlres) => {
       res.send({
         'kopman': req.body.rider_participation_id,
         selectionsComplete: sqlres[1].rows.map(x => x.complete)
@@ -31,8 +30,7 @@ module.exports = function (app) {
     var selectionCompleteQuery = selectionsCompleteQuery(race_id, req.body.stage, req.user.account_id);
     var removeQuery = `UPDATE stage_selection SET kopman_id = NULL WHERE stage_selection_id = ${stage_selection_id} AND kopman_id = ${req.body.rider_participation_id};\n`
     var query = removeQuery + selectionCompleteQuery;
-    sqlDB.query(query, (err, sqlres) => {
-      if (err) { console.log("WRONG QUERY:", query); throw err; }
+    sqlDB.query(query, (_, sqlres) => {
 
       res.send({
         kopman: null,
@@ -52,8 +50,7 @@ module.exports = function (app) {
                             WHERE stage_selection_id=${stage_selection_id} AND rider_participation_id=${req.body.rider_participation_id};\n `;
 
     query += removeKopmanQuery;
-    sqlDB.query(query, (err, sqlres) => {
-      if (err) { console.log("WRONG QUERY:", query); throw err; }
+    sqlDB.query(query, (_, sqlres) => {
       var race_id = req.body.race_id;
       var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
       var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${req.body.stage} AND race_id=${race_id})`
@@ -68,8 +65,7 @@ module.exports = function (app) {
       var selectionCompleteQuery = selectionsCompleteQuery(race_id, req.body.stage, req.user.account_id);
       var query = stage_selection_riderQuery + prevClassificationQuery + kopmanQuery + selectionCompleteQuery;
 
-      sqlDB.query(query, (err, sqlres) => {
-        if (err) throw err;
+      sqlDB.query(query, (_, sqlres) => {
         res.send({
           stageSelection: sqlres[0].rows,
           prevClassifications: sqlres.slice(1, 5).map(x => x.rows),
@@ -91,8 +87,7 @@ module.exports = function (app) {
                             INNER JOIN rider_participation USING (rider_participation_id)
                             INNER JOIN rider USING (rider_id)
                             WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id}`;
-    sqlDB.query(query, values, (err, result) => {
-      if (err) { console.log("WRONG QUERY:", query); throw err; }
+    sqlDB.query(query, values, (_, result) => {
       if (result.rows.length === 9) {
         res.send(false)
       } else {
@@ -101,8 +96,7 @@ module.exports = function (app) {
         var query = `INSERT INTO stage_selection_rider (stage_selection_id, rider_participation_id)
                                             VALUES (${stage_selection_id},$4)
                                             ON CONFLICT (rider_participation_id,stage_selection_id) DO NOTHING`
-        sqlDB.query(query, values, (err, sqlres) => {
-          if (err) throw err;
+        sqlDB.query(query, values, (_, sqlres) => {
           var race_id = req.body.race_id;
           var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${req.user.account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
           var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${req.body.stage} AND race_id=${race_id})`
@@ -117,8 +111,7 @@ module.exports = function (app) {
           var selectionCompleteQuery = selectionsCompleteQuery(race_id, req.body.stage, req.user.account_id);
 
           var query = stage_selection_riderQuery + prevClassificationQuery + kopmanQuery + selectionCompleteQuery;
-          sqlDB.query(query, (err, sqlres) => {
-            if (err) throw err;
+          sqlDB.query(query, (_, sqlres) => {
             res.send({
               stageSelection: sqlres[0].rows,
               prevClassifications: sqlres.slice(1, 5).map(x => x.rows),

@@ -64,22 +64,16 @@ module.exports = (app) => {
       // tslint:disable-next-line: max-line-length
       const totalQuery = allTableSizesQuery + stageSelectionRiderQuery + resultsPointsQuery + riderParticipationQuery + teamSelectionRiderQuery + stageSelectionQuery;
       sqlDB.query(totalQuery,
-        (err, sqlres) => {
-          if (err) {
-            // tslint:disable-next-line: no-console
-            console.log('WRONG QUERY:', totalQuery);
-            throw err;
-          } else {
-            const sum = { Tables: 'Totaal', Rows: 0, Inserts: 0, Updates: 0, Deletions: 0 };
-            sqlres[0].rows.forEach((row) => {
-              sum.Rows += parseInt(row.Rows, 10);
-              sum.Inserts += parseInt(row.Inserts, 10);
-              sum.Updates += parseInt(row.Updates, 10);
-              sum.Deletions += parseInt(row.Deletions, 10);
-            });
-            sqlres[0].rows.push(sum);
-            res.send({ tables: sqlres, titles });
-          }
+        (_, sqlres) => {
+          const sum = { Tables: 'Totaal', Rows: 0, Inserts: 0, Updates: 0, Deletions: 0 };
+          sqlres[0].rows.forEach((row) => {
+            sum.Rows += parseInt(row.Rows, 10);
+            sum.Inserts += parseInt(row.Inserts, 10);
+            sum.Updates += parseInt(row.Updates, 10);
+            sum.Deletions += parseInt(row.Deletions, 10);
+          });
+          sqlres[0].rows.push(sum);
+          res.send({ tables: sqlres, titles });
         });
 
 
