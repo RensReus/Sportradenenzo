@@ -45,15 +45,15 @@ module.exports = (app) => {
     // Check for existing username
     const usernameValue = [req.body.username];
     const usernameQuery = 'SELECT * FROM account WHERE username ILIKE $1';
-    let sqlres = await sqlDB.query(usernameQuery, usernameValue);
-    if (sqlres.rowCount === 0) {
-      passport.authenticate('local-signup', ( user) => {
+    let results = await sqlDB.query(usernameQuery, usernameValue);
+    if (results.rowCount === 0) {
+      passport.authenticate('local-signup', async (user) => {
         if (!user) {
           return res.send({ succes: false, error: 'email adress is already taken' });
         } else {
           const userData = [req.body.email, req.body.username];
           const addUsernameQuery = 'UPDATE account SET username=$2 WHERE email=$1';
-          sqlDB.query(addUsernameQuery, userData); //TODO wait for response?
+          await sqlDB.query(addUsernameQuery, userData);
           req.logIn(user, (err) => {
             if (err) {
               return next(err);

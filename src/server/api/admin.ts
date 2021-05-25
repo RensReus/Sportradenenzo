@@ -50,18 +50,18 @@ module.exports = (app) => {
       // tslint:disable-next-line: max-line-length
       const totalQuery = allTableSizesQuery + stageSelectionRiderQuery + resultsPointsQuery + riderParticipationQuery + teamSelectionRiderQuery + stageSelectionQuery;
 
-      let sqlres = await sqlDB.query(totalQuery);
+      let results = await sqlDB.query(totalQuery);
 
       const sum = { Tables: 'Totaal', Rows: 0, Inserts: 0, Updates: 0, Deletions: 0 };
-      sqlres[0].rows.forEach((row) => {
+      results[0].rows.forEach((row) => {
         sum.Rows += parseInt(row.Rows, 10);
         sum.Inserts += parseInt(row.Inserts, 10);
         sum.Updates += parseInt(row.Updates, 10);
         sum.Deletions += parseInt(row.Deletions, 10);
       });
-      sqlres[0].rows.push(sum);
+      results[0].rows.push(sum);
 
-      res.send({ tables: sqlres, titles });
+      res.send({ tables: results, titles });
     } else {
       return res.status(401).send('Access denied. No admin');
     }
