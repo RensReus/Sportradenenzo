@@ -82,10 +82,7 @@ module.exports = (app) => {
 
   // Login into an excisting account
   app.post('/api/login', (req, res, next) => {
-    passport.authenticate('local-login', {failureFlash: true}, (errPassportLoginAuth, user) => {
-      if (errPassportLoginAuth) {
-        return next(errPassportLoginAuth);
-      }
+    passport.authenticate('local-login', {failureFlash: true}, (user) => {
       if (!user) {
         return res.send({isLoggedIn: false, isAdmin: false});
       }
