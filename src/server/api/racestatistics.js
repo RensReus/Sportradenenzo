@@ -4,7 +4,7 @@ module.exports = (app) => {
   const sqlDB = require('../db/sqlDB');
   const async = require('async');
 
-  app.post('/api/statistics', function (req, res) {
+  app.post('/api/statistics', async (req, res) => {
     var race_id = req.body.race_id;
     var budgetparticipation = req.body.budgetparticipation;
     if (!req.body.alwaysget) {
@@ -13,15 +13,14 @@ module.exports = (app) => {
       WHERE (starttime < now() AT TIME ZONE 'Europe/Paris' OR race.finished) AND race_id = ${race_id}
       ORDER BY stagenr DESC
       LIMIT 1`;
-      sqlDB.query(raceHasStartedQuery, (_, results) => {
-        if (results.rows.length === 0) {
-          res.send({ mode: '404' })
-        } else {
-          getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, req.body.showClassifications, function (results) {
-            res.send(results);
-          })
-        }
-      })
+      const results = await sqlDB.query(raceHasStartedQuery)
+      if (results.rows.length === 0) {
+        res.send({ mode: '404' })
+      } else {
+        getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, req.body.showClassifications, function (results) {
+          res.send(results);
+        })
+      }
     } else {
       getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, req.body.showClassifications, function (results) {
         res.send(results);
@@ -43,7 +42,7 @@ module.exports = (app) => {
     }
   }
 
-  function getstagevictories(race_id, budgetparticipation, callback) {
+  async function getstagevictories(race_id, budgetparticipation, callback) {
     var subquery = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore DESC) FROM stage_selection
     INNER JOIN account_participation USING (account_participation_id)
     INNER JOIN account USING (account_id)
@@ -54,69 +53,68 @@ module.exports = (app) => {
     (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
     GROUP BY username`//aantal keer per ranking
     var query = query1 + query2;
-    sqlDB.query(query, (_, res) => {
-      var headersRank = ["Stage"];
-      var headersCount = ["User"];
-      var rowsRank = [];
-      var rowsCount = [];
+    const res = await sqlDB.query(query)
+    var headersRank = ["Stage"];
+    var headersCount = ["User"];
+    var rowsRank = [];
+    var rowsCount = [];
 
-      var userCount = res[1].rows.length
-      for (var i in res[0].rows) {//ranking per stage
-        var row = [parseInt(i) + 1];
-        for (var j in res[0].rows[i].usernames) {
-          row.push(res[0].rows[i].usernames[j] + " (" + res[0].rows[i].scores[j] + ")");
-        }
-        rowsRank.push(row);
+    var userCount = res[1].rows.length
+    for (var i in res[0].rows) {//ranking per stage
+      var row = [parseInt(i) + 1];
+      for (var j in res[0].rows[i].usernames) {
+        row.push(res[0].rows[i].usernames[j] + " (" + res[0].rows[i].scores[j] + ")");
       }
+      rowsRank.push(row);
+    }
 
-      for (var i in res[1].rows) {//aantal keer per ranking
-        var user = res[1].rows[i];
-        var row = new Array(userCount + 1).fill(0)
-        row[0] = user.username;
-        for (var j in user.ranks) {
-          row[user.ranks[j]] = user.rankcounts[j];
-        }
-        rowsCount.push(row);
+    for (var i in res[1].rows) {//aantal keer per ranking
+      var user = res[1].rows[i];
+      var row = new Array(userCount + 1).fill(0)
+      row[0] = user.username;
+      for (var j in user.ranks) {
+        row[user.ranks[j]] = user.rankcounts[j];
       }
+      rowsCount.push(row);
+    }
 
-      //make headers
+    //make headers
+    for (var i = 1; i < userCount + 1; i++) {
+      headersRank.push(i + "e");
+      headersCount.push(i + "e");
+    }
+
+    //sort rowsCount
+    rowsCount.sort(function (a, b) {
       for (var i = 1; i < userCount + 1; i++) {
-        headersRank.push(i + "e");
-        headersCount.push(i + "e");
+        if (a[i] > b[i]) return false;
+        if (a[i] < b[i]) return true;
       }
-
-      //sort rowsCount
-      rowsCount.sort(function (a, b) {
-        for (var i = 1; i < userCount + 1; i++) {
-          if (a[i] > b[i]) return false;
-          if (a[i] < b[i]) return true;
-        }
-        return false;
-      })
-      var rankTable = []
-      for (let i in rowsRank) {
-        let newRow = {};
-        for (let j in headersRank) {
-          newRow[headersRank[j]] = rowsRank[i][j]
-        }
-        rankTable.push(newRow)
-      }
-      var countTable = []
-      for (let i in rowsCount) {
-        let newRow = {};
-        for (let j in headersCount) {
-          newRow[headersCount[j]] = rowsCount[i][j]
-        }
-        countTable.push(newRow)
-      }
-      var tables = []
-      tables.push({ tableData: rankTable, title: "Etappe Uitslagen" })
-      tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
-      callback({ tables, title: "Etappe Winsten Overzicht" })
+      return false;
     })
+    var rankTable = []
+    for (let i in rowsRank) {
+      let newRow = {};
+      for (let j in headersRank) {
+        newRow[headersRank[j]] = rowsRank[i][j]
+      }
+      rankTable.push(newRow)
+    }
+    var countTable = []
+    for (let i in rowsCount) {
+      let newRow = {};
+      for (let j in headersCount) {
+        newRow[headersCount[j]] = rowsCount[i][j]
+      }
+      countTable.push(newRow)
+    }
+    var tables = []
+    tables.push({ tableData: rankTable, title: "Etappe Uitslagen" })
+    tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
+    callback({ tables, title: "Etappe Winsten Overzicht" })
   }
 
-  function gettourvictories(budgetparticipation, callback) {
+  async function gettourvictories(budgetparticipation, callback) {
     // var poule_id = req.body.poule_id;
     var subquery = `(SELECT username, finalscore, CONCAT(year, ' ', name) AS race, rank() over (PARTITION BY race ORDER BY finalscore DESC) FROM account_participation
             INNER JOIN account USING (account_id)
@@ -145,70 +143,69 @@ module.exports = (app) => {
                 ${orderby}`
 
     var query = rankQuery + countQuery + thousandsQuery;
-    sqlDB.query(query, (_, results) => {
-      var headersRank = ["Race"];
-      var headersCount = ["User"];
-      var rowsRank = [];
-      var rowsCount = [];
+    const results = await sqlDB.query(query)
+    var headersRank = ["Race"];
+    var headersCount = ["User"];
+    var rowsRank = [];
+    var rowsCount = [];
 
-      var userCount = results[1].rows.length
-      for (var i in results[0].rows) {//ranking per stage
-        var row = [results[0].rows[i].race];
-        for (var j in results[0].rows[i].usernames) {
-          row.push(results[0].rows[i].usernames[j] + " (" + results[0].rows[i].scores[j] + ")");
-        }
-        rowsRank.push(row);
+    var userCount = results[1].rows.length
+    for (var i in results[0].rows) {//ranking per stage
+      var row = [results[0].rows[i].race];
+      for (var j in results[0].rows[i].usernames) {
+        row.push(results[0].rows[i].usernames[j] + " (" + results[0].rows[i].scores[j] + ")");
       }
+      rowsRank.push(row);
+    }
 
-      for (var i in results[1].rows) {//aantal keer per ranking
-        var user = results[1].rows[i];
-        var row = new Array(userCount + 1).fill(0)
-        row[0] = user.username;
-        for (var j in user.ranks) {
-          row[user.ranks[j]] = user.rankcounts[j];
-        }
-        rowsCount.push(row);
+    for (var i in results[1].rows) {//aantal keer per ranking
+      var user = results[1].rows[i];
+      var row = new Array(userCount + 1).fill(0)
+      row[0] = user.username;
+      for (var j in user.ranks) {
+        row[user.ranks[j]] = user.rankcounts[j];
       }
+      rowsCount.push(row);
+    }
 
-      //make headers
+    //make headers
+    for (var i = 1; i < userCount + 1; i++) {
+      headersRank.push(i + "e");
+      headersCount.push(i + "e");
+    }
+
+    //sort rowsCount
+    rowsCount.sort(function (a, b) {
       for (var i = 1; i < userCount + 1; i++) {
-        headersRank.push(i + "e");
-        headersCount.push(i + "e");
+        if (a[i] > b[i]) return false;
+        if (a[i] < b[i]) return true;
       }
-
-      //sort rowsCount
-      rowsCount.sort(function (a, b) {
-        for (var i = 1; i < userCount + 1; i++) {
-          if (a[i] > b[i]) return false;
-          if (a[i] < b[i]) return true;
-        }
-        return false;
-      })
-      var rankTable = []
-      for (let i in rowsRank) {
-        let newRow = {};
-        for (let j in headersRank) {
-          newRow[headersRank[j]] = rowsRank[i][j]
-        }
-        rankTable.push(newRow)
-      }
-      var countTable = []
-      for (let i in rowsCount) {
-        let newRow = {};
-        for (let j in headersCount) {
-          newRow[headersCount[j]] = rowsCount[i][j]
-        }
-        countTable.push(newRow)
-      }
-      var tables = []
-      tables.push({ tableData: rankTable, title: "Ronde Uitslagen" })
-      tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
-      tables.push({ tableData: results[2].rows, title: "Score verdelingen" })
-      callback({ tables, title: "Ronde Winsten Overzicht" })
+      return false;
     })
+    var rankTable = []
+    for (let i in rowsRank) {
+      let newRow = {};
+      for (let j in headersRank) {
+        newRow[headersRank[j]] = rowsRank[i][j]
+      }
+      rankTable.push(newRow)
+    }
+    var countTable = []
+    for (let i in rowsCount) {
+      let newRow = {};
+      for (let j in headersCount) {
+        newRow[headersCount[j]] = rowsCount[i][j]
+      }
+      countTable.push(newRow)
+    }
+    var tables = []
+    tables.push({ tableData: rankTable, title: "Ronde Uitslagen" })
+    tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
+    tables.push({ tableData: results[2].rows, title: "Score verdelingen" })
+    callback({ tables, title: "Ronde Winsten Overzicht" })
   }
 
-  function getriderpointsall(race_id, budgetparticipation, callback) {
+  async function getriderpointsall(race_id, budgetparticipation, callback) {
     var teamscore = `SUM(teamscore) AS "Team",`
     var teamscoreNotFinished = `0 AS "Team",`
     var totalscore = `SUM(totalscore)`
@@ -239,18 +236,17 @@ module.exports = (app) => {
     //0 for string 1 for number
     var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Klassement": 1, "Team": 1, "Total": 1, "PPM": 1, "dnf": 0 };
     var hiddenCols = ["AK", "Punten", "Berg", "Jong", "PPM"];
-    sqlDB.query(query, (_, results) => {
-      let tables = [{
-        tableData: results.rows,
-        coltype,
-        hiddenCols,
-        title: "Alle Renners"
-      }]
-      callback({ tables, title: "Alle Renners Overzicht" })
-    })
+    const results = await sqlDB.query(query)
+    let tables = [{
+      tableData: results.rows,
+      coltype,
+      hiddenCols,
+      title: "Alle Renners"
+    }]
+    callback({ tables, title: "Alle Renners Overzicht" })
   }
 
-  function getriderpointsselected(race_id, budgetparticipation, showClassifications, callback) {
+  async function getriderpointsselected(race_id, budgetparticipation, showClassifications, callback) {
     var teamscore = ` SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Team",`
     var totalscore = `totalscore `
     if (budgetparticipation) {
@@ -278,27 +274,26 @@ module.exports = (app) => {
       query = getSelectedRidersClassificationsQuery(race_id, budgetparticipation);
     }
 
-    sqlDB.query(query, (_, results) => {
-      let tables = [];
-      if (showClassifications) {
-        var classificationNames = ["AK", "Punten", "Berg", "Jong"];
+    const results = await sqlDB.query(query)
+    let tables = [];
+    if (showClassifications) {
+      var classificationNames = ["AK", "Punten", "Berg", "Jong"];
 
-        for (const i = 0; i < results.length; i++) {
-          tables.push({
-            tableData: results[i].rows,
-            title: classificationNames[i]
-          })
-        }
-      } else {
-        tables = [{
-          tableData: results.rows,
-          coltype: coltype,
-          hiddenCols,
-          title: "Alle Geselecteerde Renners"
-        }]
+      for (const i = 0; i < results.length; i++) {
+        tables.push({
+          tableData: results[i].rows,
+          title: classificationNames[i]
+        })
       }
-      callback({ tables, title: "Alle Geselecteerde Renners Overzicht" })
-    })
+    } else {
+      tables = [{
+        tableData: results.rows,
+        coltype: coltype,
+        hiddenCols,
+        title: "Alle Geselecteerde Renners"
+      }]
+    }
+    callback({ tables, title: "Alle Geselecteerde Renners Overzicht" })
   }
 
   function getSelectedRidersClassificationsQuery(race_id, budgetparticipation) {
@@ -339,23 +334,22 @@ module.exports = (app) => {
     })
   }
 
-  function missedpointsall(race_id, budgetparticipation, callback) {
+  async function missedpointsall(race_id, budgetparticipation, callback) {
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)
                 WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
                 ORDER BY account_id;`
-    sqlDB.query(usersQuery, (_, results) => {
-      async.map(results.rows, function (account, done) {
-        missedPointsUser(account.account_participation_id, budgetparticipation, function (tableData) {
-          done(null, { tableData, title: account.username })
-        })
-      }, function (_, tables) {
-        callback({ tables, title: "Gemiste Punten Iedereen" })
+    const results = await sqlDB.query(usersQuery)
+    async.map(results.rows, function (account, done) {
+      missedPointsUser(account.account_participation_id, budgetparticipation, function (tableData) {
+        done(null, { tableData, title: account.username })
       })
+    }, function (_, tables) {
+      callback({ tables, title: "Gemiste Punten Iedereen" })
     })
   }
 
-  function missedPointsUser(account_participation_id, budgetparticipation, callback) {
+  async function missedPointsUser(account_participation_id, budgetparticipation, callback) {
     var teamselection = `SELECT rider_participation_id FROM team_selection_rider
                 WHERE account_participation_id = ${account_participation_id}\n `
     var totalscore = 'totalscore';
@@ -368,45 +362,44 @@ module.exports = (app) => {
                 INNER JOIN stage USING(stage_id) WHERE account_participation_id = ${account_participation_id}
                 ORDER BY stagenr;\n `
     var totalQuery = ridersQuery + resultsQuery;
-    sqlDB.query(totalQuery, (_, results) => {
-      var outputArray = [];
-      var actualPoints = results[1].rows.map(a => a.stagescore);
-      var optimalTotal = 0;
-      var actualTotal = 0;
-      var missedTotal = 0;
-      for (var i = 0; i < results[0].rows.length; i++) {
-        optimalPoints = 0;
-        var totalscores = results[0].rows[i].points.map(scores => ({ score: scores.total, id: scores.id }));
-        var stagescores = results[0].rows[i].points.map(scores => ({ score: scores.stage, id: scores.id }));
-        stagescores.sort(function (a, b) { return b.score - a.score })
-        var bestId = stagescores[0].id;
-        var pos = attrIndex(totalscores, 'index', bestId)
-        var forRenners = 9;
-        if (pos > 8) forRenners = 8;
+    const results = await sqlDB.query(totalQuery)
+    var outputArray = [];
+    var actualPoints = results[1].rows.map(a => a.stagescore);
+    var optimalTotal = 0;
+    var actualTotal = 0;
+    var missedTotal = 0;
+    for (var i = 0; i < results[0].rows.length; i++) {
+      optimalPoints = 0;
+      var totalscores = results[0].rows[i].points.map(scores => ({ score: scores.total, id: scores.id }));
+      var stagescores = results[0].rows[i].points.map(scores => ({ score: scores.stage, id: scores.id }));
+      stagescores.sort(function (a, b) { return b.score - a.score })
+      var bestId = stagescores[0].id;
+      var pos = attrIndex(totalscores, 'index', bestId)
+      var forRenners = 9;
+      if (pos > 8) forRenners = 8;
 
-        for (var j = 0; j < forRenners; j++) {
-          if (totalscores[j] == undefined) continue;
-          optimalPoints += totalscores[j].score;
-          if (totalscores[j].id === bestId) {
-            optimalPoints += stagescores[0].score * .5;
-          }
-        }
-        if (forRenners === 8) {
-          outputArray.push({ Behaald: "Zeg tegen Rens", Optimaal: "dat er iets", Gemist: "speciaals gebeurt is" })
-        } else {
-          if (i === 21) {
-            outputArray.push({ Etappe: i + 1, Behaald: actualPoints[i], Optimaal: actualPoints[i], Gemist: 0 })
-          } else {
-            outputArray.push({ Etappe: i + 1, Behaald: actualPoints[i], Optimaal: optimalPoints, Gemist: optimalPoints - actualPoints[i] })
-          }
-          optimalTotal += optimalPoints;
-          actualTotal += actualPoints[i];
-          missedTotal += optimalPoints - actualPoints[i];
+      for (var j = 0; j < forRenners; j++) {
+        if (totalscores[j] == undefined) continue;
+        optimalPoints += totalscores[j].score;
+        if (totalscores[j].id === bestId) {
+          optimalPoints += stagescores[0].score * .5;
         }
       }
-      outputArray.push({ Etappe: "Totaal", Behaald: actualTotal, Optimaal: optimalTotal, Gemist: missedTotal })
-      callback(outputArray);
-    })
+      if (forRenners === 8) {
+        outputArray.push({ Behaald: "Zeg tegen Rens", Optimaal: "dat er iets", Gemist: "speciaals gebeurt is" })
+      } else {
+        if (i === 21) {
+          outputArray.push({ Etappe: i + 1, Behaald: actualPoints[i], Optimaal: actualPoints[i], Gemist: 0 })
+        } else {
+          outputArray.push({ Etappe: i + 1, Behaald: actualPoints[i], Optimaal: optimalPoints, Gemist: optimalPoints - actualPoints[i] })
+        }
+        optimalTotal += optimalPoints;
+        actualTotal += actualPoints[i];
+        missedTotal += optimalPoints - actualPoints[i];
+      }
+    }
+    outputArray.push({ Etappe: "Totaal", Behaald: actualTotal, Optimaal: optimalTotal, Gemist: missedTotal })
+    callback(outputArray);
   }
 
   function attrIndex(array, attr, value) {
@@ -418,32 +411,31 @@ module.exports = (app) => {
     return -1;
   }
 
-  function teams(race_id, budgetparticipation, account_id, details, callback) {
+  async function teams(race_id, budgetparticipation, account_id, details, callback) {
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
                 WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
                 ORDER BY account_id;`
     var main_account_participation_id = `(SELECT account_participation_id FROM account_participation 
       WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation} AND account_id = ${account_id})`
-    sqlDB.query(usersQuery, (_, results) => {
-      async.map(results.rows, function (account, done) {
-        teamoverzichtuser(main_account_participation_id, account.account_participation_id, budgetparticipation, details, function (teamoverzicht) {
-          if (details) {
-            done(null, { tableData: teamoverzicht.tableData, title: account.username, coltype: teamoverzicht.coltype })
-          } else {
-            done(null, { riders: teamoverzicht.tableData, username: account.username, coltype: teamoverzicht.coltype })
-          }
-        })
-      }, function (_, tables) {
-        if (!details) {
-          tables = selectionsPopUp(tables)
+    const results = await sqlDB.query(usersQuery)
+    async.map(results.rows, function (account, done) {
+      teamoverzichtuser(main_account_participation_id, account.account_participation_id, budgetparticipation, details, function (teamoverzicht) {
+        if (details) {
+          done(null, { tableData: teamoverzicht.tableData, title: account.username, coltype: teamoverzicht.coltype })
+        } else {
+          done(null, { riders: teamoverzicht.tableData, username: account.username, coltype: teamoverzicht.coltype })
         }
-        callback({ tables, title: "Team Overzicht Iedereen" })
       })
+    }, function (_, tables) {
+      if (!details) {
+        tables = selectionsPopUp(tables)
+      }
+      callback({ tables, title: "Team Overzicht Iedereen" })
     })
   }
 
-  function teamoverzichtuser(main_account_participation_id, account_participation_id, budgetparticipation, details, callback) {
+  async function teamoverzichtuser(main_account_participation_id, account_participation_id, budgetparticipation, details, callback) {
     var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
         INNER JOIN stage_selection USING(stage_selection_id)
         INNER JOIN stage USING (stage_id)
@@ -485,12 +477,11 @@ module.exports = (app) => {
       WHERE rider_participation_id NOT IN (${alreadyFound}) AND account_participation_id = ${account_participation_id}
       ORDER BY ${orderBy} DESC`
 
-    sqlDB.query(query, (_, results) => {
-      callback({ tableData: results.rows, coltype })
-    })
+    const results = await sqlDB.query(query)
+    callback({ tableData: results.rows, coltype })
   }
 
-  function getadditionalstats(race_id, budgetparticipation, callback) {
+  async function getadditionalstats(race_id, budgetparticipation, callback) {
     var selectedRidersQuery = `SELECT stagenr as "Etappe", COUNT(DISTINCT rider_participation) as "Renners" from stage_selection_rider
                 INNER JOIN stage_selection USING(stage_selection_id)
                 INNER JOIN rider_participation USING(rider_participation_id)
@@ -527,17 +518,16 @@ module.exports = (app) => {
     var totalQuery = selectedRidersQuery + uitgevallenQuery + betereUniekheidsQuery;
     var titles = ['Verschillende Gekozen Renners', 'Uitgevallen Renners', `Uniekste team`, `Uniekste team(beter)`]
     var coltypes = [{}, { "Uitvallers": 1, "Waarde": 1 }, {}, { "Uniekheid": 1, "Uniekheid (Geld)": 1 }]
-    sqlDB.query(totalQuery, (_, results) => {
-      var tables = [];
-      for (var i in results) {
-        tables.push({ title: titles[i], tableData: results[i].rows, coltype: coltypes[i] })
-      }
-      let title = "Overige Statistieken";
-      callback({ tables, title })
-    })
+    const results = await sqlDB.query(totalQuery)
+    var tables = [];
+    for (var i in results) {
+      tables.push({ title: titles[i], tableData: results[i].rows, coltype: coltypes[i] })
+    }
+    let title = "Overige Statistieken";
+    callback({ tables, title })
   }
 
-  function teamcomparisons(race_id, budgetparticipation, callback) {
+  async function teamcomparisons(race_id, budgetparticipation, callback) {
     var usersQuery = `SELECT username, ARRAY_AGG(json_build_object('price', price, 'rider_participation_id', rider_participation_id)) AS riders FROM team_selection_rider 
     INNER JOIN rider_participation USING (rider_participation_id)
     INNER JOIN account_participation USING (account_participation_id)
@@ -545,65 +535,64 @@ module.exports = (app) => {
     WHERE rider_participation.race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
     GROUP BY username;
     SELECT budget FROM race WHERE race_id = ${race_id}`
-    sqlDB.query(usersQuery, (_, results) => {
-      var countAbs = [];
-      var countRel = [];
-      var budgetAbs = [];
-      var budgetRel = [];
-      var coltype = { ' ': 0 }
-      var budget = results[1].rows[0].budget / 1000000;
-      if (budgetparticipation) budget = 11.5;
-      for (var i in results[0].rows) {
-        var team1 = results[0].rows[i].riders;
-        var user1 = results[0].rows[i].username
-        coltype[user1] = 1;
-        var row = { ' ': user1 };
-        var rowRel = { ' ': user1 };
-        var rowBudget = { ' ': user1 };
-        var rowBudgetRel = { ' ': user1 };
-        for (var j in results[0].rows) {
-          var user2 = results[0].rows[j].username
-          var sameRiders = 0;
-          var sameBudget = 0;
-          if (i === j) {
-            row[user2] = 'X';
-            rowBudget[user2] = 'X';
-            rowRel[user2] = 'X';
-            rowBudgetRel[user2] = 'X';
-            continue;
-          }
-          var team2 = results[0].rows[j].riders;
-          for (var k in team1) {
-            for (var l in team2) {
-              if (team1[k].rider_participation_id === team2[l].rider_participation_id) {
-                sameRiders++;
-                sameBudget += team1[k].price / 1000000;
-                break;
-              }
+    const results = await sqlDB.query(usersQuery)
+    var countAbs = [];
+    var countRel = [];
+    var budgetAbs = [];
+    var budgetRel = [];
+    var coltype = { ' ': 0 }
+    var budget = results[1].rows[0].budget / 1000000;
+    if (budgetparticipation) budget = 11.5;
+    for (var i in results[0].rows) {
+      var team1 = results[0].rows[i].riders;
+      var user1 = results[0].rows[i].username
+      coltype[user1] = 1;
+      var row = { ' ': user1 };
+      var rowRel = { ' ': user1 };
+      var rowBudget = { ' ': user1 };
+      var rowBudgetRel = { ' ': user1 };
+      for (var j in results[0].rows) {
+        var user2 = results[0].rows[j].username
+        var sameRiders = 0;
+        var sameBudget = 0;
+        if (i === j) {
+          row[user2] = 'X';
+          rowBudget[user2] = 'X';
+          rowRel[user2] = 'X';
+          rowBudgetRel[user2] = 'X';
+          continue;
+        }
+        var team2 = results[0].rows[j].riders;
+        for (var k in team1) {
+          for (var l in team2) {
+            if (team1[k].rider_participation_id === team2[l].rider_participation_id) {
+              sameRiders++;
+              sameBudget += team1[k].price / 1000000;
+              break;
             }
           }
-          row[user2] = sameRiders;
-          rowBudget[user2] = sameBudget;
-          rowRel[user2] = Math.round(sameRiders / 20 * 100);
-          rowBudgetRel[user2] = Math.round(sameBudget / budget * 100)
         }
-        countAbs.push(row)
-        budgetAbs.push(rowBudget)
-        countRel.push(rowRel)
-        budgetRel.push(rowBudgetRel)
+        row[user2] = sameRiders;
+        rowBudget[user2] = sameBudget;
+        rowRel[user2] = Math.round(sameRiders / 20 * 100);
+        rowBudgetRel[user2] = Math.round(sameBudget / budget * 100)
       }
-      var tables = []
-      tables.push({ title: "Renners Absoluut", tableData: countAbs, coltype })
-      tables.push({ title: `Budget (${budget}M) Absoluut`, tableData: budgetAbs, coltype })
-      tables.push({ title: "Renners Relatief", tableData: countRel, coltype })
-      tables.push({ title: `Budget Relatief`, tableData: budgetRel, coltype })
-      var title = "Vergelijking van Selecties"
-      callback({ tables, title })
-    })
+      countAbs.push(row)
+      budgetAbs.push(rowBudget)
+      countRel.push(rowRel)
+      budgetRel.push(rowBudgetRel)
+    }
+    var tables = []
+    tables.push({ title: "Renners Absoluut", tableData: countAbs, coltype })
+    tables.push({ title: `Budget (${budget}M) Absoluut`, tableData: budgetAbs, coltype })
+    tables.push({ title: "Renners Relatief", tableData: countRel, coltype })
+    tables.push({ title: `Budget Relatief`, tableData: budgetRel, coltype })
+    var title = "Vergelijking van Selecties"
+    callback({ tables, title })
   }
 
   //for the individual rider page
-  app.post('/api/getriderresults', function (req, res) {
+  app.post('/api/getriderresults', async (req, res) => {
 
     var riderQuery = `SELECT country, name, year, CONCAT(firstname, ' ', lastname) AS ridername, rider_participation_id, team  FROM rider_participation
     INNER JOIN race USING(race_id)
@@ -611,17 +600,17 @@ module.exports = (app) => {
     WHERE rider_id = ${req.body.rider_id}
     ORDER BY year, name; `
 
-    sqlDB.query(riderQuery, (_, riderResults) => {
-      const riderName = riderResults.rows[0].ridername;
-      const country = riderResults.rows[0].country;
-      const races = riderResults.rows;
-      let totalQuery = '';
-      for (let i in riderResults.rows) {
-        totalQuery += `SELECT stagenr AS "Etappe", stagepos AS "Dag", gcpos AS "Ak", pointspos AS "Punten", kompos AS "Berg", yocpos AS "Jong" FROM results_points
+    const riderResults = await sqlDB.query(riderQuery)
+    const riderName = riderResults.rows[0].ridername;
+    const country = riderResults.rows[0].country;
+    const races = riderResults.rows;
+    let totalQuery = '';
+    for (let i in riderResults.rows) {
+      totalQuery += `SELECT stagenr AS "Etappe", stagepos AS "Dag", gcpos AS "Ak", pointspos AS "Punten", kompos AS "Berg", yocpos AS "Jong" FROM results_points
         INNER JOIN stage USING(stage_id)
         WHERE rider_participation_id = ${riderResults.rows[i].rider_participation_id}
         ORDER BY "Etappe";\n `
-        totalQuery += `SELECT stagenr AS "Etappe", stagescore AS "Dag", gcscore AS "Ak", pointsscore AS "Punten", komscore AS "Berg", yocscore AS "Jong", teamscore AS "Team", totalscore AS "Totaal" FROM results_points
+      totalQuery += `SELECT stagenr AS "Etappe", stagescore AS "Dag", gcscore AS "Ak", pointsscore AS "Punten", komscore AS "Berg", yocscore AS "Jong", teamscore AS "Team", totalscore AS "Totaal" FROM results_points
         INNER JOIN stage USING(stage_id)
         WHERE rider_participation_id = ${riderResults.rows[i].rider_participation_id}
         UNION all
@@ -630,32 +619,30 @@ module.exports = (app) => {
         WHERE rider_participation_id = ${riderResults.rows[i].rider_participation_id}
         GROUP BY "Etappe"
         ORDER BY "Etappe";\n `
-      }
-      sqlDB.query(totalQuery, (_, results) => {
-        let pointsData = [];
-        let posData = [];
-        for (let i = 0; i < results.length; i += 2) {
-          let newPointsData = results[i + 1].rows
-          if (newPointsData.length) newPointsData[newPointsData.length - 1]["Etappe"] = "Totaal";
-          pointsData.push(newPointsData)
-          let newPosData = results[i].rows;
-          for (let k in newPosData) {
-            for (let j in newPosData[k]) {
-              if (newPosData[k][j] === 0) {
-                newPosData[k][j] = '-'
-              }
-            }
+    }
+    const results = await sqlDB.query(totalQuery)
+    let pointsData = [];
+    let posData = [];
+    for (let i = 0; i < results.length; i += 2) {
+      let newPointsData = results[i + 1].rows
+      if (newPointsData.length) newPointsData[newPointsData.length - 1]["Etappe"] = "Totaal";
+      pointsData.push(newPointsData)
+      let newPosData = results[i].rows;
+      for (let k in newPosData) {
+        for (let j in newPosData[k]) {
+          if (newPosData[k][j] === 0) {
+            newPosData[k][j] = '-'
           }
-          posData.push(newPosData)
         }
-        res.send({
-          posData,
-          pointsData,
-          riderName,
-          country,
-          races
-        })
-      })
+      }
+      posData.push(newPosData)
+    }
+    res.send({
+      posData,
+      pointsData,
+      riderName,
+      country,
+      races
     })
   })
 }
