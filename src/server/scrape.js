@@ -19,9 +19,8 @@ const getStartlist = function (race, callback) {
   //set racestring
   if (race.raceName === 'classics') {//if classics get name of the stage/race from DB
     raceDataQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${race.racenr}`
-    sqlDB.query(raceDataQuery, (_, results) => {
-      startlistProcessRiders(results.rows[0].name, 'classics', race.year, race_id, callback)
-    })
+    const results = await sqlDB.query(raceDataQuery);
+    startlistProcessRiders(results.rows[0].name, 'classics', race.year, race_id, callback)
   } else {//if not classics set racestring and load price list
     switch (race.raceName) {
       case "giro":
@@ -142,9 +141,8 @@ var startlistProcessRiders = function (raceString, scoritoPrices, year, race_id,
         var deleteStartlistQuery = `DELETE FROM rider_participation WHERE rider_participation_id NOT IN ${startlist_IDs} AND race_id = ${race_id};\n `;
         var totalQuery = deleteStageSelectionQuery + deleteKopmanQuery + deleteTeamSelectionQuery + deleteStartlistQuery + riderQuery + participationQuery;
       }
-      sqlDB.query(totalQuery, () => {
-        callback();
-      });
+      await sqlDB.query(totalQuery);
+      callback();
     }
   });
 }
@@ -153,51 +151,49 @@ var getResult = function (race, stagenr) {
   var race_id = `(SELECT race_id FROM race WHERE year = ${race.year} AND name = '${race.name}')`
   var stageQuery = `SELECT * FROM stage INNER JOIN race USING(race_id) WHERE stagenr = ${stagenr} AND race_id = ${race_id}`;
   //Get info about current stage
-  sqlDB.query(stageQuery, (_, stageResults) => {
-    var stage = stageResults.rows[0];
-    var raceString = getRaceString(race.name, stage.stagename);
-    var stage_id = stage.stage_id;
-    var etLink = stage.type === 'FinalStandings' ? stagenr - 1 : stagenr;
+  const stageResults = await sqlDB.query(stageQuery);
+  var stage = stageResults.rows[0];
+  var raceString = getRaceString(race.name, stage.stagename);
+  var stage_id = stage.stage_id;
+  var etLink = stage.type === 'FinalStandings' ? stagenr - 1 : stagenr;
 
-    //get results from PCS
-    request({
-      url: `https://www.procyclingstats.com/race/${raceString}/${race.year}/stage-${etLink}`,
-      headers: { "Connection": "keep-alive" }
-    }, function (error, response, html) {
-      if (error) console.log(error);
-      if (!error && response.statusCode === 200) {
-        var $ = cheerio.load(html);
+  //get results from PCS
+  request({
+    url: `https://www.procyclingstats.com/race/${raceString}/${race.year}/stage-${etLink}`,
+    headers: { "Connection": "keep-alive" }
+  }, function (error, response, html) {
+    if (error) console.log(error);
+    if (!error && response.statusCode === 200) {
+      var $ = cheerio.load(html);
 
-        var TTTresult = []; // TODO clean up TTT code
-        if (stage.type === 'TTT') {// TTTresults is teamnames
-          $(".resTTTh").first().parent(function () {
-            $(this).children('.tttRidersCont').each(function () {
-              TTTresult.push($(this).children().eq(0).children().eq(1).children().eq(1).text());
-            })
+      var TTTresult = []; // TODO clean up TTT code
+      if (stage.type === 'TTT') {// TTTresults is teamnames
+        $(".resTTTh").first().parent(function () {
+          $(this).children('.tttRidersCont').each(function () {
+            TTTresult.push($(this).children().eq(0).children().eq(1).children().eq(1).text());
           })
-        }
-
-        var [ridersResults, teamWinners] = processPCSresults($, stage.type);
-
-        updateDNFriders(ridersResults['dnf'], stage.race_id);
-
-        setStageToComplete(ridersResults, stage.stagenr, race_id);
-
-        var resultsQuery = buildResultsQuery(ridersResults, teamWinners, stage);
-        var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
-
-        var totalQuery = deleteQuery + resultsQuery;
-
-        if (ridersResults['all'].length) {// don't send if no results
-          sqlDB.query(totalQuery, (_, res) => {
-            console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
-            calculateUserScores(race_id, stagenr, stage.type)
-          })
-        } else {
-          calculateUserScores(race_id, stagenr, stage.type)
-        }
+        })
       }
-    })
+
+      var [ridersResults, teamWinners] = processPCSresults($, stage.type);
+
+      updateDNFriders(ridersResults['dnf'], stage.race_id);
+
+      setStageToComplete(ridersResults, stage.stagenr, race_id);
+
+      var resultsQuery = buildResultsQuery(ridersResults, teamWinners, stage);
+      var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
+
+      var totalQuery = deleteQuery + resultsQuery;
+
+      if (ridersResults['all'].length) {// don't send if no results
+        const res = await sqlDB.query(totalQuery);
+        console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
+        calculateUserScores(race_id, stagenr, stage.type)
+      } else {
+        calculateUserScores(race_id, stagenr, stage.type)
+      }
+    }
   })
 }
 
@@ -278,8 +274,7 @@ var updateDNFriders = function (dnfRiders, race_id) {
       dnfquery += `(SELECT rider_id FROM rider WHERE pcs_id = '${dnfRiders[rider].pcs_id}'),`
     }
     dnfquery = dnfquery.slice(0, -1) + ")";
-    sqlDB.query(dnfquery, () => {
-    });
+    await sqlDB.query(dnfquery);
   }
 }
 
@@ -295,26 +290,24 @@ var setStageToComplete = function (ridersResults, stagenr, race_id) {
                   SELECT COUNT(rider_participation_id) FROM results_points WHERE stage_id = ${prevstage_id} AND NOT yocpos = 0;
                   SELECT complete as count FROM stage WHERE stage_id = ${prevstage_id}`;
 
-  sqlDB.query(prevQuery, function (_, prevRes) {
-    if (stagenr != 1) {
-      [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = prevRes.map(x => x.rows[0].count)
-    }
+  const prevRes = await sqlDB.query(prevQuery);
+  if (stagenr != 1) {
+    [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = prevRes.map(x => x.rows[0].count)
+  }
 
-    var akComp = (ridersResults['GC'].length + ridersResults['dnf'].length) >= GCprevlength;
-    var sprintComp = (ridersResults['Points'].length + ridersResults['dnf'].length) >= pointsprevlength;
-    var bergComp = (ridersResults['KOM'].length + ridersResults['dnf'].length) >= komprevlength;
-    var jongComp = (ridersResults['Youth'].length + ridersResults['dnf'].length) >= youngprevlength;
-    if (akComp && sprintComp && bergComp && jongComp && ridersResults['GC'].length === ridersResults['Stage'].length) {
-      uitslagCompleet = true;
-    }
+  var akComp = (ridersResults['GC'].length + ridersResults['dnf'].length) >= GCprevlength;
+  var sprintComp = (ridersResults['Points'].length + ridersResults['dnf'].length) >= pointsprevlength;
+  var bergComp = (ridersResults['KOM'].length + ridersResults['dnf'].length) >= komprevlength;
+  var jongComp = (ridersResults['Youth'].length + ridersResults['dnf'].length) >= youngprevlength;
+  if (akComp && sprintComp && bergComp && jongComp && ridersResults['GC'].length === ridersResults['Stage'].length) {
+    uitslagCompleet = true;
+  }
 
-    var stageCompleteQuery = `UPDATE stage SET complete = TRUE, finished = TRUE WHERE stage_id = ${stage_id}`
-    if (uitslagCompleet && prevStageComplete) {
-      sqlDB.query(stageCompleteQuery, function () {
-        console.log("Stage %s Complete", stagenr)
-      })
-    }
-  })
+  var stageCompleteQuery = `UPDATE stage SET complete = TRUE, finished = TRUE WHERE stage_id = ${stage_id}`
+  if (uitslagCompleet && prevStageComplete) {
+    await sqlDB.query(stageCompleteQuery);
+    console.log("Stage %s Complete", stagenr)
+  }
 }
 
 var buildResultsQuery = function (ridersResults, teamWinners, stage) {
@@ -499,86 +492,82 @@ var calculateUserScores = function (race_id, stage, stageType) {
   let TTTstageQuery = `SELECT stagenr FROM stage WHERE race_id = ${race_id} AND type ='TTT';\n `
   let raceLengthQuery = `SELECT stage_id FROM stage WHERE race_id = ${race_id};\n `
   let totalQuery = participantsQuery + TTTstageQuery + raceLengthQuery;
-  sqlDB.query(totalQuery, function (_, res) {
-    var totalQuery = '';
-    var TTTstages = res[1].rows.map(stage => stage.stagenr);
-    for (var i in res[0].rows) {// voor iedere gewone user
+  const res = await sqlDB.query(totalQuery);
+  var totalQuery = '';
+  var TTTstages = res[1].rows.map(stage => stage.stagenr);
+  for (var i in res[0].rows) {// voor iedere gewone user
 
-      for (var j = stage; j < res[2].rowCount; j++) {// to show correct totalscores for later stages 
-        var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
-        var account_participation_id = res[0].rows[i].account_participation_id;
-        var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
-        var selection_id_val = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id = ${stage_id})`
-        var selection = `stage_selection_rider`
-        var selection_id = `stage_selection_id`
-        var kopmanScore = ` + (COALESCE ((SELECT 0.5 * stagescore FROM results_points
+    for (var j = stage; j < res[2].rowCount; j++) {// to show correct totalscores for later stages 
+      var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
+      var account_participation_id = res[0].rows[i].account_participation_id;
+      var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
+      var selection_id_val = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id = ${stage_id})`
+      var selection = `stage_selection_rider`
+      var selection_id = `stage_selection_id`
+      var kopmanScore = ` + (COALESCE ((SELECT 0.5 * stagescore FROM results_points
           WHERE rider_participation_id = (SELECT kopman_id FROM stage_selection WHERE stage_selection_id = ${selection_id_val}) AND stage_id = ${stage_id}),0))`
-        if (stageType === "FinalStandings") {
-          kopmanScore = ''
-          selection_id = `account_participation_id`
-          selection = 'team_selection_rider'
-          selection_id_val = account_participation_id;
-        }
-        var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM ${selection} 
+      if (stageType === "FinalStandings") {
+        kopmanScore = ''
+        selection_id = `account_participation_id`
+        selection = 'team_selection_rider'
+        selection_id_val = account_participation_id;
+      }
+      var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM ${selection} 
                                 INNER JOIN results_points USING (rider_participation_id)
                                 WHERE ${selection_id} = ${selection_id_val} AND results_points.stage_id = ${stage_id}),0) `;
-        if (res[0].rows[i].budgetparticipation) {// andere stage score voor budget
-          var divide2 = "";
-          if (TTTstages.includes(j)) {
-            divide2 = "/2";
-          }
-          stagescore = `COALESCE((SELECT SUM(results_points.totalscore - results_points.teamscore) FROM ${selection} 
+      if (res[0].rows[i].budgetparticipation) {// andere stage score voor budget
+        var divide2 = "";
+        if (TTTstages.includes(j)) {
+          divide2 = "/2";
+        }
+        stagescore = `COALESCE((SELECT SUM(results_points.totalscore - results_points.teamscore) FROM ${selection} 
                     INNER JOIN results_points USING (rider_participation_id)
                     WHERE ${selection_id} = ${selection_id_val} AND results_points.stage_id = ${stage_id}),0)${divide2} `;
-        }
-        stagescore += kopmanScore;
-        var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
-        var prevstagesScore = `COALESCE((SELECT SUM(stagescore) FROM stage_selection
-                    WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages}),0)`;
-        var totalscore = `${prevstagesScore} + ${stagescore}`;
-        scoreQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore})`;
-        scoreQuery += ` ON CONFLICT (account_participation_id,stage_id)
-                DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore; `
-        totalQuery += scoreQuery;
-
       }
+      stagescore += kopmanScore;
+      var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
+      var prevstagesScore = `COALESCE((SELECT SUM(stagescore) FROM stage_selection
+                    WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages}),0)`;
+      var totalscore = `${prevstagesScore} + ${stagescore}`;
+      scoreQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore})`;
+      scoreQuery += ` ON CONFLICT (account_participation_id,stage_id)
+                DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore; `
+      totalQuery += scoreQuery;
+
     }
-    sqlDB.query(totalQuery, () => {
-    })
-  })
+  }
+  await sqlDB.query(totalQuery);
 }
 
 var calculateUserScoresKlassieker = function (year, stage, callback) { //TODO integreren in voorgaande functie
   var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = 'classics')`
   var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
-  sqlDB.query(participantsQuery, function (_, res) {
-    var totalQuery = '';
-    for (var i in res.rows) {// voor iedere user
-      for (var j = stage; j < 15; j++) {// to show correct totalscores for later stages
-        var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
-        var account_participation_id = res.rows[i].account_participation_id;
-        var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
-        var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM team_selection_rider 
+  const res = await sqlDB.query(participantsQuery);
+  var totalQuery = '';
+  for (var i in res.rows) {// voor iedere user
+    for (var j = stage; j < 15; j++) {// to show correct totalscores for later stages
+      var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
+      var account_participation_id = res.rows[i].account_participation_id;
+      var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
+      var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM team_selection_rider 
                                 INNER JOIN rider_participation USING (rider_participation_id)
                                 INNER JOIN results_points USING (rider_participation_id)
                                 WHERE rider_participation.race_id = ${race_id} AND account_participation_id = ${account_participation_id} and stage_id = ${stage_id}),0)`;
-        var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
-        var prevstagesScore = '0'
-        if (j != 1) {
-          var prevstagesScore = `(SELECT SUM(stagescore) FROM stage_selection
+      var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
+      var prevstagesScore = '0'
+      if (j != 1) {
+        var prevstagesScore = `(SELECT SUM(stagescore) FROM stage_selection
                     WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages})`;
-        }
-        var totalscore = `${prevstagesScore} + ${stagescore}`;
-        scoreQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore})`;
-        scoreQuery += `ON CONFLICT (account_participation_id,stage_id)
-                DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore; `
-        totalQuery += scoreQuery;
-
       }
+      var totalscore = `${prevstagesScore} + ${stagescore}`;
+      scoreQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore})`;
+      scoreQuery += `ON CONFLICT (account_participation_id,stage_id)
+                DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore; `
+      totalQuery += scoreQuery;
+
     }
-    sqlDB.query(totalQuery, () => {
-    })
-  })
+  }
+  await sqlDB.query(totalQuery);
   callback(null, 'Calculated User Scores');
 }
 
@@ -624,56 +613,55 @@ var getRider = function (pcsid, callback) {
   });
 }
 
-var startSchedule = () => {
+var startSchedule = async () => {
   var activeRacesQuery = `SELECT * FROM race WHERE NOT finished`;
-  sqlDB.query(activeRacesQuery, (_, activeRacesResults) => {
-    // async.each(activeRacesResults.rows, (race, callback) => {
-    activeRacesResults.rows.forEach(race => {
-      var scrapeResults = schedule.scheduleJob("* * * * *", function () {
-        var stageQuery = `SELECT * FROM STAGE
+  const activeRacesResults = await sqlDB.query(activeRacesQuery);
+  // async.each(activeRacesResults.rows, (race, callback) => {
+  activeRacesResults.rows.forEach(race => {
+    var scrapeResults = schedule.scheduleJob("* * * * *", function () {
+      var stageQuery = `SELECT * FROM STAGE
         WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race.race_id}
         ORDER BY stagenr DESC
         LIMIT 1`;
-        sqlDB.query(stageQuery, function (_, results) {//returns the most recent stage that started
-          if (results.rows.length) {// if some results, so at least after start of stage 1
-            var stage = results.rows[0];
-            if (!stage.finished) {
-              getTimetoFinish(race.name, function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
-                if (stageFinished) {
-                  var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
-                  sqlDB.query(updateStageQuery, function () {
-                    console.log("Race %s Stage %s finished", race.race_id, stage.stagenr)
-                  });
-                  getResult(race, stage.stagenr, function (err, response) {
-                    if (err) throw err;
-                    console.log(response, "stage", stage.stagenr, "\n");
-                  })
-                } else {
-                  scrapeResults.reschedule(newResultsRule);  //update new schedule
-                }
-              })
-            } else if (!stage.complete) {//get results if not complete
+      const results = await sqlDB.query(stageQuery);
+      //returns the most recent stage that started
+      if (results.rows.length) {// if some results, so at least after start of stage 1
+        var stage = results.rows[0];
+        if (!stage.finished) {
+          getTimetoFinish(race.name, function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
+            if (stageFinished) {
+              var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
+
               getResult(race, stage.stagenr, function (err, response) {
                 if (err) throw err;
                 console.log(response, "stage", stage.stagenr, "\n");
               })
-            } else {// if finished and complete set schedule to run again at start of next stage
-              var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race.race_id} AND stagenr = ${stage.stagenr + 1}`;
-              sqlDB.query(nextStageQuery, function (_, nextStageResults) {
-                if (nextStageResults.rows[0].type !== "FinalStandings") {
-                  var d = nextStageResults.rows[0].starttime;
-                  var resultsRule = `${d.getSeconds() + 5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
-                  scrapeResults.reschedule(resultsRule);
-                  console.log("wait until next stage")
-                }
-              })
+
+              await sqlDB.query(updateStageQuery);
+              console.log("Race %s Stage %s finished", race.race_id, stage.stagenr)
+            } else {
+              scrapeResults.reschedule(newResultsRule);  //update new schedule
             }
-          } else {
-            scrapeResults.reschedule('0 17 * * *')// als voor een race check dan opnieuw iedere dag om 17:00
-            console.log("Check again at 17:00", race.name)
+          })
+        } else if (!stage.complete) {//get results if not complete
+          getResult(race, stage.stagenr, function (err, response) {
+            if (err) throw err;
+            console.log(response, "stage", stage.stagenr, "\n");
+          })
+        } else {// if finished and complete set schedule to run again at start of next stage
+          var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race.race_id} AND stagenr = ${stage.stagenr + 1}`;
+          const nextStageResults = await sqlDB.query(nextStageQuery);
+          if (nextStageResults.rows[0].type !== "FinalStandings") {
+            var d = nextStageResults.rows[0].starttime;
+            var resultsRule = `${d.getSeconds() + 5} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth()} *`
+            scrapeResults.reschedule(resultsRule);
+            console.log("wait until next stage")
           }
-        })
-      })
+        }
+      } else {
+        scrapeResults.reschedule('0 17 * * *')// als voor een race check dan opnieuw iedere dag om 17:00
+        console.log("Check again at 17:00", race.name)
+      }
     })
   })
 }
