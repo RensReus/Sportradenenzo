@@ -47,10 +47,7 @@ module.exports = (app) => {
     const usernameQuery = 'SELECT * FROM account WHERE username ILIKE $1';
     let sqlres = await sqlDB.query(usernameQuery, usernameValue);
     if (sqlres.rowCount === 0) {
-      passport.authenticate('local-signup', (errPassportSignupAuth, user) => {
-        if (errPassportSignupAuth) {
-          return next(errPassportSignupAuth);
-        }
+      passport.authenticate('local-signup', ( user) => {
         if (!user) {
           return res.send({ succes: false, error: 'email adress is already taken' });
         } else {

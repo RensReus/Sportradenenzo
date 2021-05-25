@@ -1,0 +1,3 @@
+leuke todos
+betere handling van admin
+makkelijke nu zonder al die nesting

@@ -33,25 +33,22 @@ module.exports = function(passport) {
         session: false,
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
-    function(req, email, password, done) {
+    function(_, email, password, done) {
         // asynchronous
         // User.findOne wont fire unless data is sent back
         process.nextTick(function() {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
-        SQLread.getLogin(email.toLowerCase(),function(err,result){
-            if (err){
-                return done(err, false);
-            }
+        SQLread.getLogin(email.toLowerCase(),function(result){
             if(result != null){ //email is already taken
-                return done(null, false);
+                return done(false);
             }else{
                 //still available make new user
                 var passwordToStore = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
                 var emailToStore    = email.toLowerCase();
-                SQLwrite.addAccount(emailToStore,passwordToStore,function(_,account){
-                    return done(null, account)
+                SQLwrite.addAccount(emailToStore,passwordToStore,function(account){
+                    return done(account)
                 })
             }
         })
@@ -71,18 +68,14 @@ module.exports = function(passport) {
         session: false,
         passReqToCallback : true  //allows us to pass back the entire request to the callback
     },
-    function(req, email, password, done) { // callback with email and password from our form
-        SQLread.getLogin(email.toLowerCase(),function(err,account){
-            if (err)
-                return done(err);
-
+    function(_, email, password, done) { // callback with email and password from our form
+        SQLread.getLogin(email.toLowerCase(),function(account){
             if (account == null) //no account with that email
-                return done(null, false);
-            
+                return done(false);
             if (!bcrypt.compareSync(password, account.password)) //incorrect password
-                return done(null, false);
+                return done(false);
             
-            return done(null,account)
+            return done(account)
 
         })
     }));
