@@ -20,15 +20,18 @@ const pool = new Pool({
 })
 
 module.exports = {
-  query: (queryString, params, callback) => {
-    pool.query(queryString, params, (err, results) => {
-      if (err) {
-        console.log("WRONG QUERY: ", queryString);
-        console.log("Error: ", err.toString());
+  query: async (text, params, adminPage) => {
+    const response;
+    try {
+      response = await pool.query(text, params);
+      return response;
+    } catch (error) {
+      if (adminPage) {
+        return error;
       } else {
-        callback(err, results);
+        throw error;
       }
-    })
+    }
   },
   getClient: (callback) => {
     pool.connect((err, client, done) => {
