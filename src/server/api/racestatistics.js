@@ -13,7 +13,7 @@ module.exports = (app) => {
       WHERE (starttime < now() AT TIME ZONE 'Europe/Paris' OR race.finished) AND race_id = ${race_id}
       ORDER BY stagenr DESC
       LIMIT 1`;
-      const results = await sqlDB.query(raceHasStartedQuery)
+      const results = await sqlDB.query(raceHasStartedQuery);
       if (results.rows.length === 0) {
         res.send({ mode: '404' })
       } else {
@@ -53,7 +53,7 @@ module.exports = (app) => {
     (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
     GROUP BY username`//aantal keer per ranking
     var query = query1 + query2;
-    const res = await sqlDB.query(query)
+    const res = await sqlDB.query(query);
     var headersRank = ["Stage"];
     var headersCount = ["User"];
     var rowsRank = [];
@@ -143,7 +143,7 @@ module.exports = (app) => {
                 ${orderby}`
 
     var query = rankQuery + countQuery + thousandsQuery;
-    const results = await sqlDB.query(query)
+    const results = await sqlDB.query(query);
     var headersRank = ["Race"];
     var headersCount = ["User"];
     var rowsRank = [];
@@ -236,7 +236,7 @@ module.exports = (app) => {
     //0 for string 1 for number
     var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Klassement": 1, "Team": 1, "Total": 1, "PPM": 1, "dnf": 0 };
     var hiddenCols = ["AK", "Punten", "Berg", "Jong", "PPM"];
-    const results = await sqlDB.query(query)
+    const results = await sqlDB.query(query);
     let tables = [{
       tableData: results.rows,
       coltype,
@@ -274,7 +274,7 @@ module.exports = (app) => {
       query = getSelectedRidersClassificationsQuery(race_id, budgetparticipation);
     }
 
-    const results = await sqlDB.query(query)
+    const results = await sqlDB.query(query);
     let tables = [];
     if (showClassifications) {
       var classificationNames = ["AK", "Punten", "Berg", "Jong"];
@@ -339,7 +339,7 @@ module.exports = (app) => {
                 INNER JOIN account USING (account_id)
                 WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
                 ORDER BY account_id;`
-    const results = await sqlDB.query(usersQuery)
+    const results = await sqlDB.query(usersQuery);
     async.map(results.rows, function (account, done) {
       missedPointsUser(account.account_participation_id, budgetparticipation, function (tableData) {
         done(null, { tableData, title: account.username })
@@ -362,7 +362,7 @@ module.exports = (app) => {
                 INNER JOIN stage USING(stage_id) WHERE account_participation_id = ${account_participation_id}
                 ORDER BY stagenr;\n `
     var totalQuery = ridersQuery + resultsQuery;
-    const results = await sqlDB.query(totalQuery)
+    const results = await sqlDB.query(totalQuery);
     var outputArray = [];
     var actualPoints = results[1].rows.map(a => a.stagescore);
     var optimalTotal = 0;
@@ -418,7 +418,7 @@ module.exports = (app) => {
                 ORDER BY account_id;`
     var main_account_participation_id = `(SELECT account_participation_id FROM account_participation 
       WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation} AND account_id = ${account_id})`
-    const results = await sqlDB.query(usersQuery)
+    const results = await sqlDB.query(usersQuery);
     async.map(results.rows, function (account, done) {
       teamoverzichtuser(main_account_participation_id, account.account_participation_id, budgetparticipation, details, function (teamoverzicht) {
         if (details) {
@@ -477,7 +477,7 @@ module.exports = (app) => {
       WHERE rider_participation_id NOT IN (${alreadyFound}) AND account_participation_id = ${account_participation_id}
       ORDER BY ${orderBy} DESC`
 
-    const results = await sqlDB.query(query)
+    const results = await sqlDB.query(query);
     callback({ tableData: results.rows, coltype })
   }
 
@@ -518,7 +518,7 @@ module.exports = (app) => {
     var totalQuery = selectedRidersQuery + uitgevallenQuery + betereUniekheidsQuery;
     var titles = ['Verschillende Gekozen Renners', 'Uitgevallen Renners', `Uniekste team`, `Uniekste team(beter)`]
     var coltypes = [{}, { "Uitvallers": 1, "Waarde": 1 }, {}, { "Uniekheid": 1, "Uniekheid (Geld)": 1 }]
-    const results = await sqlDB.query(totalQuery)
+    const results = await sqlDB.query(totalQuery);
     var tables = [];
     for (var i in results) {
       tables.push({ title: titles[i], tableData: results[i].rows, coltype: coltypes[i] })
@@ -535,7 +535,7 @@ module.exports = (app) => {
     WHERE rider_participation.race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
     GROUP BY username;
     SELECT budget FROM race WHERE race_id = ${race_id}`
-    const results = await sqlDB.query(usersQuery)
+    const results = await sqlDB.query(usersQuery);
     var countAbs = [];
     var countRel = [];
     var budgetAbs = [];
@@ -600,7 +600,7 @@ module.exports = (app) => {
     WHERE rider_id = ${req.body.rider_id}
     ORDER BY year, name; `
 
-    const riderResults = await sqlDB.query(riderQuery)
+    const riderResults = await sqlDB.query(riderQuery);
     const riderName = riderResults.rows[0].ridername;
     const country = riderResults.rows[0].country;
     const races = riderResults.rows;
@@ -620,7 +620,7 @@ module.exports = (app) => {
         GROUP BY "Etappe"
         ORDER BY "Etappe";\n `
     }
-    const results = await sqlDB.query(totalQuery)
+    const results = await sqlDB.query(totalQuery);
     let pointsData = [];
     let posData = [];
     for (let i = 0; i < results.length; i += 2) {

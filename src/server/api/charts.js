@@ -30,7 +30,7 @@ module.exports = function (app) {
             INNER JOIN stage USING (stage_id)
             WHERE stage.race_id = ${race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester'
             ORDER BY username, stagenr`
-    const results = await sqlDB.query(query)
+    const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
       console.log("results", results.rows)
       res.send({ mode: '404' })
@@ -92,7 +92,7 @@ module.exports = function (app) {
             INNER JOIN stage USING (stage_id)
             WHERE stage.race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished AND NOT username = 'tester'
             ORDER BY username, stagenr`
-    const results = await sqlDB.query(query)
+    const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
       console.log("results", results.rows)
       res.send({ mode: '404' })
@@ -153,7 +153,7 @@ module.exports = function (app) {
             INNER JOIN stage USING (stage_id)
             WHERE rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) AND totalscore > 0 AND stage.finished
             ORDER by lastname, stagenr`
-    const results = await sqlDB.query(query)
+    const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
       res.send({ mode: '404' })
       return
@@ -220,7 +220,7 @@ module.exports = function (app) {
 
     }
     var totalQuery = barQuery + avgQuery;
-    const results = await sqlDB.query(totalQuery)
+    const results = await sqlDB.query(totalQuery);
     var data = [{
       type: "column",
       legendText: "Score",
@@ -246,14 +246,14 @@ module.exports = function (app) {
                 INNER JOIN account USING (account_id)   
                 WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
                 ORDER BY account_id;`
-    const userresults = await sqlDB.query(usersQuery)
+    const userresults = await sqlDB.query(usersQuery);
     var totalQuery = userresults.rows.reduce((query, user) => query + `SELECT stagenr AS label, stagescore AS y FROM stage_selection
       INNER JOIN account_participation USING(account_participation_id)
       INNER JOIN stage USING(stage_id)
       WHERE stage.finished AND account_participation_id = ${user.account_participation_id}
       ORDER BY stagenr;\n `, '')
 
-    const results = await sqlDB.query(totalQuery)
+    const results = await sqlDB.query(totalQuery);
 
     var data = results.map((result, i) => ({
       type: "column",
@@ -278,7 +278,7 @@ module.exports = function (app) {
 
     var extraQuery = `SELECT username FROM account;`
     var totalQuery = racePointsQuery + extraQuery;
-    const results = await sqlDB.query(totalQuery)
+    const results = await sqlDB.query(totalQuery);
     var data = [{
       type: "column",
       legendText: "Score",
@@ -301,14 +301,14 @@ module.exports = function (app) {
     var budgetparticipation = req.body.budgetparticipation;
     var usersQuery = `SELECT account_id, username FROM account 
                 ORDER BY account_id;`
-    const userresults = await sqlDB.query(usersQuery)
+    const userresults = await sqlDB.query(usersQuery);
     var totalQuery = userresults.rows.reduce((query, user) => query + `SELECT CONCAT(name, ' ', year) AS label, finalscore AS y FROM account_participation
       INNER JOIN race USING(race_id)
       INNER JOIN account USING(account_id)
       WHERE race.finished AND account_id = ${user.account_id} AND budgetparticipation = ${budgetparticipation} AND NOT race.name = 'classics'
       ORDER BY year, race.name;\n `, '')
 
-    const results = await sqlDB.query(totalQuery)
+    const results = await sqlDB.query(totalQuery);
 
     var data = results.map((result, i) => ({
       type: "column",
@@ -338,7 +338,7 @@ module.exports = function (app) {
                 ORDER BY race_id;\n`
 
     var totalQuery = barQuery + avgQuery;
-    const results = await sqlDB.query(totalQuery)
+    const results = await sqlDB.query(totalQuery);
     var data = [{
       type: "scatter",
       showInLegend: true,
@@ -364,7 +364,7 @@ module.exports = function (app) {
     INNER JOIN race USING(race_id)
     WHERE race.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT name = 'classics'
     ORDER BY username, year, name`
-    const results = await sqlDB.query(query)
+    const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
       console.log("results", results.rows)
       res.send({ mode: '404' })

@@ -11,7 +11,7 @@ module.exports = function (app) {
     var budgetParticipation = req.body.budgetParticipation == 1;
     var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
     var stageInfoQuery = `SELECT starttime, type FROM stage WHERE race_id=${race_id} AND stagenr='${stagenr}'`;
-    const stageInfoResults = await sqlDB.query(stageInfoQuery)
+    const stageInfoResults = await sqlDB.query(stageInfoQuery);
     if (!stageInfoResults.rows.length) {
       res.send({ mode: '404' })
     } else {
@@ -32,7 +32,7 @@ module.exports = function (app) {
         var prevClassificationQuery = prevClassificationsQuery(race_id, stagenr, account_id, budgetParticipation);
         var selectionCompleteQuery = selectionsCompleteQuery(race_id, stagenr, account_id)
         var totalQuery = teamSelectionQuery + stageSelectionQuery + kopmanQuery + prevClassificationQuery + selectionCompleteQuery;
-        const results = await sqlDB.query(totalQuery)
+        const results = await sqlDB.query(totalQuery);
         res.send({
           'mode': 'selection',
           'teamSelection': results[0].rows,
@@ -79,7 +79,7 @@ module.exports = function (app) {
         var totalQuery = teamresultQuery + userscoresQuery + resultsCompleteQuery;
 
         var userScoresColtype = { "Stage": 1, "Total": 1 };
-        const uitslagresults = await sqlDB.query(totalQuery)
+        const uitslagresults = await sqlDB.query(totalQuery);
         var userscores = uitslagresults[1].rows;
 
         var teamresult = [];
@@ -115,7 +115,7 @@ module.exports = function (app) {
     var race_id = req.body.race_id;
     var now = new Date();
     var query = `SELECT starttime, type FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
-    const results = await sqlDB.query(query)
+    const results = await sqlDB.query(query);
     if (!results.rows.length) {
       res.send({ mode: '404' })
     } else {
@@ -159,7 +159,7 @@ module.exports = function (app) {
                             WHERE stage_id=${stage_id} AND ${classifications[i].pos} > 0 
                             ORDER BY " " ASC;\n `;
         var totalQuery = resultsQuery + resultsLengthQuery;
-        const stageresults = await sqlDB.query(totalQuery)
+        const stageresults = await sqlDB.query(totalQuery);
         var lengths = stageresults[1].rows[0];
         var stageResultsLengths = [lengths.stage, lengths.gc, lengths.points, lengths.kom, lengths.yoc].map(x => x === null ? 0 : x);
         res.send({
@@ -173,7 +173,7 @@ module.exports = function (app) {
   app.post('/api/getAllSelections', async (req, res) => {
     var race_id = req.body.race_id;
     var typeQuery = `SELECT type FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
-    const typeResults = await sqlDB.query(typeQuery)
+    const typeResults = await sqlDB.query(typeQuery);
     if (!typeResults.rows.length) {
       res.send({ mode: '404' })
     } else {
@@ -241,7 +241,7 @@ module.exports = function (app) {
           WHERE a.rider_participation_id in ${allselectedriders} 
           GROUP BY username; \n`
       var query = selectionsQuery + notSelectedQuery;
-      const allSelectionsResults = await sqlDB.query(query)
+      const allSelectionsResults = await sqlDB.query(query);
 
       var allSelections = selectionsPopUp(allSelectionsResults[0].rows);
       budgetParticipation = budgetParticipation ? 1 : 0;
@@ -332,7 +332,7 @@ module.exports = function (app) {
 
       var userScoresColtype = { stagescore: 1, totalscore: 1 };
 
-      const results = await sqlDB.query(totalQuery)
+      const results = await sqlDB.query(totalQuery);
       var userscores = results[1].rows;
       var selecties = results[3].rows
       for (var i in userscores) {

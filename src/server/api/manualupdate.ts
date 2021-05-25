@@ -85,7 +85,7 @@ module.exports = (app) => {
     if (req.user.admin) {
       const race_id = `(SELECT race_id FROM race WHERE name = '${req.body.raceName}' AND year = ${req.body.year})`;
       const accountParticipationsQuery = `SELECT * FROM account_participation WHERE race_id = ${race_id}`;
-      const participations = await sqlDB.query(accountParticipationsQuery)
+      const participations = await sqlDB.query(accountParticipationsQuery);
       var totalQuery = `UPDATE race set finished = true WHERE race_id = ${race_id};\n `
       for (var part of participations.rows) {
         var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection 
@@ -100,7 +100,7 @@ module.exports = (app) => {
 
         totalQuery += updateAccountScore;
       }
-      await sqlDB.query(totalQuery)
+      await sqlDB.query(totalQuery);
       console.log(`Copied ${participations.rows.length} finalscores AND ${req.body.raceName} ${req.body.year} set to finished`)
       res.send(`${req.body.raceName} ${req.body.year} finished And scores copied`);
 
@@ -123,7 +123,7 @@ module.exports = (app) => {
                                             WHERE stage_id = ${stage_id}
                                             GROUP BY account_participation_id, stage_selection_id
                                             HAVING COUNT(rider_participation_id) = 0`;
-      const noSelectionResults = await sqlDB.query(accountsWithoutSelectionQuery)
+      const noSelectionResults = await sqlDB.query(accountsWithoutSelectionQuery);
       console.log("noslectionresults", noSelectionResults)
       let totalQuery: string = '';
       for (const i of Object.keys(noSelectionResults.rows)) {// for each account_participation with an empty stage_selection for the stage that just started
@@ -135,7 +135,7 @@ module.exports = (app) => {
         const insertPrevKopman = `UPDATE stage_selection SET kopman_id = ${prevKopman_id} WHERE stage_selection_id = ${noSelectionResults.rows[i].stage_selection_id};\n`;
         totalQuery += insertPrevSelection + insertPrevKopman;
       }
-      await sqlDB.query(totalQuery)
+      await sqlDB.query(totalQuery);
       res.send(`Copied ${noSelectionResults.rowCount} selections`);
     } else {
       return res.status(401).send('Access denied. No admin');
@@ -146,7 +146,7 @@ module.exports = (app) => {
     if (req.user.admin) {
       const race_idQuery = `SELECT race_id FROM race
           WHERE year = ${req.body.year} AND name = '${req.body.raceName}';\n`;
-      const results = await sqlDB.query(race_idQuery)
+      const results = await sqlDB.query(race_idQuery);
       const race_id = results.rows[0].race_id;
 
       race_backup.findById(race_id, async (_, race) => {
@@ -199,7 +199,7 @@ module.exports = (app) => {
         }
         if (race.team_selection_rider.length) { team_selection_riderQuery += 'ON CONFLICT(account_participation_id,rider_participation_id) DO NOTHING;\n'; }
         const totalQuery = results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
-        const results2 = await sqlDB.query(totalQuery)
+        const results2 = await sqlDB.query(totalQuery);
         console.log('IMPORTED ', req.body.raceName, req.body.year);
         console.log(results2);
         res.send('Import Succesful');
@@ -228,7 +228,7 @@ module.exports = (app) => {
         WHERE race_id = ${race_id};\n`;
 
       const totalQuery = race_idQuery + results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
-      const results = await sqlDB.query(totalQuery)
+      const results = await sqlDB.query(totalQuery);
       // race_backup.updateOne({_id:results[0].rows[0].race_id},{
       //   $set: {"raceName":req.body.raceName,"year":req.body.year}
       // },
