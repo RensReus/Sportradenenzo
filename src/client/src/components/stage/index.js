@@ -306,7 +306,6 @@ class Stage extends Component {
   }
 
   render() {
-    console.log(this.state.stage,'length',this.state.stageResultsLengths)
     const mode = this.state.mode
     const budget = this.state.budget;
     let allSelectionsPopup
