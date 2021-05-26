@@ -10,28 +10,27 @@ module.exports = function (app) {
     var beforeStartQuery = `SELECT COUNT(stage_id) FROM stage WHERE race_id = ${race_id} AND starttime < now() AT TIME ZONE 'Europe/Paris'`
     const beforeStartResults = await sqlDB.query(beforeStartQuery);
     if (beforeStartResults.rows[0].count === 0) {
-      runTeamSelectionCall(req.body.apilink, race_id, req.body.budgetParticipation, req.user.account_id, req.body.rider_participation_id, (results) => {
-        res.send(results);
-      })
+      const results = await runTeamSelectionCall(req.body.apilink, race_id, req.body.budgetParticipation, req.user.account_id, req.body.rider_participation_id);
+      res.send(results);
     } else {
       res.send({ redirect: true, redirectLink: '/stage/1' })
     }
   })
 
-  async function runTeamSelectionCall(apilink, race_id, budgetParticipation, account_id, rider_participation_id, callback) {
+  async function runTeamSelectionCall(apilink, race_id, budgetParticipation, account_id, rider_participation_id) {
     budgetParticipation = budgetParticipation === 1;
     switch (apilink) {
-      case "getridersandteam": getridersandteam(race_id, account_id, callback); break;
-      case "addRider": addRider(race_id, budgetParticipation, account_id, rider_participation_id, callback); break;
-      case "removeRider": removeRider(race_id, budgetParticipation, account_id, rider_participation_id, callback); break;
-      case "addaccountparticipation": addaccountparticipation(race_id, account_id, callback); break;
+      case "getridersandteam": return await getridersandteam(race_id, account_id);
+      case "addRider": return await addRider(race_id, budgetParticipation, account_id, rider_participation_id);
+      case "removeRider": return await removeRider(race_id, budgetParticipation, account_id, rider_participation_id);
+      case "addaccountparticipation": return await addaccountparticipation(race_id, account_id);
     }
   }
 
-  async function getridersandteam(race_id, account_id, callback) {
+  async function getridersandteam(race_id, account_id) {
     const participationResults = await sqlDB.query(`SELECT * FROM account_participation WHERE race_id = ${race_id} AND account_id = ${account_id}`);
     if (participationResults.rows.length == 0) {
-      callback({ noParticipation: true });
+      return { noParticipation: true };
     } else {
       // TODO parallel
       const allRiders = await SQLread.getAllRiders(race_id)
@@ -52,11 +51,11 @@ module.exports = function (app) {
         IDsBudget.push(userSelectionBudget[i].rider_participation_id)
         budgetBudget -= userSelectionBudget[i].price
       }
-      callback({ allRiders: allRiders, userSelectionGewoon: userSelectionGewoon, userSelectionBudget: userSelectionBudget, budgetGewoon, budgetBudget })
+      return { allRiders: allRiders, userSelectionGewoon: userSelectionGewoon, userSelectionBudget: userSelectionBudget, budgetGewoon, budgetBudget };
     }
   };
 
-  async function addRider(race_id, budgetParticipation, account_id, rider_participation_id, callback) {
+  async function addRider(race_id, budgetParticipation, account_id, rider_participation_id) {
     var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
     var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
 
@@ -84,7 +83,7 @@ module.exports = function (app) {
       }
     }
     if (results[1].rows.length >= 20 || budget < results[0].rows[0].price + (19 - results[1].rows.length) * 500000 || ridersSameTeam >= 4) {
-      callback(false)
+      return false;
     } else {
       var addQuery = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
                                 VALUES(${rider_participation_id},${account_participation_id}) 
@@ -96,11 +95,11 @@ module.exports = function (app) {
       }
       var budgetLeft = budgetParticipation ? 11250000 : results[2].rows[0].budget;
       budgetLeft -= results[1].rows.reduce((sum, x) => sum + x.price, 0);
-      callback({ userSelection: results[1].rows, budgetLeft })
+      return { userSelection: results[1].rows, budgetLeft };
     }
   };
 
-  async function removeRider(race_id, budgetParticipation, account_id, rider_participation_id, callback) {
+  async function removeRider(race_id, budgetParticipation, account_id, rider_participation_id) {
     var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
     var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
 
@@ -126,11 +125,11 @@ module.exports = function (app) {
     var budgetLeft = budgetParticipation ? 11250000 : results[4].rows[0].budget;
     budgetLeft -= results[3].rows.reduce((sum, x) => sum + x.price, 0);
 
-    callback({ userSelection: results[3].rows, budgetLeft })
+    return { userSelection: results[3].rows, budgetLeft };
 
   };
 
-  async function addaccountparticipation(race_id, account_id, callback) {
+  async function addaccountparticipation(race_id, account_id) {
     var account_participationQuery = `INSERT INTO account_participation(account_id,race_id,budgetparticipation) 
                 VALUES(${account_id},${race_id},false),(${account_id},${race_id},true) 
                 ON CONFLICT (account_id,race_id,budgetparticipation) DO NOTHING
@@ -148,9 +147,9 @@ module.exports = function (app) {
       stage_selectionQuery = stage_selectionQuery.slice(0, -1) + `ON CONFLICT (account_participation_id,stage_id) DO NOTHING;\n`
 
       await sqlDB.query(stage_selectionQuery);
-      callback({ participationAdded: true })
+      return { participationAdded: true };
     } else {
-      callback({ participationAdded: false })
+      return { participationAdded: false };
     }
 
   }
