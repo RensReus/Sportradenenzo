@@ -11,12 +11,12 @@ module.exports = function (passport) {
     // passport needs ability to serialize and unserialize accounts out of session
 
     // used to serialize the user for the session
-    passport.serializeUser(function (account, done) {
+    passport.serializeUser((account, done) => {
         done(null, account.account_id);
     });
 
     // used to deserialize the user
-    passport.deserializeUser(function (account_id, done) {
+    passport.deserializeUser(async (account_id, done) => {
         var account = await SQLread.getAccount(account_id);
         done(null, account);
     });
@@ -34,11 +34,10 @@ module.exports = function (passport) {
         session: false,
         passReqToCallback: true // allows us to pass back the entire request to the callback
     },
-        function (_, email, password, done) {
+        (_, email, password, done) => {
             // asynchronous
             // User.findOne wont fire unless data is sent back
-            process.nextTick(function () {
-
+            process.nextTick(async () => {
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
                 const account = await SQLread.getLogin(email.toLowerCase());
@@ -68,7 +67,7 @@ module.exports = function (passport) {
         session: false,
         passReqToCallback: true  //allows us to pass back the entire request to the callback
     },
-        function (_, email, password, done) { // callback with email and password from our form
+        async (_, email, password, done) => { // callback with email and password from our form
             const account = await SQLread.getLogin(email.toLowerCase());
             if (account == null) //no account with that email
                 return done(false);
