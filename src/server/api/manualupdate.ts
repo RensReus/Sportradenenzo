@@ -1,8 +1,6 @@
-import { startSchedule } from "../scrape";
 
 module.exports = (app) => {
   const race_backup = require('../db/Mongo/models/race_backup.js');
-  const async = require('async');
   const sqlDB = require('../db/sqlDB');
   const scrape = require('../scrape')
 
@@ -55,27 +53,21 @@ module.exports = (app) => {
     }
   });
 
-  app.post('/api/getresults', (req, res) => {
+  app.post('/api/getresults', async (req, res) => {
     if (req.user.admin) {
       const year = parseInt(req.body.year, 10);
       const name = req.body.raceName;
       const race = { name, year }
       const stage = parseInt(req.body.stage, 10);
       if (req.body.stage === 'all') {
-        res.send('Tijdelijk geen all mogelijk door async await refactor info') //TODO restore call backs after scrape await refactor
-
-        // const stages = Array.apply(null, { length: 22 }).map(Number.call, Number);
-        // async.eachSeries(stages, (stage) => {
-        //   scrape.getResult(race, stage + 1, () => {
-        //     res.send('Tijdelijk geen callback info')
-        //   });
-        // });
+        for (var stageNum = 1; stageNum < 23; stageNum++){
+          await scrape.getResult(race, stageNum);
+        }
+        res.send('completed');
       } else {
-        scrape.getResult(race, stage, (err) => {
-          if (err) { res.send('error'); }
-        });
-        startSchedule()
-        res.send('Tijdelijk geen callback info')
+        await scrape.getResult(race, stage);
+        scrape.startSchedule()
+        res.send('completed')
       }
     } else {
       return res.status(401).send('Access denied. No admin');

@@ -7,7 +7,7 @@ module.exports = {
    * @param {number} race_id
    * @param {function} callback
    */
-  addRiderToSelection: (rider_participation_id, account_id, budgetParticipation, race_id, callback) => {
+  addRiderToSelection: async (rider_participation_id, account_id, budgetParticipation, race_id, callback) => {
     const values = [rider_participation_id, account_id, race_id, budgetParticipation];
     const account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $2 AND race_id = $3 AND budgetParticipation = $4)`;
     const query = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
@@ -23,7 +23,7 @@ module.exports = {
    * @param {number} race_id
    * @param {function} callback
    */
-  removeRiderFromSelection: (account_id, rider_participation_id, budgetParticipation, race_id, callback) => {
+  removeRiderFromSelection: async (account_id, rider_participation_id, budgetParticipation, race_id, callback) => {
     const values = [account_id, rider_participation_id, race_id, budgetParticipation];
     const account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $1 AND race_id = $3 AND budgetParticipation = $4)`;
     const query = `DELETE FROM team_selection_rider
@@ -42,7 +42,7 @@ module.exports = {
    * @param {String} initials
    * @param {Function} callback
    */
-  addRiderToDatabase: (pcs_id, country, firstname, lastname, initials, callback) => {
+  addRiderToDatabase: async (pcs_id, country, firstname, lastname, initials, callback) => {
     const values = [pcs_id, country, firstname, lastname, initials];
     const query = `INSERT INTO rider(pcs_id, country, firstname, lastname, initials)
   VALUES ($1, $2, $3, $4, $5)
@@ -60,7 +60,7 @@ module.exports = {
    * @param {String} team
    * @param {Function} callback
    */
-  addRiderToRace: (race_id, rider_id, price, team, callback) => {
+  addRiderToRace: async (race_id, rider_id, price, team, callback) => {
     const values = [race_id, rider_id, price, team];
     const query = `INSERT INTO rider_participation (race_id,rider_id,price,team)
   VALUES ($1, $2, $3, $4)
@@ -76,7 +76,7 @@ module.exports = {
    * @param {String} password
    * @param {function} callback
    */
-  addAccount: (email, password, callback) => {
+  addAccount: async (email, password, callback) => {
     const values = [email, password];
     const query = `INSERT INTO account(email, password)
               VALUES($1, $2)
@@ -90,7 +90,7 @@ module.exports = {
    * @param {number} race_id
    * @param {function} callback
    */
-  addAccount_participation: (account_id, race_id, callback) => {
+  addAccount_participation: async (account_id, race_id, callback) => {
     const values = [account_id, race_id];
     const query = `INSERT INTO account_participation(account_id, race_id)
               VALUES($1, $2)
@@ -101,7 +101,7 @@ module.exports = {
   },
 
   // template
-  functionName: (parameters, callback) => {
+  functionName: async (parameters, callback) => {
     const values = [parameters];
     const query = ``;
 

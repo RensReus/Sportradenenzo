@@ -4,7 +4,7 @@ const schedule = require('node-schedule');
 const sqlDB = require('./db/sqlDB');
 const async = require('async');
 const stageresults = require('./api/stageresults');
-const getStartlist = function (race, callback) {
+const getStartlist = async (race, callback) => {
   const fs = require('fs');
   var raceString = "";
   var prijzenfile = "";
@@ -52,8 +52,8 @@ const getStartlist = function (race, callback) {
   }
 }
 
-var startlistProcessRiders = function (raceString, scoritoPrices, year, race_id, callback) {
-  request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, function (error, response, html) {
+var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id, callback) => {
+  request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, async (error, response, html) => {
     var stage_id = 0; //Placeholder
     if (!error && response.statusCode === 200) {
       var $ = cheerio.load(html);
@@ -73,7 +73,7 @@ var startlistProcessRiders = function (raceString, scoritoPrices, year, race_id,
           // sla achternaam voor naam en voorletters op
           var i = 0
           while (i <= name.length) {
-            character = name.charAt(i);
+            var character = name.charAt(i);
             if (character != character.toUpperCase() && character != ' ') {
               break;
             }
@@ -147,7 +147,7 @@ var startlistProcessRiders = function (raceString, scoritoPrices, year, race_id,
   });
 }
 
-var getResult = function (race, stagenr) {
+var getResult = async (race, stagenr) => {
   var race_id = `(SELECT race_id FROM race WHERE year = ${race.year} AND name = '${race.name}')`
   var stageQuery = `SELECT * FROM stage INNER JOIN race USING(race_id) WHERE stagenr = ${stagenr} AND race_id = ${race_id}`;
   //Get info about current stage
@@ -161,7 +161,7 @@ var getResult = function (race, stagenr) {
   request({
     url: `https://www.procyclingstats.com/race/${raceString}/${race.year}/stage-${etLink}`,
     headers: { "Connection": "keep-alive" }
-  }, function (error, response, html) {
+  }, async (error, response, html) => {
     if (error) console.log(error);
     if (!error && response.statusCode === 200) {
       var $ = cheerio.load(html);
@@ -181,7 +181,7 @@ var getResult = function (race, stagenr) {
 
       setStageToComplete(ridersResults, stage.stagenr, race_id);
 
-      var resultsQuery = buildResultsQuery(ridersResults, teamWinners, stage);
+      var resultsQuery = buildResultsQuery(ridersResults, TTTresult, teamWinners, stage);
       var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
 
       var totalQuery = deleteQuery + resultsQuery;
@@ -189,9 +189,9 @@ var getResult = function (race, stagenr) {
       if (ridersResults['all'].length) {// don't send if no results
         const res = await sqlDB.query(totalQuery);
         console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
-        calculateUserScores(race_id, stagenr, stage.type)
+        return await calculateUserScores(race_id, stagenr, stage.type)
       } else {
-        calculateUserScores(race_id, stagenr, stage.type)
+        return await calculateUserScores(race_id, stagenr, stage.type)
       }
     }
   })
@@ -266,7 +266,7 @@ var getClassifications = function ($, stageType) {
   return classifications;
 }
 
-var updateDNFriders = function (dnfRiders, race_id) {
+var updateDNFriders = async (dnfRiders, race_id) => {
   if (dnfRiders.length) { //only submit if > 0
     var dnfquery = `UPDATE rider_participation SET dnf = TRUE 
                 WHERE race_id = ${race_id} AND rider_id IN ( `
@@ -278,7 +278,7 @@ var updateDNFriders = function (dnfRiders, race_id) {
   }
 }
 
-var setStageToComplete = function (ridersResults, stagenr, race_id) {
+var setStageToComplete = async (ridersResults, stagenr, race_id) => {
   // TODO classics complete / classics auto scrape
   var uitslagCompleet = false;
   var [GCprevlength, pointsprevlength, komprevlength, youngprevlength, prevStageComplete] = [176, 10, 0, 1, true]
@@ -310,7 +310,7 @@ var setStageToComplete = function (ridersResults, stagenr, race_id) {
   }
 }
 
-var buildResultsQuery = function (ridersResults, teamWinners, stage) {
+var buildResultsQuery = function (ridersResults, TTTresult, teamWinners, stage) {
   //processing scores and SQL insert
   var resultsQuery = `INSERT INTO results_points(stage_id, rider_participation_id, 
       stagepos, stagescore, stageresult, gcpos, gcscore, gcresult, gcprev, gcchange,
@@ -332,8 +332,8 @@ var buildResultsQuery = function (ridersResults, teamWinners, stage) {
       //set initial values
       var [pos, score, result, prev, change] = [0, 0, "", "", ""];
       if (classification === 'Stage') {
-        if (stage.type === 'TTT') {
-          pos = TTTresult.indexOf(teamRider) + 1; // positie in de uitslag
+        if (stage.type === 'TTT') { //TODO pass
+          pos = TTTresult.indexOf(teamRider) + 1; // positie in de uitslag 
         } else {// REG, ITT or CLA
           pos = getIndex(ridersResults[classification], 'pcs_id', pcs_id) + 1;
           if (pos > 0) {
@@ -487,13 +487,12 @@ var getEindPunten = function (kl, pos) {
   return 0;
 }
 
-var calculateUserScores = function (race_id, stage, stageType) {
+var calculateUserScores = async (race_id, stage, stageType) => {
   let participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id};\n `
   let TTTstageQuery = `SELECT stagenr FROM stage WHERE race_id = ${race_id} AND type ='TTT';\n `
   let raceLengthQuery = `SELECT stage_id FROM stage WHERE race_id = ${race_id};\n `
   let totalQuery = participantsQuery + TTTstageQuery + raceLengthQuery;
   const res = await sqlDB.query(totalQuery);
-  var totalQuery = '';
   var TTTstages = res[1].rows.map(stage => stage.stagenr);
   for (var i in res[0].rows) {// voor iedere gewone user
 
@@ -537,9 +536,10 @@ var calculateUserScores = function (race_id, stage, stageType) {
     }
   }
   await sqlDB.query(totalQuery);
+  return "Calculated Userscores";
 }
 
-var calculateUserScoresKlassieker = function (year, stage, callback) { //TODO integreren in voorgaande functie
+var calculateUserScoresKlassieker = async (year, stage, callback) => { //TODO integreren in voorgaande functie
   var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = 'classics')`
   var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
   const res = await sqlDB.query(participantsQuery);
@@ -618,7 +618,7 @@ var startSchedule = async () => {
   const activeRacesResults = await sqlDB.query(activeRacesQuery);
   // async.each(activeRacesResults.rows, (race, callback) => {
   activeRacesResults.rows.forEach(race => {
-    var scrapeResults = schedule.scheduleJob("* * * * *", function () {
+    var scrapeResults = schedule.scheduleJob("* * * * *", async () => {
       var stageQuery = `SELECT * FROM STAGE
         WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race_id = ${race.race_id}
         ORDER BY stagenr DESC
@@ -628,14 +628,12 @@ var startSchedule = async () => {
       if (results.rows.length) {// if some results, so at least after start of stage 1
         var stage = results.rows[0];
         if (!stage.finished) {
-          getTimetoFinish(race.name, function (stageFinished, newResultsRule) {// getTimetoFinish if not finished
+          getTimetoFinish(race.name, async (stageFinished, newResultsRule) => {// getTimetoFinish if not finished
             if (stageFinished) {
               var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
 
-              getResult(race, stage.stagenr, function (err, response) {
-                if (err) throw err;
-                console.log(response, "stage", stage.stagenr, "\n");
-              })
+              var response = await getResult(race, stage.stagenr)
+              console.log(response, "stage", stage.stagenr, "\n");
 
               await sqlDB.query(updateStageQuery);
               console.log("Race %s Stage %s finished", race.race_id, stage.stagenr)
@@ -644,10 +642,8 @@ var startSchedule = async () => {
             }
           })
         } else if (!stage.complete) {//get results if not complete
-          getResult(race, stage.stagenr, function (err, response) {
-            if (err) throw err;
-            console.log(response, "stage", stage.stagenr, "\n");
-          })
+          var response = await getResult(race, stage.stagenr)
+          console.log(response, "stage", stage.stagenr, "\n");
         } else {// if finished and complete set schedule to run again at start of next stage
           var nextStageQuery = `SELECT * FROM stage WHERE race_id = ${race.race_id} AND stagenr = ${stage.stagenr + 1}`;
           const nextStageResults = await sqlDB.query(nextStageQuery);
