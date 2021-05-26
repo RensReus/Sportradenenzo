@@ -15,7 +15,7 @@ module.exports = function (app) {
       toolTip,
       data: data
     }
-    for (field in extraFields) {
+    for (var field in extraFields) {
       options[field] = extraFields[field]
     }
     return options
@@ -65,11 +65,11 @@ module.exports = function (app) {
     data.push(userObj)
     for (i in userObj.dataPoints) {
       var total = 0;
-      for (user in data) {
+      for (var user in data) {
         total += data[user].dataPoints[i].y;
       }
       var avg = total / data.length;
-      for (user in data) {
+      for (var user in data) {
         data[user].dataPoints[i].y -= avg;
       }
     }
@@ -380,12 +380,12 @@ module.exports = function (app) {
     var data = [];
     var minusi = 0;
     var total = 0
-    for (var i in results.rows) {
+    for (var i in results.rows) {// TODO cleanear to remove de parseInts
       if (userObj.name == results.rows[i].username) {
         total += results.rows[i].finalscore
-        userObj.dataPoints.push({ x: i - minusi, y: total })
+        userObj.dataPoints.push({ x: parseInt(i) - minusi, y: total })
       } else {
-        minusi = i;
+        minusi = parseInt(i);
 
         data.push(userObj);
         username = results.rows[i].username;
@@ -397,17 +397,17 @@ module.exports = function (app) {
         }
         total = results.rows[i].finalscore
 
-        userObj.dataPoints.push({ x: i - minusi, y: total })
+        userObj.dataPoints.push({ x: parseInt(i) - minusi, y: total })
       }
     }
     data.push(userObj)
     for (i in userObj.dataPoints) {
       var total = 0;
-      for (user in data) {
+      for (var user in data) {
         total += data[user].dataPoints[i].y;
       }
       var avg = total / data.length;
-      for (user in data) {
+      for (var user in data) {
         data[user].dataPoints[i].y -= avg;
       }
     }

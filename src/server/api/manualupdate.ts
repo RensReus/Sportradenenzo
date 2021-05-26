@@ -54,6 +54,7 @@ module.exports = (app) => {
       return res.status(401).send('Access denied. No admin');
     }
   });
+
   app.post('/api/getresults', (req, res) => {
     if (req.user.admin) {
       const year = parseInt(req.body.year, 10);

@@ -1,6 +1,6 @@
 //In dit bestand staan alle calls die betrekking hebben tot de resultaten van een stage
 const sqlDB = require('../db/sqlDB')
-
+const helper = require('./helperfunctions')
 module.exports = function (app) {
   app.post('/api/setkopman', async (req, res) => {
     var budgetParticipation = req.body.budgetParticipation == 1;
@@ -57,7 +57,7 @@ module.exports = function (app) {
                                         INNER JOIN rider_participation USING (rider_participation_id)
                                         INNER JOIN rider USING (rider_id)
                                         WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id};\n `;
-    var prevClassificationQuery = prevClassificationsQuery(race_id, req.body.stage, req.user.account_id, budgetParticipation);
+    var prevClassificationQuery = helper.prevClassificationsQuery(race_id, req.body.stage, req.user.account_id, budgetParticipation);
     var kopmanQuery = `SELECT kopman_id FROM stage_selection
                       WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id};\n `;
     var selectionCompleteQuery = selectionsCompleteQuery(race_id, req.body.stage, req.user.account_id);
@@ -101,7 +101,7 @@ module.exports = function (app) {
                                             INNER JOIN rider_participation USING (rider_participation_id)
                                             INNER JOIN rider USING (rider_id)
                                             WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id};\n `;
-      var prevClassificationQuery = prevClassificationsQuery(race_id, req.body.stage, req.user.account_id, budgetParticipation);
+      var prevClassificationQuery = helper.prevClassificationsQuery(race_id, req.body.stage, req.user.account_id, budgetParticipation);
       var kopmanQuery = `SELECT kopman_id FROM stage_selection
                       WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id};\n `;
       var selectionCompleteQuery = selectionsCompleteQuery(race_id, req.body.stage, req.user.account_id);
