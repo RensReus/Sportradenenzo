@@ -1,4 +1,3 @@
-
 module.exports = (app) => {
   const race_backup = require('../db/Mongo/models/race_backup.js');
   const sqlDB = require('../db/sqlDB');
