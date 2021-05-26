@@ -1,7 +1,9 @@
 module.exports = {
-    /** Returns the account object from db
+    /** Returns query for previous classifications
+     * @param {number} race_id
+     * @param {number} stagenr
      * @param {number} account_id
-     * @param {function} callback 
+     * @param {boolean} budgetParticipation
      * @return {string}
      */
     prevClassificationsQuery: (race_id: number, stagenr: number, account_id: number, budgetParticipation: boolean): string => {
