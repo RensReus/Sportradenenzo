@@ -20,15 +20,14 @@ const pool = new Pool({
 })
 
 module.exports = {
-  query: async (text, params, adminPage) => {
-    const response;
+  query: async (query, params, adminPage) => {
     try {
-      response = await pool.query(text, params);
-      return response;
+      return await pool.query(query, params);
     } catch (error) {
       if (adminPage) {
         return error;
       } else {
+        console.log("Query Error: ", error);
         throw error;
       }
     }

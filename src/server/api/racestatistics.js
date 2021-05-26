@@ -47,23 +47,25 @@ module.exports = (app) => {
             GROUP BY username; \n`//aantal keer per ranking
 
     var low = `COUNT(CASE WHEN finalscore < 4000 THEN 1 END) AS "<4K"`
-    var medium = `COUNT(CASE WHEN finalscore > 4000 AND finalscore < 5000 THEN 1 END) AS "4K"`
-    var high = `COUNT(CASE WHEN finalscore > 5000 THEN 1 END) AS ">5K"`
-    var orderby = `ORDER BY ">5K" DESC, "4K" DESC, "<4K" DESC`
+    var second = `COUNT(CASE WHEN finalscore >= 4000 AND finalscore < 4500 THEN 1 END) AS "4K"`
+    var third = `COUNT(CASE WHEN finalscore >= 4500 AND finalscore < 5000 THEN 1 END) AS "4.5K"`
+    var high = `COUNT(CASE WHEN finalscore >= 5000 THEN 1 END) AS ">5K"`
+    var orderby = `ORDER BY ">5K" DESC, "4.5K" DESC, "4K" DESC, "<4K" DESC`
     if (budgetparticipation) {
       low = `COUNT(CASE WHEN finalscore < 500 THEN 1 END) AS "<500"`
-      medium = `COUNT(CASE WHEN finalscore > 500 AND finalscore < 1000 THEN 1 END) AS "500 "`
-      high = `COUNT(CASE WHEN finalscore > 1000 THEN 1 END) AS ">1K"`
-      orderby = `ORDER BY ">1K" DESC, "500 " DESC, "<500" DESC`
+      second = `COUNT(CASE WHEN finalscore >= 500 AND finalscore < 750 THEN 1 END) AS "500 "`
+      second = `COUNT(CASE WHEN finalscore >= 750 AND finalscore < 1000 THEN 1 END) AS "750 "`
+      high = `COUNT(CASE WHEN finalscore >= 1000 THEN 1 END) AS ">1K"`
+      orderby = `ORDER BY ">1K" DESC, "750" DESC, "500" DESC, "<500" DESC`
     }
-    var thousandsQuery = `SELECT username AS "User", ${low}, ${medium}, ${high} from account_participation
+    var scoreCountQuery = `SELECT username AS "User", ${low}, ${second}, ${third}, ${high} from account_participation
                 INNER JOIN account USING(account_id)
                 INNER JOIN race USING(race_id)
                 WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished
                 GROUP BY username
                 ${orderby}`
 
-    var query = rankQuery + countQuery + thousandsQuery;
+    var query = rankQuery + countQuery + scoreCountQuery;
     const results = await sqlDB.query(query);
     var headersRank = ["Race"];
     var headersCount = ["User"];
@@ -71,6 +73,7 @@ module.exports = (app) => {
     var rowsCount = [];
 
     var userCount = results[1].rows.length
+    // TODO combine this block with getstagevictories into a function
     for (var i in results[0].rows) {//ranking per stage
       var row = [results[0].rows[i].race];
       for (var j in results[0].rows[i].usernames) {
@@ -135,25 +138,49 @@ module.exports = (app) => {
     var query1 = `SELECT ARRAY_AGG(username ORDER BY stagescore DESC) as usernames, ARRAY_AGG(stagescore ORDER BY stagescore DESC) as scores, stagenr FROM ${subquery} GROUP BY stagenr; `;//ranking per stage
     var query2 = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
     (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
-    GROUP BY username`//aantal keer per ranking
-    var query = query1 + query2;
-    const res = await sqlDB.query(query);
+    GROUP BY username; \n`//aantal keer per ranking
+
+    var first = `COUNT(CASE WHEN stagescore < 50 THEN 1 END) AS "50-"`
+    var second = `COUNT(CASE WHEN stagescore >= 50 AND stagescore < 100 THEN 1 END) AS "50"`
+    var third = `COUNT(CASE WHEN stagescore >= 100 AND stagescore < 200 THEN 1 END) AS "100"`
+    var fourth = `COUNT(CASE WHEN stagescore >= 200 AND stagescore < 300 THEN 1 END) AS "200"`
+    var last = `COUNT(CASE WHEN stagescore >= 300 THEN 1 END) AS "300+"`
+    var orderby = `ORDER BY "300+" DESC, "200" DESC, "100" DESC, "50" DESC, "50-" DESC`
+    
+    if (budgetparticipation) {
+      first = `COUNT(CASE WHEN stagescore < 10 THEN 1 END) AS "10-"`
+      second = `COUNT(CASE WHEN stagescore >= 10 AND stagescore < 30 THEN 1 END) AS "10"`
+      third = `COUNT(CASE WHEN stagescore >= 30 AND stagescore < 50 THEN 1 END) AS "30"`
+      fourth = `COUNT(CASE WHEN stagescore >= 50 AND stagescore < 100 THEN 1 END) AS "50"`
+      last = `COUNT(CASE WHEN stagescore >= 100 THEN 1 END) AS "100+"`
+      orderby = `ORDER BY "100+" DESC, "50" DESC, "30" DESC, "10" DESC, "10-" DESC`
+    }
+    var scoreCountQuery = `SELECT username AS "User", ${first}, ${second}, ${third}, ${fourth}, ${last} from stage_selection
+                INNER JOIN account_participation USING(account_participation_id)
+                INNER JOIN account USING(account_id)
+                INNER JOIN stage USING(stage_id)
+                WHERE budgetparticipation = ${budgetparticipation} AND stage.race_id = ${race_id} AND account_participation.race_id = ${race_id} AND finished AND NOT type = 'FinalStandings'
+                GROUP BY username
+                ${orderby}`
+
+    var query = query1 + query2 + scoreCountQuery;
+    const results = await sqlDB.query(query);
     var headersRank = ["Stage"];
     var headersCount = ["User"];
     var rowsRank = [];
     var rowsCount = [];
 
-    var userCount = res[1].rows.length
-    for (var i in res[0].rows) {//ranking per stage
+    var userCount = results[1].rows.length
+    for (var i in results[0].rows) {//ranking per stage
       var row = [parseInt(i) + 1];
-      for (var j in res[0].rows[i].usernames) {
-        row.push(res[0].rows[i].usernames[j] + " (" + res[0].rows[i].scores[j] + ")");
+      for (var j in results[0].rows[i].usernames) {
+        row.push(results[0].rows[i].usernames[j] + " (" + results[0].rows[i].scores[j] + ")");
       }
       rowsRank.push(row);
     }
 
-    for (var i in res[1].rows) {//aantal keer per ranking
-      var user = res[1].rows[i];
+    for (var i in results[1].rows) {//aantal keer per ranking
+      var user = results[1].rows[i];
       var row = new Array(userCount + 1).fill(0)
       row[0] = user.username;
       for (var j in user.ranks) {
@@ -195,6 +222,7 @@ module.exports = (app) => {
     var tables = []
     tables.push({ tableData: rankTable, title: "Etappe Uitslagen" })
     tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
+    tables.push({ tableData: results[2].rows, title: "Score verdelingen" })
     return { tables, title: "Etappe Winsten Overzicht" };
   }
 
