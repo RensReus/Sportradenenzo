@@ -7,114 +7,35 @@ module.exports = (app) => {
   app.post('/api/statistics', async (req, res) => {
     var race_id = req.body.race_id;
     var budgetparticipation = req.body.budgetparticipation;
-    if (!req.body.alwaysget) {
-      var raceHasStartedQuery = `SELECT * FROM STAGE
-      INNER JOIN race USING (race_id)
-      WHERE (starttime < now() AT TIME ZONE 'Europe/Paris' OR race.finished) AND race_id = ${race_id}
-      ORDER BY stagenr DESC
-      LIMIT 1`;
-      const results = await sqlDB.query(raceHasStartedQuery);
-      if (results.rows.length === 0) {
-        res.send({ mode: '404' })
-      } else {
-        getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, req.body.showClassifications, function (results) {
-          res.send(results);
-        })
-      }
-    } else {
-      getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, req.body.showClassifications, function (results) {
-        res.send(results);
-      })
-    }
+    const results = await getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, req.body.showClassifications)
+    res.send(results);
   })
 
-  async function getData(selection, race_id, budgetparticipation, account_id, details, showClassifications, callback) {
+  getData = async (selection, race_id, budgetparticipation, account_id, details, showClassifications) => {
+    if (selection === "rondewinsten") return await gettourvictories(budgetparticipation);
+    var raceHasStartedQuery = `SELECT * FROM STAGE
+    INNER JOIN race USING (race_id)
+    WHERE (starttime < now() AT TIME ZONE 'Europe/Paris' OR race.finished) AND race_id = ${race_id}
+    ORDER BY stagenr DESC
+    LIMIT 1`;
+    const results = await sqlDB.query(raceHasStartedQuery);
+    if (results.rows.length === 0) {
+      return { mode: '404' };
+    }
     switch (selection) {
-      case "etappewinsten": getstagevictories(race_id, budgetparticipation, callback); break;
-      case "rondewinsten": gettourvictories(budgetparticipation, callback); break;
-      case "allriders": getriderpointsall(race_id, budgetparticipation, callback); break;
-      case "selectedriders": getriderpointsselected(race_id, budgetparticipation, showClassifications, callback); break;
-      case "missedpoints": missedpoints(race_id, budgetparticipation, account_id, callback); break;
-      case "missedpointsall": missedpointsall(race_id, budgetparticipation, callback); break;
-      case "teams": teams(race_id, budgetparticipation, account_id, details, callback); break;
-      case "teamcomparisons": teamcomparisons(race_id, budgetparticipation, callback); break;
-      case "overigestats": getadditionalstats(race_id, budgetparticipation, callback); break;
+      case "etappewinsten": return await getstagevictories(race_id, budgetparticipation);
+      case "allriders": return await getriderpointsall(race_id, budgetparticipation);
+      case "selectedriders": return await getriderpointsselected(race_id, budgetparticipation, showClassifications);
+      case "missedpoints": return await missedpoints(race_id, budgetparticipation, account_id);
+      case "missedpointsall": return await missedpointsall(race_id, budgetparticipation);
+      case "teams": return await teams(race_id, budgetparticipation, account_id, details);
+      case "teamcomparisons": return await teamcomparisons(race_id, budgetparticipation);
+      case "overigestats": return await getadditionalstats(race_id, budgetparticipation);
     }
   }
 
-  async function getstagevictories(race_id, budgetparticipation, callback) {
-    var subquery = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore DESC) FROM stage_selection
-    INNER JOIN account_participation USING (account_participation_id)
-    INNER JOIN account USING (account_id)
-    INNER JOIN stage USING (stage_id)
-    WHERE stage.race_id = ${race_id} AND NOT username = 'tester' AND budgetparticipation = ${budgetparticipation} AND stage.finished) AS subquery`
-    var query1 = `SELECT ARRAY_AGG(username ORDER BY stagescore DESC) as usernames, ARRAY_AGG(stagescore ORDER BY stagescore DESC) as scores, stagenr FROM ${subquery} GROUP BY stagenr; `;//ranking per stage
-    var query2 = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
-    (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
-    GROUP BY username`//aantal keer per ranking
-    var query = query1 + query2;
-    const res = await sqlDB.query(query);
-    var headersRank = ["Stage"];
-    var headersCount = ["User"];
-    var rowsRank = [];
-    var rowsCount = [];
 
-    var userCount = res[1].rows.length
-    for (var i in res[0].rows) {//ranking per stage
-      var row = [parseInt(i) + 1];
-      for (var j in res[0].rows[i].usernames) {
-        row.push(res[0].rows[i].usernames[j] + " (" + res[0].rows[i].scores[j] + ")");
-      }
-      rowsRank.push(row);
-    }
-
-    for (var i in res[1].rows) {//aantal keer per ranking
-      var user = res[1].rows[i];
-      var row = new Array(userCount + 1).fill(0)
-      row[0] = user.username;
-      for (var j in user.ranks) {
-        row[user.ranks[j]] = user.rankcounts[j];
-      }
-      rowsCount.push(row);
-    }
-
-    //make headers
-    for (var i = 1; i < userCount + 1; i++) {
-      headersRank.push(i + "e");
-      headersCount.push(i + "e");
-    }
-
-    //sort rowsCount
-    rowsCount.sort(function (a, b) {
-      for (var i = 1; i < userCount + 1; i++) {
-        if (a[i] > b[i]) return false;
-        if (a[i] < b[i]) return true;
-      }
-      return false;
-    })
-    var rankTable = []
-    for (let i in rowsRank) {
-      let newRow = {};
-      for (let j in headersRank) {
-        newRow[headersRank[j]] = rowsRank[i][j]
-      }
-      rankTable.push(newRow)
-    }
-    var countTable = []
-    for (let i in rowsCount) {
-      let newRow = {};
-      for (let j in headersCount) {
-        newRow[headersCount[j]] = rowsCount[i][j]
-      }
-      countTable.push(newRow)
-    }
-    var tables = []
-    tables.push({ tableData: rankTable, title: "Etappe Uitslagen" })
-    tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
-    callback({ tables, title: "Etappe Winsten Overzicht" })
-  }
-
-  async function gettourvictories(budgetparticipation, callback) {
+  gettourvictories = async (budgetparticipation) => {
     // var poule_id = req.body.poule_id;
     var subquery = `(SELECT username, finalscore, CONCAT(year, ' ', name) AS race, rank() over (PARTITION BY race ORDER BY finalscore DESC) FROM account_participation
             INNER JOIN account USING (account_id)
@@ -202,10 +123,83 @@ module.exports = (app) => {
     tables.push({ tableData: rankTable, title: "Ronde Uitslagen" })
     tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
     tables.push({ tableData: results[2].rows, title: "Score verdelingen" })
-    callback({ tables, title: "Ronde Winsten Overzicht" })
+    return { tables, title: "Ronde Winsten Overzicht" };
   }
 
-  async function getriderpointsall(race_id, budgetparticipation, callback) {
+  getstagevictories = async (race_id, budgetparticipation) => {
+    var subquery = `(SELECT username, stagescore, stagenr, rank() over (PARTITION BY stagenr ORDER BY stagescore DESC) FROM stage_selection
+    INNER JOIN account_participation USING (account_participation_id)
+    INNER JOIN account USING (account_id)
+    INNER JOIN stage USING (stage_id)
+    WHERE stage.race_id = ${race_id} AND NOT username = 'tester' AND budgetparticipation = ${budgetparticipation} AND stage.finished) AS subquery`
+    var query1 = `SELECT ARRAY_AGG(username ORDER BY stagescore DESC) as usernames, ARRAY_AGG(stagescore ORDER BY stagescore DESC) as scores, stagenr FROM ${subquery} GROUP BY stagenr; `;//ranking per stage
+    var query2 = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
+    (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
+    GROUP BY username`//aantal keer per ranking
+    var query = query1 + query2;
+    const res = await sqlDB.query(query);
+    var headersRank = ["Stage"];
+    var headersCount = ["User"];
+    var rowsRank = [];
+    var rowsCount = [];
+
+    var userCount = res[1].rows.length
+    for (var i in res[0].rows) {//ranking per stage
+      var row = [parseInt(i) + 1];
+      for (var j in res[0].rows[i].usernames) {
+        row.push(res[0].rows[i].usernames[j] + " (" + res[0].rows[i].scores[j] + ")");
+      }
+      rowsRank.push(row);
+    }
+
+    for (var i in res[1].rows) {//aantal keer per ranking
+      var user = res[1].rows[i];
+      var row = new Array(userCount + 1).fill(0)
+      row[0] = user.username;
+      for (var j in user.ranks) {
+        row[user.ranks[j]] = user.rankcounts[j];
+      }
+      rowsCount.push(row);
+    }
+
+    //make headers
+    for (var i = 1; i < userCount + 1; i++) {
+      headersRank.push(i + "e");
+      headersCount.push(i + "e");
+    }
+
+    //sort rowsCount
+    rowsCount.sort(function (a, b) {
+      for (var i = 1; i < userCount + 1; i++) {
+        if (a[i] > b[i]) return false;
+        if (a[i] < b[i]) return true;
+      }
+      return false;
+    })
+    var rankTable = []
+    for (let i in rowsRank) {
+      let newRow = {};
+      for (let j in headersRank) {
+        newRow[headersRank[j]] = rowsRank[i][j]
+      }
+      rankTable.push(newRow)
+    }
+    var countTable = []
+    for (let i in rowsCount) {
+      let newRow = {};
+      for (let j in headersCount) {
+        newRow[headersCount[j]] = rowsCount[i][j]
+      }
+      countTable.push(newRow)
+    }
+    var tables = []
+    tables.push({ tableData: rankTable, title: "Etappe Uitslagen" })
+    tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
+    return { tables, title: "Etappe Winsten Overzicht" };
+  }
+
+
+  getriderpointsall = async (race_id, budgetparticipation) => {
     var teamscore = `SUM(teamscore) AS "Team",`
     var teamscoreNotFinished = `0 AS "Team",`
     var totalscore = `SUM(totalscore)`
@@ -243,10 +237,10 @@ module.exports = (app) => {
       hiddenCols,
       title: "Alle Renners"
     }]
-    callback({ tables, title: "Alle Renners Overzicht" })
+    return { tables, title: "Alle Renners Overzicht" };
   }
 
-  async function getriderpointsselected(race_id, budgetparticipation, showClassifications, callback) {
+  getriderpointsselected = async (race_id, budgetparticipation, showClassifications) => {
     var teamscore = ` SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Team",`
     var totalscore = `totalscore `
     if (budgetparticipation) {
@@ -293,7 +287,7 @@ module.exports = (app) => {
         title: "Alle Geselecteerde Renners"
       }]
     }
-    callback({ tables, title: "Alle Geselecteerde Renners Overzicht" })
+    return { tables, title: "Alle Geselecteerde Renners Overzicht" };
   }
 
   function getSelectedRidersClassificationsQuery(race_id, budgetparticipation) {
@@ -322,34 +316,32 @@ module.exports = (app) => {
     return query;
   }
 
-  function missedpoints(race_id, budgetparticipation, account_id, callback) {
+  missedpoints = async (race_id, budgetparticipation, account_id) => {
     var account_participation_id = `(SELECT account_participation_id, FROM account_participation
                 WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetparticipation = ${budgetparticipation})`
-    missedPointsUser(account_participation_id, budgetparticipation, function (outputArray) {
-      var tables = [{
-        tableData: outputArray,
-        title: "Gemiste Punten"
-      }]
-      callback({ tables, title: "Gemiste Punten" })
-    })
+    const outputArray = await missedPointsUser(account_participation_id, budgetparticipation)
+    var tables = [{
+      tableData: outputArray,
+      title: "Gemiste Punten"
+    }]
+    return { tables, title: "Gemiste Punten" };
   }
 
-  async function missedpointsall(race_id, budgetparticipation, callback) {
+  missedpointsall = async (race_id, budgetparticipation) => {
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)
                 WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
                 ORDER BY account_id;`
     const results = await sqlDB.query(usersQuery);
-    async.map(results.rows, function (account, done) {
-      missedPointsUser(account.account_participation_id, budgetparticipation, function (tableData) {
-        done(null, { tableData, title: account.username })
-      })
-    }, function (_, tables) {
-      callback({ tables, title: "Gemiste Punten Iedereen" })
-    })
+    let tables = [];
+    for (const account of results.rows) {
+      const tableData = await missedPointsUser(account.account_participation_id, budgetparticipation);
+      tables.push({ tableData, title: account.username });
+    }
+    return { tables, title: "Gemiste Punten Iedereen" };
   }
 
-  async function missedPointsUser(account_participation_id, budgetparticipation, callback) {
+  missedPointsUser = async (account_participation_id, budgetparticipation) => {
     var teamselection = `SELECT rider_participation_id FROM team_selection_rider
                 WHERE account_participation_id = ${account_participation_id}\n `
     var totalscore = 'totalscore';
@@ -399,7 +391,7 @@ module.exports = (app) => {
       }
     }
     outputArray.push({ Etappe: "Totaal", Behaald: actualTotal, Optimaal: optimalTotal, Gemist: missedTotal })
-    callback(outputArray);
+    return outputArray;
   }
 
   function attrIndex(array, attr, value) {
@@ -411,7 +403,7 @@ module.exports = (app) => {
     return -1;
   }
 
-  async function teams(race_id, budgetparticipation, account_id, details, callback) {
+  teams = async (race_id, budgetparticipation, account_id, details) => {
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
                 WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
@@ -419,23 +411,23 @@ module.exports = (app) => {
     var main_account_participation_id = `(SELECT account_participation_id FROM account_participation 
       WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation} AND account_id = ${account_id})`
     const results = await sqlDB.query(usersQuery);
-    async.map(results.rows, function (account, done) {
-      teamoverzichtuser(main_account_participation_id, account.account_participation_id, budgetparticipation, details, function (teamoverzicht) {
-        if (details) {
-          done(null, { tableData: teamoverzicht.tableData, title: account.username, coltype: teamoverzicht.coltype })
-        } else {
-          done(null, { riders: teamoverzicht.tableData, username: account.username, coltype: teamoverzicht.coltype })
-        }
-      })
-    }, function (_, tables) {
-      if (!details) {
-        tables = selectionsPopUp(tables)
+    const tables = [];
+    for (const account of results.rows) {
+      const teamoverzicht = await teamoverzichtuser(main_account_participation_id, account.account_participation_id, budgetparticipation, details);
+      if (details) {
+        tables.push({ tableData: teamoverzicht.tableData, title: account.username, coltype: teamoverzicht.coltype })
+      } else {
+        tables.push({ riders: teamoverzicht.tableData, username: account.username, coltype: teamoverzicht.coltype })
       }
-      callback({ tables, title: "Team Overzicht Iedereen" })
-    })
+    };
+
+    if (!details) {
+      tables = selectionsPopUp(tables);
+    }
+    return { tables, title: "Team Overzicht Iedereen" };
   }
 
-  async function teamoverzichtuser(main_account_participation_id, account_participation_id, budgetparticipation, details, callback) {
+  teamoverzichtuser = async (main_account_participation_id, account_participation_id, budgetparticipation, details) => {
     var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
         INNER JOIN stage_selection USING(stage_selection_id)
         INNER JOIN stage USING (stage_id)
@@ -478,10 +470,10 @@ module.exports = (app) => {
       ORDER BY ${orderBy} DESC`
 
     const results = await sqlDB.query(query);
-    callback({ tableData: results.rows, coltype })
+    return { tableData: results.rows, coltype };
   }
 
-  async function getadditionalstats(race_id, budgetparticipation, callback) {
+  getadditionalstats = async (race_id, budgetparticipation) => {
     var selectedRidersQuery = `SELECT stagenr as "Etappe", COUNT(DISTINCT rider_participation) as "Renners" from stage_selection_rider
                 INNER JOIN stage_selection USING(stage_selection_id)
                 INNER JOIN rider_participation USING(rider_participation_id)
@@ -524,10 +516,10 @@ module.exports = (app) => {
       tables.push({ title: titles[i], tableData: results[i].rows, coltype: coltypes[i] })
     }
     let title = "Overige Statistieken";
-    callback({ tables, title })
+    return { tables, title };
   }
 
-  async function teamcomparisons(race_id, budgetparticipation, callback) {
+  teamcomparisons = async (race_id, budgetparticipation) => {
     var usersQuery = `SELECT username, ARRAY_AGG(json_build_object('price', price, 'rider_participation_id', rider_participation_id)) AS riders FROM team_selection_rider 
     INNER JOIN rider_participation USING (rider_participation_id)
     INNER JOIN account_participation USING (account_participation_id)
@@ -588,7 +580,7 @@ module.exports = (app) => {
     tables.push({ title: "Renners Relatief", tableData: countRel, coltype })
     tables.push({ title: `Budget Relatief`, tableData: budgetRel, coltype })
     var title = "Vergelijking van Selecties"
-    callback({ tables, title })
+    return { tables, title };
   }
 
   //for the individual rider page

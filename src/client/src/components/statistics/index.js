@@ -46,28 +46,11 @@ class statistics extends Component {
   }
 
   renderPage() {
-
     this.setState({
       currlink: this.props.match.params.selection,
       tables: '',
     }, () => {
-      var pageref = this.state.currlink;
-      switch (pageref) {
-        case "rondewinsten":
-          this.getDataAndRender(pageref, true)
-          break;
-        case "allriders":
-        case "selectedriders":
-        case "missedpoints":
-        case "missedpointsall":
-        case "teams":
-        case "etappewinsten":
-        case "overigestats":
-        case "teamcomparisons":
-          this.getDataAndRender(pageref, false)
-          break;
-        default: this.props.history.push(this.props.redirect); break;
-      }
+      this.getDataAndRender(this.state.currlink);
     })
   }
 
@@ -105,6 +88,7 @@ class statistics extends Component {
             budgetSwitchButton: <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
           })
         } else {
+          this.props.history.push(this.props.redirect);
           document.title = '404';
           this.setState({
             tables: [],
@@ -118,7 +102,7 @@ class statistics extends Component {
     return (
       <div className="statisticsContainer">
         {this.state.budgetSwitchButton}
-        {this.state.currlink === "selectedriders" && <StateSwitchButton stateStrings={['Punten', 'Klassementen']} stateVar={this.state.showPoints} stateVarSwitch={this.classificationsPointsSwitch}  />}
+        {this.state.currlink === "selectedriders" && <StateSwitchButton stateStrings={['Punten', 'Klassementen']} stateVar={this.state.showPoints} stateVarSwitch={this.classificationsPointsSwitch} />}
         {this.state.currlink === "teams" && this.state.tables.length > 0 && <StateSwitchButton stateStrings={['Simpel', 'Details']} stateVar={this.state.details} stateVarSwitch={this.detailsSwitch} />}
         {this.state.tables}
       </div>
