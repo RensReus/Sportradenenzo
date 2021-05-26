@@ -3,26 +3,25 @@ module.exports = (app) => {
 
   // const current_race_id = current_race.id;
 
-  app.post('/api/getracepartcipation', (req, res) => {
+  app.post('/api/getracepartcipation', async (req, res) => {
     const query = `SELECT race_id FROM account_participation
         WHERE account_id = ${req.user.account_id} AND finalscore=0 AND budgetparticipation=false`;
-    sqlDB.query(query, (_, results) => {
-      res.send({ participations: results.rows });
-    });
+    const results = await sqlDB.query(query);
+    res.send({ participations: results.rows });
   });
 
-  app.post('/api/getactiveraces', (req, res) => {
+  app.post('/api/getactiveraces', async (_, res) => {
     let activeRacesQuery = `SELECT race_id, COUNT(stage_id) FROM race
     INNER JOIN stage USING(race_id)
     WHERE race.finished = false AND name IN ('giro','tour','vuelta')
     GROUP BY race_id;`
 
-    sqlDB.query(activeRacesQuery, (_, activeRacesResults) => {
-      if (activeRacesResults.rows.length === 0) { 
-          res.send({activeRaces:[]})
-      } else {
-        
-        var currentStagesQuery = activeRacesResults.rows.reduce((query, race) => query + `SELECT stagenr + CASE WHEN complete THEN 1 ELSE 0 END AS stagenr,race_id,name,year FROM stage 
+    const activeRacesResults = await sqlDB.query(activeRacesQuery);
+    if (activeRacesResults.rows.length === 0) {
+      res.send({ activeRaces: [] })
+    } else {
+
+      var currentStagesQuery = activeRacesResults.rows.reduce((query, race) => query + `SELECT stagenr + CASE WHEN complete THEN 1 ELSE 0 END AS stagenr,race_id,name,year FROM stage 
         INNER JOIN race USING(race_id)
         WHERE starttime < now() AT TIME ZONE 'Europe/Paris' AND race.race_id = ${race.race_id}
         UNION 
@@ -30,21 +29,19 @@ module.exports = (app) => {
         INNER JOIN race USING(race_id)
         WHERE stagenr = 1 AND race.race_id = ${race.race_id}
         ORDER BY stagenr DESC
-        LIMIT 1;;\n `,'')
-        sqlDB.query(currentStagesQuery, (_, currentStagesResults) => {
-          let activeRaces: Array<any>;
-          if (activeRacesResults.rows.length === 1) {
-            activeRaces = currentStagesResults.rows
-          } else {
-             activeRaces = currentStagesResults.map(x => x.rows[0]);
-          }
-          res.send({ activeRaces });
-        })
+        LIMIT 1;;\n `, '')
+      const currentStagesResults = await sqlDB.query(currentStagesQuery);
+      let activeRaces: Array<any>;
+      if (activeRacesResults.rows.length === 1) {
+        activeRaces = currentStagesResults.rows
+      } else {
+        activeRaces = currentStagesResults.map(x => x.rows[0]);
       }
-    });
+      res.send({ activeRaces });
+    }
   })
 
-  app.post('/api/getfinishedraces', (req, res) => {
+  app.post('/api/getfinishedraces', async (_, res) => {
     // let query = `SELECT finalscore, name, year, race_id FROM account_participation
     // INNER JOIN race USING(race_id)
     // WHERE finished AND account_id = ${req.user.account_id}`;
@@ -52,11 +49,10 @@ module.exports = (app) => {
     INNER JOIN race USING(race_id)
     WHERE race.finished AND type = 'FinalStandings'
     ORDER BY year, name`;
-    sqlDB.query(query, (_, results2) => {
-      const finishedRaces = results2.rows;
-      res.send({ finishedRaces });
-    });
-  })
+    const results = await sqlDB.query(query);
+    const finishedRaces = results.rows;
+    res.send({ finishedRaces });
+  });
 
   // app.post('/api/addparticipation',function(req,res){
   //     if(!req.user){
