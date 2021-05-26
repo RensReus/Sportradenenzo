@@ -2,9 +2,8 @@ const cheerio = require('cheerio');
 const request = require('request');
 const schedule = require('node-schedule');
 const sqlDB = require('./db/sqlDB');
-const async = require('async');
 const stageresults = require('./api/stageresults');
-const getStartlist = async (race, callback) => {
+const getStartlist = async (race) => {
   const fs = require('fs');
   var raceString = "";
   var prijzenfile = "";
@@ -20,7 +19,7 @@ const getStartlist = async (race, callback) => {
   if (race.raceName === 'classics') {//if classics get name of the stage/race from DB
     raceDataQuery = `SELECT * FROM stage WHERE race_id = ${race_id} AND stagenr = ${race.racenr}`
     const results = await sqlDB.query(raceDataQuery);
-    startlistProcessRiders(results.rows[0].name, 'classics', race.year, race_id, callback)
+    return startlistProcessRiders(results.rows[0].name, 'classics', race.year, race_id)
   } else {//if not classics set racestring and load price list
     switch (race.raceName) {
       case "giro":
@@ -47,12 +46,12 @@ const getStartlist = async (race, callback) => {
         let price = parseFloat(rider.Price);
         riderprices.push({ firstName, lastName, price })
       }
-      startlistProcessRiders(raceString, riderprices, race.year, race_id, callback)
+      return startlistProcessRiders(raceString, riderprices, race.year, race_id)
     })
   }
 }
 
-var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id, callback) => {
+var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id) => {
   request(`https://www.procyclingstats.com/race/${raceString}/${year}/startlist`, async (error, response, html) => {
     var stage_id = 0; //Placeholder
     if (!error && response.statusCode === 200) {
@@ -141,8 +140,7 @@ var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id, ca
         var deleteStartlistQuery = `DELETE FROM rider_participation WHERE rider_participation_id NOT IN ${startlist_IDs} AND race_id = ${race_id};\n `;
         var totalQuery = deleteStageSelectionQuery + deleteKopmanQuery + deleteTeamSelectionQuery + deleteStartlistQuery + riderQuery + participationQuery;
       }
-      await sqlDB.query(totalQuery);
-      callback();
+      return await sqlDB.query(totalQuery);
     }
   });
 }
@@ -539,46 +537,46 @@ var calculateUserScores = async (race_id, stage, stageType) => {
   return "Calculated Userscores";
 }
 
-var calculateUserScoresKlassieker = async (year, stage, callback) => { //TODO integreren in voorgaande functie
-  var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = 'classics')`
-  var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
-  const res = await sqlDB.query(participantsQuery);
-  var totalQuery = '';
-  for (var i in res.rows) {// voor iedere user
-    for (var j = stage; j < 15; j++) {// to show correct totalscores for later stages
-      var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
-      var account_participation_id = res.rows[i].account_participation_id;
-      var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
-      var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM team_selection_rider 
-                                INNER JOIN rider_participation USING (rider_participation_id)
-                                INNER JOIN results_points USING (rider_participation_id)
-                                WHERE rider_participation.race_id = ${race_id} AND account_participation_id = ${account_participation_id} and stage_id = ${stage_id}),0)`;
-      var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
-      var prevstagesScore = '0'
-      if (j != 1) {
-        var prevstagesScore = `(SELECT SUM(stagescore) FROM stage_selection
-                    WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages})`;
-      }
-      var totalscore = `${prevstagesScore} + ${stagescore}`;
-      scoreQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore})`;
-      scoreQuery += `ON CONFLICT (account_participation_id,stage_id)
-                DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore; `
-      totalQuery += scoreQuery;
+// var calculateUserScoresKlassieker = async (year, stage) => { //TODO integreren in voorgaande functie
+//   var race_id = `(SELECT race_id FROM race WHERE year = ${year} AND name = 'classics')`
+//   var participantsQuery = `SELECT account_participation_id, budgetParticipation FROM account_participation WHERE race_id = ${race_id}`
+//   const res = await sqlDB.query(participantsQuery);
+//   var totalQuery = '';
+//   for (var i in res.rows) {// voor iedere user
+//     for (var j = stage; j < 15; j++) {// to show correct totalscores for later stages
+//       var scoreQuery = `INSERT INTO stage_selection(account_participation_id,stage_id, stagescore, totalscore) VALUES`
+//       var account_participation_id = res.rows[i].account_participation_id;
+//       var stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr = ${j})`;
+//       var stagescore = `COALESCE((SELECT SUM(results_points.totalscore) FROM team_selection_rider 
+//                                 INNER JOIN rider_participation USING (rider_participation_id)
+//                                 INNER JOIN results_points USING (rider_participation_id)
+//                                 WHERE rider_participation.race_id = ${race_id} AND account_participation_id = ${account_participation_id} and stage_id = ${stage_id}),0)`;
+//       var previousStages = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} and stagenr < ${j})`
+//       var prevstagesScore = '0'
+//       if (j != 1) {
+//         var prevstagesScore = `(SELECT SUM(stagescore) FROM stage_selection
+//                     WHERE account_participation_id = ${account_participation_id} AND stage_id IN ${previousStages})`;
+//       }
+//       var totalscore = `${prevstagesScore} + ${stagescore}`;
+//       scoreQuery += `(${account_participation_id},${stage_id},${stagescore},${totalscore})`;
+//       scoreQuery += `ON CONFLICT (account_participation_id,stage_id)
+//                 DO UPDATE SET stagescore = EXCLUDED.stagescore, totalscore = EXCLUDED.totalscore; `
+//       totalQuery += scoreQuery;
 
-    }
-  }
-  await sqlDB.query(totalQuery);
-  callback(null, 'Calculated User Scores');
-}
+//     }
+//   }
+//   return await sqlDB.query(totalQuery);
+// }
 
-var getRider = function (pcsid, callback) {
+var getRider = function (pcsid) {
   request(`https://www.procyclingstats.com/rider/${pcsid}`, function (err, res, html) {
-    if (!err && res.statusCode === 200) {
+    if (err || res.statusCode !== 200) {
+      return 404;
+    } else {
       var $ = cheerio.load(html);
       var entry = $('.entry').children('h1').text()
       if (entry === 'Could not find rider') { //Kijk of de pagina bestaat, volledig afhankelijk van de 404 pagina layout
-        callback(404)
-        return;
+        return 404;
       } else {
         var nameAndTeam = entry.split('»') //Zoek naam en team op de pagina
         var age = $('.rdr-info-cont').text().match(new RegExp(/\(([^)]+)\)/))[1] //Zoek de leeftijd, het getal tussen de haakjes
@@ -603,12 +601,8 @@ var getRider = function (pcsid, callback) {
           'countryFullname': countryFullname,
           'initials': initials
         }
-        callback(rider);
-        return;
+        return rider;
       }
-    } else {
-      callback(404)
-      return;
     }
   });
 }
@@ -616,7 +610,6 @@ var getRider = function (pcsid, callback) {
 var startSchedule = async () => {
   var activeRacesQuery = `SELECT * FROM race WHERE NOT finished`;
   const activeRacesResults = await sqlDB.query(activeRacesQuery);
-  // async.each(activeRacesResults.rows, (race, callback) => {
   activeRacesResults.rows.forEach(race => {
     var scrapeResults = schedule.scheduleJob("* * * * *", async () => {
       var stageQuery = `SELECT * FROM STAGE
@@ -628,19 +621,18 @@ var startSchedule = async () => {
       if (results.rows.length) {// if some results, so at least after start of stage 1
         var stage = results.rows[0];
         if (!stage.finished) {
-          getTimetoFinish(race.name, async (stageFinished, newResultsRule) => {// getTimetoFinish if not finished
-            if (stageFinished) {
-              var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
+          var [stageFinished, newResultsRule] = await getTimetoFinish(race.name);
+          if (stageFinished) {
+            var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
 
-              var response = await getResult(race, stage.stagenr)
-              console.log(response, "stage", stage.stagenr, "\n");
+            var response = await getResult(race, stage.stagenr)
+            console.log(response, "stage", stage.stagenr, "\n");
 
-              await sqlDB.query(updateStageQuery);
-              console.log("Race %s Stage %s finished", race.race_id, stage.stagenr)
-            } else {
-              scrapeResults.reschedule(newResultsRule);  //update new schedule
-            }
-          })
+            await sqlDB.query(updateStageQuery);
+            console.log("Race %s Stage %s finished", race.race_id, stage.stagenr)
+          } else {
+            scrapeResults.reschedule(newResultsRule);  //update new schedule
+          }
         } else if (!stage.complete) {//get results if not complete
           var response = await getResult(race, stage.stagenr)
           console.log(response, "stage", stage.stagenr, "\n");
@@ -662,54 +654,49 @@ var startSchedule = async () => {
   })
 }
 
-var getTimetoFinish = function (racename, callback) {
-  request({
+var getTimetoFinish = async (racename) => {
+  var html = await request({
     url: 'https://www.procyclingstats.com/',
     headers: { "Connection": "keep-alive" }
-  }, function (error, response, html) {
-    var $ = cheerio.load(html);
-    var rule = '';
-    var racebeschikbaar = false;
-    $('.tblCont1').first().children().eq(1).children().eq(1).children().first().each(function () {
-      var startString = ''
-      switch (racename) {
-        case 'giro': startString = 'Giro d\'Italia'; break;
-        case 'tour': startString = 'Tour de France'; break;
-        case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
-      }
+  });
+  var $ = cheerio.load(html);
+  var rule = '';
+  var racebeschikbaar = false;
+  $('.tblCont1').first().children().eq(1).children().eq(1).children().first().each(function () {
+    var startString = ''
+    switch (racename) {
+      case 'giro': startString = 'Giro d\'Italia'; break;
+      case 'tour': startString = 'Tour de France'; break;
+      case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
+    }
 
-      if ($(this).children().eq(2).text().startsWith(startString)) {
-        racebeschikbaar = true;
-        if ($(this).children().eq(0).text() != 'finished') {
-          var finish = $(this).children().eq(0).text().split(':').map(x => parseInt(x));
-          var now = new Date();
-          if (finish[0] - now.getHours() <= 1) { // als nog een uur of minder
-            rule = '*/5 * * * *';// iedere 5 min checken 
-            console.log("next run in 5 min", racename)
-            callback(false, rule);
-            return;
-          } else {
-            rule = '15 * * * *';// ieder uur op XX:15
-            console.log("next run in 1 hour", racename)
-            callback(false, rule);
-            return;
-          }
-
-        } else {//als gefinisht
-          rule = '* * * * *';// iedere 1 min checken 
-          console.log("stage finished", racename)
-          callback(true, rule);
-          return;
+    if ($(this).children().eq(2).text().startsWith(startString)) {
+      racebeschikbaar = true;
+      if ($(this).children().eq(0).text() != 'finished') {
+        var finish = $(this).children().eq(0).text().split(':').map(x => parseInt(x));
+        var now = new Date();
+        if (finish[0] - now.getHours() <= 1) { // als nog een uur of minder
+          rule = '*/5 * * * *';// iedere 5 min checken 
+          console.log("next run in 5 min", racename)
+          return [false, rule];
+        } else {
+          rule = '15 * * * *';// ieder uur op XX:15
+          console.log("next run in 1 hour", racename)
+          return [false, rule];
         }
+
+      } else {//als gefinisht
+        rule = '* * * * *';// iedere 1 min checken 
+        console.log("stage finished", racename)
+        return [true, rule];
       }
-    });
-    if (!racebeschikbaar) { // trigger later
-      console.log("Race not available"), racename;
-      rule = '0 0 10 * *'; // check at 10am
-      callback(false, rule);
-      return;
     }
   });
+  if (!racebeschikbaar) { // trigger later
+    console.log("Race not available"), racename;
+    rule = '0 0 10 * *'; // check at 10am
+    return [false, rule];
+  }
 }
 
 module.exports.getStartlist = getStartlist;

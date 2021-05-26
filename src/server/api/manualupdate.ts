@@ -38,15 +38,14 @@ module.exports = (app) => {
   //   })
   // });
 
-  app.post('/api/getstartlist', (req, res) => {
+  app.post('/api/getstartlist', async (req, res) => {
     if (req.user.admin) {
       const year = parseInt(req.body.year, 10);
       const raceName = req.body.raceName;
       var race = { raceName: raceName, year: year };
-      scrape.getStartlist(race, () => {
-        console.log('Got startlist %s year %s', raceName, year);
-        res.send('loaded startlist');
-      });
+      await scrape.getStartlist(race)
+      console.log('Got startlist %s year %s', raceName, year);
+      res.send('loaded startlist');
     } else {
       return res.status(401).send('Access denied. No admin');
     }

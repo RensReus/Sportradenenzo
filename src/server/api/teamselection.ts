@@ -1,10 +1,8 @@
 // In dit bestand staan alle calls die te maken hebben met het selecteren van het team voor een race
 
 module.exports = function (app) {
-  const async = require('async')
   const sqlDB = require('../db/sqlDB')
   const SQLread = require('../db/SQLread')
-  const SQLwrite = require('../db/SQLwrite')
   const scrape = require('../scrape')
 
   app.post('/api/teamselection', async (req, res) => {
@@ -35,7 +33,7 @@ module.exports = function (app) {
     if (participationResults.rows.length == 0) {
       callback({ noParticipation: true });
     } else {
-    // TODO parallel
+      // TODO parallel
       const allRiders = await SQLread.getAllRiders(race_id)
       const userSelectionGewoon = await SQLread.getTeamSelection(account_id, false, race_id)
       const userSelectionBudget = await SQLread.getTeamSelection(account_id, true, race_id)
@@ -214,13 +212,12 @@ module.exports = function (app) {
   // });
 
   //Haalt de data van een enkele renner van pcs
-  app.post('/api/getrider', (req, res) => {
-    scrape.getRider(req.body.pcsid, function (response) {
-      if (response == 404) {
-        res.send(false)
-      } else {
-        res.send({ rider: response })
-      }
-    });
+  app.post('/api/getrider', async (req, res) => {
+    const rider = await scrape.getRider(req.body.pcsid)
+    if (rider == 404) {
+      res.send(false)
+    } else {
+      res.send({ rider })
+    }
   });
 }
