@@ -1,7 +1,5 @@
-const sqlDB = require('./sqlDB')
 // TODO remove callbacks
 // todo Maybe remove whole file? maar de styling met params en typing is nice
-
 module.exports = {
     /** Returns the account object from db
      * @param {number} account_id account id

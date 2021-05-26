@@ -47,9 +47,8 @@ module.exports = function(passport) {
                 //still available make new user
                 var passwordToStore = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
                 var emailToStore    = email.toLowerCase();
-                SQLwrite.addAccount(emailToStore,passwordToStore,function(account){
-                    return done(account)
-                })
+                var account         = await SQLwrite.addAccount(emailToStore,passwordToStore)
+                done(account);
             }
         })
         });

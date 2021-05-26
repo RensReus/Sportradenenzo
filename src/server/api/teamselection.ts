@@ -188,52 +188,52 @@ module.exports = function (app) {
     });
   });
 
-  app.post('/api/teamselectionaddclassics', (req, res) => {
-    //Scrape de rider opnieuw om foute data te voorkomen
-    scrape.getRider(req.body.rider.pcsid.toLowerCase(), function (response) {
-      if (response == 404) {
-        res.send(false)
-      } else {
-        async.auto({
-          rider_id: function (callback) {
-            SQLwrite.addRiderToDatabase(
-              response.pcsid,
-              response.country,
-              response.firstName,
-              response.lastName,
-              response.initials,
-              callback
-            )
-          },
-          race: function (callback) {
-            SQLread.getRace(
-              req.body.race,
-              req.body.year,
-              callback
-            )
-          }
-        }, function (results) {
-          SQLwrite.addRiderToRace(
-            results.race.race_id,
-            results.rider_id,
-            req.body.price,
-            response.team,
-            function (reaction) {
-              SQLwrite.addRiderToSelection(
-                reaction.rider_participation_id,
-                req.user.account_id,
-                results.race.race_id,
-                function (finalResponse) {
-                  res.send(finalResponse)
-                }
-              )
-            }
+  // app.post('/api/teamselectionaddclassics', (req, res) => {
+  //   //Scrape de rider opnieuw om foute data te voorkomen
+  //   scrape.getRider(req.body.rider.pcsid.toLowerCase(), function (response) {
+  //     if (response == 404) {
+  //       res.send(false)
+  //     } else {
+  //       async.auto({
+  //         rider_id: function (callback) {
+  //           SQLwrite.addRiderToDatabase(
+  //             response.pcsid,
+  //             response.country,
+  //             response.firstName,
+  //             response.lastName,
+  //             response.initials,
+  //             callback
+  //           )
+  //         },
+  //         race: function (callback) {
+  //           SQLread.getRace(
+  //             req.body.race,
+  //             req.body.year,
+  //             callback
+  //           )
+  //         }
+  //       }, function (results) {
+  //         SQLwrite.addRiderToRace(
+  //           results.race.race_id,
+  //           results.rider_id,
+  //           req.body.price,
+  //           response.team,
+  //           function (reaction) {
+  //             SQLwrite.addRiderToSelection(
+  //               reaction.rider_participation_id,
+  //               req.user.account_id,
+  //               results.race.race_id,
+  //               function (finalResponse) {
+  //                 res.send(finalResponse)
+  //               }
+  //             )
+  //           }
 
-          )
-        })
-      }
-    });
-  });
+  //         )
+  //       })
+  //     }
+  //   });
+  // });
 
   //Haalt de data van een enkele renner van pcs
   app.post('/api/getrider', (req, res) => {
