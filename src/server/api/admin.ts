@@ -2,35 +2,21 @@ module.exports = (app) => {
   const sqlDB = require('../db/sqlDB');
   // const sqlDBnew = require('../db/sqlDBnew');
 
-  app.post('/api/admin/query', (req, res) => {
+  app.post('/api/admin/query', async (req, res) => {
     if (req.user.admin) {
       const sqlQuery = req.body.query;
-      sqlDB.query(sqlQuery,
-        (err, sqlres) => {
-          if (err) {
-            // tslint:disable-next-line: no-console
-            console.log(sqlQuery);
-            // tslint:disable-next-line: no-console
-            console.log('ERROR');
-            // tslint:disable-next-line: no-console
-            console.log(err);
-            // tslint:disable-next-line: no-console
-            console.log(err.toString());
-            res.send({ errorBool: true, data: err, error: err.toString() });
-          } else {
-            // tslint:disable-next-line: no-console
-            console.log('Query: ');
-            // tslint:disable-next-line: no-console
-            console.log(sqlQuery);
-            res.send({ data: sqlres });
-          }
-        });
+      var response = await sqlDB.query(sqlQuery, [], true);
+      if (response.error) {
+        res.send({ errorBool: true, data: response.error, error: response.error.toString() });
+      } else {
+        res.send({ data: response });
+      }
     } else {
       return res.status(401).send('Access denied. No admin');
     }
   });
 
-  app.post('/api/admin/getdbinfo', (req, res) => {
+  app.post('/api/admin/getdbinfo', async (req, res) => {
     if (req.user.admin) {
       const allTableSizesQuery = `SELECT relname "Table", n_live_tup AS "Rows", n_tup_ins AS "Inserts", n_tup_upd AS "Updates", n_tup_del AS "Deletions"
                 FROM pg_stat_user_tables
@@ -63,20 +49,19 @@ module.exports = (app) => {
       const titles = ['All Table Sizes', 'stage_selection_rider', 'results_points', 'rider_participation', 'team_selection_rider', 'stage_selection'];
       // tslint:disable-next-line: max-line-length
       const totalQuery = allTableSizesQuery + stageSelectionRiderQuery + resultsPointsQuery + riderParticipationQuery + teamSelectionRiderQuery + stageSelectionQuery;
-      sqlDB.query(totalQuery,
-        (_, sqlres) => {
-          const sum = { Tables: 'Totaal', Rows: 0, Inserts: 0, Updates: 0, Deletions: 0 };
-          sqlres[0].rows.forEach((row) => {
-            sum.Rows += parseInt(row.Rows, 10);
-            sum.Inserts += parseInt(row.Inserts, 10);
-            sum.Updates += parseInt(row.Updates, 10);
-            sum.Deletions += parseInt(row.Deletions, 10);
-          });
-          sqlres[0].rows.push(sum);
-          res.send({ tables: sqlres, titles });
-        });
 
+      let results = await sqlDB.query(totalQuery);
 
+      const sum = { Tables: 'Totaal', Rows: 0, Inserts: 0, Updates: 0, Deletions: 0 };
+      results[0].rows.forEach((row) => {
+        sum.Rows += parseInt(row.Rows, 10);
+        sum.Inserts += parseInt(row.Inserts, 10);
+        sum.Updates += parseInt(row.Updates, 10);
+        sum.Deletions += parseInt(row.Deletions, 10);
+      });
+      results[0].rows.push(sum);
+
+      res.send({ tables: results, titles });
     } else {
       return res.status(401).send('Access denied. No admin');
     }

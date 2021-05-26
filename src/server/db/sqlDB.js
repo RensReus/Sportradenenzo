@@ -20,44 +20,16 @@ const pool = new Pool({
 })
 
 module.exports = {
-  query: (queryString, params, callback) => {
-    pool.query(queryString, params, (err, results) => {
-      if (err) {
-        console.log("WRONG QUERY: ", queryString);
-        console.log("Error: ", err.toString());
+  query: async (query, params, adminPage) => {
+    try {
+      return await pool.query(query, params);
+    } catch (error) {
+      if (adminPage) {
+        return error;
       } else {
-        callback(err, results);
+        console.log("Query Error: ", error);
+        throw error;
       }
-    })
-  },
-  getClient: (callback) => {
-    pool.connect((err, client, done) => {
-      const query = client.query.bind(client)
-
-      // monkey patch the query method to keep track of the last query executed
-      client.query = () => {
-        client.lastQuery = arguments
-        client.query.apply(client, arguments)
-      }
-
-      // set a timeout of 5 seconds, after which we will log this client's last query
-      const timeout = setTimeout(() => {
-        console.error('A client has been checked out for more than 5 seconds!')
-        console.error(`The last executed query on this client was: ${client.lastQuery}`)
-      }, 5000)
-
-      const release = (err) => {
-        // call the actual 'done' method, returning this client to the pool
-        done(err)
-
-        // clear our timeout
-        clearTimeout(timeout)
-
-        // set the query method back to its old un-monkey-patched version
-        client.query = query
-      }
-
-      callback(err, client, done)
-    })
+    }
   }
 }
