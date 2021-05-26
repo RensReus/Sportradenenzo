@@ -32,39 +32,29 @@ module.exports = function (app) {
 
   async function getridersandteam(race_id, account_id, callback) {
     const participationResults = await sqlDB.query(`SELECT * FROM account_participation WHERE race_id = ${race_id} AND account_id = ${account_id}`);
-    if (participationResults.rows.length) {
-      async.auto({
-        allRiders: function (innerCallback) {
-          SQLread.getAllRiders(race_id, innerCallback)
-        },
-        userSelectionGewoon: function (innerCallback) {
-          SQLread.getTeamSelection(account_id, false, race_id, innerCallback)
-        },
-        userSelectionBudget: function (innerCallback) {
-          SQLread.getTeamSelection(account_id, true, race_id, innerCallback)
-        },
-        race: function (innerCallback) {
-          SQLread.getRace(race_id, innerCallback)
-        }
-      }, function (results) {
-
-        var IDsGewoon = [];
-        var IDsBudget = [];
-        var budgetGewoon = results.race.budget;
-        var budgetBudget = 11250000;
-        for (var i = 0; i < results.userSelectionGewoon.length; i++) {
-          IDsGewoon.push(results.userSelectionGewoon[i].rider_participation_id)
-          budgetGewoon -= results.userSelectionGewoon[i].price
-        }
-
-        for (var i = 0; i < results.userSelectionBudget.length; i++) {
-          IDsBudget.push(results.userSelectionBudget[i].rider_participation_id)
-          budgetBudget -= results.userSelectionBudget[i].price
-        }
-        callback({ allRiders: results.allRiders, userSelectionGewoon: results.userSelectionGewoon, userSelectionBudget: results.userSelectionBudget, budgetGewoon, budgetBudget })
-      });
+    if (participationResults.rows.length == 0) {
+      callback({ noParticipation: true });
     } else {
-      callback({ noParticipation: true })
+    // TODO parallel
+      const allRiders = await SQLread.getAllRiders(race_id)
+      const userSelectionGewoon = await SQLread.getTeamSelection(account_id, false, race_id)
+      const userSelectionBudget = await SQLread.getTeamSelection(account_id, true, race_id)
+      const race = await SQLread.getRace(race_id)
+
+      var IDsGewoon = [];
+      var IDsBudget = [];
+      var budgetGewoon = race.budget;
+      var budgetBudget = 11250000;
+      for (var i = 0; i < userSelectionGewoon.length; i++) {
+        IDsGewoon.push(userSelectionGewoon[i].rider_participation_id)
+        budgetGewoon -= userSelectionGewoon[i].price
+      }
+
+      for (var i = 0; i < userSelectionBudget.length; i++) {
+        IDsBudget.push(userSelectionBudget[i].rider_participation_id)
+        budgetBudget -= userSelectionBudget[i].price
+      }
+      callback({ allRiders: allRiders, userSelectionGewoon: userSelectionGewoon, userSelectionBudget: userSelectionBudget, budgetGewoon, budgetBudget })
     }
   };
 
@@ -168,24 +158,12 @@ module.exports = function (app) {
   }
 
   //Voor klassiekerspel:
-  app.post('/api/getuserteamselection', (req, res) => {
-    async.auto({
-      userSelection: function (callback) {
-        SQLread.getTeamSelection(req.user.account_id, req.body.race, req.body.year, callback)
-      },
-      race: function (callback) {
-        SQLread.getRace(req.body.race, req.body.year, callback)
-      }
-    }, function (results) {
-      //Bereken het budget
-      var IDs = [];
-      var budget = results.race.budget;
-      for (var i = 0; i < results.userSelection.length; i++) {
-        IDs.push(results.userSelection[i].rider_participation_id)
-        budget = budget - results.userSelection[i].price
-      }
-      res.send({ userSelection: results.userSelection, budget: budget }) //{allRiders,userSelection}
-    });
+  app.post('/api/getuserteamselection', async (req, res) => {
+    // TODO parallel
+    const userSelection = await SQLread.getTeamSelection(req.user.account_id, req.body.race, req.body.year);
+    const race = await SQLread.getRace(req.body.race, req.body.year);
+    var remainingBudget = race.budget - userSelection.reduce((a, b) => a + b, 0);
+    res.send({ userSelection: userSelection, budget: remainingBudget });
   });
 
   // app.post('/api/teamselectionaddclassics', (req, res) => {
