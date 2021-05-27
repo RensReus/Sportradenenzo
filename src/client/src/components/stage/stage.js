@@ -5,9 +5,7 @@ import ModalButton from '../shared/modal'
 import Table from '../shared/table'
 import StageSelectionPage from './selection'
 import StageResultsTables from './results'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
-import BudgetSwitchButton from '../shared/budgetSwitchButton';
+import StageInfo from './info'
 import LoadingDiv from '../shared/loadingDiv'
 import _ from "lodash"
 
@@ -308,24 +306,23 @@ class Stage extends Component {
   render() {
     const mode = this.state.mode
     const budget = this.state.budget;
-    let allSelectionsPopup
-    // always
-    var stageProfile = '';
-    stageProfile = <div>
-      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/stage-' + this.state.stage + '-profile.jpg'} alt="profile" />
-      <br></br>
-        finish
-        <br></br>
-      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/stage-' + this.state.stage + '-finish.jpg'} alt="" />
-      <br></br>
-      extra
-        <br></br>
-      <img className='profileImage' src={'/images/stageProfiles/' + this.props.race_id + '/stage-' + this.state.stage + '-extra.jpg'} alt="" />
-    </div>
-    if (this.state.racename === 'vuelta'){
-      stageProfile = <iframe width="1800" height="900" title='profielen' src={`https://www.procyclingstats.com/race/vuelta-a-espana/2020/stage-${this.state.stage}/today/profiles`}></iframe>
+    // Stage Info
+    const stageInfoData = {
+      race_id: this.props.race_id,
+      racename: this.state.racename,
+      stage: this.state.stage,
+      stageType: this.state.stageType,
+      budget: this.state.budget,
+    };
+
+    const stageInfoFunctions = {
+      nextStage: this.nextStage,
+      previousStage: this.previousStage,
+      budgetSwitch: this.budgetSwitch,
     }
-    //selection
+    let allSelectionsPopup
+
+    //Results
     if (mode === 'results') {
       let allSelections = this.state.allSelections[budget];
       let notSelected = this.state.notSelected[budget];
@@ -355,36 +352,13 @@ class Stage extends Component {
       <div>
         {/* 404 */}
         {mode === '404' && <span className="h6">404: Data not found</span>}
-        {/* Always renders TODO merge into one clean div */}
-        <div className="stageContainer">
-          <div className="stageInfo">
-            <div className='stagetext'>
-              <div id="prevStageButton"> {/* TODO hide if stage 1 and race started */}
-                <button className={"buttonStandard " + this.props.racename} onClick={this.previousStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
-              </div>
-              <span className="bold black h7">Stage: {this.state.stage}</span>
-              {((this.state.stageType !== "FinalStandings" && this.state.stageType !== "") || mode === 'selection') && 
-                <div id="nextStageButton">
-                  <button className={"buttonStandard " + this.props.racename} onClick={this.nextStage}><span className="h7 bold">   <FontAwesomeIcon icon={faAngleRight} />   </span></button>
-                </div>
-              }
-            </div>
-            <BudgetSwitchButton budget={this.state.budget} budgetSwitch={this.budgetSwitch} />
-            <ModalButton
-              cssClassButton={"buttonStandard " + this.props.racename}
-              content="Profile "
-              contentIcon={<FontAwesomeIcon icon={faMountain} />}
-              modalContent={stageProfile}
-            />
-          </div>
-        </div>
+        <StageInfo data={stageInfoData} functions={stageInfoFunctions} />
         {mode === 'selection' && <StageSelectionPage
           teamSelection={this.state.teamSelection[budget]} kopman={this.state.kopman[budget]}
           prevClassifications={this.state.prevClassifications[budget]} stageSelection={this.state.stageSelection[budget]}
           loadingSelection={this.state.loadingSelection} starttime={new Date(this.state.starttime)} selectionsComplete={this.state.selectionsComplete}
           addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} removeKopman={this.removeKopman}
         />}
-
         {/* Results TODO merge into one div*/}
         {mode === 'results' && <div className="stageContainer">
           {allSelectionsPopup}
