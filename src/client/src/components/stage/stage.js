@@ -70,15 +70,14 @@ class Stage extends Component {
 
   render() {
     const mode = this.state.mode
-    const budget = this.state.budget;
 
     const childData = {
       race_id: this.props.race_id,
       stage: this.state.stage,
       racename: this.state.racename,
       stageType: this.state.stageType,
-      mode: this.state.mode,
-      budget
+      budget: this.state.budget,
+      mode
     }
 
     const stageInfoFunctions = {
