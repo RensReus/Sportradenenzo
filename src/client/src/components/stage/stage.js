@@ -26,16 +26,14 @@ class Stage extends Component {
       this.setState({
         racename: this.props.racename,
       }, () => {
-        this.updateStage(this.state.stage, 0)
+        this.updateStage(this.state.stage)
       })
     }
   }
 
-  updateStage(stage, increment) {
-    this.setState({
-      stage: stage + increment
-    }, () => {
-      this.props.history.push('/stage/' + (stage + increment).toString())
+  updateStage(stage) {
+    this.setState({ stage }, () => {
+      this.props.history.push('/stage/' + (stage).toString())
       document.title = "Etappe " + stage;
       
       axios.post('/api/getstageinfo', { race_id: this.props.race_id, stage })
@@ -54,14 +52,14 @@ class Stage extends Component {
 
   previousStage() {
     if (this.state.stage > 1) {
-      this.updateStage(this.state.stage, - 1);
+      this.updateStage(this.state.stage - 1);
     } else if (this.state.mode === 'selection') {
       this.props.history.push('/teamselection')
     }
   }
 
   nextStage() {
-    this.updateStage(this.state.stage, + 1);
+    this.updateStage(this.state.stage + 1);
   }
 
   budgetSwitch() {
