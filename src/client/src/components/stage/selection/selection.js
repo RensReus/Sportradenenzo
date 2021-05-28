@@ -33,6 +33,7 @@ class Selection extends Component {
   }
 
   updateData(stage) {
+    this.setState({ loading: true })
     const budget = this.props.data.budget;
     axios.post('/api/getstage', { race_id: this.props.data.race_id, stage, budgetParticipation: budget })
       .then((res) => {

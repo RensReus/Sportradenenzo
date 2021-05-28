@@ -3,7 +3,7 @@ const sqlDB = require('../db/sqlDB')
 const helper = require('./helperfunctions')
 
 module.exports = function (app) {
-  app.post('/api/getstagemode', async (req, res) => {
+  app.post('/api/getstageinfo', async (req, res) => {
     var stagenr = req.body.stage;
     var stageInfoQuery = `SELECT starttime, type FROM stage WHERE race_id=${req.body.race_id} AND stagenr='${stagenr}'`;
     const stageInfoResults = await sqlDB.query(stageInfoQuery);
@@ -12,9 +12,9 @@ module.exports = function (app) {
     } else {
       var stageInfo = stageInfoResults.rows[0];
       if (new Date() < stageInfo.starttime && stageInfo.type !== "FinalStandings") {
-        res.send({ mode: 'selection' })
+        res.send({ mode: 'selection', stageType: stageInfo.type })
       } else {
-        res.send({ mode: 'results' })
+        res.send({ mode: 'results', stageType: stageInfo.type })
       }
     }
   });

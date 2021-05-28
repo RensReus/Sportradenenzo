@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../../shared/budgetSwitchButton';
@@ -24,9 +24,10 @@ class stageInfo extends Component {
       <div className="stageContainer">
         <div className="stageInfo">
           <div className='stagetext'>
-            <div id="prevStageButton"> {/* TODO hide if stage 1 and race started */}
+            {/* TODO (arjen) disable button ipv hide */}
+            { (this.props.data.mode === 'selection' || this.props.data.stage !== 1) && <div id="prevStageButton"> 
               <button className={"buttonStandard " + this.props.data.racename} onClick={this.props.functions.previousStage}><span className="h7 bold">  <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
-            </div>
+            </div> }
             <span className="bold black h7">Stage: {this.props.data.stage}</span>
             {((this.props.data.stageType !== "FinalStandings" && this.props.data.stageType !== "")) &&
               <div id="nextStageButton">
