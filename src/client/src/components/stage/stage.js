@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import axios from 'axios';
 import './index.css';
 import ModalButton from '../shared/modal'
 import Table from '../shared/table'
-import StageSelectionPage from './selection'
+import Selection from './selection'
 import StageResultsTables from './results'
 import StageInfo from './info'
 import LoadingDiv from '../shared/loadingDiv'
@@ -18,36 +18,23 @@ class Stage extends Component {
       loadingAll: true,
       loadingStageres: false,
       loadingSelection: false,
-      year: '',
       budget: 0,
       stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
-      stageSelection: [[], []],
-      teamSelection: [[], []],
-      kopman: [null, null],
       stageSelectionResults: [[], []],
       userScores: [[], []],
       stageResults: [[[], [], [], [], []], [[], [], [], [], []]],
       stageResultsLengths: [0, 0, 0, 0, 0],
-      lastStage: false,
-      raceStarted: false,
-      starttime: '',
-      prevClassifications: [[[], [], [], []], [[], [], [], []]],
       allSelections: [[], []],
       notSelected: [[], []],
       oldracelink: '',
       classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
       pouleTeamResultDownloaded: [false, false],
-      selectionsComplete: [0, 0],
       classificationIndex: 0,
       stageType: ''
     }
-    this.setKopman = this.setKopman.bind(this)
-    this.removeKopman = this.removeKopman.bind(this)
     this.budgetSwitch = this.budgetSwitch.bind(this)
     this.previousStage = this.previousStage.bind(this);
     this.nextStage = this.nextStage.bind(this);
-    this.updateData = this.updateData.bind(this);
-    this.addRemoveRider = this.addRemoveRider.bind(this);
     this.getStageResults = this.getStageResults.bind(this);
     this.changedClassificationDisplay = this.changedClassificationDisplay.bind(this);
     this.setDownloadedTrue = this.setDownloadedTrue.bind(this);
@@ -61,9 +48,20 @@ class Stage extends Component {
       this.setState({
         racename: this.props.racename,
       }, () => {
-        this.updateData(this.state.stage)
+        this.updateMode(this.state.stage)
       })
     }
+  }
+
+  updateMode(stage) {
+    axios.post('/api/getstagemode', { race_id: this.props.race_id, stage })
+    .then((res) => {
+      if (res.data.mode === '404') {
+        this.props.history.push('/');
+      } else {
+        this.setState({ mode: res.data.mode })
+      }
+    })
   }
 
   previousStage() {
@@ -136,24 +134,6 @@ class Stage extends Component {
         .then((res) => {
           if (res.data.mode === '404') {
             this.props.history.push('/');
-          } else if (res.data.mode === 'selection') {
-            let teamSelection = _.cloneDeep(this.state.teamSelection)
-            teamSelection[budget] = res.data.teamSelection;
-            let stageSelection = _.cloneDeep(this.state.stageSelection)
-            stageSelection[budget] = res.data.stageSelection;
-            let kopman = _.cloneDeep(this.state.kopman)
-            kopman[budget] = res.data.kopman;
-            let prevClassifications = _.cloneDeep(this.state.prevClassifications)
-            prevClassifications[budget] = res.data.prevClassifications;
-            this.setState({
-              mode: 'selection',
-              teamSelection,
-              stageSelection,
-              kopman,
-              starttime: res.data.starttime,
-              prevClassifications,
-              selectionsComplete: res.data.selectionsComplete
-            })
           } else if (res.data.mode === 'results') {
             let classificationIndex = this.state.classificationIndex;
             let stageType = res.data.stageType;
@@ -241,66 +221,7 @@ class Stage extends Component {
   budgetSwitch() {
     this.setState({
       budget: (this.state.budget - 1) * -1
-    }, () => {
-      this.updateData(this.state.stage)
     })
-  }
-
-  setKopman(rider_participation_id) {
-    const stage = this.state.stage
-    const race_id = this.props.race_id
-    const budget = this.state.budget
-    axios.post('/api/setkopman', { race_id, stage, rider_participation_id, budgetParticipation: budget })
-      .then((res) => {
-        let kopman = _.cloneDeep(this.state.kopman);
-        kopman[budget] = res.data.kopman;
-        this.setState({
-          kopman,
-          selectionsComplete: res.data.selectionsComplete
-        })
-      })
-  }
-
-  removeKopman(rider_participation_id) {
-    const stage = this.state.stage
-    const race_id = this.props.race_id
-    const budget = this.state.budget
-    axios.post('/api/removekopman', { race_id, stage, rider_participation_id, budgetParticipation: budget })
-      .then((res) => {
-        let kopman = _.cloneDeep(this.state.kopman);
-        kopman[budget] = res.data.kopman;
-        this.setState({
-          kopman,
-          selectionsComplete: res.data.selectionsComplete
-        })
-      })
-  }
-
-  addRemoveRider(rider_participation_id, addRemove) {
-    var link = '';
-    const stage = this.state.stage
-    const race_id = this.props.race_id
-    const budget = this.state.budget
-    if (addRemove === 'add') {
-      link = '/api/addridertostage';
-    } else if (addRemove === 'remove') {
-      link = '/api/removeriderfromstage';
-    }
-    axios.post(link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
-      .then((res) => {
-        let kopman = _.cloneDeep(this.state.kopman)
-        kopman[budget] = res.data.kopman;
-        let prevClassifications = _.cloneDeep(this.state.prevClassifications)
-        prevClassifications[budget] = res.data.prevClassifications;
-        let stageSelection = _.cloneDeep(this.state.stageSelection);
-        stageSelection[budget] = res.data.stageSelection;
-        this.setState({
-          stageSelection,
-          kopman,
-          prevClassifications,
-          selectionsComplete: res.data.selectionsComplete
-        })
-      })
   }
 
   render() {
@@ -320,6 +241,14 @@ class Stage extends Component {
       previousStage: this.previousStage,
       budgetSwitch: this.budgetSwitch,
     }
+
+    // Selection
+    const selectionData = {
+      race_id: this.props.race_id,
+      stage: this.state.stage,
+      budget: this.state.budget,
+    };
+
     let allSelectionsPopup
 
     //Results
@@ -353,12 +282,7 @@ class Stage extends Component {
         {/* 404 */}
         {mode === '404' && <span className="h6">404: Data not found</span>}
         <StageInfo data={stageInfoData} functions={stageInfoFunctions} />
-        {mode === 'selection' && <StageSelectionPage
-          teamSelection={this.state.teamSelection[budget]} kopman={this.state.kopman[budget]}
-          prevClassifications={this.state.prevClassifications[budget]} stageSelection={this.state.stageSelection[budget]}
-          loadingSelection={this.state.loadingSelection} starttime={new Date(this.state.starttime)} selectionsComplete={this.state.selectionsComplete}
-          addRemoveRider={this.addRemoveRider} setKopman={this.setKopman} removeKopman={this.removeKopman}
-        />}
+        {mode === 'selection' && <Selection data={selectionData} />}
         {/* Results TODO merge into one div*/}
         {mode === 'results' && <div className="stageContainer">
           {allSelectionsPopup}

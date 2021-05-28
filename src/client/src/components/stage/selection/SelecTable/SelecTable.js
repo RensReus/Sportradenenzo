@@ -12,9 +12,9 @@ class SelecTableRow extends Component {
     if (this.props.selected === 'selected') {
       addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID, 'remove')}><FontAwesomeIcon icon={faUserMinus} /></button>
       if (this.props.kopman === this.props.riderID) {
-        setKopmanButton = <button className="selectbutton" onClick={() => this.props.removeKopman(this.props.riderID)}><FontAwesomeIcon icon={solFaCheckCircle} /></button>
+        setKopmanButton = <button className="selectbutton" onClick={() => this.props.setRemoveKopman(this.props.riderID, 'remove')}><FontAwesomeIcon icon={solFaCheckCircle} /></button>
       } else {
-        setKopmanButton = <button className="selectbutton" onClick={() => this.props.setKopman(this.props.riderID)}><FontAwesomeIcon icon={regFaCheckCircle} /></button>
+        setKopmanButton = <button className="selectbutton" onClick={() => this.props.setRemoveKopman(this.props.riderID, 'set')}><FontAwesomeIcon icon={regFaCheckCircle} /></button>
       }
     } else if (this.props.selected === 'unselected') {
       addRemoveButton = <button className="selectbutton" onClick={() => this.props.addRemoveRider(this.props.riderID, 'add')}><FontAwesomeIcon icon={faUserPlus} /></button>
@@ -33,9 +33,9 @@ class SelecTableRow extends Component {
 
 class SelecTable extends Component {
   render() {
-    const selectionIDs = this.props.selectionIDs;
+    const selectionIDs = this.props.data.selectionIDs;
     const selectionLength = selectionIDs.length;
-    const teamSelectionSorted = this.props.teamSelection.sort(function (a, b) {//put selected on top
+    const teamSelectionSorted = this.props.data.teamSelection.sort(function (a, b) {//put selected on top
       var aSelected = selectionIDs.includes(a.rider_participation_id);
       var bSelected = selectionIDs.includes(b.rider_participation_id);
       if (aSelected === bSelected) return 0;
@@ -50,20 +50,20 @@ class SelecTable extends Component {
         selected = 'selected'
       }
       if (dnf) {
-        return <SelecTableRow name={name} team={team} country={country} selected='dnf' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />
+        return <SelecTableRow name={name} team={team} country={country} selected='dnf' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.data.kopman} addRemoveRider={this.props.functions.addRemoveRider} />
       } else if ((selectionLength >= 9 && selected !== 'selected')) {
-        return <SelecTableRow name={name} team={team} country={country} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />
+        return <SelecTableRow name={name} team={team} country={country} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.data.kopman} addRemoveRider={this.props.functions.addRemoveRider} />
       } else {
         if (selected === 'selected') {
-          return <SelecTableRow name={name} team={team} country={country} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} setKopman={this.props.setKopman} removeKopman={this.props.removeKopman} />
+          return <SelecTableRow name={name} team={team} country={country} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.data.kopman} addRemoveRider={this.props.functions.addRemoveRider} setRemoveKopman={this.props.functions.setRemoveKopman} />
         } else {
-          return <SelecTableRow name={name} team={team} country={country} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.kopman} addRemoveRider={this.props.addRemoveRider} />
+          return <SelecTableRow name={name} team={team} country={country} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.data.kopman} addRemoveRider={this.props.functions.addRemoveRider} />
         }
       }
     })
     return (
       <div className="selecTable" style={{ position: 'relative' }}>
-        <LoadingDiv loading={this.props.loading} />
+        <LoadingDiv loading={this.props.data.loading} />
         <table>
           <caption>{selectionLength}/9</caption>
           <thead>

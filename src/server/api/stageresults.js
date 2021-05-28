@@ -3,7 +3,24 @@ const sqlDB = require('../db/sqlDB')
 const helper = require('./helperfunctions')
 
 module.exports = function (app) {
-  app.post('/api/getstage', async (req, res) => {
+  app.post('/api/getstagemode', async (req, res) => {
+    var stagenr = req.body.stage;
+    var stageInfoQuery = `SELECT starttime, type FROM stage WHERE race_id=${req.body.race_id} AND stagenr='${stagenr}'`;
+    const stageInfoResults = await sqlDB.query(stageInfoQuery);
+    if (!stageInfoResults.rows.length) {
+      res.send({ mode: '404' })
+    } else {
+      var stageInfo = stageInfoResults.rows[0];
+      if (new Date() < stageInfo.starttime && stageInfo.type !== "FinalStandings") {
+        res.send({ mode: 'selection' })
+      } else {
+        res.send({ mode: 'results' })
+      }
+    }
+  });
+
+
+  app.post('/api/getstage', async (req, res) => { //TODO split up into getselection, get result
     var race_id = req.body.race_id;
     var now = new Date();
     var stagenr = req.body.stage;
