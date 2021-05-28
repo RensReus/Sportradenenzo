@@ -1,9 +1,9 @@
 import { Component } from 'react';
 import Table from '../../shared/table'
 import LoadingDiv from '../../shared/loadingDiv'
+import { updateArray } from '../helperfunctions'
 import SelecTable from './SelecTable'
 import axios from 'axios';
-import _ from "lodash"
 
 class Selection extends Component {
   constructor(props) {
@@ -37,25 +37,19 @@ class Selection extends Component {
     const budget = this.props.data.budget;
     axios.post('/api/getstage', { race_id: this.props.data.race_id, stage, budgetParticipation: budget })
       .then((res) => {
-        if (res.data.mode === '404') {
+        const data = res.data;
+        if (data.mode === '404') {
           this.props.history.push('/');
         } else {
-          let teamSelection = _.cloneDeep(this.state.teamSelection)
-          teamSelection[budget] = res.data.teamSelection;
-          let stageSelection = _.cloneDeep(this.state.stageSelection)
-          stageSelection[budget] = res.data.stageSelection;
-          let kopman = _.cloneDeep(this.state.kopman)
-          kopman[budget] = res.data.kopman;
-          let prevClassifications = _.cloneDeep(this.state.prevClassifications)
-          prevClassifications[budget] = res.data.prevClassifications;
+          const state = this.state;
           this.setState({
             mode: 'selection',
-            teamSelection,
-            stageSelection,
-            kopman,
-            starttime: res.data.starttime,
-            prevClassifications,
-            selectionsComplete: res.data.selectionsComplete,
+            teamSelection: updateArray(state.teamSelection, budget, data.teamSelection),
+            stageSelection: updateArray(state.stageSelection, budget, data.stageSelection),
+            kopman: updateArray(state.kopman, budget, data.kopman),
+            starttime: data.starttime,
+            prevClassifications: updateArray(state.prevClassifications, budget, data.prevClassifications),
+            selectionsComplete: data.selectionsComplete,
             loading: false
           })
         }
@@ -69,10 +63,8 @@ class Selection extends Component {
     const link = setremove === 'set' ? 'setkopman' : 'removekopman';
     axios.post('/api/' + link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
-        let kopman = _.cloneDeep(this.state.kopman);
-        kopman[budget] = res.data.kopman;
         this.setState({
-          kopman,
+          kopman: updateArray(this.state.kopman, budget, res.data.kopman),
           selectionsComplete: res.data.selectionsComplete
         })
       })
@@ -85,17 +77,13 @@ class Selection extends Component {
     const link = addRemove === 'add' ? 'addridertostage' : 'removeriderfromstage';
     axios.post('/api/' + link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
       .then((res) => {
-        let kopman = _.cloneDeep(this.state.kopman)
-        kopman[budget] = res.data.kopman;
-        let prevClassifications = _.cloneDeep(this.state.prevClassifications)
-        prevClassifications[budget] = res.data.prevClassifications;
-        let stageSelection = _.cloneDeep(this.state.stageSelection);
-        stageSelection[budget] = res.data.stageSelection;
+        const state = this.state;
+        const data = res.data;
         this.setState({
-          stageSelection,
-          kopman,
-          prevClassifications,
-          selectionsComplete: res.data.selectionsComplete
+          stageSelection: updateArray(state.stageSelection, budget, data.stageSelection),
+          kopman: updateArray(state.kopman, budget, data.kopman),
+          prevClassifications: updateArray(state.prevClassifications, budget, data.prevClassifications),
+          selectionsComplete: data.selectionsComplete
         })
       })
   }

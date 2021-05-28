@@ -60,7 +60,7 @@ class Rows extends Component {
         if (property === "rowClassName") {
           className = data[i][property];
         } else if (property === "country") {
-          row.push(<td><FlagIcon code={tdContent} /></td>);
+          row.push(<td key={i + "flag"}><FlagIcon code={tdContent} /></td>);
         } else {
           var tdClassname = property;
           if (tdClassname === ' ') tdClassname = 'rank'
