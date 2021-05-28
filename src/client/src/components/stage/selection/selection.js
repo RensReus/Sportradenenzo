@@ -91,11 +91,11 @@ class Selection extends Component {
   render() {
     const budget = this.props.data.budget
     const prevClassifications = this.state.prevClassifications[budget];
-    // TODO fix startttime
-    // var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] 
-    // var minutes = this.state.starttime.getMinutes();
-    // var minutesString = minutes < 10 ? "0" + minutes : minutes;
-    // var starttimeString = dayArray[this.state.starttime.getDay()] + " " + this.state.starttime.getHours() + ":" + minutesString;
+    var starttime = new Date(this.state.starttime);
+    var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] 
+    var minutes = starttime.getMinutes();
+    var minutesString = minutes < 10 ? "0" + minutes : minutes;
+    var starttimeString = dayArray[starttime.getDay()] + " " + starttime.getHours() + ":" + minutesString;
     const selecTableData = {
       teamSelection: this.state.teamSelection[budget],
       kopman: this.state.kopman[budget],
@@ -108,10 +108,10 @@ class Selection extends Component {
       setRemoveKopman: this.setRemoveKopman
     }
     return (
-      <div className="stageContainer"> {/* TODO? fix css divs/ move to stage selection file */}
+      <div className="stageContainer">
         <div className='stagetext'>
-          <div className='stagestarttime h7 bold'> {/* TODO move to stage selection file? */}
-            {/* {starttimeString} */}
+          <div className='stagestarttime h7 bold'>
+            {starttimeString}
           </div>
           <div className={"completeContainer " + ((this.state.selectionsComplete[0] + this.state.selectionsComplete[1]) === 20 ? "allCompleet" : "")}>Compleet:
         <div className="gewoonCompleet"><div style={{ width: this.state.selectionsComplete[0] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
