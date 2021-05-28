@@ -6,14 +6,12 @@ import Results from './results'
 import StageInfo from './info'
 
 class Stage extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
       mode: '',
       budget: 0,
-      stage: parseInt(this.props.match.params.stagenumber), //Haal het nummer uit de link
-      oldracelink: '',
+      stage: parseInt(this.props.match.params.stagenumber),
       stageType: ''
     }
     this.budgetSwitch = this.budgetSwitch.bind(this)
@@ -28,48 +26,42 @@ class Stage extends Component {
       this.setState({
         racename: this.props.racename,
       }, () => {
-        this.updateMode(this.state.stage)
+        this.updateStage(this.state.stage, 0)
       })
     }
   }
 
-  updateMode(stage) {
-    document.title = "Etappe " + stage;
-    axios.post('/api/getstageinfo', { race_id: this.props.race_id, stage })
-    .then((res) => {
-      if (res.data.mode === '404') {
-        this.props.history.push('/');
-      } else {
-        this.setState({ 
-          mode: res.data.mode,
-          stageType: res.data.stageType
+  updateStage(stage, increment) {
+    this.setState({
+      stage: stage + increment
+    }, () => {
+      this.props.history.push('/stage/' + (stage + increment).toString())
+      document.title = "Etappe " + stage;
+      
+      axios.post('/api/getstageinfo', { race_id: this.props.race_id, stage })
+        .then((res) => {
+          if (res.data.mode === '404') {
+            this.props.history.push('/');
+          } else {
+            this.setState({
+              mode: res.data.mode,
+              stageType: res.data.stageType
+            })
+          }
         })
-      }
     })
   }
 
   previousStage() {
-    const currentstage = parseInt(this.state.stage)
-    if (currentstage > 1) {
-      this.setState({
-        stage: currentstage - 1
-      }, () => {
-        this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage - 1).toString())
-        this.updateMode(currentstage - 1)
-      })
+    if (this.state.stage > 1) {
+      this.updateStage(this.state.stage, - 1);
     } else if (this.state.mode === 'selection') {
       this.props.history.push('/teamselection')
     }
   }
 
   nextStage() {
-    const currentstage = parseInt(this.state.stage)
-    this.props.history.push(this.state.oldracelink + '/stage/' + (currentstage + 1).toString())
-    this.setState({
-      stage: currentstage + 1
-    }, () => {
-      this.updateMode(currentstage + 1)
-    })
+    this.updateStage(this.state.stage, + 1);
   }
 
   budgetSwitch() {
@@ -82,15 +74,14 @@ class Stage extends Component {
     const mode = this.state.mode
     const budget = this.state.budget;
 
-    // Stage Info
-    const stageInfoData = {
+    const childData = {
       race_id: this.props.race_id,
-      racename: this.state.racename,
       stage: this.state.stage,
+      racename: this.state.racename,
       stageType: this.state.stageType,
       mode: this.state.mode,
-      budget,
-    };
+      budget
+    }
 
     const stageInfoFunctions = {
       nextStage: this.nextStage,
@@ -98,32 +89,15 @@ class Stage extends Component {
       budgetSwitch: this.budgetSwitch,
     }
 
-    // Selection
-    const selectionData = {
-      race_id: this.props.race_id,
-      stage: this.state.stage,
-      budget,
-    };
-
-    // Results
-    const resultsData = {
-      race_id: this.props.race_id,
-      racename: this.state.racename,
-      stage: this.state.stage,
-      stageType: this.state.stageType,
-      budget
-    };
-
     return (
       <div>
-        <StageInfo data={stageInfoData} functions={stageInfoFunctions} />
+        <StageInfo data={childData} functions={stageInfoFunctions} />
 
         {mode === '404' && <span className="h6">404: Data not found</span>}
 
-        {mode === 'selection' && <Selection data={selectionData} />}
+        {mode === 'selection' && <Selection data={childData} />}
 
-        {mode === 'results' && <Results data={resultsData} />}
-
+        {mode === 'results' && <Results data={childData} />}
       </div>
     )
   }

@@ -50,7 +50,6 @@ class Results extends Component {
     const budget = raceData.budget;
     axios.post('/api/getstage', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget })
       .then((res) => {
-        console.log('getstage RES',res.data)
         if (res.data.mode === '404') {
           this.props.history.push('/');
         } else if (res.data.mode === 'results') {
