@@ -44,7 +44,8 @@ module.exports = {
     getLogin: async function (email: string) {
         var values = [email]
         var query = `SELECT * FROM account WHERE email = $1`;
-        return await sqlDB2.query(query, values);
+        const response = await sqlDB2.query(query, values);
+        return response.rows.length == 1 ? response.rows[0] : null;
     },
 
     /**Returns race
