@@ -40,11 +40,11 @@ class Selection extends Component {
       const state = this.state;
       this.setState({
         mode: 'selection',
-        teamSelection: updateArray(state.teamSelection, budget, data.teamSelection),
-        stageSelection: updateArray(state.stageSelection, budget, data.stageSelection),
-        kopman: updateArray(state.kopman, budget, data.kopman),
+        teamSelection: updateArray(state.teamSelection, data.teamSelection, budget),
+        stageSelection: updateArray(state.stageSelection, data.stageSelection, budget),
+        kopman: updateArray(state.kopman, data.kopman, budget),
         starttime: data.starttime,
-        prevClassifications: updateArray(state.prevClassifications, budget, data.prevClassifications),
+        prevClassifications: updateArray(state.prevClassifications, data.prevClassifications, budget),
         selectionsComplete: data.selectionsComplete,
         loading: false
       })
@@ -58,7 +58,7 @@ class Selection extends Component {
     const link = setremove === 'set' ? 'setkopman' : 'removekopman';
     const res = await axios.post('/api/' + link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
     this.setState({
-      kopman: updateArray(this.state.kopman, budget, res.data.kopman),
+      kopman: updateArray(this.state.kopman, budgdata.kopman, budget),
       selectionsComplete: res.data.selectionsComplete
     })
   }
@@ -72,9 +72,9 @@ class Selection extends Component {
     const state = this.state;
     const data = res.data;
     this.setState({
-      stageSelection: updateArray(state.stageSelection, budget, data.stageSelection),
-      kopman: updateArray(state.kopman, budget, data.kopman),
-      prevClassifications: updateArray(state.prevClassifications, budget, data.prevClassifications),
+      stageSelection: updateArray(state.stageSelection, data.stageSelection, budget),
+      kopman: updateArray(state.kopman, data.kopman, budget),
+      prevClassifications: updateArray(state.prevClassifications, data.prevClassifications, budget),
       selectionsComplete: data.selectionsComplete
     })
   }
@@ -90,7 +90,6 @@ class Selection extends Component {
   render() {
     const budget = this.props.data.budget
     const prevClassifications = this.state.prevClassifications[budget];
-    
     const selecTableData = {
       teamSelection: this.state.teamSelection[budget],
       kopman: this.state.kopman[budget],

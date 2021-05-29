@@ -98,7 +98,7 @@ module.exports = function (app) {
 
         var userScoresColtype = { "Stage": 1, "Total": 1 };
         const uitslagresults = await sqlDB.query(totalQuery);
-        var userscores = uitslagresults[1].rows;
+        var userScores = uitslagresults[1].rows;
 
         var teamresult = [];
         if (uitslagresults[0].rowCount) {
@@ -120,7 +120,7 @@ module.exports = function (app) {
         res.send({
           'mode': 'results',
           teamresult,
-          userscores,
+          userScores,
           resultsComplete: uitslagresults[2].rows[0].complete,
           userScoresColtype: userScoresColtype,
           stageType: stageInfo.type
@@ -364,7 +364,7 @@ module.exports = function (app) {
       res.send({
         mode: '',
         teamresult: results[0].rows,
-        userscores: userscores,
+        userscores,
         stageresults: results[2].rows,
         userScoresColtype: userScoresColtype,
         prevText: prevText,

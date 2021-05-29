@@ -4,7 +4,7 @@ import ModalButton from '../../shared/modal'
 import Table from '../../shared/table'
 import ResultsTables from './resultsTables'
 import LoadingDiv from '../../shared/loadingDiv'
-import _ from "lodash"
+import { updateArray } from '../helperfunctions'
 
 class Results extends Component {
 
@@ -29,7 +29,7 @@ class Results extends Component {
     this.updateData(this.props.data)
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps) { //TODO trigger less
     if (this.props !== prevProps) {
       this.setState({
         classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
@@ -47,18 +47,14 @@ class Results extends Component {
     if (res.data.mode === '404') {
       this.props.history.push('/');
     } else if (res.data.mode === 'results') {
-      let stageSelectionResults = _.cloneDeep(this.state.stageSelectionResults)
-      stageSelectionResults[budget] = res.data.teamresult;
-      let userScores = _.cloneDeep(this.state.userScores)
-      userScores[budget] = res.data.userscores;
-      let pouleTeamResultDownloaded = _.cloneDeep(this.state.pouleTeamResultDownloaded)
-      pouleTeamResultDownloaded[budget] = true;
+      const state = this.state;
+      const data = res.data;
       if (!res.data.resultsComplete) this.autoupdate();
       this.setState({
         userScoresColtype: res.data.userScoresColtype,
-        stageSelectionResults,
-        userScores: userScores,
-        pouleTeamResultDownloaded,
+        stageSelectionResults: updateArray(state.stageSelectionResults, data.teamresult, budget),
+        userScores: updateArray(state.userScores, data.userScores, budget),
+        pouleTeamResultDownloaded: updateArray(state.pouleTeamResultDownloaded, true, budget),
         classificationIndex: this.state.classificationIndex
       }, () => {
         this.getStageResults(raceData)
@@ -67,9 +63,7 @@ class Results extends Component {
   }
 
   changedClassificationDisplay = (classificationIndex) => {
-    this.setState({
-      classificationIndex
-    }, () => {
+    this.setState({ classificationIndex }, () => {
       this.getStageResults(this.props.data);
     })
   }
@@ -97,12 +91,10 @@ class Results extends Component {
       this.setState({ loadingResults: true })
       const res = await axios.post('/api/getStageResults', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget, classificationIndex })
       this.setDownloadedTrue(budget, classificationIndex);
-      let newResults = _.cloneDeep(this.state.stageResults);
-      newResults[budget][classificationIndex] = res.data.stageResults;
       this.setState({
         loadingPoule: false,
         loadingResults: false,
-        stageResults: newResults,
+        stageResults: updateArray(this.state.stageResults, res.data.stageResults, budget, classificationIndex),
         stageResultsLengths: res.data.stageResultsLengths
       })
     }
@@ -113,21 +105,15 @@ class Results extends Component {
     const stage = this.props.data.stage;
     const budget = this.props.data.budget;
     const res = await axios.post('/api/getAllSelections', { race_id, stage, budgetParticipation: budget })
-    let newAllSelections = _.cloneDeep(this.state.allSelections);
-    newAllSelections[budget] = res.data.allSelections;
-    let newNotSelected = _.cloneDeep(this.state.notSelected);
-    newNotSelected[budget] = res.data.notSelected;
     this.setState({
-      allSelections: newAllSelections,
-      notSelected: newNotSelected
+      allSelections: updateArray(this.state.allSelections, res.data.allSelections, budget),
+      notSelected: updateArray(this.state.notSelected, res.data.notSelected, budget),
     })
   }
 
   setDownloadedTrue = (budget, classificationIndex) => {
-    let newClassificationDownloaded = _.cloneDeep(this.state.classificationDownloaded);
-    newClassificationDownloaded[budget][classificationIndex] = true;
     this.setState({
-      classificationDownloaded: newClassificationDownloaded
+      classificationDownloaded: updateArray(this.state.classificationDownloaded, true, budget, classificationIndex),
     })
   }
 
@@ -136,6 +122,7 @@ class Results extends Component {
     const budget = this.props.data.budget
 
     //Results
+    // TODO move all logic and popup to separate file
     let allSelections = this.state.allSelections[budget];
     let notSelected = this.state.notSelected[budget];
     var allSelectionsPopupContent = [];
@@ -169,8 +156,8 @@ class Results extends Component {
         </div>
         <div className="stage">
           <LoadingDiv loading={this.state.loadingResults} />
-          <ResultsTables data={this.state.stageResults[budget]} stageResultsLengths={this.state.stageResultsLengths} 
-          classificationIndex={this.state.classificationIndex} changedClassificationDisplay={this.changedClassificationDisplay} />
+          <ResultsTables data={this.state.stageResults[budget]} stageResultsLengths={this.state.stageResultsLengths}
+            classificationIndex={this.state.classificationIndex} changedClassificationDisplay={this.changedClassificationDisplay} />
         </div>
       </div>
     )
