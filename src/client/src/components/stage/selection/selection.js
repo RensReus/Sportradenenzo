@@ -17,9 +17,6 @@ class Selection extends Component {
       prevClassifications: [[[], [], [], []], [[], [], [], []]],
       selectionsComplete: [0, 0],
     }
-    this.setRemoveKopman = this.setRemoveKopman.bind(this)
-    this.updateData = this.updateData.bind(this);
-    this.addRemoveRider = this.addRemoveRider.bind(this);
   }
 
   componentDidMount() {
@@ -32,70 +29,68 @@ class Selection extends Component {
     }
   }
 
-  updateData(stage) {
+  updateData = async (stage) => {
     this.setState({ loading: true })
     const budget = this.props.data.budget;
-    axios.post('/api/getstage', { race_id: this.props.data.race_id, stage, budgetParticipation: budget })
-      .then((res) => {
-        const data = res.data;
-        if (data.mode === '404') {
-          this.props.history.push('/');
-        } else {
-          const state = this.state;
-          this.setState({
-            mode: 'selection',
-            teamSelection: updateArray(state.teamSelection, budget, data.teamSelection),
-            stageSelection: updateArray(state.stageSelection, budget, data.stageSelection),
-            kopman: updateArray(state.kopman, budget, data.kopman),
-            starttime: data.starttime,
-            prevClassifications: updateArray(state.prevClassifications, budget, data.prevClassifications),
-            selectionsComplete: data.selectionsComplete,
-            loading: false
-          })
-        }
+    const res = await axios.post('/api/getstage', { race_id: this.props.data.race_id, stage, budgetParticipation: budget })
+    const data = res.data;
+    if (data.mode === '404') {
+      this.props.history.push('/');
+    } else {
+      const state = this.state;
+      this.setState({
+        mode: 'selection',
+        teamSelection: updateArray(state.teamSelection, budget, data.teamSelection),
+        stageSelection: updateArray(state.stageSelection, budget, data.stageSelection),
+        kopman: updateArray(state.kopman, budget, data.kopman),
+        starttime: data.starttime,
+        prevClassifications: updateArray(state.prevClassifications, budget, data.prevClassifications),
+        selectionsComplete: data.selectionsComplete,
+        loading: false
       })
+    }
   }
 
-  setRemoveKopman(rider_participation_id, setremove) {
+  setRemoveKopman = async (rider_participation_id, setremove) => {
     const stage = this.props.data.stage;
     const race_id = this.props.data.race_id;
     const budget = this.props.data.budget;
     const link = setremove === 'set' ? 'setkopman' : 'removekopman';
-    axios.post('/api/' + link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
-      .then((res) => {
-        this.setState({
-          kopman: updateArray(this.state.kopman, budget, res.data.kopman),
-          selectionsComplete: res.data.selectionsComplete
-        })
-      })
+    const res = await axios.post('/api/' + link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
+    this.setState({
+      kopman: updateArray(this.state.kopman, budget, res.data.kopman),
+      selectionsComplete: res.data.selectionsComplete
+    })
   }
 
-  addRemoveRider(rider_participation_id, addRemove) {
+  addRemoveRider = async (rider_participation_id, addRemove) => {
     const stage = this.props.data.stage
     const race_id = this.props.data.race_id
     const budget = this.props.data.budget
     const link = addRemove === 'add' ? 'addridertostage' : 'removeriderfromstage';
-    axios.post('/api/' + link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
-      .then((res) => {
-        const state = this.state;
-        const data = res.data;
-        this.setState({
-          stageSelection: updateArray(state.stageSelection, budget, data.stageSelection),
-          kopman: updateArray(state.kopman, budget, data.kopman),
-          prevClassifications: updateArray(state.prevClassifications, budget, data.prevClassifications),
-          selectionsComplete: data.selectionsComplete
-        })
-      })
+    const res = await axios.post('/api/' + link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
+    const state = this.state;
+    const data = res.data;
+    this.setState({
+      stageSelection: updateArray(state.stageSelection, budget, data.stageSelection),
+      kopman: updateArray(state.kopman, budget, data.kopman),
+      prevClassifications: updateArray(state.prevClassifications, budget, data.prevClassifications),
+      selectionsComplete: data.selectionsComplete
+    })
+  }
+
+  starttimeString = () => {
+    var starttime = new Date(this.state.starttime);
+    var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    var minutes = starttime.getMinutes();
+    var minutesString = minutes < 10 ? "0" + minutes : minutes;
+    return dayArray[starttime.getDay()] + " " + starttime.getHours() + ":" + minutesString;
   }
 
   render() {
     const budget = this.props.data.budget
     const prevClassifications = this.state.prevClassifications[budget];
-    var starttime = new Date(this.state.starttime);
-    var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] 
-    var minutes = starttime.getMinutes();
-    var minutesString = minutes < 10 ? "0" + minutes : minutes;
-    var starttimeString = dayArray[starttime.getDay()] + " " + starttime.getHours() + ":" + minutesString;
+    
     const selecTableData = {
       teamSelection: this.state.teamSelection[budget],
       kopman: this.state.kopman[budget],
@@ -111,7 +106,7 @@ class Selection extends Component {
       <div className="stageContainer">
         <div className='stagetext'>
           <div className='stagestarttime h7 bold'>
-            {starttimeString}
+            {this.starttimeString()}
           </div>
           <div className={"completeContainer " + ((this.state.selectionsComplete[0] + this.state.selectionsComplete[1]) === 20 ? "allCompleet" : "")}>Compleet:
         <div className="gewoonCompleet"><div style={{ width: this.state.selectionsComplete[0] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>

@@ -14,9 +14,6 @@ class Stage extends Component {
       stage: parseInt(this.props.match.params.stagenumber),
       stageType: ''
     }
-    this.budgetSwitch = this.budgetSwitch.bind(this)
-    this.previousStage = this.previousStage.bind(this);
-    this.nextStage = this.nextStage.bind(this);
   }
 
   componentDidMount() {
@@ -32,25 +29,24 @@ class Stage extends Component {
   }
 
   updateStage(stage) {
-    this.setState({ stage }, () => {
+    this.setState({ stage }, async () => {
       this.props.history.push('/stage/' + (stage).toString())
       document.title = "Etappe " + stage;
-      
-      axios.post('/api/getstageinfo', { race_id: this.props.race_id, stage })
-        .then((res) => {
-          if (res.data.mode === '404') {
-            this.props.history.push('/');
-          } else {
-            this.setState({
-              mode: res.data.mode,
-              stageType: res.data.stageType
-            })
-          }
+
+      var res = await axios.post('/api/getstageinfo', { race_id: this.props.race_id, stage })
+
+      if (res.data.mode === '404') {
+        this.props.history.push('/');
+      } else {
+        this.setState({
+          mode: res.data.mode,
+          stageType: res.data.stageType
         })
+      }
     })
   }
 
-  previousStage() {
+  previousStage = () => {
     if (this.state.stage > 1) {
       this.updateStage(this.state.stage - 1);
     } else if (this.state.mode === 'selection') {
@@ -58,11 +54,11 @@ class Stage extends Component {
     }
   }
 
-  nextStage() {
+  nextStage = () => {
     this.updateStage(this.state.stage + 1);
   }
 
-  budgetSwitch() {
+  budgetSwitch = () => {
     this.setState({
       budget: (this.state.budget - 1) * -1
     })

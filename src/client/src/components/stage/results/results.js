@@ -21,13 +21,8 @@ class Results extends Component {
       notSelected: [[], []],
       classificationDownloaded: [[false, false, false, false, false], [false, false, false, false, false]],
       pouleTeamResultDownloaded: [false, false],
-      classificationIndex: 0,
-      stageType: ''
+      classificationIndex: this.props.data.stageType === "FinalStandings" ? 1 : 0,
     }
-    this.getStageResults = this.getStageResults.bind(this);
-    this.changedClassificationDisplay = this.changedClassificationDisplay.bind(this);
-    this.setDownloadedTrue = this.setDownloadedTrue.bind(this);
-    this.getAllSelections = this.getAllSelections.bind(this);
   }
 
   componentDidMount() {
@@ -45,39 +40,33 @@ class Results extends Component {
     }
   }
 
-  updateData(raceData) {
+  updateData = async (raceData) => {
     this.setState({ loadingPoule: true, loadingResults: true })
     const budget = raceData.budget;
-    axios.post('/api/getstage', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget })
-      .then((res) => {
-        if (res.data.mode === '404') {
-          this.props.history.push('/');
-        } else if (res.data.mode === 'results') {
-          let classificationIndex = this.state.classificationIndex;
-          let stageType = res.data.stageType;
-          if (stageType === "FinalStandings") classificationIndex = 1;
-          let stageSelectionResults = _.cloneDeep(this.state.stageSelectionResults)
-          stageSelectionResults[budget] = res.data.teamresult;
-          let userScores = _.cloneDeep(this.state.userScores)
-          userScores[budget] = res.data.userscores;
-          let pouleTeamResultDownloaded = _.cloneDeep(this.state.pouleTeamResultDownloaded)
-          pouleTeamResultDownloaded[budget] = true;
-          if (!res.data.resultsComplete) this.autoupdate();
-          this.setState({
-            userScoresColtype: res.data.userScoresColtype,
-            stageSelectionResults,
-            userScores: userScores,
-            pouleTeamResultDownloaded,
-            classificationIndex,
-            stageType,
-          }, () => {
-            this.getStageResults(raceData)
-          })
-        }
+    const res = await axios.post('/api/getstage', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget })
+    if (res.data.mode === '404') {
+      this.props.history.push('/');
+    } else if (res.data.mode === 'results') {
+      let stageSelectionResults = _.cloneDeep(this.state.stageSelectionResults)
+      stageSelectionResults[budget] = res.data.teamresult;
+      let userScores = _.cloneDeep(this.state.userScores)
+      userScores[budget] = res.data.userscores;
+      let pouleTeamResultDownloaded = _.cloneDeep(this.state.pouleTeamResultDownloaded)
+      pouleTeamResultDownloaded[budget] = true;
+      if (!res.data.resultsComplete) this.autoupdate();
+      this.setState({
+        userScoresColtype: res.data.userScoresColtype,
+        stageSelectionResults,
+        userScores: userScores,
+        pouleTeamResultDownloaded,
+        classificationIndex: this.state.classificationIndex
+      }, () => {
+        this.getStageResults(raceData)
       })
+    }
   }
 
-  changedClassificationDisplay(classificationIndex) {
+  changedClassificationDisplay = (classificationIndex) => {
     this.setState({
       classificationIndex
     }, () => {
@@ -101,44 +90,40 @@ class Results extends Component {
     }.bind(this), msToGo);
   }
 
-  getStageResults(raceData) {
+  getStageResults = async (raceData) => {
     const budget = raceData.budget;
     const classificationIndex = this.state.classificationIndex;
     if (!this.state.classificationDownloaded[budget][classificationIndex]) {
       this.setState({ loadingResults: true })
-      axios.post('/api/getStageResults', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget, classificationIndex })
-        .then((res) => {
-          this.setDownloadedTrue(budget, classificationIndex);
-          let newResults = _.cloneDeep(this.state.stageResults);
-          newResults[budget][classificationIndex] = res.data.stageResults;
-          this.setState({
-            loadingPoule: false,
-            loadingResults: false,
-            stageResults: newResults,
-            stageResultsLengths: res.data.stageResultsLengths
-          })
-        })
+      const res = await axios.post('/api/getStageResults', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget, classificationIndex })
+      this.setDownloadedTrue(budget, classificationIndex);
+      let newResults = _.cloneDeep(this.state.stageResults);
+      newResults[budget][classificationIndex] = res.data.stageResults;
+      this.setState({
+        loadingPoule: false,
+        loadingResults: false,
+        stageResults: newResults,
+        stageResultsLengths: res.data.stageResultsLengths
+      })
     }
   }
 
-  getAllSelections() { //TODO add loader
+  getAllSelections = async () => { //TODO add loader
     const race_id = this.props.data.race_id;
     const stage = this.props.data.stage;
     const budget = this.props.data.budget;
-    axios.post('/api/getAllSelections', { race_id, stage, budgetParticipation: budget })
-      .then((res) => {
-        let newAllSelections = _.cloneDeep(this.state.allSelections);
-        newAllSelections[budget] = res.data.allSelections;
-        let newNotSelected = _.cloneDeep(this.state.notSelected);
-        newNotSelected[budget] = res.data.notSelected;
-        this.setState({
-          allSelections: newAllSelections,
-          notSelected: newNotSelected
-        })
-      })
+    const res = await axios.post('/api/getAllSelections', { race_id, stage, budgetParticipation: budget })
+    let newAllSelections = _.cloneDeep(this.state.allSelections);
+    newAllSelections[budget] = res.data.allSelections;
+    let newNotSelected = _.cloneDeep(this.state.notSelected);
+    newNotSelected[budget] = res.data.notSelected;
+    this.setState({
+      allSelections: newAllSelections,
+      notSelected: newNotSelected
+    })
   }
 
-  setDownloadedTrue(budget, classificationIndex) {
+  setDownloadedTrue = (budget, classificationIndex) => {
     let newClassificationDownloaded = _.cloneDeep(this.state.classificationDownloaded);
     newClassificationDownloaded[budget][classificationIndex] = true;
     this.setState({
@@ -184,7 +169,8 @@ class Results extends Component {
         </div>
         <div className="stage">
           <LoadingDiv loading={this.state.loadingResults} />
-          <ResultsTables data={this.state.stageResults[budget]} stageResultsLengths={this.state.stageResultsLengths} stageType={this.props.data.stageType} changedClassificationDisplay={this.changedClassificationDisplay} />
+          <ResultsTables data={this.state.stageResults[budget]} stageResultsLengths={this.state.stageResultsLengths} 
+          classificationIndex={this.state.classificationIndex} changedClassificationDisplay={this.changedClassificationDisplay} />
         </div>
       </div>
     )

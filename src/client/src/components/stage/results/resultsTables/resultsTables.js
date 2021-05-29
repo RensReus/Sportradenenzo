@@ -2,24 +2,6 @@ import { Component } from 'react';
 import Table from '../../../shared/table'
 
 class ResultsTables extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      classificationIndex: 0
-    }
-  }
-
-  componentDidMount() {
-    if (this.props.stageType === "FinalStandings") {
-      this.setState({
-        classificationIndex: 1
-      })
-    }
-  }
-  showResult(i) {
-    this.props.changedClassificationDisplay(i);
-    this.setState({ classificationIndex: i });
-  }
   render() {
     var klassementen = [];
     for (var i = 0; i < 5; i++) {
@@ -36,12 +18,12 @@ class ResultsTables extends Component {
         <div style={{ display: 'flex' }}>
           {classificationNamesButtons.map((element, index) => {
             var buttonclassname = "klassementButton ";
-            buttonclassname += index === this.state.classificationIndex ? 'block' : 'none';
-            return <button style={{ display: 'block' }} disabled={this.props.stageResultsLengths[index] === 0} className={buttonclassname} key={element} onClick={this.showResult.bind(this, index)}>{element}</button>
+            buttonclassname += index === this.props.classificationIndex ? 'block' : 'none';
+            return <button style={{ display: 'block' }} disabled={this.props.stageResultsLengths[index] === 0} className={buttonclassname} key={element} onClick={this.props.changedClassificationDisplay.bind(this, index)}>{element}</button>
           })}
         </div>
         <div className="classification">
-          <Table data={klassementen[this.state.classificationIndex]} title={classificationNames[this.state.classificationIndex]} maxRows={20} classNames="classification" />
+          <Table data={klassementen[this.props.classificationIndex]} title={classificationNames[this.props.classificationIndex]} maxRows={20} classNames="classification" />
         </div>
       </div>
     )
