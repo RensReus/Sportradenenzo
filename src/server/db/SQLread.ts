@@ -1,3 +1,5 @@
+const sqlDB2 = require('./sqlDB');
+
 module.exports = {
     /** Returns the account object from db
      * @param {number} account_id account id
@@ -5,7 +7,7 @@ module.exports = {
     getAccount: async function (account_id: number) {
         var query = `SELECT account_id, username, email, admin FROM account
                 WHERE account_id = ${account_id}`;
-        return await sqlDB.query(query);
+        return await sqlDB2.query(query);
     },
 
     /** Returns all riders for a given account/race/year
@@ -21,7 +23,7 @@ module.exports = {
         INNER JOIN rider using(rider_id)
         WHERE rider_participation_id IN ${teamselection}
         ORDER BY dnf, price DESC`;
-        return await sqlDB.query(query, values);
+        return await sqlDB2.query(query, values);
     },
 
     /** Returns all riders for a given race/year
@@ -33,7 +35,7 @@ module.exports = {
                 INNER JOIN rider using(rider_id)
                 WHERE race_id = $1
                 ORDER BY price DESC`;
-        return await sqlDB.query(query, values);
+        return await sqlDB2.query(query, values);
     },
 
     /**Returns account belonging to email
@@ -42,7 +44,8 @@ module.exports = {
     getLogin: async function (email: string) {
         var values = [email]
         var query = `SELECT * FROM account WHERE email = $1`;
-        return await sqlDB.query(query, values);
+        const response = await sqlDB2.query(query, values);
+        return response.rows.length == 1 ? response.rows[0] : null;
     },
 
     /**Returns race
@@ -52,6 +55,6 @@ module.exports = {
         var values = [race_id];
         var query = `SELECT * FROM race 
                 WHERE race_id = $1`;
-        return await sqlDB.query(query, values);
+        return await sqlDB2.query(query, values);
     }
 }
