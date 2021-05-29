@@ -1,5 +1,5 @@
 const cheerio = require('cheerio');
-const request = require('request');
+const request = require('request-promise');
 const schedule = require('node-schedule');
 const sqlDB = require('./db/sqlDB');
 const stageresults = require('./api/stageresults');
@@ -156,43 +156,39 @@ var getResult = async (race, stagenr) => {
   var etLink = stage.type === 'FinalStandings' ? stagenr - 1 : stagenr;
 
   //get results from PCS
-  request({
+  const html = await request({
     url: `https://www.procyclingstats.com/race/${raceString}/${race.year}/stage-${etLink}`,
     headers: { "Connection": "keep-alive" }
-  }, async (error, response, html) => {
-    if (error) console.log(error);
-    if (!error && response.statusCode === 200) {
-      var $ = cheerio.load(html);
-
-      var TTTresult = []; // TODO clean up TTT code
-      if (stage.type === 'TTT') {// TTTresults is teamnames
-        $(".resTTTh").first().parent(function () {
-          $(this).children('.tttRidersCont').each(function () {
-            TTTresult.push($(this).children().eq(0).children().eq(1).children().eq(1).text());
-          })
-        })
-      }
-
-      var [ridersResults, teamWinners] = processPCSresults($, stage.type);
-
-      updateDNFriders(ridersResults['dnf'], stage.race_id);
-
-      setStageToComplete(ridersResults, stage.stagenr, race_id);
-
-      var resultsQuery = buildResultsQuery(ridersResults, TTTresult, teamWinners, stage);
-      var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
-
-      var totalQuery = deleteQuery + resultsQuery;
-
-      if (ridersResults['all'].length) {// don't send if no results
-        const res = await sqlDB.query(totalQuery);
-        console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
-        return await calculateUserScores(race_id, stagenr, stage.type)
-      } else {
-        return await calculateUserScores(race_id, stagenr, stage.type)
-      }
-    }
   })
+  var $ = cheerio.load(html);
+
+  var TTTresult = []; // TODO clean up TTT code
+  if (stage.type === 'TTT') {// TTTresults is teamnames
+    $(".resTTTh").first().parent(function () {
+      $(this).children('.tttRidersCont').each(function () {
+        TTTresult.push($(this).children().eq(0).children().eq(1).children().eq(1).text());
+      })
+    })
+  }
+
+  var [ridersResults, teamWinners] = processPCSresults($, stage.type);
+
+  updateDNFriders(ridersResults['dnf'], stage.race_id);
+
+  setStageToComplete(ridersResults, stage.stagenr, race_id);
+
+  var resultsQuery = buildResultsQuery(ridersResults, TTTresult, teamWinners, stage);
+  var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id}; `;
+
+  var totalQuery = deleteQuery + resultsQuery;
+
+  if (ridersResults['all'].length) {// don't send if no results
+    const res = await sqlDB.query(totalQuery);
+    console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
+    return await calculateUserScores(race_id, stagenr, stage.type)
+  } else {
+    return await calculateUserScores(race_id, stagenr, stage.type)
+  }
 }
 
 var getRaceString = function (raceName, stageName) {
@@ -662,7 +658,7 @@ var getTimetoFinish = async (racename) => {
   var $ = cheerio.load(html);
   var rule = '';
   var racebeschikbaar = false;
-  $('.tblCont1').first().children().eq(1).children().eq(1).children().first().each(function () {
+  $('.tblCont1').first().children().eq(1).children().eq(1).children().each(function () {
     var startString = ''
     switch (racename) {
       case 'giro': startString = 'Giro d\'Italia'; break;
