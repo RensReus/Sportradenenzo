@@ -3,7 +3,24 @@ const sqlDB = require('../db/sqlDB')
 const helper = require('./helperfunctions')
 
 module.exports = function (app) {
-  app.post('/api/getstage', async (req, res) => {
+  app.post('/api/getstageinfo', async (req, res) => {
+    var stagenr = req.body.stage;
+    var stageInfoQuery = `SELECT starttime, type FROM stage WHERE race_id=${req.body.race_id} AND stagenr='${stagenr}'`;
+    const stageInfoResults = await sqlDB.query(stageInfoQuery);
+    if (!stageInfoResults.rows.length) {
+      res.send({ mode: '404' })
+    } else {
+      var stageInfo = stageInfoResults.rows[0];
+      if (new Date() < stageInfo.starttime && stageInfo.type !== "FinalStandings") {
+        res.send({ mode: 'selection', stageType: stageInfo.type })
+      } else {
+        res.send({ mode: 'results', stageType: stageInfo.type })
+      }
+    }
+  });
+
+
+  app.post('/api/getstage', async (req, res) => { //TODO split up into getselection, get result
     var race_id = req.body.race_id;
     var now = new Date();
     var stagenr = req.body.stage;
@@ -81,7 +98,7 @@ module.exports = function (app) {
 
         var userScoresColtype = { "Stage": 1, "Total": 1 };
         const uitslagresults = await sqlDB.query(totalQuery);
-        var userscores = uitslagresults[1].rows;
+        var userScores = uitslagresults[1].rows;
 
         var teamresult = [];
         if (uitslagresults[0].rowCount) {
@@ -103,7 +120,7 @@ module.exports = function (app) {
         res.send({
           'mode': 'results',
           teamresult,
-          userscores,
+          userScores,
           resultsComplete: uitslagresults[2].rows[0].complete,
           userScoresColtype: userScoresColtype,
           stageType: stageInfo.type
@@ -347,7 +364,7 @@ module.exports = function (app) {
       res.send({
         mode: '',
         teamresult: results[0].rows,
-        userscores: userscores,
+        userscores,
         stageresults: results[2].rows,
         userScoresColtype: userScoresColtype,
         prevText: prevText,
