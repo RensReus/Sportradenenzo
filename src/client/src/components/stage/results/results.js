@@ -43,7 +43,7 @@ class Results extends Component {
   updateData = async (raceData) => {
     this.setState({ loadingPoule: true, loadingResults: true })
     const budget = raceData.budget;
-    const res = await axios.post('/api/getstage', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget })
+    const res = await axios.post('/api/getstageresultsDEPRICATED', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget })
     if (res.data.mode === '404') {
       this.props.history.push('/');
     } else if (res.data.mode === 'results') {

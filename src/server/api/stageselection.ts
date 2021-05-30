@@ -2,6 +2,48 @@
 const helper = require('./helperfunctions')
 module.exports = function (app) {
   const sqlDB = require('../db/sqlDB')
+
+  app.post('/api/getstageselection', async (req, res) => {
+    var race_id = req.body.race_id;
+    var stagenr = req.body.stage;
+    var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${req.body.stage})`;
+    var account_id = req.user.account_id;
+    var budgetParticipation = req.body.budgetParticipation == 1;
+    var account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetParticipation = ${budgetParticipation})`;
+    var stageInfoQuery = `SELECT starttime, type FROM stage WHERE race_id=${race_id} AND stagenr='${stagenr}'`;
+    const stageInfoResults = await sqlDB.query(stageInfoQuery);
+    if (!stageInfoResults.rows.length) {
+      res.send({ mode: '404' })
+    } else {
+      var stageInfo = stageInfoResults.rows[0];
+      var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
+      var teamSelectionQuery = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id, dnf, country FROM rider_participation
+          INNER JOIN rider using(rider_id)
+          WHERE rider_participation_id IN ${teamselection}
+          ORDER BY dnf, price DESC;\n `;
+      var stageSelectionQuery = `SELECT * FROM stage_selection_rider
+          INNER JOIN stage_selection USING (stage_selection_id)
+          INNER JOIN rider_participation USING (rider_participation_id)
+          INNER JOIN rider USING (rider_id)
+          WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id};\n `;
+      var kopmanQuery = `SELECT kopman_id FROM stage_selection
+          WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id};\n `;
+      var prevClassificationQuery = helper.prevClassificationsQuery(race_id, stagenr, account_id, budgetParticipation);
+      var selectionCompleteQuery = selectionsCompleteQuery(race_id, stagenr, account_id)
+      var totalQuery = teamSelectionQuery + stageSelectionQuery + kopmanQuery + prevClassificationQuery + selectionCompleteQuery;
+      const results = await sqlDB.query(totalQuery);
+      res.send({
+        'mode': 'selection',
+        'teamSelection': results[0].rows,
+        'stageSelection': results[1].rows,
+        'kopman': results[2].rows[0].kopman_id,
+        starttime: stageInfo.starttime,
+        prevClassifications: results.slice(3, 7).map(x => x.rows),
+        selectionsComplete: results[7].rows.map(x => x.complete)
+      })
+    }
+  });
+
   app.post('/api/setkopman', async (req, res) => {
     var budgetParticipation = req.body.budgetParticipation == 1;
     var race_id = req.body.race_id;

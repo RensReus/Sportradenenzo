@@ -1,9 +1,8 @@
 import { Component } from 'react';
 import Table from '../../shared/table'
 import LoadingDiv from '../../shared/loadingDiv'
-import { updateArray } from '../helperfunctions'
 import SelecTable from './SelecTable'
-import axios from 'axios';
+import { getSelectionData, starttimeString, updateKopmanCall, updateRiderCall } from './selectionHelperFunctions'
 
 class Selection extends Component {
   constructor(props) {
@@ -20,71 +19,32 @@ class Selection extends Component {
   }
 
   componentDidMount() {
-    this.updateData(this.props.data.stage)
+    this.setSelectionData(this.props.data.stage)
   }
 
   componentDidUpdate(prevProps) {
     if (this.props !== prevProps) {
-      this.updateData(this.props.data.stage);
+      this.setSelectionData(this.props.data.stage);
     }
   }
 
-  updateData = async (stage) => {
+  setSelectionData = async (stage) => {
     this.setState({ loading: true })
-    const budget = this.props.data.budget;
-    const res = await axios.post('/api/getstage', { race_id: this.props.data.race_id, stage, budgetParticipation: budget })
-    const data = res.data;
-    if (data.mode === '404') {
-      this.props.history.push('/');
-    } else {
-      const state = this.state;
-      this.setState({
-        mode: 'selection',
-        teamSelection: updateArray(state.teamSelection, data.teamSelection, budget),
-        stageSelection: updateArray(state.stageSelection, data.stageSelection, budget),
-        kopman: updateArray(state.kopman, data.kopman, budget),
-        starttime: data.starttime,
-        prevClassifications: updateArray(state.prevClassifications, data.prevClassifications, budget),
-        selectionsComplete: data.selectionsComplete,
-        loading: false
-      })
+    const selectionData = await getSelectionData(stage, this.state, this.props);
+    if (selectionData.mode === '404') {
+      props.history.push('/');
     }
+    this.setState(selectionData);
   }
 
-  setRemoveKopman = async (rider_participation_id, setremove) => {
-    const stage = this.props.data.stage;
-    const race_id = this.props.data.race_id;
-    const budget = this.props.data.budget;
-    const link = setremove === 'set' ? 'setkopman' : 'removekopman';
-    const res = await axios.post('/api/' + link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
-    this.setState({
-      kopman: updateArray(this.state.kopman, res.data.kopman, budget),
-      selectionsComplete: res.data.selectionsComplete
-    })
+  updateKopman = async (rider_participation_id, setremove) => {
+    const updatedSelection = await updateKopmanCall(rider_participation_id, setremove, this.state, this.props)
+    this.setState(updatedSelection);
   }
 
-  addRemoveRider = async (rider_participation_id, addRemove) => {
-    const stage = this.props.data.stage
-    const race_id = this.props.data.race_id
-    const budget = this.props.data.budget
-    const link = addRemove === 'add' ? 'addridertostage' : 'removeriderfromstage';
-    const res = await axios.post('/api/' + link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
-    const state = this.state;
-    const data = res.data;
-    this.setState({
-      stageSelection: updateArray(state.stageSelection, data.stageSelection, budget),
-      kopman: updateArray(state.kopman, data.kopman, budget),
-      prevClassifications: updateArray(state.prevClassifications, data.prevClassifications, budget),
-      selectionsComplete: data.selectionsComplete
-    })
-  }
-
-  starttimeString = () => {
-    var starttime = new Date(this.state.starttime);
-    var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    var minutes = starttime.getMinutes();
-    var minutesString = minutes < 10 ? "0" + minutes : minutes;
-    return dayArray[starttime.getDay()] + " " + starttime.getHours() + ":" + minutesString;
+  updateRider = async (rider_participation_id, addRemove) => {
+    const updatedSelection = await updateRiderCall(rider_participation_id, addRemove, this.state, this.props)
+    this.setState(updatedSelection);
   }
 
   render() {
@@ -98,14 +58,14 @@ class Selection extends Component {
     }
 
     const selecTableFunctions = {
-      addRemoveRider: this.addRemoveRider,
-      setRemoveKopman: this.setRemoveKopman
+      updateRider: this.updateRider,
+      updateKopman: this.updateKopman
     }
     return (
       <div className="stageContainer">
         <div className='stagetext'>
           <div className='stagestarttime h7 bold'>
-            {this.starttimeString()}
+            {starttimeString(this.state.starttime)}
           </div>
           <div className={"completeContainer " + ((this.state.selectionsComplete[0] + this.state.selectionsComplete[1]) === 20 ? "allCompleet" : "")}>Compleet:
         <div className="gewoonCompleet"><div style={{ width: this.state.selectionsComplete[0] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
