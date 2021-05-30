@@ -54,9 +54,9 @@ module.exports = (app) => {
     if (budgetparticipation) {
       low = `COUNT(CASE WHEN finalscore < 500 THEN 1 END) AS "<500"`
       second = `COUNT(CASE WHEN finalscore >= 500 AND finalscore < 750 THEN 1 END) AS "500 "`
-      second = `COUNT(CASE WHEN finalscore >= 750 AND finalscore < 1000 THEN 1 END) AS "750 "`
+      third = `COUNT(CASE WHEN finalscore >= 750 AND finalscore < 1000 THEN 1 END) AS "750 "`
       high = `COUNT(CASE WHEN finalscore >= 1000 THEN 1 END) AS ">1K"`
-      orderby = `ORDER BY ">1K" DESC, "750" DESC, "500" DESC, "<500" DESC`
+      orderby = `ORDER BY ">1K" DESC, "750 " DESC, "500 " DESC, "<500" DESC`
     }
     var scoreCountQuery = `SELECT username AS "User", ${low}, ${second}, ${third}, ${high} from account_participation
                 INNER JOIN account USING(account_id)
@@ -141,19 +141,19 @@ module.exports = (app) => {
     GROUP BY username; \n`//aantal keer per ranking
 
     var first = `COUNT(CASE WHEN stagescore < 50 THEN 1 END) AS "50-"`
-    var second = `COUNT(CASE WHEN stagescore >= 50 AND stagescore < 100 THEN 1 END) AS "50"`
-    var third = `COUNT(CASE WHEN stagescore >= 100 AND stagescore < 200 THEN 1 END) AS "100"`
-    var fourth = `COUNT(CASE WHEN stagescore >= 200 AND stagescore < 300 THEN 1 END) AS "200"`
+    var second = `COUNT(CASE WHEN stagescore >= 50 AND stagescore < 100 THEN 1 END) AS "50 "`
+    var third = `COUNT(CASE WHEN stagescore >= 100 AND stagescore < 200 THEN 1 END) AS "100 "`
+    var fourth = `COUNT(CASE WHEN stagescore >= 200 AND stagescore < 300 THEN 1 END) AS "200 "`
     var last = `COUNT(CASE WHEN stagescore >= 300 THEN 1 END) AS "300+"`
-    var orderby = `ORDER BY "300+" DESC, "200" DESC, "100" DESC, "50" DESC, "50-" DESC`
+    var orderby = `ORDER BY "300+" DESC, "200 " DESC, "100 " DESC, "50 " DESC, "50-" DESC`
     
     if (budgetparticipation) {
       first = `COUNT(CASE WHEN stagescore < 10 THEN 1 END) AS "10-"`
-      second = `COUNT(CASE WHEN stagescore >= 10 AND stagescore < 30 THEN 1 END) AS "10"`
-      third = `COUNT(CASE WHEN stagescore >= 30 AND stagescore < 50 THEN 1 END) AS "30"`
-      fourth = `COUNT(CASE WHEN stagescore >= 50 AND stagescore < 100 THEN 1 END) AS "50"`
+      second = `COUNT(CASE WHEN stagescore >= 10 AND stagescore < 30 THEN 1 END) AS "10 "`
+      third = `COUNT(CASE WHEN stagescore >= 30 AND stagescore < 50 THEN 1 END) AS "30 "`
+      fourth = `COUNT(CASE WHEN stagescore >= 50 AND stagescore < 100 THEN 1 END) AS "50 "`
       last = `COUNT(CASE WHEN stagescore >= 100 THEN 1 END) AS "100+"`
-      orderby = `ORDER BY "100+" DESC, "50" DESC, "30" DESC, "10" DESC, "10-" DESC`
+      orderby = `ORDER BY "100+" DESC, "50 " DESC, "30 " DESC, "10 " DESC, "10-" DESC`
     }
     var scoreCountQuery = `SELECT username AS "User", ${first}, ${second}, ${third}, ${fourth}, ${last} from stage_selection
                 INNER JOIN account_participation USING(account_participation_id)
