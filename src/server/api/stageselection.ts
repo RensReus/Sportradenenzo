@@ -62,7 +62,6 @@ module.exports = function (app) {
   });
 
   app.post('/api/removekopman', async (req, res) => {
-    console.log('called removekopman')
     var budgetParticipation = req.body.budgetParticipation == 1;
     var race_id = req.body.race_id;
     var stage_id = `(SELECT stage_id FROM stage WHERE stagenr=${req.body.stage} AND race_id=${race_id})`
