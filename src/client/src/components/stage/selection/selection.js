@@ -58,7 +58,7 @@ class Selection extends Component {
     const link = setremove === 'set' ? 'setkopman' : 'removekopman';
     const res = await axios.post('/api/' + link, { race_id, stage, rider_participation_id, budgetParticipation: budget })
     this.setState({
-      kopman: updateArray(this.state.kopman, budgdata.kopman, budget),
+      kopman: updateArray(this.state.kopman, res.data.kopman, budget),
       selectionsComplete: res.data.selectionsComplete
     })
   }
