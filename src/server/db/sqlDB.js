@@ -28,6 +28,8 @@ module.exports = {
         return error;
       } else {
         console.log("Query Error: ", error);
+        console.log("Query: ", query)
+        console.log("Params: ", params)
         throw error;
       }
     }

@@ -3,9 +3,24 @@ const sqlDB = require('../db/sqlDB')
 const helper = require('./helperfunctions')
 
 module.exports = function (app) {
-  app.post('/api/getstage', async (req, res) => {
+  app.post('/api/getstageinfo', async (req, res) => {
+    var stagenr = req.body.stage;
+    var stageInfoQuery = `SELECT starttime, type FROM stage WHERE race_id=${req.body.race_id} AND stagenr='${stagenr}'`;
+    const stageInfoResults = await sqlDB.query(stageInfoQuery);
+    if (!stageInfoResults.rows.length) {
+      res.send({ mode: '404' })
+    } else {
+      var stageInfo = stageInfoResults.rows[0];
+      if (new Date() < stageInfo.starttime && stageInfo.type !== "FinalStandings") {
+        res.send({ mode: 'selection', stageType: stageInfo.type })
+      } else {
+        res.send({ mode: 'results', stageType: stageInfo.type })
+      }
+    }
+  });
+
+  app.post('/api/getstageresultsDEPRICATED', async (req, res) => { //TODO merge with next function
     var race_id = req.body.race_id;
-    var now = new Date();
     var stagenr = req.body.stage;
     var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${stagenr})`;
     var account_id = req.user.account_id;
@@ -17,52 +32,25 @@ module.exports = function (app) {
       res.send({ mode: '404' })
     } else {
       var stageInfo = stageInfoResults.rows[0];
-      if (now < stageInfo.starttime && stageInfo.type !== "FinalStandings") {
-        var teamselection = `(SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id})`;
-        var teamSelectionQuery = `SELECT rider.firstname, rider.lastname, price, team, rider_participation_id, dnf, country FROM rider_participation
-          INNER JOIN rider using(rider_id)
-          WHERE rider_participation_id IN ${teamselection}
-          ORDER BY dnf, price DESC;\n `;
-        var stageSelectionQuery = `SELECT * FROM stage_selection_rider
-          INNER JOIN stage_selection USING (stage_selection_id)
-          INNER JOIN rider_participation USING (rider_participation_id)
-          INNER JOIN rider USING (rider_id)
-          WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id};\n `;
-        var kopmanQuery = `SELECT kopman_id FROM stage_selection
-          WHERE account_participation_id=${account_participation_id} AND stage_id=${stage_id};\n `;
-        var prevClassificationQuery = helper.prevClassificationsQuery(race_id, stagenr, account_id, budgetParticipation);
-        var selectionCompleteQuery = selectionsCompleteQuery(race_id, stagenr, account_id)
-        var totalQuery = teamSelectionQuery + stageSelectionQuery + kopmanQuery + prevClassificationQuery + selectionCompleteQuery;
-        const results = await sqlDB.query(totalQuery);
-        res.send({
-          'mode': 'selection',
-          'teamSelection': results[0].rows,
-          'stageSelection': results[1].rows,
-          'kopman': results[2].rows[0].kopman_id,
-          starttime: stageInfo.starttime,
-          prevClassifications: results.slice(3, 7).map(x => x.rows),
-          selectionsComplete: results[7].rows.map(x => x.complete)
-        })
-      } else { // after stage start (stageresults) mode='results'
-        var selection_id_val = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id = ${stage_id})`
-        var selection = `stage_selection_rider`
-        var selection_id = `stage_selection_id`
-        var kopman = `rider_participation.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
-        if (stageInfo.type === "FinalStandings") {
-          kopman = 'WHEN FALSE'
-          selection_id = `account_participation_id`
-          selection = 'team_selection_rider'
-          selection_id_val = account_participation_id;
-        }
-        var stagescore = `CASE ${kopman} THEN stagescore * 1.5 ELSE stagescore END`
-        var totalscore = `CASE ${kopman} THEN totalscore + stagescore * .5 ELSE totalscore END`
-        var name = `CASE ${kopman} THEN CONCAT('*', firstname, ' ', lastname) ELSE CONCAT(firstname, ' ', lastname) END  AS "Name"`
-        var teampoints = ` COALESCE(teamscore,0) as "Team",`;
-        if (budgetParticipation) {
-          teampoints = '';
-          totalscore = `CASE ${kopman} THEN totalscore - teamscore + stagescore * .5 ELSE totalscore - teamscore END`
-        }
-        var teamresultQuery = `SELECT ${name}, COALESCE(${stagescore},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", ${teampoints} COALESCE(${totalscore},0) as "Total"
+      var selection_id_val = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id = ${stage_id})`
+      var selection = `stage_selection_rider`
+      var selection_id = `stage_selection_id`
+      var kopman = `rider_participation.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
+      if (stageInfo.type === "FinalStandings") {
+        kopman = 'WHEN FALSE'
+        selection_id = `account_participation_id`
+        selection = 'team_selection_rider'
+        selection_id_val = account_participation_id;
+      }
+      var stagescore = `CASE ${kopman} THEN stagescore * 1.5 ELSE stagescore END`
+      var totalscore = `CASE ${kopman} THEN totalscore + stagescore * .5 ELSE totalscore END`
+      var name = `CASE ${kopman} THEN CONCAT('*', firstname, ' ', lastname) ELSE CONCAT(firstname, ' ', lastname) END  AS "Name"`
+      var teampoints = ` COALESCE(teamscore,0) as "Team",`;
+      if (budgetParticipation) {
+        teampoints = '';
+        totalscore = `CASE ${kopman} THEN totalscore - teamscore + stagescore * .5 ELSE totalscore - teamscore END`
+      }
+      var teamresultQuery = `SELECT ${name}, COALESCE(${stagescore},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", ${teampoints} COALESCE(${totalscore},0) as "Total"
           FROM ${selection} 
           INNER JOIN rider_participation USING(rider_participation_id)
           LEFT JOIN results_points ON results_points.rider_participation_id = rider_participation.rider_participation_id  AND results_points.stage_id = ${stage_id}
@@ -70,45 +58,44 @@ module.exports = function (app) {
           WHERE ${selection_id} = ${selection_id_val}
           ORDER BY "Total" DESC, "Stage" DESC; `;
 
-        var userscoresQuery = `SELECT RANK() OVER(ORDER by totalscore DESC) AS " ", CONCAT('/profile/',account_id) AS "User_link", username AS "User", stagescore AS "Stage", totalscore AS "Total" FROM stage_selection
+      var userscoresQuery = `SELECT RANK() OVER(ORDER by totalscore DESC) AS " ", CONCAT('/profile/',account_id) AS "User_link", username AS "User", stagescore AS "Stage", totalscore AS "Total" FROM stage_selection
           INNER JOIN account_participation USING(account_participation_id)
           INNER JOIN account USING(account_id)
           WHERE stage_id=${stage_id} AND budgetparticipation = ${budgetParticipation}
           ORDER BY "Total" DESC; `;
 
-        var resultsCompleteQuery = `SELECT complete FROM stage WHERE stage_id = ${stage_id}`
-        var totalQuery = teamresultQuery + userscoresQuery + resultsCompleteQuery;
+      var resultsCompleteQuery = `SELECT complete FROM stage WHERE stage_id = ${stage_id}`
+      var totalQuery = teamresultQuery + userscoresQuery + resultsCompleteQuery;
 
-        var userScoresColtype = { "Stage": 1, "Total": 1 };
-        const uitslagresults = await sqlDB.query(totalQuery);
-        var userscores = uitslagresults[1].rows;
+      var userScoresColtype = { "Stage": 1, "Total": 1 };
+      const uitslagresults = await sqlDB.query(totalQuery);
+      var userScores = uitslagresults[1].rows;
 
-        var teamresult = [];
-        if (uitslagresults[0].rowCount) {
-          teamresult = uitslagresults[0].rows;
-          var totalteam = { "Name": "Totaal", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Team": 0, "Total": 0 }
-          if (budgetParticipation) totalteam = { "Name": "Totaal", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Total": 0 };
-          for (var i in teamresult) {
-            totalteam.Stage += parseInt(teamresult[i].Stage);
-            totalteam.AK += teamresult[i].AK;
-            totalteam.Punten += teamresult[i].Punten;
-            totalteam.Berg += teamresult[i].Berg;
-            totalteam.Jong += teamresult[i].Jong;
-            if (!budgetParticipation) totalteam.Team += teamresult[i].Team;
-            totalteam.Total += parseInt(teamresult[i].Total);
-          }
-          teamresult.push(totalteam);
+      var teamresult = [];
+      if (uitslagresults[0].rowCount) {
+        teamresult = uitslagresults[0].rows;
+        var totalteam = { "Name": "Totaal", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Team": 0, "Total": 0 }
+        if (budgetParticipation) totalteam = { "Name": "Totaal", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Total": 0 };
+        for (var i in teamresult) {
+          totalteam.Stage += parseInt(teamresult[i].Stage);
+          totalteam.AK += teamresult[i].AK;
+          totalteam.Punten += teamresult[i].Punten;
+          totalteam.Berg += teamresult[i].Berg;
+          totalteam.Jong += teamresult[i].Jong;
+          if (!budgetParticipation) totalteam.Team += teamresult[i].Team;
+          totalteam.Total += parseInt(teamresult[i].Total);
         }
-        budgetParticipation = budgetParticipation ? 1 : 0;
-        res.send({
-          'mode': 'results',
-          teamresult,
-          userscores,
-          resultsComplete: uitslagresults[2].rows[0].complete,
-          userScoresColtype: userScoresColtype,
-          stageType: stageInfo.type
-        })
+        teamresult.push(totalteam);
       }
+      budgetParticipation = budgetParticipation ? 1 : 0;
+      res.send({
+        'mode': 'results',
+        teamresult,
+        userScores,
+        resultsComplete: uitslagresults[2].rows[0].complete,
+        userScoresColtype: userScoresColtype,
+        stageType: stageInfo.type
+      })
     }
   });
 
@@ -347,7 +334,7 @@ module.exports = function (app) {
       res.send({
         mode: '',
         teamresult: results[0].rows,
-        userscores: userscores,
+        userscores,
         stageresults: results[2].rows,
         userScoresColtype: userScoresColtype,
         prevText: prevText,
