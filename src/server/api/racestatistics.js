@@ -172,7 +172,7 @@ module.exports = (app) => {
 
     var userCount = results[1].rows.length
     for (var i in results[0].rows) {//ranking per stage
-      var row = [parseInt(i) + 1];
+      var row = [results[0].rows[i].stagenr];
       for (var j in results[0].rows[i].usernames) {
         row.push(results[0].rows[i].usernames[j] + " (" + results[0].rows[i].scores[j] + ")");
       }
