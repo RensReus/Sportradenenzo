@@ -441,7 +441,7 @@ module.exports = (app) => {
     const results = await sqlDB.query(usersQuery);
     const tables = [];
     for (const account of results.rows) {
-      const teamoverzicht = await teamoverzichtuser(main_account_participation_id, account.account_participation_id, budgetparticipation, details);
+      const teamoverzicht = await teamoverzichtuser(main_account_participation_id, account.account_participation_id, budgetparticipation, details, race_id);
       if (details) {
         tables.push({ tableData: teamoverzicht.tableData, title: account.username, coltype: teamoverzicht.coltype })
       } else {
@@ -455,11 +455,15 @@ module.exports = (app) => {
     return { tables, title: "Team Overzicht Iedereen" };
   }
 
-  teamoverzichtuser = async (main_account_participation_id, account_participation_id, budgetparticipation, details) => {
+  teamoverzichtuser = async (main_account_participation_id, account_participation_id, budgetparticipation, details, race_id) => {
     var selected_riders_stages = `(SELECT rider_participation_id, kopman_id, stage_id FROM stage_selection_rider
         INNER JOIN stage_selection USING(stage_selection_id)
         INNER JOIN stage USING (stage_id)
-        WHERE account_participation_id = ${account_participation_id} AND NOW() > starttime) a`
+        WHERE account_participation_id = ${account_participation_id} AND NOW() > starttime
+        UNION
+        SELECT rider_participation_id, null, (SELECT stage_id FROM stage WHERE type = 'FinalStandings' AND race_id = ${race_id}) FROM team_selection_rider 
+        INNER JOIN rider_participation USING (rider_participation_id)
+        WHERE account_participation_id = ${account_participation_id} AND NOT dnf) a`
     var inteam = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${main_account_participation_id}) THEN 'bold black' ELSE '' END`
     var rowClassName = `${inteam} AS "rowClassName"`;
     var totalscore = `CASE WHEN a.kopman_id = a.rider_participation_id THEN totalscore + stagescore * .5 ELSE totalscore END`
