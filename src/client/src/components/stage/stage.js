@@ -23,17 +23,21 @@ class Stage extends Component {
       this.setState({
         racename: this.props.racename,
       }, () => {
-        this.updateStage(this.state.stage)
+        this.getStage(this.state.stage)
       })
     }
   }
 
-  updateStage(stage) {
+  getStage = (stage) => {
+    if (stage == 0 && this.state.mode === 'selection') {
+      this.props.history.push('/teamselection')
+      return;
+    }
     this.setState({ stage }, async () => {
       this.props.history.push('/stage/' + (stage).toString())
       document.title = "Etappe " + stage;
 
-      var res = await axios.post('/api/getstageinfo', { race_id: this.props.race_id, stage })
+      const res = await axios.post('/api/getstageinfo', { race_id: this.props.race_id, stage })
 
       if (res.data.mode === '404') {
         this.props.history.push('/');
@@ -43,24 +47,12 @@ class Stage extends Component {
           stageType: res.data.stageType
         })
       }
-    })
-  }
-
-  previousStage = () => {
-    if (this.state.stage > 1) {
-      this.updateStage(this.state.stage - 1);
-    } else if (this.state.mode === 'selection') {
-      this.props.history.push('/teamselection')
-    }
-  }
-
-  nextStage = () => {
-    this.updateStage(this.state.stage + 1);
+    });
   }
 
   budgetSwitch = () => {
     this.setState({
-      budget: (this.state.budget - 1) * -1
+      budget: !this.state.budget
     })
   }
 
@@ -77,8 +69,7 @@ class Stage extends Component {
     }
 
     const stageInfoFunctions = {
-      nextStage: this.nextStage,
-      previousStage: this.previousStage,
+      getStage: this.getStage,
       budgetSwitch: this.budgetSwitch,
     }
 
