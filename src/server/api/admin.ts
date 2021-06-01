@@ -6,8 +6,10 @@ module.exports = (app) => {
     if (req.user.admin) {
       const sqlQuery = req.body.query;
       var response = await sqlDB.query(sqlQuery, [], true);
-      if (response.error) {
-        res.send({ errorBool: true, data: response.error, error: response.error.toString() });
+      console.log(" response",response)
+      console.log(' err', response.error)
+      if (response.severity == 'ERROR') {
+        res.send({ errorBool: true, data: response, error: response.toString() });
       } else {
         res.send({ data: response });
       }

@@ -16,7 +16,7 @@ const pool = new Pool({
     connectionString: sqlDBstring,
     rejectUnauthorized: false,
     ssl: true,
-    max: 5
+    max: 3
 })
 
 module.exports = {
