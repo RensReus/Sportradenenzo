@@ -40,7 +40,7 @@ module.exports = function (app) {
 
       var IDsGewoon = [];
       var IDsBudget = [];
-      var budgetGewoon = race.budget;
+      var budgetGewoon = race.rows[0].budget;
       var budgetBudget = 11250000;
       for (var i = 0; i < userSelectionGewoon.length; i++) {
         IDsGewoon.push(userSelectionGewoon[i].rider_participation_id)
@@ -51,7 +51,8 @@ module.exports = function (app) {
         IDsBudget.push(userSelectionBudget[i].rider_participation_id)
         budgetBudget -= userSelectionBudget[i].price
       }
-      return { allRiders: allRiders, userSelectionGewoon: userSelectionGewoon, userSelectionBudget: userSelectionBudget, budgetGewoon, budgetBudget };
+
+      return { allRiders: allRiders.rows, userSelectionGewoon: userSelectionGewoon.rows, userSelectionBudget: userSelectionBudget.rows, budgetGewoon, budgetBudget };
     }
   };
 
