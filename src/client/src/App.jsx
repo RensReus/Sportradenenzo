@@ -24,6 +24,7 @@ import Settings from './components/settings'
 import './components/css/buttons.css'
 import './components/css/colours.css'
 import './components/css/fonts.css'
+import './components/css/menus.css'
 import './components/css/tables.css'
 
 const jwtDecode = require('jwt-decode');

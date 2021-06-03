@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../../shared/budgetSwitchButton';
 import ModalButton from '../../shared/modal';
-import '../../css/buttons.css';
 
 
 class stageInfo extends Component {
@@ -33,7 +32,7 @@ class stageInfo extends Component {
       dropdown.push(<option value={i} key={i} className='stage_select_dropdown_option'>{i}</option>);
     }
     return (
-      <div className="border-2 border-solid">
+      <div className="flex flex-col space-y-3 w-full sm:w-96 border-2 border-solid">
         <div className='flex items-center'>
           {(this.props.data.mode === 'selection' || this.props.data.stage !== 1) ?
             <button className="button_standard blue" onClick={() => this.props.functions.getStage(this.props.data.stage - 1)}>

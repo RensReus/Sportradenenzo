@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Riderselectiontable from './riderselectiontable'
 import Userselectiontable from './userselectiontable'
 import axios from 'axios';
 import './index.css';
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
-import _ from "lodash"
+import _, { forEach } from "lodash"
+import { faSearch, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
 class Teamselection extends Component {
   constructor(props) {
@@ -14,6 +16,8 @@ class Teamselection extends Component {
       filteredRiders: [],
       userSelection: [[], []],
       budgetLeft: [0, 0],
+      minPrice: 500000,
+      maxPrice: 7000000,
       joinButton: ' ',
       filtervalue: '',
       showBudget: 0
@@ -21,8 +25,9 @@ class Teamselection extends Component {
     this.addRemoveRider = this.addRemoveRider.bind(this);
     this.updatePage = this.updatePage.bind(this);
     this.budgetSwitch = this.budgetSwitch.bind(this);
-    this.initialRender = this.initialRender.bind(this);
     this.filter = this.filter.bind(this);
+    this.handleChangeMinPrice = this.handleChangeMinPrice.bind(this);
+    this.handleChangeMaxPrice = this.handleChangeMaxPrice.bind(this);
   }
 
   componentDidMount() {
@@ -34,7 +39,7 @@ class Teamselection extends Component {
     })
   }
 
-  initialRender() {
+  initialRender = () => {
     const race_id = this.state.race_id;
     document.title = "Team Keuze " + this.state.racename.charAt(0).toUpperCase() + this.state.racename.slice(1);
     if (sessionStorage.getItem('currentStageLink') === '/teamselection') {
@@ -42,7 +47,7 @@ class Teamselection extends Component {
         .then((res) => {
           if (res.data.noParticipation) {
             this.setState({
-              joinButton: <button className={"buttonStandard joinRace " + this.state.racename} onClick={() => this.joinRace()}>Klik hier om mee te doen aan de {this.state.racename.charAt(0).toUpperCase() + this.state.racename.slice(1)}</button>
+              joinButton: <button className={"button_standard joinRace " + this.state.racename} onClick={() => this.joinRace()}>Klik hier om mee te doen aan de {this.state.racename.charAt(0).toUpperCase() + this.state.racename.slice(1)}</button>
             })
           } else {
             this.setState({
@@ -52,14 +57,27 @@ class Teamselection extends Component {
               userSelection: [res.data.userSelectionGewoon, res.data.userSelectionBudget],
               budgetLeft: [res.data.budgetGewoon, res.data.budgetBudget],
             })
+            this.getRemainingBudget();
           }
         })
     } else {
       this.redirect(this.props.redirect)
     }
   }
-
-
+  
+  getRemainingBudget = () => {
+    let totalGewoon = 0;
+    let totalBudget = 0;
+    this.state.userSelection[0].forEach((rider) => {
+      totalGewoon += rider.price;
+    });
+    this.state.userSelection[1].forEach((rider) => {
+      totalBudget += rider.price;
+    });
+    this.setState({
+      budgetLeft: [this.state.budgetLeft[0] - totalGewoon, this.state.budgetLeft[1] - totalBudget]
+    })
+  }
 
   joinRace() {
     axios.post('/api/teamselection', { apilink: 'addaccountparticipation', race_id: this.state.race_id })
@@ -88,6 +106,7 @@ class Teamselection extends Component {
 
   updatePage(data, showBudget) {
     if (data) {
+      console.log(data)
       let userSelection = _.cloneDeep(this.state.userSelection)
       userSelection[showBudget] = data.userSelection;
       let budgetLeft = _.cloneDeep(this.state.budgetLeft)
@@ -105,6 +124,18 @@ class Teamselection extends Component {
     })
   }
 
+  handleChangeMinPrice(e) {
+    this.setState({minPrice: e.target.value}, () => {
+      this.filter({ target: { value: this.state.filtervalue } })
+    });
+  }
+  
+  handleChangeMaxPrice(e) {
+    this.setState({maxPrice: e.target.value}, () => {
+      this.filter({ target: { value: this.state.filtervalue } })
+    });
+  }
+
   redirect = (url) => {
     this.props.history.push(url);
   }
@@ -115,7 +146,13 @@ class Teamselection extends Component {
       var filteredRiders = [];
       var allRiders = this.state.allRiders;
       for (var i in allRiders) {
-        if ((allRiders[i].name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").match(regex) || allRiders[i].team.match(regex)) && (!this.state.showBudget || allRiders[i].price <= 750000)) {
+        if (
+          (allRiders[i].name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").match(regex) 
+          || allRiders[i].team.match(regex)) 
+          && (!this.state.showBudget || allRiders[i].price <= 750000) 
+          && allRiders[i].price >= this.state.minPrice
+          && allRiders[i].price <= this.state.maxPrice
+          ){
           filteredRiders.push(allRiders[i])
         }
       }
@@ -127,30 +164,70 @@ class Teamselection extends Component {
     const allRiders = this.state.filteredRiders
     const userSelection = this.state.userSelection[this.state.showBudget]
     const budgetLeft = this.state.budgetLeft[this.state.showBudget]
+    let minPriceDropdown = [];
+    let maxPriceDropdown = [];
+    const priceArray = [50,75,100,150,200,250,300,350,400,450,500,550,600,650,700]
+    priceArray.forEach(price => {
+      if(price*10000<=this.state.maxPrice){
+        minPriceDropdown.push(<option value={price*10000} key={'min'+price} className='minimalistic-dropdown-option'>{(price*10000).toLocaleString('nl', { useGrouping: true })}</option>);
+      }
+      if(price*10000>=this.state.minPrice){
+        maxPriceDropdown.push(<option value={price*10000} key={'max'+price} className='minimalistic-dropdown-option'>{(price*10000).toLocaleString('nl', { useGrouping: true })}</option>);
+      }
+    });
     return (
       <div>
         {this.state.joinButton === '' &&
-          <div className="containerTeamselection">
-            <div className="switchAndSearch">
-              <BudgetSwitchButton budget={this.state.showBudget} budgetSwitch={this.budgetSwitch} />
-              Search for a rider: <textarea className="filterField" value={this.state.filtervalue} onChange={(e) => { this.filter(e) }} />
+          <div className="">
+            <div className="w-full flex">
+              <div className="w-1/2 p-4">
+                <div className="text-lg">Priced between
+                  <select
+                    className='minimalistic-dropdown'
+                    value={this.state.minPrice}
+                    name="minPrice"
+                    onChange={this.handleChangeMinPrice}>
+                    {minPriceDropdown}
+                  </select>
+                  and
+                  <select
+                    className='minimalistic-dropdown'
+                    value={this.state.maxPrice}
+                    name="maxPrice"
+                    onChange={this.handleChangeMaxPrice}>
+                    {maxPriceDropdown}
+                  </select>
+                </div>
+                <div>
+                  <span className="text-gray-500 mr-2"><FontAwesomeIcon icon={faSearch} /></span>
+                  <input type="text" className="h-8 w-64 py-4 px-2 text-base border-solid border-2 border-gray-200 rounded-md" placeholder="Type a name or team..." value={this.state.filtervalue} onChange={(e) => { this.filter(e) }} />
+                </div>
+              </div>
+              <div className="w-1/2 flex items-center flex-wrap mb-6 p-4">
+                <div className="w-1/2">
+                  <span>Budget: {budgetLeft.toLocaleString('nl', { useGrouping: true })}</span>
+                </div>
+                <div className="w-1/2 flex justify-end items-center space-x-16">
+                  <BudgetSwitchButton budget={this.state.showBudget} budgetSwitch={this.budgetSwitch} />
+                  {userSelection.length == 20 ?
+                    <button className="button_standard blue" onClick={() => this.redirect('/stage/1')}>To stages <FontAwesomeIcon icon={faAngleRight} /></button>
+                    :
+                    <button className="button_standard gray disabled">To stages <FontAwesomeIcon icon={faAngleRight} /></button>
+                  }
+                </div>
+              </div>
+            </div>
+            <div className="teamselection-tables w-full flex">
+              <div className="ridertablecontainer w-1/2">
+                <Riderselectiontable riders={allRiders} selectionIDs={userSelection.map(rider => rider.rider_participation_id)} selectionTeams={userSelection.map(rider => rider.team)} budget={budgetLeft} addRemoveRider={this.addRemoveRider} budgetParticipation={this.state.showBudget} />
+              </div>
+              <div className="usertablecontainer w-1/2">
+                <div className="w-5/6 ml-auto">
+                  <Userselectiontable selection={userSelection} addRemoveRider={this.addRemoveRider} budgetParticipation={this.state.showBudget} />
+                </div>
+              </div>
             </div>
 
-            <div className="ridertablecontainer">
-              <div className="teamindicator">
-                Team Selectie
-                    </div>
-              <Riderselectiontable riders={allRiders} selectionIDs={userSelection.map(rider => rider.rider_participation_id)} selectionTeams={userSelection.map(rider => rider.team)} budget={budgetLeft} addRemoveRider={this.addRemoveRider} budgetParticipation={this.state.showBudget} />
-            </div>
-            <div className="usertablecontainer">
-              <div className="budget">
-                Budget over: {budgetLeft.toLocaleString('nl', { useGrouping: true })} Renners {userSelection.length}/20
-                    </div>
-              <Userselectiontable selection={userSelection} addRemoveRider={this.addRemoveRider} budgetParticipation={this.state.showBudget} />
-            </div>
-            <div id="stage1button">
-              <button onClick={() => this.redirect('/stage/1')}>To stages </button>
-            </div>
           </div>
         }
         <div className="containerTeamselection">

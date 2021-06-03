@@ -1,22 +1,30 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 class Selectionbutton extends Component{
     addRemoveRider=()=> {
         if(this.props.selected==='unselected'){
             this.props.addRemoveRider('addRider', this.props.riderID, this.props.budgetParticipation);
+        } else if (this.props.selected==='selected') {
+          this.props.addRemoveRider('removeRider', this.props.riderID, this.props.budgetParticipation);
         }
     }
     render(){
         let buttonText
+        let className
         if(this.props.selected==='unselected'){
-            buttonText = 'Add'
+            buttonText = <FontAwesomeIcon icon={faPlus} />
+            className = 'button_standard small blue'
         }else if(this.props.selected==='selected'){
-            buttonText = 'Added'
+            buttonText = <FontAwesomeIcon icon={faTimes} />
+            className = 'button_standard small red'
         }else if(this.props.selected==='unselectable'){
-            buttonText = 'No.'
+            buttonText = <FontAwesomeIcon icon={faPlus} />
+            className = 'button_standard small gray disableds'
         }
         return(
-            <button className={this.props.selected} onClick={() => this.addRemoveRider(this.props.riderID, this.props.budgetParticipation)}>{buttonText}</button>
+            <button className={className} onClick={() => this.addRemoveRider(this.props.riderID, this.props.budgetParticipation)}>{buttonText}</button>
         )
     }
 }
@@ -25,8 +33,17 @@ class Riderrow extends Component{
     render(){
         return(
             <tr className='riderRow'>
-                <td className={this.props.selected}>{this.props.name}</td>
-                <td className={this.props.selected}>{this.props.team}</td>
+                <td className={this.props.selected}>
+                  <div>
+                    <div>
+                      {this.props.name}
+                    </div>
+                    <div className='text-gray-500 mt-2'>
+                      {this.props.team}
+                    </div>
+                  </div>
+                  </td>
+                <td className={this.props.selected}></td>
                 <td className={this.props.selected}>{this.props.price.toLocaleString('nl', {useGrouping:true})}</td>
                 <td><Selectionbutton selected={this.props.selected} addRemoveRider={this.props.addRemoveRider} riderID={this.props.riderID} budgetParticipation={this.props.budgetParticipation}/></td>
             </tr>
@@ -56,15 +73,25 @@ class Riderselectiontable extends Component{
             }
         })
         return(
-            <table>
+            <table className="teamselection-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Team</th>
+                        <th>Rider</th>
+                        <th>Specialty</th>
                         <th>Price</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
+                    {this.props.riders.length == 0?
+                      <tr>
+                      <td colSpan="4">
+                        <div className="text-gray-400 text-center text-2xl">No rider found, try a different search?</div>
+                      </td>
+                      </tr>
+                      :
+                      <></> 
+                    }
                     {rows}
                 </tbody>
             </table>
