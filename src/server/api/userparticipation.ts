@@ -10,11 +10,16 @@ module.exports = (app) => {
     res.send({ participations: results.rows });
   });
 
-  app.post('/api/getactiveraces', async (_, res) => {
-    let activeRacesQuery = `SELECT race_id, COUNT(stage_id) FROM race
+  app.post('/api/getactiveraces', async (req, res) => {
+    let activeRacesQuery = `SELECT DISTINCT race_id, CASE WHEN COUNT(stage_id) > 0 THEN 1 ELSE 0 END FROM race
     INNER JOIN stage USING(race_id)
-    WHERE race.finished = false AND name IN ('giro','tour','vuelta')
-    GROUP BY race_id;`
+    INNER JOIN account_participation USING(race_id)
+    WHERE race.finished = false AND account_id = ${req.user.account_id}
+    GROUP BY race_id
+    UNION 
+    SELECT race_id, 1 FROM race
+    INNER JOIN stage USING(race_id)
+    WHERE stagenr = 1 and starttime > now(); `
 
     const activeRacesResults = await sqlDB.query(activeRacesQuery);
     if (activeRacesResults.rows.length === 0) {
@@ -29,7 +34,7 @@ module.exports = (app) => {
         INNER JOIN race USING(race_id)
         WHERE stagenr = 1 AND race.race_id = ${race.race_id}
         ORDER BY stagenr DESC
-        LIMIT 1;;\n `, '')
+        LIMIT 1;\n `, '')
       const currentStagesResults = await sqlDB.query(currentStagesQuery);
       let activeRaces: Array<any>;
       if (activeRacesResults.rows.length === 1) {
@@ -41,13 +46,11 @@ module.exports = (app) => {
     }
   })
 
-  app.post('/api/getfinishedraces', async (_, res) => {
-    // let query = `SELECT finalscore, name, year, race_id FROM account_participation
-    // INNER JOIN race USING(race_id)
-    // WHERE finished AND account_id = ${req.user.account_id}`;
-    let query = `SELECT stagenr, complete,race_id,name,year, race.finished FROM stage 
+  app.post('/api/getfinishedraces', async (req, res) => {
+    let query = `SELECT DISTINCT stagenr, complete,race_id,name,year, race.finished FROM stage 
     INNER JOIN race USING(race_id)
-    WHERE race.finished AND type = 'FinalStandings'
+    INNER JOIN account_participation USING (race_id)
+    WHERE race.finished AND type = 'FinalStandings' AND account_id = ${req.user.account_id}
     ORDER BY year, name`;
     const results = await sqlDB.query(query);
     const finishedRaces = results.rows;
