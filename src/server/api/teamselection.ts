@@ -131,18 +131,26 @@ module.exports = function (app) {
   };
 
   async function addaccountparticipation(race_id, account_id) {
+    var budgetInsert = "";
+    if (account_id <= 5) { //TODO uiteindelijk op basis van poule of zo
+      budgetInsert = `,(${account_id},${race_id},true)`
+    }
     var account_participationQuery = `INSERT INTO account_participation(account_id,race_id,budgetparticipation) 
-                VALUES(${account_id},${race_id},false),(${account_id},${race_id},true) 
+                VALUES(${account_id},${race_id},false) ${budgetInsert}
                 ON CONFLICT (account_id,race_id,budgetparticipation) DO NOTHING
                 RETURNING (account_participation_id);\n`
     account_participationQuery += `SELECT COUNT(*) FROM stage WHERE race_id = ${race_id};\n `
 
     const results = await sqlDB.query(account_participationQuery);
-    if (results[0].rows.length === 2) {
+    if ((results[0].rows.length === 2 && account_id <= 5) || (results[0].rows.length === 1 && account_id > 5)) {
       var stage_selectionQuery = `INSERT INTO stage_selection(stage_id,account_participation_id) VALUES`
       for (let stage = 1; stage < results[1].rows[0].count + 1; stage++) {
         let stage_id = `(SELECT stage_id FROM stage WHERE race_id = ${race_id} AND stagenr = ${stage})`
-        stage_selectionQuery += `(${stage_id},${results[0].rows[0].account_participation_id}),(${stage_id},${results[0].rows[1].account_participation_id}),`
+        var budgparticipationInsert = "";
+        if (account_id <= 5) {
+          budgparticipationInsert = `,(${stage_id},${results[0].rows[1].account_participation_id})`
+        }
+        stage_selectionQuery += `(${stage_id},${results[0].rows[0].account_participation_id})${budgparticipationInsert},`
       }
 
       stage_selectionQuery = stage_selectionQuery.slice(0, -1) + `ON CONFLICT (account_participation_id,stage_id) DO NOTHING;\n`

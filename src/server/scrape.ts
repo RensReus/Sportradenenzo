@@ -28,7 +28,7 @@ const getStartlist = async (race) => {
         break;
       case "tour":
         raceString = "tour-de-france";
-        prijzenfile = "./src/server/tourprijzen.txt";
+        prijzenfile = "./src/server/tourprijzen.json";
         break;
       case "vuelta":
         raceString = "vuelta-a-espana";
@@ -40,15 +40,30 @@ const getStartlist = async (race) => {
       let riders = JSON.parse(file).Content;
       var riderprices = []
       for (let i in riders) {
-        let rider = riders[i];
-        let firstName = rider.FirstName;
-        let lastName = rider.LastName;
-        let price = parseFloat(rider.Price);
-        riderprices.push({ firstName, lastName, price })
+        const rider = riders[i];
+        const firstName = rider.FirstName;
+        const lastName = rider.LastName;
+        const price = parseFloat(rider.Price);
+        const qualities = getQualities(rider.Qualities);
+        riderprices.push({ firstName, lastName, price, qualities })
       }
       return startlistProcessRiders(raceString, riderprices, race.year, race_id)
     })
   }
+}
+
+var getQualities = (qualities: any): object => {
+  var newQualities = { punch: 0, climb: 0, sprint: 0, tt: 0, gc: 0 }
+  for (var quality of qualities) {
+    switch(quality.Type){
+      case 0: newQualities.gc = quality.Value; break;
+      case 1: newQualities.climb = quality.Value; break;
+      case 2: newQualities.tt = quality.Value; break;
+      case 3: newQualities.sprint = quality.Value; break;
+      case 4: newQualities.punch = quality.Value; break;
+    }
+  }
+  return newQualities;
 }
 
 var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id) => {
@@ -57,7 +72,7 @@ var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id) =>
     if (!error && response.statusCode === 200) {
       var $ = cheerio.load(html);
       var riderQuery = `INSERT INTO rider(pcs_id, country, firstname, lastname, initials) VALUES`;
-      var participationQuery = `INSERT INTO rider_participation (race_id,rider_id,price,team) VALUES`;
+      var participationQuery = `INSERT INTO rider_participation (race_id, rider_id, price, team, gc, climb, tt, sprint, punch) VALUES`;
       var results_pointsQuery = `INSERT INTO results_points(stage_id, rider_participation_id) VALUES`;
       var startlist_IDs = '(';
 
@@ -86,7 +101,7 @@ var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id) =>
           for (var i = 0; i < voornamen.length; i++) {
             voorletters += voornamen[i].substring(0, 1) + ".";
           }
-
+          let qualities;
           if (scoritoPrices === 'classics') {//voor klassiekers zijn de prijzen te veel werk om in te voeren
             var prijs = 500000;
           } else {// voor grote ronde zijn de prijzen ingelezen
@@ -94,6 +109,7 @@ var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id) =>
             for (let j in scoritoPrices) {
               if (voornaam.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(scoritoPrices[j].firstName.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "")) && lastname.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "") === scoritoPrices[j].lastName.toLowerCase().replace("ł", "l").normalize("NFD").replace(/[\u0300-\u036f]/g, "")) {
                 prijs = parseFloat(scoritoPrices[j].price);
+                qualities = scoritoPrices[j].qualities;
               }
             }
             if (prijs === 66666666) {//rider not in prices file
@@ -114,7 +130,7 @@ var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id) =>
           if (prijs !== 66666666) {// only add riders if they have a correct price, no riders with incorrect price like this hopefully
             riderQuery += `('${pcs_id}', '${country}', '${voornaam}', '${lastname}', '${voorletters}'),`;
             var rider = `(SELECT rider_id FROM rider WHERE PCS_id = '${pcs_id}')`;
-            participationQuery += `(${race_id}, ${rider}, ${prijs}, '${teamName}'),`;
+            participationQuery += `(${race_id}, ${rider}, ${prijs}, '${teamName}', ${qualities.gc}, ${qualities.climb}, ${qualities.tt}, ${qualities.sprint}, ${qualities.punch}),`;
             var rider_participation = `(SELECT rider_participation_id FROM rider_participation WHERE rider_id = ${rider} AND race_id = ${race_id})`;
             results_pointsQuery += `(${stage_id},${rider_participation}),`;
             startlist_IDs += `${rider_participation},`
@@ -126,7 +142,8 @@ var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id) =>
                     DO UPDATE SET PCS_id = EXCLUDED.PCS_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials;\n `;
 
       participationQuery = participationQuery.slice(0, -1) + ` ON CONFLICT (race_id,rider_id) 
-                    DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team, price = EXCLUDED.price;\n `;
+                    DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, team = EXCLUDED.team, price = EXCLUDED.price,
+                    gc = EXCLUDED.gc, climb = EXCLUDED.climb, tt = EXCLUDED.tt, sprint = EXCLUDED.sprint, punch = EXCLUDED.punch;\n `;
 
       if (scoritoPrices === 'classics') {
         var deleteQuery = `DELETE FROM results_points WHERE stage_id = ${stage_id} AND rider_participation_id NOT IN ${startlist_IDs}; `;// to remove riders no longer on startlist

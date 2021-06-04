@@ -31,7 +31,7 @@ module.exports = {
      */
     getAllRiders: async function (race_id: number) {
         var values = [race_id];
-        var query = `SELECT rider.firstname || ' ' || rider.lastname as name, price, team, rider_participation_id FROM rider_participation
+        var query = `SELECT rider.firstname || ' ' || rider.lastname as name, price, team, rider_participation_id, gc, climb, tt, sprint, punch FROM rider_participation
                 INNER JOIN rider using(rider_id)
                 WHERE race_id = $1
                 ORDER BY price DESC`;
