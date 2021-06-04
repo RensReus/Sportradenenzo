@@ -1,3 +1,5 @@
+const sqlDB3 = require('./sqlDB');
+
 module.exports = {
   /**
    * @param {number} rider_participation_id
@@ -10,7 +12,7 @@ module.exports = {
     const account_participation_id = `(SELECT account_participation_id FROM account_participation WHERE account_id = $2 AND race_id = $3 AND budgetParticipation = $4)`;
     const query = `INSERT INTO team_selection_rider(rider_participation_id,account_participation_id)
               VALUES($1,${account_participation_id})`;
-    return await sqlDB.query(query, values);
+    return await sqlDB3.query(query, values);
   },
 
   /** Removes a rider from team selection
@@ -25,7 +27,7 @@ module.exports = {
     const query = `DELETE FROM team_selection_rider
               WHERE account_participation_id = ${account_participation_id}
               AND rider_participation_id = $2`;
-    return await sqlDB.query(query, values);
+    return await sqlDB3.query(query, values);
   },
 
   /** Adds a rider to the database
@@ -42,7 +44,7 @@ module.exports = {
     ON CONFLICT (pcs_id)
     DO UPDATE SET pcs_id = EXCLUDED.pcs_id, country = EXCLUDED.country, firstname = EXCLUDED.firstname, lastname = EXCLUDED.lastname, initials = EXCLUDED.initials
     RETURNING rider_id`;
-    return await sqlDB.query(query, values);
+    return await sqlDB3.query(query, values);
   },
 
   /** Adds a rider to a race
@@ -58,7 +60,7 @@ module.exports = {
     ON CONFLICT (race_id,rider_id)
     DO UPDATE SET race_id = EXCLUDED.race_id, rider_id = EXCLUDED.rider_id, price = EXCLUDED.price, team = EXCLUDED.team
     RETURNING rider_participation_id`;
-    return await sqlDB.query(query, values);
+    return await sqlDB3.query(query, values);
   },
 
   /**add a new account to the database and returns it
@@ -70,7 +72,7 @@ module.exports = {
     const query = `INSERT INTO account(email, password)
               VALUES($1, $2)
               RETURNING *`;
-    return await sqlDB.query(query, values);
+    return await sqlDB3.query(query, values);
   },
 
   /**
@@ -82,6 +84,6 @@ module.exports = {
     const query = `INSERT INTO account_participation(account_id, race_id)
               VALUES($1, $2)
               RETURNING *`;
-    return await sqlDB.query(query, values);
+    return await sqlDB3.query(query, values);
   }
 }
