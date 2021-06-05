@@ -33,6 +33,7 @@ class SettingsDropdown extends Component {
 
   logout() {
     localStorage.removeItem('authToken');
+    sessionStorage.clear();
     this.props.history.push('/')
   }
 
