@@ -63,8 +63,8 @@ class Riderrow extends Component {
         const specialty = this.formatRiderSpecialty();
         return (
             <>
-                <tr className='riderRow' onClick={() => this.setState({showInfo: !this.state.showInfo})}>
-                    <td className={this.props.selected}>
+                <tr className='riderRow'>
+                    <td className={this.props.selected} onClick={() => this.setState({showInfo: !this.state.showInfo})}>
                         <div>
                             <div>
                                 {this.props.name}
@@ -74,8 +74,8 @@ class Riderrow extends Component {
                             </div>
                         </div>
                     </td>
-                    <td className={this.props.selected}><div>{specialty.specialty}<br/><span className="text-xl text-yellow-400">{specialty.specialtyValue}</span></div></td>
-                    <td className={this.props.selected}>{this.props.price.toLocaleString('nl', { useGrouping: true })}</td>
+                    <td className={this.props.selected} onClick={() => this.setState({showInfo: !this.state.showInfo})}><div>{specialty.specialty}<br/><span className="text-xl text-yellow-400">{specialty.specialtyValue}</span></div></td>
+                    <td className={this.props.selected} onClick={() => this.setState({showInfo: !this.state.showInfo})}>{this.props.price.toLocaleString('nl', { useGrouping: true })}</td>
                     <td className={this.props.selected}><Selectionbutton selected={this.props.selected} addRemoveRider={this.props.addRemoveRider} riderID={this.props.riderID} budgetParticipation={this.props.budgetParticipation} /></td>
                 </tr>
                 {this.state.showInfo?
