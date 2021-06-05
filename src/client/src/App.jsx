@@ -205,7 +205,7 @@ class App extends Component {
             this.state.isLoggedIn ? (<Redirect to="/home" />) : (<Redirect to="/login"/>)
           )} />
           <Route exact path="/login" render={() => (
-            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} Signup={false} />)
+            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : this.state.loading ? <div></div> :(<LogInSignUp history={this.props.history} Signup={false}/>)
           )} />
           <ReactRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
