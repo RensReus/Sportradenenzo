@@ -2,7 +2,6 @@ import { Component } from 'react';
 import './index.css';
 import LoginForm from './LoginForm';
 import LoginFormModal from './LoginFormModal';
-import { ReactComponent as FakeStageProfile } from '../shared/svg/FakeStageProfile.svg';
 import { ReactComponent as LogoGiro } from '../shared/svg/LogoGiro2021.svg';
 class LogInSignUp extends Component {
   constructor(props) {
@@ -22,14 +21,14 @@ class LogInSignUp extends Component {
   render() {
     return (
       <div className="flex flex-col lg:flex-row absolute top-0 left-0 min-h-full w-screen bg-gradient-to-tl from-blue-700 to-blue-500 select-none">
-        <div className="hidden sm:block fixed z-0 -bottom-16 w-screen"><FakeStageProfile/></div>
+        <div className="fakeStageProfile hidden sm:block"></div>
         <div className="flex flex-col lg:flex-grow">
           <div className="text-center min-w-full ml-0 md:min-w-0 sm:text-left sm:ml-6 my-4 text-white font-sans font-bold">
             <div className="text-4xl md:text-6xl">Sport Raden Enzo</div>
             <div className="text-lg mt-3 md:text-xl">Create your own fantasy cycling team</div>
           </div>
-          <div className="flex items-start flex-row-reverse w-full">
-            <div className="hidden self-center mr-12 md:block">
+          <div className="flex items-start justify-center flex-row-reverse w-full xl:w-3/4">
+            <div className="hidden self-center md:block">
               <div className="mt-10 mb-4 text-center text-white">
                 {this.state.signup?
                   <>
@@ -44,11 +43,11 @@ class LogInSignUp extends Component {
                 }
               </div>
             </div>
-            <div className={this.state.signup? 'hidden' : 'hidden md:block'}>
+            <div className={this.state.signup? 'hidden' : 'hidden md:block min-w-min'}>
               <LoginForm history={this.props.history} signup={false}/>
             </div>
-            <div className={this.state.signup? 'hidden md:block' : 'hidden'}>
-                <LoginForm history={this.props.history} signup={true}/>
+            <div className={this.state.signup? 'hidden md:block min-w-min' : 'hidden'}>
+              <LoginForm history={this.props.history} signup={true}/>
             </div>
             <div className="flex flex-col m-auto mt-16 mb-16 text-lg md:hidden">
               <div className="mb-2 font-bold text-white text-center">Log in to manage your team</div>

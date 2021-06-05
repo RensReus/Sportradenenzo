@@ -51,7 +51,7 @@ class LoginForm extends Component {
     this.state.signup? submit = this.signupSubmit : submit = this.loginSubmit
 
     return (
-    <div className="flex flex-col w-96 max-w-full m-auto md:mr-12 md:ml-4 mt-12 bg-white p-5 shadow-2xl rounded-md">
+    <div className="flex flex-col max-w-full m-auto md:mr-12 md:ml-4 mt-12 bg-white p-5 shadow-2xl rounded-md">
       <div className="mt-1 mb-6 font-bold text-gray-600 text-center">
         {this.state.signup? 'Create an account' : 'Log in to manage your team'}
       </div>

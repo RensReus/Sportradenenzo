@@ -81,10 +81,14 @@ div.errordiv{
   z-index: 100;
 }
 
-.display-block {
-  display: block;
-}
-
-.display-none {
-  display: none;
+.fakeStageProfile {
+  background-image: url('../shared/svg/FakeStageProfile.png');
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  bottom: -10vh;
+  position: fixed;
+  height: 30vh;
+  width: 100vw;
+  z-index: 0;
 }
