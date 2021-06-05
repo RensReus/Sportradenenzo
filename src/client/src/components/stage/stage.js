@@ -52,7 +52,7 @@ class Stage extends Component {
 
   budgetSwitch = () => {
     this.setState({
-      budget: !this.state.budget
+      budget: (this.state.budget - 1) * -1
     })
   }
 

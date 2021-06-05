@@ -29,9 +29,6 @@ class UserRiderrow extends Component {
           </div>
         </td>
         <td>
-          Specialty
-        </td>
-        <td>
           {rider.price.toLocaleString('nl', { useGrouping: true })}
         </td>
         <td>
@@ -43,17 +40,29 @@ class UserRiderrow extends Component {
 }
 class Userselectiontable extends Component {
   render() {
-    const rows = this.props.selection.map(({ firstname, lastname, team, price, rider_participation_id }) => {
-      return <UserRiderrow firstname={firstname} lastname={lastname} team={team} price={price} key={rider_participation_id} riderID={rider_participation_id} budgetParticipation={this.props.budgetParticipation} addRemoveRider={this.props.addRemoveRider} />;
+    console.log(this.props.selection)
+    const rows = this.props.selection.map(({ firstname, lastname, team, price, rider_participation_id}) => {
+      return <UserRiderrow 
+        firstname={firstname} 
+        lastname={lastname} 
+        team={team} 
+        price={price} 
+        key={rider_participation_id} 
+        riderID={rider_participation_id} 
+        budgetParticipation={this.props.budgetParticipation} 
+        addRemoveRider={this.props.addRemoveRider} 
+        />;
     });
     return (
       <table className="teamselection-table userteam">
         <thead>
-          <th colSpan="4">Selection 
-          {this.props.selection.length<10?
-            <span className="text-blue-500"> 0</span>:' '
-          }
-          {this.props.selection.length}/20</th>
+          <tr>
+            <th colSpan="4">Selection 
+            {this.props.selection.length<10?
+              <span className="text-blue-500"> 0</span>:' '
+            }
+            {this.props.selection.length}/20</th>
+          </tr>
         </thead>
         <tbody>
           {rows}

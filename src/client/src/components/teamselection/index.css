@@ -1,6 +1,6 @@
 .teamselection-table th{
   background-color: #3B82F6;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 .teamselection-table th:first-child {
@@ -81,12 +81,26 @@ div.teamindicator{
     width: 400px;
 }
 
+.riderRow:hover {
+  background-color: #F9FAFB;
+  cursor: pointer;
+
+}
+
 .riderRow .selected{
     background-color: #D1FAE5;
 }
 
+.riderRow:hover .selected{
+  background-color: #ECFDF5;
+}
+
 .riderRow .unselectable{
     background-color: #FEE2E2;
+}
+
+.riderRow:hover .unselectable{
+    background-color: #FEF2F2;
 }
 
 .unselectable{

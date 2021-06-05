@@ -61,7 +61,7 @@ class App extends Component {
     let race_id = sessionStorage.getItem('race_id')
     let racename = sessionStorage.getItem('racename')
     let currentStageLink = sessionStorage.getItem('currentStageLink')
-    let contentclass = 'content dark:bg-gray-600';
+    let contentclass = 'content';
     const darkMode = localStorage.getItem('darkMode'); //"dark" | "light"
     if (darkMode === 'dark' || (!(darkMode) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       contentclass = contentclass + ' dark';
@@ -198,7 +198,6 @@ class App extends Component {
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
       <div className={this.state.contentclass}>
-        <div className="backgroundImage"></div>
         <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} isLoading={this.state.loading} history={this.props.history} racename={this.state.racename} currentStageLink={this.state.currentStageLink} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (

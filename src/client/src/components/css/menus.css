@@ -5,10 +5,9 @@
   background-repeat: no-repeat;
   background-position-x: 100%;
   background-position-y: 50%;
-  padding: 1rem;
   padding-right: 1.5rem;
   padding-left: 0.5rem;
-  font-size: 1.25rem;
+  font-size: inherit;
   text-align: center;
 }
 

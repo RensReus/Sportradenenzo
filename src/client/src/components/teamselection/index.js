@@ -5,7 +5,7 @@ import Userselectiontable from './userselectiontable'
 import axios from 'axios';
 import './index.css';
 import BudgetSwitchButton from '../shared/budgetSwitchButton';
-import _, { forEach } from "lodash"
+import _ from "lodash"
 import { faSearch, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
 class Teamselection extends Component {
@@ -20,6 +20,7 @@ class Teamselection extends Component {
       maxPrice: 7000000,
       joinButton: ' ',
       filtervalue: '',
+      skillFilter: '',
       showBudget: 0
     }
     this.addRemoveRider = this.addRemoveRider.bind(this);
@@ -28,6 +29,7 @@ class Teamselection extends Component {
     this.filter = this.filter.bind(this);
     this.handleChangeMinPrice = this.handleChangeMinPrice.bind(this);
     this.handleChangeMaxPrice = this.handleChangeMaxPrice.bind(this);
+    this.handleChangeSkill = this.handleChangeSkill.bind(this);
   }
 
   componentDidMount() {
@@ -47,7 +49,7 @@ class Teamselection extends Component {
         .then((res) => {
           if (res.data.noParticipation) {
             this.setState({
-              joinButton: <button className={"button_standard joinRace " + this.state.racename} onClick={() => this.joinRace()}>Klik hier om mee te doen aan de {this.state.racename.charAt(0).toUpperCase() + this.state.racename.slice(1)}</button>
+              joinButton: <button className={"button_standard blue joinRace " + this.state.racename} onClick={() => this.joinRace()}>Klik hier om mee te doen aan de {this.state.racename.charAt(0).toUpperCase() + this.state.racename.slice(1)}</button>
             })
           } else {
             this.setState({
@@ -136,6 +138,12 @@ class Teamselection extends Component {
     });
   }
 
+  handleChangeSkill(e) {
+    this.setState({skillFilter: e.target.value}, () => {
+      this.filter({ target: { value: this.state.filtervalue } })
+    });
+  }
+
   redirect = (url) => {
     this.props.history.push(url);
   }
@@ -152,12 +160,28 @@ class Teamselection extends Component {
           && (!this.state.showBudget || allRiders[i].price <= 750000) 
           && allRiders[i].price >= this.state.minPrice
           && allRiders[i].price <= this.state.maxPrice
+          && this.filterSkills({
+            'GC': allRiders[i].gc, 
+            'Climb': allRiders[i].climb, 
+            'Sprint': allRiders[i].sprint,
+            'Punch': allRiders[i].punch,
+            'Time Trial': allRiders[i].tt
+          })
           ){
           filteredRiders.push(allRiders[i])
         }
       }
       this.setState({ filteredRiders })
     })
+  }
+
+  filterSkills(specialty) {
+    for (const [key, value] of Object.entries(specialty)) {
+      if (key == this.state.skillFilter) {
+        return value != 0;
+      }
+    }
+    return true;
   }
 
   render() {
@@ -175,13 +199,30 @@ class Teamselection extends Component {
         maxPriceDropdown.push(<option value={price*10000} key={'max'+price} className='minimalistic-dropdown-option'>{(price*10000).toLocaleString('nl', { useGrouping: true })}</option>);
       }
     });
+    let skillsDropdown = []
+    const skillName = ['Nothing', 'General Classification', 'Climbing', 'Sprinting', 'Punching', 'Time Trialing'];
+    const skillCode = ['', 'GC', 'Climb', 'Sprint', 'Punch', 'Time Trial'];
+    for(var i = 0; i<skillName.length; i++){
+      skillsDropdown.push(<option value={skillCode[i]} key={skillCode[i]} className='minimalistic-dropdown-option'>{skillName[i]}</option>);
+    }
     return (
       <div>
         {this.state.joinButton === '' &&
           <div className="">
             <div className="w-full flex">
+
               <div className="w-1/2 p-4">
-                <div className="text-lg">Priced between
+                <div className="text-lg">The rider I'm looking for...</div>
+                <div className="pt-2 text-lg">...must be good at
+                  <select
+                    className='minimalistic-dropdown'
+                    value={this.state.skillFilter}
+                    name="skillFilter"
+                    onChange={this.handleChangeSkill}>
+                    {skillsDropdown}
+                  </select>
+                </div>
+                <div className="pt-2 text-lg">...must be priced between
                   <select
                     className='minimalistic-dropdown'
                     value={this.state.minPrice}
@@ -198,16 +239,15 @@ class Teamselection extends Component {
                     {maxPriceDropdown}
                   </select>
                 </div>
-                <div>
-                  <span className="text-gray-500 mr-2"><FontAwesomeIcon icon={faSearch} /></span>
-                  <input type="text" className="h-8 w-64 py-4 px-2 text-base border-solid border-2 border-gray-200 rounded-md" placeholder="Type a name or team..." value={this.state.filtervalue} onChange={(e) => { this.filter(e) }} />
+                <div className="pt-2 text-lg">...must have a (team)name like 
+                  <input type="text" className="h-8 w-64 py-4 px-2 ml-2 text-base border-solid border-2 border-gray-200 rounded-md" placeholder="search..." value={this.state.filtervalue} onChange={(e) => { this.filter(e) }} />
                 </div>
               </div>
               <div className="w-1/2 flex items-center flex-wrap mb-6 p-4">
                 <div className="w-1/2">
                   <span>Budget: {budgetLeft.toLocaleString('nl', { useGrouping: true })}</span>
                 </div>
-                <div className="w-1/2 flex justify-end items-center space-x-16">
+                <div className="w-1/2 flex justify-end items-center space-x-14">
                   <BudgetSwitchButton budget={this.state.showBudget} budgetSwitch={this.budgetSwitch} />
                   {userSelection.length == 20 ?
                     <button className="button_standard blue" onClick={() => this.redirect('/stage/1')}>To stages <FontAwesomeIcon icon={faAngleRight} /></button>
@@ -219,7 +259,14 @@ class Teamselection extends Component {
             </div>
             <div className="teamselection-tables w-full flex">
               <div className="ridertablecontainer w-1/2">
-                <Riderselectiontable riders={allRiders} selectionIDs={userSelection.map(rider => rider.rider_participation_id)} selectionTeams={userSelection.map(rider => rider.team)} budget={budgetLeft} addRemoveRider={this.addRemoveRider} budgetParticipation={this.state.showBudget} />
+                <Riderselectiontable 
+                  riders={allRiders} 
+                  selectionIDs={userSelection.map(rider => rider.rider_participation_id)} 
+                  selectionTeams={userSelection.map(rider => rider.team)} budget={budgetLeft}
+                  skillFilter={this.state.skillFilter} 
+                  addRemoveRider={this.addRemoveRider} 
+                  budgetParticipation={this.state.showBudget} 
+                />
               </div>
               <div className="usertablecontainer w-1/2">
                 <div className="w-5/6 ml-auto">
