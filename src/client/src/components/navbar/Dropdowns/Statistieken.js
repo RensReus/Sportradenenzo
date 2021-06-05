@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons"; //Pijltjes voor de dropdown
@@ -38,15 +38,15 @@ class StatistiekenDropdown extends Component {
           this.state.showMenu
             ? (
               <div className="navbar_dropdown-content">
-                <Link className='navbar_dropdown_item' to='/statistics/etappewinsten'>Uitslagen per etappe</Link>
                 <Link className='navbar_dropdown_item' to='/statistics/rondewinsten'>Uitslagen per ronde</Link>
-                <Link className='navbar_dropdown_item' to='/statistics/allriders'>Alle renners</Link>
-                <Link className='navbar_dropdown_item' to='/statistics/selectedriders'>Geselecteerde renners</Link>
-                <Link className='navbar_dropdown_item' to='/statistics/missedpointsall'>Gemiste punten iedereen</Link>
-                <Link className='navbar_dropdown_item' to='/statistics/teams'>Team overzichten</Link>
+                { this.props.showRaceSpecificData &&  [<Link className='navbar_dropdown_item' to='/statistics/etappewinsten'>Uitslagen per etappe</Link>,
+                <Link className='navbar_dropdown_item' to='/statistics/allriders'>Alle renners</Link>,
+                <Link className='navbar_dropdown_item' to='/statistics/selectedriders'>Geselecteerde renners</Link>,
+                <Link className='navbar_dropdown_item' to='/statistics/missedpointsall'>Gemiste punten iedereen</Link>,
+                <Link className='navbar_dropdown_item' to='/statistics/teams'>Team overzichten</Link>,
+                <Link className='navbar_dropdown_item' to='/statistics/teamcomparisons'>Selectie vergelijking</Link>,
+                <Link className='navbar_dropdown_item' to='/statistics/overigestats'>Overige Statistieken</Link>]}
                 <Link className='navbar_dropdown_item' to='/rulesandpoints'>Regels en Punten uitleg</Link>
-                <Link className='navbar_dropdown_item' to='/statistics/teamcomparisons'>Selectie vergelijking</Link>
-                <Link className='navbar_dropdown_item' to='/statistics/overigestats'>Overige Statistieken</Link>
               </div>
             )
             : (

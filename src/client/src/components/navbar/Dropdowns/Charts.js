@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons"; //Pijltjes voor de dropdown
@@ -40,11 +40,10 @@ class ChartsDropdown extends Component {
           this.state.showMenu
             ? (
               <div className="navbar_dropdown-content">
-                <Link className='navbar_dropdown_item' to='/charts/userscores'>Relatief Scoreverloop</Link>
-                <Link className='navbar_dropdown_item' to='/charts/userrank'>Ranking</Link>
-                <Link className='navbar_dropdown_item' to='/charts/riderpercentage'>Puntenaandeel Renner per Etappe</Link>
-                {/* <Link className='navbar_dropdown_item h9' to='/charts/riderpercentagetotal'>Puntenaandeel Renner totaal</Link> */}
-                <Link className='navbar_dropdown_item' to='/charts/scorespread'>Score verdeling</Link>
+                { this.props.showRaceSpecificData && [<Link className='navbar_dropdown_item' to='/charts/userscores'>Relatief Scoreverloop</Link>,
+                <Link className='navbar_dropdown_item' to='/charts/userrank'>Ranking</Link>,
+                <Link className='navbar_dropdown_item' to='/charts/riderpercentage'>Puntenaandeel Renner per Etappe</Link>,
+                <Link className='navbar_dropdown_item' to='/charts/scorespread'>Score verdeling</Link>]}
                 <Link className='navbar_dropdown_item' to='/charts/totalscorespread'>Score verdeling Totaal</Link>
               </div>
             )
