@@ -34,7 +34,7 @@ class Navbar extends Component {
           <SRELogo className={'h-full fill-current text-' + raceColor + " duration-300 hover:text-" + raceColorLight} />
         </Link>
         <div className='flex items-center gap-x-5 h-full text-lg '>
-          <Link className='navbar_link' to={this.props.currentStageLink}><span>Current stage</span></Link>
+          {race !== null && <Link className='navbar_link' to={this.props.currentStageLink}><span>Current stage</span></Link>}
           {!this.props.isLoading && <ChartsDropdown showRaceSpecificData={race !== null} />}
           {!this.props.isLoading && <StatsDropdown showRaceSpecificData={race !== null} />}
           {this.props.isAdmin &&
