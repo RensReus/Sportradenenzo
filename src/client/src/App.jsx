@@ -78,28 +78,24 @@ class App extends Component {
       racename,
       contentclass
     });
-    this.setRace = this.setRace.bind(this)
-    this.createAxiosResponseInterceptor = this.createAxiosResponseInterceptor.bind(this)
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     //Eenmalig controleren of de gebruiker is ingelogd bij het initiele laden van de pagina
     //Na dit zal de authentication gaan via de interceptor
     if(localStorage.getItem('authToken')){
-      axios.post('/api/getlogin', {token: localStorage.getItem('authToken')})
-        .then(res => {
-          this.setState({
-            isLoggedIn: res.data.isLoggedIn,
-            isAdmin: res.data.admin, 
-            loading: false
-          })
-          if(!res.data){
-            this.setState({
-              redirect: this.props.history.location.pathname // voor redirect na inloggen
-            })
-            this.props.history.replace('/login')
-          }
+      var res = await axios.post('/api/getlogin', {token: localStorage.getItem('authToken')})
+        this.setState({
+          isLoggedIn: res.data.isLoggedIn,
+          isAdmin: res.data.admin,
+          loading: false
         })
+        if(!res.data){
+          this.setState({
+            redirect: this.props.history.location.pathname // voor redirect na inloggen
+          })
+          this.props.history.replace('/login')
+        }
     } else {
       this.setState({
         loading: false, 
@@ -109,7 +105,7 @@ class App extends Component {
     } 
   }
   
-  createAxiosResponseInterceptor() {
+  createAxiosResponseInterceptor = () => {
     const interceptor = axios.interceptors.response.use(
       response => {
         if (!this.state.isLoggedIn) {
@@ -178,7 +174,7 @@ class App extends Component {
     );
   }
 
-  setRace(race){
+  setRace = (race) => {
     var currentStageLink = "/stage/" + race.stagenr;
     if (race.stagenr === 0) {
       currentStageLink = "/teamselection";
