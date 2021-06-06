@@ -4,9 +4,9 @@ import Riderselectiontable from './riderselectiontable'
 import Userselectiontable from './userselectiontable'
 import axios from 'axios';
 import './index.css';
-import BudgetSwitchButton from '../shared/budgetSwitchButton';
 import _ from "lodash"
-import { faSearch, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { connect } from 'react-redux'
 
 class Teamselection extends Component {
   constructor(props) {
@@ -21,15 +21,7 @@ class Teamselection extends Component {
       joinButton: ' ',
       filtervalue: '',
       skillFilter: '',
-      showBudget: 0
     }
-    this.addRemoveRider = this.addRemoveRider.bind(this);
-    this.updatePage = this.updatePage.bind(this);
-    this.budgetSwitch = this.budgetSwitch.bind(this);
-    this.filter = this.filter.bind(this);
-    this.handleChangeMinPrice = this.handleChangeMinPrice.bind(this);
-    this.handleChangeMaxPrice = this.handleChangeMaxPrice.bind(this);
-    this.handleChangeSkill = this.handleChangeSkill.bind(this);
   }
 
   componentDidMount() {
@@ -106,7 +98,7 @@ class Teamselection extends Component {
       })
   }
 
-  updatePage(data, showBudget) {
+  updatePage = (data, showBudget) => {
     if (data) {
       let userSelection = _.cloneDeep(this.state.userSelection)
       userSelection[showBudget] = data.userSelection;
@@ -119,25 +111,19 @@ class Teamselection extends Component {
     }
   }
 
-  budgetSwitch() {
-    this.setState({ showBudget: (this.state.showBudget - 1) * -1 }, () => {
-      this.filter({ target: { value: this.state.filtervalue } })
-    })
-  }
-
-  handleChangeMinPrice(e) {
+  handleChangeMinPrice = (e) => {
     this.setState({minPrice: e.target.value}, () => {
       this.filter({ target: { value: this.state.filtervalue } })
     });
   }
   
-  handleChangeMaxPrice(e) {
+  handleChangeMaxPrice = (e) => {
     this.setState({maxPrice: e.target.value}, () => {
       this.filter({ target: { value: this.state.filtervalue } })
     });
   }
 
-  handleChangeSkill(e) {
+  handleChangeSkill = (e) => {
     this.setState({skillFilter: e.target.value}, () => {
       this.filter({ target: { value: this.state.filtervalue } })
     });
@@ -147,7 +133,7 @@ class Teamselection extends Component {
     this.props.history.push(url);
   }
 
-  filter(e) {
+  filter = (e) => {
     this.setState({ filtervalue: e.target.value }, () => {
       var regex = new RegExp("\\w*" + this.state.filtervalue + "\\w*", 'i')
       var filteredRiders = [];
@@ -156,7 +142,7 @@ class Teamselection extends Component {
         if (
           (allRiders[i].name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").match(regex) 
           || allRiders[i].team.match(regex)) 
-          && (!this.state.showBudget || allRiders[i].price <= 750000) 
+          && (!this.props.budget ? 1 : 0 || allRiders[i].price <= 750000) 
           && allRiders[i].price >= this.state.minPrice
           && allRiders[i].price <= this.state.maxPrice
           && this.filterSkills({
@@ -185,8 +171,8 @@ class Teamselection extends Component {
 
   render() {
     const allRiders = this.state.filteredRiders
-    const userSelection = this.state.userSelection[this.state.showBudget]
-    const budgetLeft = this.state.budgetLeft[this.state.showBudget]
+    const userSelection = this.state.userSelection[this.props.budget ? 1 : 0]
+    const budgetLeft = this.state.budgetLeft[this.props.budget ? 1 : 0]
     let minPriceDropdown = [];
     let maxPriceDropdown = [];
     const priceArray = [50,75,100,150,200,250,300,350,400,450,500,550,600,650,700]
@@ -247,7 +233,6 @@ class Teamselection extends Component {
                   <span>Budget: {budgetLeft.toLocaleString('nl', { useGrouping: true })}</span>
                 </div>
                 <div className="w-1/2 flex justify-end items-center space-x-14">
-                  <BudgetSwitchButton budget={this.state.showBudget} budgetSwitch={this.budgetSwitch} />
                   {userSelection.length == 20 ?
                     <button className="button_standard blue" onClick={() => this.redirect('/stage/1')}>To stages <FontAwesomeIcon icon={faAngleRight} /></button>
                     :
@@ -264,12 +249,12 @@ class Teamselection extends Component {
                   selectionTeams={userSelection.map(rider => rider.team)} budget={budgetLeft}
                   skillFilter={this.state.skillFilter} 
                   addRemoveRider={this.addRemoveRider} 
-                  budgetParticipation={this.state.showBudget} 
+                  budgetParticipation={this.props.budget ? 1 : 0} 
                 />
               </div>
               <div className="usertablecontainer w-1/2">
                 <div className="w-5/6 ml-auto">
-                  <Userselectiontable selection={userSelection} addRemoveRider={this.addRemoveRider} budgetParticipation={this.state.showBudget} />
+                  <Userselectiontable selection={userSelection} addRemoveRider={this.addRemoveRider} budgetParticipation={this.props.budget ? 1 : 0} />
                 </div>
               </div>
             </div>
@@ -284,4 +269,8 @@ class Teamselection extends Component {
   }
 }
 
-export default Teamselection
+const mapStateToProps = state => {
+  return { budget: state.budgetSwitch.value };
+};
+
+export default connect(mapStateToProps)(Teamselection);

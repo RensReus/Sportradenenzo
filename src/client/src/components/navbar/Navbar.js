@@ -8,7 +8,7 @@ import MobileDropdown from './Dropdowns/Mobile'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { SRELogo } from '../shared/svg/all-icons.js'
-import BudgetSwitchButton from '../shared/budgetSwitchButton';
+import BudgetSwitchButton from './budgetSwitchButton';
 const jwtDecode = require('jwt-decode');
 
 class Navbar extends Component {
