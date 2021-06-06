@@ -22,9 +22,7 @@ class Home extends Component {
 
   darkModeSwitch= (e) => {
     const val = e.target.selectedOptions[0].value
-    console.log(val)
     val === ""? localStorage.removeItem('darkMode') : localStorage.setItem('darkMode', val);
-    console.log(localStorage.getItem('darkMode'))
   }
 
 

@@ -36,7 +36,7 @@ module.exports = function (app) {
         'mode': 'selection',
         'teamSelection': results[0].rows,
         'stageSelection': results[1].rows,
-        'kopman': results[2].rows[0].kopman_id,
+        'kopman': results[2].rows[0]?.kopman_id,
         starttime: stageInfo.starttime,
         prevClassifications: results.slice(3, 7).map(x => x.rows),
         selectionsComplete: results[7].rows.map(x => x.complete)

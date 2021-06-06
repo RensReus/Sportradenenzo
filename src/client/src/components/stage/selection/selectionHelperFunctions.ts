@@ -21,14 +21,6 @@ export async function getSelectionData(stage: number, state: any, props: any): P
   }
 }
 
-export function starttimeString(starttimeInput: string) {
-  var starttime = new Date(starttimeInput);
-  var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-  var minutes = starttime.getMinutes();
-  var minutesString = minutes < 10 ? "0" + minutes : minutes;
-  return dayArray[starttime.getDay()] + " " + starttime.getHours() + ":" + minutesString;
-}
-
 export async function updateKopmanCall(rider_participation_id: number, setremove: string, state: any, props: any) {
   const budget = props.data.budget;
   const link = setremove === 'set' ? 'setkopman' : 'removekopman';

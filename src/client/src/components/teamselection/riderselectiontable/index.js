@@ -21,7 +21,7 @@ class Selectionbutton extends Component {
             className = 'button_standard small red'
         } else if (this.props.selected === 'unselectable') {
             buttonText = <FontAwesomeIcon icon={faPlus} />
-            className = 'button_standard small gray disableds'
+            className = 'button_standard small gray disabled'
         }
         return (
             <button className={className} onClick={() => this.addRemoveRider(this.props.riderID, this.props.budgetParticipation)}>{buttonText}</button>

@@ -98,3 +98,57 @@ td.rank{
   .tableLink:hover {
     text-decoration: underline;
   }
+
+  .table-standard th {
+    font-size: 1.5rem;
+  }
+
+  .table-standard.blue th{
+    background-color: #3B82F6;
+  }
+  
+  .table-standard.rounded th:first-child {
+    border-top-left-radius: 0.5rem;
+  }
+  
+  .table-standard.rounded th:last-child {
+    border-top-right-radius: 0.5rem;
+  }
+
+  .table-standard th:first-child {
+    padding-left: 0.5rem;
+  }
+  
+  .table-standard td{
+    vertical-align: middle;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+  
+  .table-standard td:first-child {
+    padding-left: 0.5rem;
+  }
+  
+  .table-standard td {
+    border-bottom: 2px solid #DBEAFE;
+  }
+
+  .table-standard td:first-child {
+    border-left: 2px solid #93C5FD; /*blue-200*/
+  }
+  
+  .table-standard td:last-child {
+    border-right: 2px solid #93C5FD; /*blue-200*/
+  }
+  
+  .table-standard tr:last-child td{
+    border-bottom: 2px solid #93C5FD; /*blue-200*/
+  }
+  
+  .table-standard.rounded tr:last-child td:first-child{
+    border-bottom-left-radius: 0.5rem;
+  }
+  
+  .table-standard.rounded tr:last-child td:last-child{
+    border-bottom-right-radius: 0.5rem;
+  }

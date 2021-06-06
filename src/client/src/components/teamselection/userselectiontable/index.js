@@ -40,7 +40,6 @@ class UserRiderrow extends Component {
 }
 class Userselectiontable extends Component {
   render() {
-    console.log(this.props.selection)
     const rows = this.props.selection.map(({ firstname, lastname, team, price, rider_participation_id}) => {
       return <UserRiderrow 
         firstname={firstname} 

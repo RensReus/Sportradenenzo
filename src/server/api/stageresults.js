@@ -12,9 +12,9 @@ module.exports = function (app) {
     } else {
       var stageInfo = stageInfoResults.rows[0];
       if (new Date() < stageInfo.starttime && stageInfo.type !== "FinalStandings") {
-        res.send({ mode: 'selection', stageType: stageInfo.type })
+        res.send({ mode: 'selection', starttime: stageInfo.starttime, stageType: stageInfo.type })
       } else {
-        res.send({ mode: 'results', stageType: stageInfo.type })
+        res.send({ mode: 'results', starttime: stageInfo.starttime, stageType: stageInfo.type })
       }
     }
   });

@@ -17,13 +17,6 @@
   text-align: center;
 }
 
-table.teamselection-table tr{
-  border-left: 2px solid #93C5FD;
-  border-right: 2px solid #93C5FD;
-  border-bottom-left-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
-}
-
 table.teamselection-table td{
   vertical-align: middle;
   padding-top: 0.75rem;

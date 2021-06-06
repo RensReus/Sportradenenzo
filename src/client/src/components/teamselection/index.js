@@ -108,7 +108,6 @@ class Teamselection extends Component {
 
   updatePage(data, showBudget) {
     if (data) {
-      console.log(data)
       let userSelection = _.cloneDeep(this.state.userSelection)
       userSelection[showBudget] = data.userSelection;
       let budgetLeft = _.cloneDeep(this.state.budgetLeft)

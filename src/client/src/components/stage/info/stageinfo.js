@@ -1,8 +1,9 @@
 import { Component } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
+import { faAngleLeft, faAngleRight, faMountain, faClock } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import BudgetSwitchButton from '../../shared/budgetSwitchButton';
 import ModalButton from '../../shared/modal';
+const jwtDecode = require('jwt-decode');
 
 
 class stageInfo extends Component {
@@ -32,8 +33,8 @@ class stageInfo extends Component {
       dropdown.push(<option value={i} key={i} className='stage_select_dropdown_option'>{i}</option>);
     }
     return (
-      <div className="flex flex-col space-y-3 w-full sm:w-96 border-2 border-solid">
-        <div className='flex items-center'>
+      <div className="flex flex-col space-y-3 w-full sm:w-96 p-4 border-2 border-solid border-blue-200 rounded-md">
+        <div className='flex items-center justify-center'>
           {(this.props.data.mode === 'selection' || this.props.data.stage !== 1) ?
             <button className="button_standard blue" onClick={() => this.props.functions.getStage(this.props.data.stage - 1)}>
               <FontAwesomeIcon icon={faAngleLeft} />
@@ -60,13 +61,25 @@ class stageInfo extends Component {
             </button>
           }
         </div>
-        <BudgetSwitchButton budget={this.props.data.budget} budgetSwitch={this.props.functions.budgetSwitch} />
+        
+        <div className='m-auto'>
+            {this.props.functions.starttimeString(this.props.data.starttime)}
+          
+        </div>
+        <div className='flex items-center'>
+        {jwtDecode(localStorage.getItem('authToken')).account_id<5?
+          <div className='mr-4'>
+            <BudgetSwitchButton budget={this.props.data.budget} budgetSwitch={this.props.functions.budgetSwitch} />
+          </div>
+          :<></>
+          }
         <ModalButton
           cssClassButton="button_standard blue"
           content="Profile "
           contentIcon={<FontAwesomeIcon icon={faMountain} />}
           modalContent={stageProfile}
         />
+        </div>
       </div>
     )
   }

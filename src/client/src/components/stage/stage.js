@@ -12,7 +12,8 @@ class Stage extends Component {
       mode: '',
       budget: 0,
       stage: parseInt(this.props.match.params.stagenumber),
-      stageType: ''
+      stageType: '',
+      starttime: ''
     }
   }
 
@@ -38,12 +39,12 @@ class Stage extends Component {
       document.title = "Etappe " + stage;
 
       const res = await axios.post('/api/getstageinfo', { race_id: this.props.race_id, stage })
-
       if (res.data.mode === '404') {
         this.props.history.push('/');
       } else {
         this.setState({
           mode: res.data.mode,
+          starttime: res.data.starttime,
           stageType: res.data.stageType
         })
       }
@@ -56,6 +57,12 @@ class Stage extends Component {
     })
   }
 
+  starttimeString = (starttimeInput) => {
+    var starttime = new Date(starttimeInput);
+    var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    return dayArray[starttime.getDay()] + " " + starttime.toLocaleString().replace(/-[0-9]{4}/,'').replace(':00','')
+  }
+
   render() {
     const mode = this.state.mode
 
@@ -63,6 +70,7 @@ class Stage extends Component {
       race_id: this.props.race_id,
       stage: this.state.stage,
       racename: this.state.racename,
+      starttime: this.state.starttime,
       stageType: this.state.stageType,
       budget: this.state.budget,
       mode
@@ -71,11 +79,14 @@ class Stage extends Component {
     const stageInfoFunctions = {
       getStage: this.getStage,
       budgetSwitch: this.budgetSwitch,
+      starttimeString: this.starttimeString
     }
 
     return (
       <div>
-        <StageInfo data={childData} functions={stageInfoFunctions} />
+        <div className='float-right'>
+          <StageInfo data={childData} functions={stageInfoFunctions} />
+        </div>
 
         {mode === '404' && <span className="h6">404: Data not found</span>}
 
