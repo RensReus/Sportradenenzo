@@ -32,7 +32,6 @@ const charts = (props) => {
       const res = await axios.post(apilink, { race_id, budgetparticipation: budget, extraParams })
       document.title = res.data.title
       var newOptions = res.data.options;
-      console.log(newOptions)
       newOptions.theme = 'dark1'
       setOptions(newOptions);
     }

@@ -1,97 +1,74 @@
-import { Component } from 'react';
 import axios from 'axios';
 import './index.css';
 import Selection from './selection'
 import Results from './results'
 import StageInfo from './info'
+import { useHistory } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { connect } from 'react-redux'
 
-class Stage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      mode: '',
-      budget: 0,
-      stage: parseInt(this.props.match.params.stagenumber),
-      stageType: '',
-      starttime: ''
-    }
-  }
+const Stage = (props) => {
+  let history = useHistory();
+  const [mode, setMode] = useState('');
+  const [stage, setStage] = useState(parseInt(props.match.params.stagenumber));
+  const [stageType, setStageType] = useState('');
+  const [starttime, setStarttime] = useState('');
 
-  componentDidMount() {
-    if (this.props.race_id === undefined) {
-      this.props.history.push('/home')
-    } else {
-      this.getStage(this.state.stage)
-    }
-  }
+  useEffect(() => {
+    setStage(parseInt(props.match.params.stagenumber));
+  }, [props])
 
-  getStage = (stage) => {
-    if (stage == 0 && this.state.mode === 'selection') {
-      this.props.history.push('/teamselection')
+  useEffect(() => {
+    getStage(stage);
+  }, [stage])// and budget?
+
+  const getStage = async (stage) => {
+    if (stage == 0 && mode === 'selection') {
+      history.push('/teamselection')
       return;
     }
-    this.setState({ stage }, async () => {
-      this.props.history.push('/stage/' + (stage).toString())
-      document.title = "Etappe " + stage;
+    history.push('/stage/' + (stage).toString())
+    document.title = "Etappe " + stage;
 
-      const res = await axios.post('/api/getstageinfo', { race_id: this.props.race_id, stage })
-      if (res.data.mode === '404') {
-        this.props.history.push('/');
-      } else {
-        this.setState({
-          mode: res.data.mode,
-          starttime: res.data.starttime,
-          stageType: res.data.stageType
-        })
-      }
-    });
-  }
-
-  budgetSwitch = () => {
-    this.setState({
-      budget: (this.state.budget - 1) * -1
-    })
-  }
-
-  starttimeString = (starttimeInput) => {
-    var starttime = new Date(starttimeInput);
-    var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    return dayArray[starttime.getDay()] + " " + starttime.toLocaleString().replace(/-[0-9]{4}/,'').replace(':00','')
-  }
-
-  render() {
-    const mode = this.state.mode
-
-    const childData = {
-      race_id: this.props.race_id,
-      stage: this.state.stage,
-      racename: this.props.racename,
-      starttime: this.state.starttime,
-      stageType: this.state.stageType,
-      budget: this.state.budget,
-      mode
+    const res = await axios.post('/api/getstageinfo', { race_id: props.race_id, stage })
+    if (res.data.mode === '404') {
+      history.push('/');
+    } else {
+      setStageType(res.data.stageType);
+      setMode(res.data.mode);
+      setStarttime(res.data.starttime);
     }
-
-    const stageInfoFunctions = {
-      getStage: this.getStage,
-      budgetSwitch: this.budgetSwitch,
-      starttimeString: this.starttimeString
-    }
-
-    return (
-      <div>
-        {/* <div className='float-right'> */}
-          <StageInfo data={childData} functions={stageInfoFunctions} />
-        {/* </div> */}
-
-        {mode === '404' && <span className="h6">404: Data not found</span>}
-
-        {mode === 'selection' && <Selection data={childData} />}
-
-        {mode === 'results' && <Results data={childData} />}
-      </div>
-    )
   }
+
+  const updateStage = (newStage) => {
+    setStage(parseInt(newStage))
+  }
+
+  const childData = {
+    race_id: props.race_id,
+    stage,
+    racename: props.racename,
+    starttime,
+    stageType: stageType,
+    budget: props.budget ? 1 : 0,
+    mode
+  }
+
+  return (
+    <div>
+      {/* <div className='float-right'> */}
+      <StageInfo data={childData} updateStage={updateStage} />
+      {/* </div> */}
+
+      {mode === 'selection' && <Selection data={childData} />}
+
+      {mode === 'results' && <Results data={childData} />}
+    </div>
+  )
 }
 
-export default Stage
+const mapStateToProps = state => {
+  return { budget: state.budgetSwitch.value };
+};
+
+export default connect(mapStateToProps)(Stage);

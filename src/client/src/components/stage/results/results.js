@@ -36,7 +36,7 @@ const results = (props) => {
     setPouleTeamResultDownloaded([false, false]);
     setStageResults([[[], [], [], [], []], [[], [], [], [], []]]);
     const budget = raceData.budget;
-    const res = await axios.post('/api/getstageresultsDEPRICATED', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget })
+    const res = await axios.post('/api/getPouleTeamResults', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget })
     const data = res.data;
     if (data.mode === '404') {
       history.push('/');
@@ -68,13 +68,13 @@ const results = (props) => {
     const budget = raceData.budget;
     if (!classificationDownloaded[budget][classificationIndex]) {
       setLoadingResults(true); //TODO subtielere loader zodat je gewoon al de results ziet maar wel een kleine hint krijgt dat er misschien nog wat extra bij komt
-      const res = await axios.post('/api/getStageResults', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget, classificationIndex });
-      setLoadingPoule(false);
-      setLoadingResults(false);
+      const res = await axios.post('/api/getClassificationResults', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget, classificationIndex });
       setClassificationDownloaded(updateArray(classificationDownloaded, true, budget, classificationIndex));
       setStageResults(updateArray(stageResults, res.data.stageResults, budget, classificationIndex));
       setStageResultsLengths(res.data.stageResultsLengths);
     }
+    setLoadingPoule(false);
+    setLoadingResults(false);
   }
 
   const getAllSelections = async () => { //TODO add loader

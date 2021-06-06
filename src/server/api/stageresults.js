@@ -19,7 +19,7 @@ module.exports = function (app) {
     }
   });
 
-  app.post('/api/getstageresultsDEPRICATED', async (req, res) => { //TODO merge with next function
+  app.post('/api/getPouleTeamResults', async (req, res) => { //TODO merge with next function
     var race_id = req.body.race_id;
     var stagenr = req.body.stage;
     var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${stagenr})`;
@@ -97,7 +97,7 @@ module.exports = function (app) {
     }
   });
 
-  app.post('/api/getStageResults', async (req, res) => {
+  app.post('/api/getClassificationResults', async (req, res) => {
     var race_id = req.body.race_id;
     var now = new Date();
     var query = `SELECT starttime, type FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;

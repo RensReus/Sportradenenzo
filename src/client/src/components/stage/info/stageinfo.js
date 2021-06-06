@@ -1,19 +1,19 @@
 import { Component } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight, faMountain, faClock } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
-import BudgetSwitchButton from '../../shared/budgetSwitchButton';
 import ModalButton from '../../shared/modal';
-const jwtDecode = require('jwt-decode');
 
 
 class stageInfo extends Component {
-  constructor() {
-    super();
-    this.handleChange = this.handleChange.bind(this);
+  handleChange = (e) => {
+    this.props.updateStage(e.target.value);
   }
-  handleChange(e) {
-    this.props.functions.getStage(e.target.value);
+  starttimeString = (starttimeInput) => {
+    var starttime = new Date(starttimeInput);
+    var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    return dayArray[starttime.getDay()] + " " + starttime.toLocaleString().replace(/-[0-9]{4}/,'').replace(':00','')
   }
+
   render() {
     // always
     var stageProfile = '';
@@ -36,7 +36,7 @@ class stageInfo extends Component {
       <div className="flex flex-col space-y-3 w-full sm:w-96 p-4 border-2 border-solid border-blue-200 rounded-md">
         <div className='flex items-center justify-center'>
           {(this.props.data.mode === 'selection' || this.props.data.stage !== 1) ?
-            <button className="button_standard blue" onClick={() => this.props.functions.getStage(this.props.data.stage - 1)}>
+            <button className="button_standard blue" onClick={() => this.props.updateStage(this.props.data.stage - 1)}>
               <FontAwesomeIcon icon={faAngleLeft} />
             </button>
             :
@@ -52,7 +52,7 @@ class stageInfo extends Component {
             {dropdown}
           </select>
           {(this.props.data.stageType !== "FinalStandings" && this.props.data.stageType !== "") ?
-            <button className="button_standard blue" onClick={() => this.props.functions.getStage(this.props.data.stage + 1)}>
+            <button className="button_standard blue" onClick={() => this.props.updateStage(this.props.data.stage + 1)}>
               <FontAwesomeIcon icon={faAngleRight} />
             </button>
             :
@@ -63,16 +63,10 @@ class stageInfo extends Component {
         </div>
         
         <div className='m-auto'>
-            {this.props.functions.starttimeString(this.props.data.starttime)}
+            {this.starttimeString(this.props.data.starttime)}
           
         </div>
         <div className='flex items-center'>
-        {jwtDecode(localStorage.getItem('authToken')).account_id<5?
-          <div className='mr-4'>
-            <BudgetSwitchButton budget={this.props.data.budget} budgetSwitch={this.props.functions.budgetSwitch} />
-          </div>
-          :<></>
-          }
         <ModalButton
           cssClassButton="button_standard blue"
           content="Profile "
