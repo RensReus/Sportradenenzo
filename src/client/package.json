@@ -27,6 +27,7 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-flag-icon-css": "^1.0.25",
+    "react-native": "^0.64.2",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "redux": "^4.1.0",

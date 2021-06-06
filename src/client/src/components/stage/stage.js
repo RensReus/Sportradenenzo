@@ -21,11 +21,7 @@ class Stage extends Component {
     if (this.props.race_id === undefined) {
       this.props.history.push('/home')
     } else {
-      this.setState({
-        racename: this.props.racename,
-      }, () => {
-        this.getStage(this.state.stage)
-      })
+      this.getStage(this.state.stage)
     }
   }
 
@@ -69,7 +65,7 @@ class Stage extends Component {
     const childData = {
       race_id: this.props.race_id,
       stage: this.state.stage,
-      racename: this.state.racename,
+      racename: this.props.racename,
       starttime: this.state.starttime,
       stageType: this.state.stageType,
       budget: this.state.budget,
