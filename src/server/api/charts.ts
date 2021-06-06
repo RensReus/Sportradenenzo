@@ -22,7 +22,7 @@ module.exports = function (app) {
   }
 
 
-  app.post('/api/chartuserstagescores', async (req, res) => {
+  app.post('/api/userscores', async (req, res) => {
     var race_id = req.body.race_id;
     var query = `SELECT username, stagenr, totalscore FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
@@ -84,7 +84,7 @@ module.exports = function (app) {
     res.send({ options, title: "Chart: User Scores" });
   })
 
-  app.post('/api/chartuserranking', async (req, res) => {
+  app.post('/api/userrank', async (req, res) => {
     var race_id = req.body.race_id;
     var query = `SELECT username, stagenr, rank() over (PARTITION BY stagenr ORDER BY totalscore desc) FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
@@ -140,7 +140,7 @@ module.exports = function (app) {
     res.send({ options, title: "Chart: User Rankings" });
   })
 
-  app.post('/api/chartriderpercentage', async (req, res) => {
+  app.post('/api/riderpercentage', async (req, res) => {
     var totalscore = 'totalscore';
     if (req.body.budgetparticipation) {
       totalscore = 'totalscore - teamscore AS totalscore'
@@ -195,7 +195,7 @@ module.exports = function (app) {
     res.send({ options, title: "Chart: Renners Punten Aandeel/Relatief" });
   })
 
-  app.post('/api/chartscorespread', async (req, res) => {
+  app.post('/api/scorespread', async (req, res) => {
     var race_id = req.body.race_id;
     var excludeFinalStr = ''
     if (req.body.extraParams.excludeFinal) excludeFinalStr = `AND NOT type = 'FinalStandings'`
@@ -239,7 +239,7 @@ module.exports = function (app) {
     res.send({ options, title: "Chart: Score Spreiding" });
   })
 
-  app.post('/api/chartscorespreadgrouped', async (req, res) => {
+  app.post('/api/scorespreadgrouped', async (req, res) => {
     var budgetparticipation = req.body.budgetparticipation;
     var race_id = req.body.race_id;
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
@@ -268,7 +268,7 @@ module.exports = function (app) {
     res.send({ options, title: "Chart: Scores Per Etappe" });
   })
 
-  app.post('/api/charttotalscorespread', async (req, res) => {
+  app.post('/api/totalscorespread', async (req, res) => {
     var budgetparticipation = req.body.budgetparticipation;
     var racePointsQuery = `SELECT username as colorlabel, CONCAT(username, ' ', name, ' ', year) as label, finalscore as y FROM account_participation
                 INNER JOIN account USING(account_id)
@@ -297,7 +297,7 @@ module.exports = function (app) {
     res.send({ options, title: "Chart: Score Spreiding" });
   })
 
-  app.post('/api/charttotalscorespreadgrouped', async (req, res) => {
+  app.post('/api/totalscorespreadgrouped', async (req, res) => {
     var budgetparticipation = req.body.budgetparticipation;
     var usersQuery = `SELECT account_id, username FROM account 
                 ORDER BY account_id;`
