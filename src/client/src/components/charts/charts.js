@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux'
 
-const charts = (props) => {
+charts = (props) => {
   let history = useHistory();
   const [options, setOptions] = useState({});
   const [grouped, setGrouped] = useState({});
@@ -39,11 +39,11 @@ const charts = (props) => {
     getData(props.race_id, chartname, props.budget);
   }, [props, grouped, showEind])
 
-  const showEindSwitch = () => {
+  showEindSwitch = () => {
     setShowEind(!showEind)
   }
 
-  const groupedSwitch = () => {
+  groupedSwitch = () => {
     setGrouped(!grouped)
   }
 
@@ -60,7 +60,7 @@ const charts = (props) => {
   );
 }
 
-const mapStateToProps = state => {
+mapStateToProps = state => {
   return { budget: state.budgetSwitch.value };
 };
 

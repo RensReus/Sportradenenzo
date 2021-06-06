@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux'
 
-const statistics = (props) => {
+statistics = (props) => {
   let history = useHistory();
   const [tables, setTables] = useState([]);
   const [details, setDetails] = useState(false);
@@ -29,11 +29,11 @@ const statistics = (props) => {
     getData(props.race_id, props.match.params.selection, props.budget);
   }, [props, details, showClassifications])
 
-  const detailsSwitch = () => {
+  detailsSwitch = () => {
     setDetails(!details);
   }
 
-  const classificationsPointsSwitch = () => {
+  classificationsPointsSwitch = () => {
     setShowClassifications(!showClassifications);
   }
 
@@ -47,7 +47,7 @@ const statistics = (props) => {
   )
 }
 
-const mapStateToProps = state => {
+mapStateToProps = state => {
   return { budget: state.budgetSwitch.value };
 };
 
