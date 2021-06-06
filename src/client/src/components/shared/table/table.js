@@ -217,9 +217,9 @@ class Table extends Component {
     if (this.state.displayCols != null) {
       var checkboxes = [];
       for (var name in this.state.displayCols) {
-        var newBox = <div className="toggleDiv">
-          <input type="checkbox" id={name} name={name} checked={this.state.displayCols[name]} onClick={(e) => this.toggleColumn(e.target.name)} />
-          <label className="toggleColLabel" for={name}>{name}</label>
+        var newBox = <div key={name} className="toggleDiv">
+          <input type="checkbox" id={name} name={name} checked={this.state.displayCols[name]} onChange={(e) => this.toggleColumn(e.target.name)} />
+          <label className="toggleColLabel" htmlFor={name}>{name}</label>
         </div>
         checkboxes.push(newBox)
       }

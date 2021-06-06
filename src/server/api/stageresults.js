@@ -67,7 +67,6 @@ module.exports = function (app) {
       var resultsCompleteQuery = `SELECT complete FROM stage WHERE stage_id = ${stage_id}`
       var totalQuery = teamresultQuery + userscoresQuery + resultsCompleteQuery;
 
-      var userScoresColtype = { "Stage": 1, "Total": 1 };
       const uitslagresults = await sqlDB.query(totalQuery);
       var userScores = uitslagresults[1].rows;
 
@@ -93,7 +92,6 @@ module.exports = function (app) {
         teamresult,
         userScores,
         resultsComplete: uitslagresults[2].rows[0].complete,
-        userScoresColtype: userScoresColtype,
         stageType: stageInfo.type
       })
     }
@@ -318,7 +316,6 @@ module.exports = function (app) {
       var totalQuery = teamresultQuery + userscoresQuery + stageresultsQuery + selectionsQuery + raceStartedQuery;
 
 
-      var userScoresColtype = { stagescore: 1, totalscore: 1 };
 
       const results = await sqlDB.query(totalQuery);
       var userscores = results[1].rows;
@@ -336,7 +333,6 @@ module.exports = function (app) {
         teamresult: results[0].rows,
         userscores,
         stageresults: results[2].rows,
-        userScoresColtype: userScoresColtype,
         prevText: prevText,
         currText: currText,
         nextText: nextText,

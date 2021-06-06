@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux'
 
-statistics = (props) => {
+const statistics = (props) => {
   let history = useHistory();
   const [tables, setTables] = useState([]);
   const [details, setDetails] = useState(false);
@@ -22,18 +22,18 @@ statistics = (props) => {
         history.push('/404');
       } else {
         document.title = res.data.title;
-        var newTables = res.data.tables.map(x => <div className="tableDiv" ><Table data={x.tableData} title={x.title} coltype={x.coltype} hiddenCols={x.hiddenCols} /></div>)
+        var newTables = res.data.tables.map(x => <div className="tableDiv" key={x.title} ><Table data={x.tableData} title={x.title} coltype={x.coltype} hiddenCols={x.hiddenCols} /></div>)
         setTables(newTables);
       }
     }
     getData(props.race_id, props.match.params.selection, props.budget);
   }, [props, details, showClassifications])
 
-  detailsSwitch = () => {
+  const detailsSwitch = () => {
     setDetails(!details);
   }
 
-  classificationsPointsSwitch = () => {
+  const classificationsPointsSwitch = () => {
     setShowClassifications(!showClassifications);
   }
 
@@ -47,7 +47,7 @@ statistics = (props) => {
   )
 }
 
-mapStateToProps = state => {
+const mapStateToProps = state => {
   return { budget: state.budgetSwitch.value };
 };
 
