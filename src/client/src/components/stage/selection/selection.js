@@ -22,7 +22,7 @@ class Selection extends Component {
     this.setSelectionData(this.props.data.stage)
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps) { // todo reduce number of calls, currently it gets triggered thrice on stage change, fix in parent
     if (this.props !== prevProps) {
       this.setSelectionData(this.props.data.stage);
     }

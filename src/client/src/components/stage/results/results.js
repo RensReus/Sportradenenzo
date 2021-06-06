@@ -21,7 +21,7 @@ const results = (props) => {
   const [pouleTeamResultDownloaded, setPouleTeamResultDownloaded] = useState([false, false]); 
   const [classificationIndex, setClassificationIndex] = useState(props.data.stageType === "FinalStandings" ? 1 : 0);
 
-  useEffect(() => {
+  useEffect(() => { // todo reduce number of calls, currently it gets triggered thrice on stage change, fix in parent
     updateData(props.data);
   }, [props.data])
 
