@@ -21,17 +21,18 @@ const charts = (props) => {
       var extraParams = {}
       switch (chartname) {
         case "totalscorespread":
-          extraParams = { perRace: this.state.grouped }
-          apilink += this.state.grouped ? 'grouped' : ''
+          extraParams = { perRace: grouped }
+          apilink += grouped ? 'grouped' : ''
           break;
         case "scorespread":
-          extraParams = { perStage: this.state.grouped, excludeFinal: !this.state.showEind }
-          apilink += this.state.grouped ? 'grouped' : ''
+          extraParams = { perStage: grouped, excludeFinal: !showEind }
+          apilink += grouped ? 'grouped' : ''
           break;
       }
       const res = await axios.post(apilink, { race_id, budgetparticipation: budget, extraParams })
       document.title = res.data.title
       var newOptions = res.data.options;
+      console.log(newOptions)
       newOptions.theme = 'dark1'
       setOptions(newOptions);
     }
