@@ -80,9 +80,9 @@ class Stage extends Component {
 
     return (
       <div>
-        <div className='float-right'>
+        {/* <div className='float-right'> */}
           <StageInfo data={childData} functions={stageInfoFunctions} />
-        </div>
+        {/* </div> */}
 
         {mode === '404' && <span className="h6">404: Data not found</span>}
 
