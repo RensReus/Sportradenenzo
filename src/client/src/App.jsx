@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import './index.css';
 import axios from 'axios';
+import jwt_decode from "jwt-decode";
 
 import { ReactRoute, AdminRoute } from './PrivateRoute'
 
@@ -27,7 +28,6 @@ import './components/css/fonts.css'
 import './components/css/menus.css'
 import './components/css/tables.css'
 
-const jwtDecode = require('jwt-decode');
 
 class App extends Component {
   constructor(props) {
@@ -45,7 +45,7 @@ class App extends Component {
         }
         return reqConfig;
       }, (error) => {
-        switch (error.response.status) {
+        switch (error.response?.status) {
           case 400:
             console.log('Bad request');
             break;
@@ -112,19 +112,23 @@ class App extends Component {
           if (response.headers.authorization) {
             this.setState({
               isLoggedIn: true,
-              isAdmin: jwtDecode(response.headers.authorization).admin
+              isAdmin: jwt_decode(response.headers.authorization).admin
+            });
+          } else if (localStorage.getItem('authToken')){
+            this.setState({
+              isLoggedIn: true,
+              isAdmin: jwt_decode(localStorage.getItem('authToken')).admin
             });
           } else {
             this.setState({
-              isLoggedIn: true,
-              isAdmin: jwtDecode(localStorage.getItem('authToken')).admin
+              isLoggedIn: false,
             });
           }
         }
         return response
       }, (error) => {
         console.log("error:" + error)
-        switch (error.response.status) {
+        switch (error.response?.status) {
           case 401: //Geen token gevonden
             console.log('Not authorized');
             if (this.state.isLoggedIn) {

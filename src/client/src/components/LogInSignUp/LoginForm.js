@@ -37,9 +37,20 @@ class LoginForm extends Component {
     const password = e.target.password.value;
     axios.post('api/signup', { email: email, username: username, password: password })
       .then((res) => {
+        console.log(res)
         if (res.data.succes) {
-          localStorage.setItem('authToken', res.data.token);
-          this.props.history.push('/')
+          axios.post('api/login', { email: email, password: password }) //Stuur de form naar de server
+          .then((res) => {
+            if (res.data.succes) {
+              localStorage.setItem('authToken', res.data.token);
+              this.props.history.push('/');
+            } else {
+              this.setState({ error: 'Login failed: incorrect email/password combination' })
+            }
+          })
+          .catch(function (error) {
+            throw error
+          });
         } else {
           this.setState({ error: res.data.error })
         }

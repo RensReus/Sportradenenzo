@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { SRELogo } from '../shared/svg/all-icons.js'
 import BudgetSwitchButton from './budgetSwitchButton';
-const jwtDecode = require('jwt-decode');
+import jwt_decode from "jwt-decode";
 
 class Navbar extends Component {
   redirect = (url) => {
@@ -44,8 +44,9 @@ class Navbar extends Component {
               <span><FontAwesomeIcon icon={faShieldAlt} /> Admin</span>
             </Link>
           }
-          {jwtDecode(localStorage.getItem('authToken')).account_id <= 5 &&
-            <BudgetSwitchButton />
+          {localStorage.getItem('authToken')? (
+            jwt_decode(localStorage.getItem('authToken')).account_id <= 5 &&
+            <BudgetSwitchButton />) : <></>
           }
         </div>
         <div className="flex flex-row-reverse flex-grow items-center h-full">

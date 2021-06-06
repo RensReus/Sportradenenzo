@@ -1,5 +1,5 @@
 import { Redirect, Route } from 'react-router-dom';
-const jwtDecode = require('jwt-decode');
+import jwt_decode from "jwt-decode";
 
 export const ReactRoute = ({ component: Component, ...rest }) => (
     <Route
@@ -14,7 +14,8 @@ export const AdminRoute = ({ component: Component, ...rest }) => (
     <Route
         {...rest}
         render={props =>
-            jwtDecode(localStorage.getItem('authToken')).admin ? (
+            localStorage.getItem('authToken')? (
+            jwt_decode(localStorage.getItem('authToken')).admin ? (
                 <Component {...props} />
             ) : (
                 <Redirect
@@ -23,7 +24,7 @@ export const AdminRoute = ({ component: Component, ...rest }) => (
                         state: { from: props.location }
                     }}
                 />
-            )
+            )) : (<></>)
         }
     />
 )
