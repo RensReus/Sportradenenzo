@@ -64,7 +64,7 @@ class App extends Component {
     let contentclass = 'content';
     const darkMode = localStorage.getItem('darkMode'); //"dark" | "light"
     if (darkMode === 'dark' || (!(darkMode) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      contentclass = contentclass + ' dark';
+      contentclass = contentclass + '';
     }
     if (currentStageLink === null) currentStageLink = '/home'
     this.state = ({
