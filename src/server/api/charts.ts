@@ -227,7 +227,7 @@ module.exports = function (app) {
       showInLegend: true,
       dataPoints: []
     }]
-    var colors = { Bierfietsen: '#487ab2', Rens: '#b84548', Sam: '#93b358', Yannick: '#2ab9a2' }
+    var colors = { Arjen: '#487ab2', Rens: '#b84548', Sam: '#93b358', Yannick: '#2ab9a2' }
     for (var i in results[0].rows) {
       var row = results[0].rows[i];
       row.color = colors[row.colorlabel];
@@ -285,7 +285,7 @@ module.exports = function (app) {
       showInLegend: true,
       dataPoints: []
     }]
-    var colors = { Bierfietsen: '#487ab2', Rens: '#b84548', Sam: '#93b358', Yannick: '#2ab9a2' }
+    var colors = { Arjen: '#487ab2', Rens: '#b84548', Sam: '#93b358', Yannick: '#2ab9a2' }
     for (var i in results[0].rows) {
       var row = results[0].rows[i];
       row.color = colors[row.colorlabel];
@@ -344,7 +344,7 @@ module.exports = function (app) {
       showInLegend: true,
       dataPoints: []
     }]
-    var colors = { Bierfietsen: '#487ab2', Rens: '#b84548', Sam: '#93b358', Yannick: '#2ab9a2' }
+    var colors = { Arjen: '#487ab2', Rens: '#b84548', Sam: '#93b358', Yannick: '#2ab9a2' }
     for (var i in results[0].rows) {
       var row = results[0].rows[i];
       row.color = colors[row.label];

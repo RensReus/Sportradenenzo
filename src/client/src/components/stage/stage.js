@@ -12,11 +12,11 @@ const Stage = (props) => {
   const [modeTypeTime, setModeTypeTime] = useState({mode: '', stageType: '', starttime: ''})
   const [stage, setStage] = useState(parseInt(props.match.params.stagenumber));
 
-  useEffect(() => {
+  useEffect(() => { //TODO reduce updates 
     setStage(parseInt(props.match.params.stagenumber));
   }, [props])
 
-  useEffect(() => {
+  useEffect(() => { // and maybe just remove this one
     getStage(stage);
   }, [stage])
 
