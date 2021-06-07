@@ -2,7 +2,7 @@ import { Component } from 'react';
 import Table from '../../shared/table'
 import LoadingDiv from '../../shared/loadingDiv'
 import SelecTable from './SelecTable'
-import { getSelectionData, starttimeString, updateKopmanCall, updateRiderCall } from './selectionHelperFunctions'
+import { getSelectionData, updateKopmanCall, updateRiderCall } from './selectionHelperFunctions'
 
 class Selection extends Component {
   constructor(props) {
@@ -22,7 +22,7 @@ class Selection extends Component {
     this.setSelectionData(this.props.data.stage)
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps) { // todo reduce number of calls, currently it gets triggered thrice on stage change, fix in parent
     if (this.props !== prevProps) {
       this.setSelectionData(this.props.data.stage);
     }
@@ -62,18 +62,17 @@ class Selection extends Component {
       updateKopman: this.updateKopman
     }
     return (
-      <div className="stageContainer">
-        <div className='stagetext'>
-          <div className='stagestarttime h7 bold'>
-            {starttimeString(this.state.starttime)}
-          </div>
+      <div className="">
+        <div className='hidden stagetext'>
           <div className={"completeContainer " + ((this.state.selectionsComplete[0] + this.state.selectionsComplete[1]) === 20 ? "allCompleet" : "")}>Compleet:
-        <div className="gewoonCompleet"><div style={{ width: this.state.selectionsComplete[0] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
+            <div className="gewoonCompleet"><div style={{ width: this.state.selectionsComplete[0] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
             <div className="budgetCompleet"><div style={{ width: this.state.selectionsComplete[1] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
           </div>
         </div>
-        <SelecTable data={selecTableData} functions={selecTableFunctions} />
-        <div className="prevClassifications"> {/* TODO maak eigen component */}
+        <div className='w-1/2'>
+          <SelecTable data={selecTableData} functions={selecTableFunctions} />
+        </div>
+        <div className="prevClassifications w-1/2"> {/* TODO maak eigen component */}
           <LoadingDiv loading={this.props.data.loading || this.state.loading} />
           <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0]} title="AK" /></div>
           <div style={{ display: prevClassifications[1].length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1]} title="Punten" /></div>

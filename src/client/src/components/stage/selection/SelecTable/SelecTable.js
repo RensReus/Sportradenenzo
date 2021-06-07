@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserMinus, faUserPlus, faCheckCircle as solFaCheckCircle } from "@fortawesome/free-solid-svg-icons"; // add/remove riders
+import { faTimes, faPlus, faCheckCircle as solFaCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { faCheckCircle as regFaCheckCircle } from "@fortawesome/free-regular-svg-icons"; // add/remove riders
 import LoadingDiv from '../../../shared/loadingDiv'
 import FlagIcon from '../../../shared/flagIcon'
@@ -10,21 +10,21 @@ class SelecTableRow extends Component {
     let updateRiderButton
     let updateKopmanButton
     if (this.props.selected === 'selected') {
-      updateRiderButton = <button className="selectbutton" onClick={() => this.props.updateRider(this.props.riderID, 'remove')}><FontAwesomeIcon icon={faUserMinus} /></button>
+      updateRiderButton = <button className="button_standard small red" onClick={() => this.props.updateRider(this.props.riderID, 'remove')}><FontAwesomeIcon icon={faTimes} /></button>
       if (this.props.kopman === this.props.riderID) {
         updateKopmanButton = <button className="selectbutton" onClick={() => this.props.updateKopman(this.props.riderID, 'remove')}><FontAwesomeIcon icon={solFaCheckCircle} /></button>
       } else {
         updateKopmanButton = <button className="selectbutton" onClick={() => this.props.updateKopman(this.props.riderID, 'set')}><FontAwesomeIcon icon={regFaCheckCircle} /></button>
       }
     } else if (this.props.selected === 'unselected') {
-      updateRiderButton = <button className="selectbutton" onClick={() => this.props.updateRider(this.props.riderID, 'add')}><FontAwesomeIcon icon={faUserPlus} /></button>
+      updateRiderButton = <button className="button_standard small blue" onClick={() => this.props.updateRider(this.props.riderID, 'add')}><FontAwesomeIcon icon={faPlus} /></button>
     }
     return (
       <tr className={this.props.selected}>
-        <td className="selectbutton">{updateKopmanButton}</td>
         <td><FlagIcon code={this.props.country}/></td>
         <td>{this.props.name}</td>
         <td>{this.props.team}</td>
+        <td className="selectbutton">{updateKopmanButton}</td>
         <td className="selectbutton">{updateRiderButton}</td>
       </tr>
     )
@@ -58,17 +58,16 @@ class SelecTable extends Component {
       }
     })
     return (
-      <div className="selecTable" style={{ position: 'relative' }}>
+      <div className="selecTable w-full" style={{ position: 'relative' }}>
         <LoadingDiv loading={this.props.data.loading} />
-        <table>
-          <caption>{selectionLength}/9</caption>
+        <table className="table-standard blue rounded w-full">
           <thead>
             <tr>
-              <th>Kopman</th>
               <th></th>
               <th>Name</th>
               <th>Team</th>
-              <th>   </th>
+              <th>Leader</th>
+              <th>{selectionLength}/9</th>
             </tr>
           </thead>
           <tbody>

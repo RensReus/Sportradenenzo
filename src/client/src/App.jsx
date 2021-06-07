@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import './index.css';
 import axios from 'axios';
+import jwt_decode from "jwt-decode";
 
 import { ReactRoute, AdminRoute } from './PrivateRoute'
 
@@ -24,9 +25,9 @@ import Settings from './components/settings'
 import './components/css/buttons.css'
 import './components/css/colours.css'
 import './components/css/fonts.css'
+import './components/css/menus.css'
 import './components/css/tables.css'
 
-const jwtDecode = require('jwt-decode');
 
 class App extends Component {
   constructor(props) {
@@ -44,7 +45,7 @@ class App extends Component {
         }
         return reqConfig;
       }, (error) => {
-        switch (error.response.status) {
+        switch (error.response?.status) {
           case 400:
             console.log('Bad request');
             break;
@@ -60,6 +61,11 @@ class App extends Component {
     let race_id = sessionStorage.getItem('race_id')
     let racename = sessionStorage.getItem('racename')
     let currentStageLink = sessionStorage.getItem('currentStageLink')
+    let contentclass = 'content';
+    const darkMode = localStorage.getItem('darkMode'); //"dark" | "light"
+    if (darkMode === 'dark' || (!(darkMode) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      contentclass = contentclass + ' dark';
+    }
     if (currentStageLink === null) currentStageLink = '/home'
     this.state = ({
       loading: true,
@@ -69,30 +75,27 @@ class App extends Component {
       message: '',
       currentStageLink,
       race_id,
-      racename
+      racename,
+      contentclass
     });
-    this.setRace = this.setRace.bind(this)
-    this.createAxiosResponseInterceptor = this.createAxiosResponseInterceptor.bind(this)
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     //Eenmalig controleren of de gebruiker is ingelogd bij het initiele laden van de pagina
     //Na dit zal de authentication gaan via de interceptor
     if(localStorage.getItem('authToken')){
-      axios.post('/api/getlogin', {token: localStorage.getItem('authToken')})
-        .then(res => {
-          this.setState({
-            isLoggedIn: res.data.isLoggedIn,
-            isAdmin: res.data.admin, 
-            loading: false
-          })
-          if(!res.data){
-            this.setState({
-              redirect: this.props.history.location.pathname // voor redirect na inloggen
-            })
-            this.props.history.replace('/login')
-          }
+      var res = await axios.post('/api/getlogin', {token: localStorage.getItem('authToken')})
+        this.setState({
+          isLoggedIn: res.data.isLoggedIn,
+          isAdmin: res.data.admin,
+          loading: false
         })
+        if(!res.data){
+          this.setState({
+            redirect: this.props.history.location.pathname // voor redirect na inloggen
+          })
+          this.props.history.replace('/login')
+        }
     } else {
       this.setState({
         loading: false, 
@@ -102,26 +105,30 @@ class App extends Component {
     } 
   }
   
-  createAxiosResponseInterceptor() {
+  createAxiosResponseInterceptor = () => {
     const interceptor = axios.interceptors.response.use(
       response => {
         if (!this.state.isLoggedIn) {
           if (response.headers.authorization) {
             this.setState({
               isLoggedIn: true,
-              isAdmin: jwtDecode(response.headers.authorization).admin
+              isAdmin: jwt_decode(response.headers.authorization).admin
+            });
+          } else if (localStorage.getItem('authToken')){
+            this.setState({
+              isLoggedIn: true,
+              isAdmin: jwt_decode(localStorage.getItem('authToken')).admin
             });
           } else {
             this.setState({
-              isLoggedIn: true,
-              isAdmin: jwtDecode(localStorage.getItem('authToken')).admin
+              isLoggedIn: false,
             });
           }
         }
         return response
       }, (error) => {
         console.log("error:" + error)
-        switch (error.response.status) {
+        switch (error.response?.status) {
           case 401: //Geen token gevonden
             console.log('Not authorized');
             if (this.state.isLoggedIn) {
@@ -171,7 +178,7 @@ class App extends Component {
     );
   }
 
-  setRace(race){
+  setRace = (race) => {
     var currentStageLink = "/stage/" + race.stagenr;
     if (race.stagenr === 0) {
       currentStageLink = "/teamselection";
@@ -190,15 +197,14 @@ class App extends Component {
     return (
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
-      <div className="content">
-        <div className="backgroundImage"></div>
+      <div className={this.state.contentclass}>
         <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} isLoading={this.state.loading} history={this.props.history} racename={this.state.racename} currentStageLink={this.state.currentStageLink} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (
             this.state.isLoggedIn ? (<Redirect to="/home" />) : (<Redirect to="/login"/>)
           )} />
           <Route exact path="/login" render={() => (
-            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : (<LogInSignUp history={this.props.history} Signup={false} />)
+            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : this.state.loading ? <></> :(<LogInSignUp history={this.props.history} Signup={false}/>)
           )} />
           <ReactRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />

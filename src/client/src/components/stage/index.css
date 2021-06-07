@@ -1,63 +1,22 @@
-div#prevStageButton {
-    float: left;
+.stage_select_dropdown{
+  appearance: none;
+  background: transparent;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: 50%;
+  padding: 1rem;
+  padding-right: 1.5rem;
+  padding-left: 0.5rem;
+  font-size: 1.25rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  text-align: center;
 }
 
-div#nextStageButton {
-    float: right;
+.stage_select_dropdown_option{
+  font-size: 1rem;
 }
-
-/*Stage #, profile, knoppen voor previous and next stage, deadline*/
-
-div.stageInfo {
-    padding: 5px;
-    display: grid;
-    grid-template-columns: 20% 20% 20% 15% 25%;
-    grid-template-rows: auto auto;
-    max-height: 200px;
-    width: 100%;
-    max-width: 600px;
-}
-
-/*Stagenumber and buttons*/
-
-div.stageInfo>div.stagetext {
-    padding: 3%;
-    grid-row: 1;
-    grid-column: 1 / 4;
-    text-align: center;
-}
-
-/*TODO: dit laten werken*/
-
-div.stageInfo>div.stagetext>span {
-    padding-top: 10%;
-}
-
-/*Switch met budget en gewoon*/
-
-div.stageInfo>div.budgettext {
-    padding: 3%;
-    grid-row: 2;
-    grid-column: 1 / 5;
-}
-
-/*Starttijd*/
-
-div.stageInfo>div.stagestarttime {
-    padding: 3%;
-    grid-row: 1;
-    grid-column: 4 / 6;
-}
-
-/*Knop met profiel*/
-
-div.stageInfo>div.stageprofilebutton {
-    padding: 3%;
-    grid-row: 2;
-    grid-column: 5 / 6;
-}
-
-/*Einde stageinfo blok*/
 
 div.prevClassifications>.GC, div.prevClassifications>.Points, div.prevClassifications>.KOM, div.prevClassifications>.Youth {
     width: 100%;

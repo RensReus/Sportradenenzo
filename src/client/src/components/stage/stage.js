@@ -1,99 +1,70 @@
-import { Component } from 'react';
 import axios from 'axios';
 import './index.css';
 import Selection from './selection'
 import Results from './results'
 import StageInfo from './info'
+import { useHistory } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { connect } from 'react-redux'
 
-class Stage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      mode: '',
-      budget: 0,
-      stage: parseInt(this.props.match.params.stagenumber),
-      stageType: ''
+const Stage = (props) => {
+  let history = useHistory();
+  const [modeTypeTime, setModeTypeTime] = useState({mode: '', stageType: '', starttime: ''})
+  const [stage, setStage] = useState(parseInt(props.match.params.stagenumber));
+
+  useEffect(() => {
+    setStage(parseInt(props.match.params.stagenumber));
+  }, [props])
+
+  useEffect(() => {
+    getStage(stage);
+  }, [stage])
+
+  const getStage = async (stage) => {
+    if (stage == 0 && modeTypeTime.mode === 'selection') {
+      history.push('/teamselection')
+      return;
     }
-  }
+    history.push('/stage/' + (stage).toString())
+    document.title = "Etappe " + stage;
 
-  componentDidMount() {
-    if (this.props.race_id === undefined) {
-      this.props.history.push('/home')
+    const res = await axios.post('/api/getstageinfo', { race_id: props.race_id, stage })
+    if (res.data.mode === '404') {
+      history.push('/');
     } else {
-      this.setState({
-        racename: this.props.racename,
-      }, () => {
-        this.updateStage(this.state.stage)
-      })
+      setModeTypeTime({mode: res.data.mode, stageType: res.data.stageType, starttime: res.data.starttime})
     }
   }
 
-  updateStage(stage) {
-    this.setState({ stage }, async () => {
-      this.props.history.push('/stage/' + (stage).toString())
-      document.title = "Etappe " + stage;
-
-      var res = await axios.post('/api/getstageinfo', { race_id: this.props.race_id, stage })
-
-      if (res.data.mode === '404') {
-        this.props.history.push('/');
-      } else {
-        this.setState({
-          mode: res.data.mode,
-          stageType: res.data.stageType
-        })
-      }
-    })
+  const updateStage = (newStage) => {
+    setStage(parseInt(newStage))
   }
 
-  previousStage = () => {
-    if (this.state.stage > 1) {
-      this.updateStage(this.state.stage - 1);
-    } else if (this.state.mode === 'selection') {
-      this.props.history.push('/teamselection')
-    }
+  const childData = {
+    race_id: props.race_id,
+    stage,
+    racename: props.racename,
+    starttime: modeTypeTime.starttime,
+    stageType: modeTypeTime.stageType,
+    budget: props.budget ? 1 : 0,
+    mode: modeTypeTime.mode
   }
 
-  nextStage = () => {
-    this.updateStage(this.state.stage + 1);
-  }
+  return (
+    <div>
+      {/* <div className='float-right'> */}
+      <StageInfo data={childData} updateStage={updateStage} />
+      {/* </div> */}
 
-  budgetSwitch = () => {
-    this.setState({
-      budget: (this.state.budget - 1) * -1
-    })
-  }
+      {modeTypeTime.mode === 'selection' && stage !== 0 && <Selection data={childData} />}
 
-  render() {
-    const mode = this.state.mode
-
-    const childData = {
-      race_id: this.props.race_id,
-      stage: this.state.stage,
-      racename: this.state.racename,
-      stageType: this.state.stageType,
-      budget: this.state.budget,
-      mode
-    }
-
-    const stageInfoFunctions = {
-      nextStage: this.nextStage,
-      previousStage: this.previousStage,
-      budgetSwitch: this.budgetSwitch,
-    }
-
-    return (
-      <div>
-        <StageInfo data={childData} functions={stageInfoFunctions} />
-
-        {mode === '404' && <span className="h6">404: Data not found</span>}
-
-        {mode === 'selection' && <Selection data={childData} />}
-
-        {mode === 'results' && <Results data={childData} />}
-      </div>
-    )
-  }
+      {modeTypeTime.mode === 'results' && <Results data={childData} />}
+    </div>
+  )
 }
 
-export default Stage
+const mapStateToProps = state => {
+  return { budget: state.budgetSwitch.value };
+};
+
+export default connect(mapStateToProps)(Stage);

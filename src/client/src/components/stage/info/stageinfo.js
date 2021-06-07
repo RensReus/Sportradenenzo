@@ -1,11 +1,19 @@
 import { Component } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
-import BudgetSwitchButton from '../../shared/budgetSwitchButton';
-import ModalButton from '../../shared/modal'
+import { faAngleLeft, faAngleRight, faMountain, faClock } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
+import ModalButton from '../../shared/modal';
 
 
 class stageInfo extends Component {
+  handleChange = (e) => {
+    this.props.updateStage(e.target.value);
+  }
+  starttimeString = (starttimeInput) => {
+    var starttime = new Date(starttimeInput);
+    var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    return dayArray[starttime.getDay()] + " " + starttime.toLocaleString().replace(/-[0-9]{4}/,'').replace(':00','')
+  }
+
   render() {
     // always
     var stageProfile = '';
@@ -20,28 +28,51 @@ class stageInfo extends Component {
       <br></br>
       <img className='profileImage' src={'/images/stageProfiles/' + this.props.data.race_id + '/stage-' + this.props.data.stage + '-extra.jpg'} alt="" />
     </div>
+    let dropdown = [];
+    for (let i = 0; i < 23; i++) {
+      dropdown.push(<option value={i} key={i} className='stage_select_dropdown_option'>{i}</option>);
+    }
     return (
-      <div className="stageContainer">
-        <div className="stageInfo">
-          <div className='stagetext'>
-            {/* TODO (arjen) disable button ipv hide */}
-            { (this.props.data.mode === 'selection' || this.props.data.stage !== 1) && <div id="prevStageButton"> 
-              <button className={"buttonStandard " + this.props.data.racename} onClick={this.props.functions.previousStage}><span className="h7 bold">  <FontAwesomeIcon icon={faAngleLeft} />   </span></button>
-            </div> }
-            <span className="bold black h7">Stage: {this.props.data.stage}</span>
-            {((this.props.data.stageType !== "FinalStandings" && this.props.data.stageType !== "")) &&
-              <div id="nextStageButton">
-                <button className={"buttonStandard " + this.props.data.racename} onClick={this.props.functions.nextStage}><span className="h7 bold">  <FontAwesomeIcon icon={faAngleRight} />   </span></button>
-              </div>
-            }
-          </div>
-          <BudgetSwitchButton budget={this.props.data.budget} budgetSwitch={this.props.functions.budgetSwitch} />
-          <ModalButton
-            cssClassButton={"buttonStandard " + this.props.data.racename}
-            content="Profile "
-            contentIcon={<FontAwesomeIcon icon={faMountain} />}
-            modalContent={stageProfile}
-          />
+      <div className="flex flex-col space-y-3 w-full sm:w-96 p-4 border-2 border-solid border-blue-200 rounded-md">
+        <div className='flex items-center justify-center'>
+          {(this.props.data.mode === 'selection' || this.props.data.stage !== 1) ?
+            <button className="button_standard blue" onClick={() => this.props.updateStage(this.props.data.stage - 1)}>
+              <FontAwesomeIcon icon={faAngleLeft} />
+            </button>
+            :
+            <button className="button_standard gray disabled">
+              <FontAwesomeIcon icon={faAngleLeft} />
+            </button>
+          }
+          <select
+            className='stage_select_dropdown'
+            value={this.props.data.stage}
+            name="stagenr"
+            onChange={this.handleChange}>
+            {dropdown}
+          </select>
+          {(this.props.data.stageType !== "FinalStandings" && this.props.data.stageType !== "") ?
+            <button className="button_standard blue" onClick={() => this.props.updateStage(this.props.data.stage + 1)}>
+              <FontAwesomeIcon icon={faAngleRight} />
+            </button>
+            :
+            <button className="button_standard gray disabled">
+              <FontAwesomeIcon icon={faAngleRight} />
+            </button>
+          }
+        </div>
+        
+        <div className='m-auto'>
+            {this.starttimeString(this.props.data.starttime)}
+          
+        </div>
+        <div className='flex items-center'>
+        <ModalButton
+          cssClassButton="button_standard blue"
+          content="Profile "
+          contentIcon={<FontAwesomeIcon icon={faMountain} />}
+          modalContent={stageProfile}
+        />
         </div>
       </div>
     )

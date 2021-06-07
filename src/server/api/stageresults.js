@@ -12,14 +12,14 @@ module.exports = function (app) {
     } else {
       var stageInfo = stageInfoResults.rows[0];
       if (new Date() < stageInfo.starttime && stageInfo.type !== "FinalStandings") {
-        res.send({ mode: 'selection', stageType: stageInfo.type })
+        res.send({ mode: 'selection', starttime: stageInfo.starttime, stageType: stageInfo.type })
       } else {
-        res.send({ mode: 'results', stageType: stageInfo.type })
+        res.send({ mode: 'results', starttime: stageInfo.starttime, stageType: stageInfo.type })
       }
     }
   });
 
-  app.post('/api/getstageresultsDEPRICATED', async (req, res) => { //TODO merge with next function
+  app.post('/api/getPouleTeamResults', async (req, res) => { //TODO merge with next function
     var race_id = req.body.race_id;
     var stagenr = req.body.stage;
     var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${stagenr})`;
@@ -67,7 +67,6 @@ module.exports = function (app) {
       var resultsCompleteQuery = `SELECT complete FROM stage WHERE stage_id = ${stage_id}`
       var totalQuery = teamresultQuery + userscoresQuery + resultsCompleteQuery;
 
-      var userScoresColtype = { "Stage": 1, "Total": 1 };
       const uitslagresults = await sqlDB.query(totalQuery);
       var userScores = uitslagresults[1].rows;
 
@@ -93,13 +92,12 @@ module.exports = function (app) {
         teamresult,
         userScores,
         resultsComplete: uitslagresults[2].rows[0].complete,
-        userScoresColtype: userScoresColtype,
         stageType: stageInfo.type
       })
     }
   });
 
-  app.post('/api/getStageResults', async (req, res) => {
+  app.post('/api/getClassificationResults', async (req, res) => {
     var race_id = req.body.race_id;
     var now = new Date();
     var query = `SELECT starttime, type FROM stage WHERE race_id=${race_id} AND stagenr='${req.body.stage}'`;
@@ -318,7 +316,6 @@ module.exports = function (app) {
       var totalQuery = teamresultQuery + userscoresQuery + stageresultsQuery + selectionsQuery + raceStartedQuery;
 
 
-      var userScoresColtype = { stagescore: 1, totalscore: 1 };
 
       const results = await sqlDB.query(totalQuery);
       var userscores = results[1].rows;
@@ -336,7 +333,6 @@ module.exports = function (app) {
         teamresult: results[0].rows,
         userscores,
         stageresults: results[2].rows,
-        userScoresColtype: userScoresColtype,
         prevText: prevText,
         currText: currText,
         nextText: nextText,

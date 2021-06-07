@@ -1,171 +1,59 @@
-.navbar {
-  background-color: var(--grey3);
-  border-top: solid 2px;
-  border-top-color: var(--default-color);
-  z-index: 999;
-  box-shadow: 0px 5px 5px 0px rgba(136, 136, 136, 0.3);
-  height: 44px;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  overflow: hidden;
-  position: fixed;
-  width: 100vw;
-  display: grid;
-  grid-template-columns: 210px auto 180px;
-}
-
-.navbar.dark {
-  background-color: var(--grey1)
-}
-
-.navbar.giro {
-  border-top-color: var(--giro-color);
-}
-
-.navbar.tour {
-  border-top-color: var(--tour-color);
-}
-
-.navbar.vuelta {
-  border-top-color: var(--vuelta-color);
-}
-
-.navbar[racename]::after {
-  content: attr(racename);
-}
-
-
-@media screen and ( max-width: 767px) {
-  .navbar {
-    height: 10vh;
-    overflow: scroll;
+@media only screen and (min-width: 768px) {
+  .navbar_link{
+    display: block;
   }
 }
 
-/* HOME LINK LOGO */
-
-.navbar_itemhome {
-  background: none;
-  color: gray;
-  border: 5px;
-  height: 44px;
-  padding-left: 10px;
-  padding-right: 10px;
-  overflow: auto;
-  grid-column: 1 / 2;
+@media only screen and (max-width: 767px) {
+  .navbar_link{
+    display: none;
+  }
 }
 
-.navbar_homelogo {
-  height: 32px;
-  padding-top: 6px;
-  fill: var(--default-color);
-  stroke: var(--default-color);
-}
-
-.navbar_homelogo.vuelta{
-  fill: var(--vuelta-color);
-  stroke: var(--vuelta-color);
-}
-
-.navbar_homelogo.tour{
-  fill: var(--tour-color);
-  stroke: var(--tour-color);
-}
-
-.navbar_homelogo.giro{
-  fill: var(--giro-color);
-  stroke: var(--giro-color);
-}
-
-.navbar_homelogo.vuelta:hover {
-  fill: var(--vuelta-color-light); 
-  transition: 0.3s;
-  cursor: pointer;
-}
-
-.navbar_homelogo.tour:hover {
-  fill: var(--tour-color-light); 
-  transition: 0.3s;
-  cursor: pointer;
-}
-
-.navbar_homelogo.giro:hover {
-  fill: var(--giro-color-light); 
-  transition: 0.3s;
-  cursor: pointer;
-}
-
-.navbar_homelogo:hover {
-  fill: var(--default-color-light); 
-  transition: 0.3s;
-  cursor: pointer;
-}
-
-/* RACE LOGO */
-
-.navbar_racelogo {
-  height: 36px;
-  float: right;
-  padding-top: 4px;
-  padding-right: 10px;
-  /* grid-column: 3 / 4; */
-}
-
-.navbar_itemcontainer {
-  grid-column: 2 / 3;
-}
-
-.navbar_item {
-  background: none;
-  color: gray;
-  border: 5px;
-  padding: 10px;
-  text-decoration: black;
-  display: inline-block;
-}
-
-.navbar_item:hover {
+/* The links in the navbar */
+.navbar_link:hover {
   color: white;
-  cursor: pointer;
-  transition: 0.3s;
+  transition: 300ms;
 }
 
 /* The container <div> - needed to position the dropdown content */
-
-.navbar_dropdown {
-  background-color: inherit;
-  position: relative;
-  display: inline-block;
-}
-
 .navbar_dropdown-content {
-  background-color: var(--grey3);
-  display: block;
-  padding-top: 0.5vh;
+  background-color: #1F2937; /*gray-800*/
+  color: #9CA3AF; /*gray-400*/
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
   position: fixed;
-  margin-top: 0vh;
-  white-space: nowrap;
+  top: 3rem;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
 
-/* Links inside the dropdown */
-
-.navbar_dropdown-content a {
-  display: block;
-}
-
 .navbar_dropdown_item {
-  color: gray;
-  border: 5px;
-  padding: 7px;
-  text-decoration: black;
-  display: inline-block;
+  border-top: 1px solid #6e737a; /*gray-600*/
+  padding: 4px;
+  padding-right: 8px;
 }
 
 .navbar_dropdown_item:hover {
+  background-color: #6e737a; /*gray-600*/
   color: white;
-  cursor: pointer;
+  padding-left: 6px;
+  padding-right: 6px;
+  transition: 0.3s;
+}
+
+.navbar_settings_dropdown_item{
+  border-top: 1px solid #6e737a; /*gray-600*/
+  font-size: 1.25rem;
+  padding: 10px;
+  padding-right: 16px;
+}
+
+.navbar_settings_dropdown_item:hover {
+  background-color: #6e737a; /*gray-600*/
+  color: white;
+  padding-left: 12px;
+  padding-right: 14px;
   transition: 0.3s;
 }

@@ -12,6 +12,9 @@ module.exports = function (passport) {
 
     // used to serialize the user for the session
     passport.serializeUser((account, done) => {
+      account.rows?
+        done(null, account.rows[0].account_id)
+      :
         done(null, account.account_id);
     });
 
