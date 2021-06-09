@@ -24,11 +24,12 @@ mongoose.connection.on('error', (err) => {
 
 //Require https
 function requireHTTPS(req, res, next) {
+  console.log(req);
   // The 'x-forwarded-proto' check is for Heroku
   if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV === "production") {
-    return res.redirect('https://' + req.get('host') + req.url);
+    return res.redirect('https://' + req.headers.host + req.url);
   }
-  next();
+  return next();
 }
 
 // Passport
