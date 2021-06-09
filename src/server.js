@@ -24,9 +24,9 @@ mongoose.connection.on('error', (err) => {
 
 //Require https
 function requireHTTPS(req, res, next) {
-  console.log(req);
+  console.log(req.headers);
   // The 'x-forwarded-proto' check is for Heroku
-  if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV === "production") {
+  if (!req.secure && req.get('x-forwarded-proto') !== 'https') {
     return res.redirect('https://' + req.headers.host + req.url);
   }
   return next();
@@ -42,7 +42,7 @@ app.use(express.urlencoded({
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(passport.initialize());
 
-app.use(requireHTTPS);
+//app.use(requireHTTPS);
 
 // Express only serves static assets in production
 if (process.env.NODE_ENV === 'production') {
