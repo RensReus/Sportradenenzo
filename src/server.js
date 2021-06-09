@@ -22,6 +22,14 @@ mongoose.connection.on('error', (err) => {
   console.log(err);
 });
 
+//Require https
+function requireHTTPS(req, res, next) {
+  // The 'x-forwarded-proto' check is for Heroku
+  if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV === "production") {
+    return res.redirect('https://' + req.get('host') + req.url);
+  }
+  next();
+}
 
 // Passport
 const passport = require('passport');
@@ -33,15 +41,13 @@ app.use(express.urlencoded({
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(passport.initialize());
 
+app.use(requireHTTPS);
+
 // Express only serves static assets in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('build/client/build'));
-  app.get('*', (req, res) => {
-    if(req.secure !== true) {
-      res.redirect('https://'+req.hostname+req.originalUrl);
-    } else {
-      res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-    };
+  app.get('*', (_, res) => {
+    path.resolve(__dirname, 'client', 'build', 'index.html');
   });
 } else {
   app.get('*', (_, res) => {
