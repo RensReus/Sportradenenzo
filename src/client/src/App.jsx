@@ -20,6 +20,7 @@ import Rulesandpoints from './components/rulesandpoints';
 import Profile from './components/profile'
 import Fourofour from './components/fourofour'
 import Settings from './components/settings'
+import TextFile from './components/textfile'
 
 //Import de standaard css stukken
 import './components/css/buttons.css'
@@ -90,7 +91,7 @@ class App extends Component {
           isAdmin: res.data.admin,
           loading: false
         })
-        if(!res.data){
+        if(!res.data && !this.props.history.location.pathname.includes('/.well-known/pki-validation/3A8D396DD6BC376007C58ECD098D4B9F.txt')){
           this.setState({
             redirect: this.props.history.location.pathname // voor redirect na inloggen
           })
@@ -101,7 +102,9 @@ class App extends Component {
         loading: false, 
         redirect: this.props.history.location.pathname
       })
-      this.props.history.replace('/login')
+      if(!this.props.history.location.pathname.includes('/.well-known/pki-validation/3A8D396DD6BC376007C58ECD098D4B9F.txt')){
+        this.props.history.replace('/login')
+      }
     } 
   }
   
@@ -198,6 +201,7 @@ class App extends Component {
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
       <div className={this.state.contentclass}>
+        <Route path="/.well-known/pki-validation" component={TextFile}/>
         <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} isLoading={this.state.loading} history={this.props.history} racename={this.state.racename} currentStageLink={this.state.currentStageLink} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (
