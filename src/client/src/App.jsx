@@ -84,30 +84,29 @@ class App extends Component {
   componentDidMount = async () => {
     //Eenmalig controleren of de gebruiker is ingelogd bij het initiele laden van de pagina
     //Na dit zal de authentication gaan via de interceptor
-    if(localStorage.getItem('authToken')){
-      var res = await axios.post('/api/getlogin', {token: localStorage.getItem('authToken')})
+    if (localStorage.getItem('authToken')) {
+      var res = await axios.post('/api/getlogin', { token: localStorage.getItem('authToken') })
+      if (!res.data) {
+        this.setState({
+          redirect: this.props.history.location.pathname // voor redirect na inloggen
+        })
+        this.props.history.replace('/login')
+      } else {
         this.setState({
           isLoggedIn: res.data.isLoggedIn,
           isAdmin: res.data.admin,
           loading: false
         })
-        if(!res.data && !this.props.history.location.pathname.includes('/.well-known/pki-validation/3A8D396DD6BC376007C58ECD098D4B9F.txt')){
-          this.setState({
-            redirect: this.props.history.location.pathname // voor redirect na inloggen
-          })
-          this.props.history.replace('/login')
-        }
+      }
     } else {
       this.setState({
-        loading: false, 
+        loading: false,
         redirect: this.props.history.location.pathname
       })
-      if(!this.props.history.location.pathname.includes('/.well-known/pki-validation/3A8D396DD6BC376007C58ECD098D4B9F.txt')){
-        this.props.history.replace('/login')
-      }
-    } 
+      this.props.history.replace('/login')
+    }
   }
-  
+
   createAxiosResponseInterceptor = () => {
     const interceptor = axios.interceptors.response.use(
       response => {
@@ -117,7 +116,7 @@ class App extends Component {
               isLoggedIn: true,
               isAdmin: jwt_decode(response.headers.authorization).admin
             });
-          } else if (localStorage.getItem('authToken')){
+          } else if (localStorage.getItem('authToken')) {
             this.setState({
               isLoggedIn: true,
               isAdmin: jwt_decode(localStorage.getItem('authToken')).admin
@@ -139,7 +138,7 @@ class App extends Component {
                 isLoggedIn: false,
                 isAdmin: false
               })
-            }                
+            }
             //Redirect als uitgelogd en niet op de main pagina
             if (this.props.history.location.pathname !== '/') {
               console.log('redir')
@@ -191,9 +190,9 @@ class App extends Component {
       racename: race.name,
       currentStageLink
     })
-    sessionStorage.setItem('race_id',race.race_id)
-    sessionStorage.setItem('racename',race.name)
-    sessionStorage.setItem('currentStageLink',currentStageLink)
+    sessionStorage.setItem('race_id', race.race_id)
+    sessionStorage.setItem('racename', race.name)
+    sessionStorage.setItem('currentStageLink', currentStageLink)
   }
 
   render() {
@@ -201,14 +200,14 @@ class App extends Component {
       // de switch en redirect zorgen ervoor dat 404 errors niet meer voorkomen 
       //maar maken admin en manual update onbereikbaar wss vanwege de admin check
       <div className={this.state.contentclass}>
-        <Route path="/.well-known/pki-validation" component={TextFile}/>
+        <Route path="/.well-known/pki-validation" component={TextFile} />
         <Navbar isLoggedIn={this.state.isLoggedIn} isAdmin={this.state.isAdmin} isLoading={this.state.loading} history={this.props.history} racename={this.state.racename} currentStageLink={this.state.currentStageLink} />
         <div className="pageContainer">
           <Route exact path="/" render={() => (
-            this.state.isLoggedIn ? (<Redirect to="/home" />) : (<Redirect to="/login"/>)
+            this.state.isLoggedIn ? (<Redirect to="/home" />) : (<Redirect to="/login" />)
           )} />
           <Route exact path="/login" render={() => (
-            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : this.state.loading ? <></> :(<LogInSignUp history={this.props.history} Signup={false}/>)
+            this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : this.state.loading ? <></> : (<LogInSignUp history={this.props.history} Signup={false} />)
           )} />
           <ReactRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
@@ -219,7 +218,7 @@ class App extends Component {
           <ReactRoute exact path="/profile/:username" component={Profile} history={this.props.history} />
           <ReactRoute path="/rider/:rider_id" component={Rider} history={this.props.history} />
           <ReactRoute exact path="/charts/:chartname" component={Charts} history={this.props.history} race_id={this.state.race_id} />
-          <ReactRoute path="/home" component={Home} history={this.props.history} setRace={this.setRace}/>
+          <ReactRoute path="/home" component={Home} history={this.props.history} setRace={this.setRace} />
           <ReactRoute path="/404" component={Fourofour} history={this.props.history} message={this.state.message} />
           <ReactRoute path="/settings" component={Settings} history={this.props.history} />
         </div>
