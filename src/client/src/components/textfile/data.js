@@ -1,3 +1,0 @@
-const text = "12F4D594D206738B92DCA366BC8B49DB7B9ED7C24A123F5D5168DA6408EF9A2B\r\ncomodoca.com\r\n9c17234edfb625e";
-
-export default text;
