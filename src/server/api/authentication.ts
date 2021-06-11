@@ -5,10 +5,12 @@ module.exports = (app) => {
   const sqlDB = require('../db/sqlDB');
   const fs = require('fs');
   const jwt = require('jsonwebtoken');
+  const transporter = require('../mailtransporter');
+  const bcrypt = require('bcrypt-nodejs');
 
   function getSecret() {
     let secret: string;
-    if (fs.existsSync('./src/server/jwtsecret.js')) {
+    if (fs.existsSync('./src/server/jwtsecret.js') || fs.existsSync('./build/server/jwtsecret.js')) {
       secret = require('../jwtsecret');
     } else {
       secret = process.env.JWT_SECRET;
@@ -144,5 +146,34 @@ module.exports = (app) => {
       req.logout();
       res.send(true);
     }
+  });
+
+  app.patch('/api/recoverytoken', async (req, res) => {
+    if (!req.body.email) {
+      res.send(false)
+    }
+    const recoveryToken = crypto.randomBytes(10).toString('hex');
+    let expiry = new Date;
+    expiry.setMinutes(expiry.getMinutes()+10);
+    const expiryString = expiry.toISOString().slice(0, 19).replace('T', ' ');
+    const query = `UPDATE account SET recovery_token='${recoveryToken}', token_expiry='${expiryString}' WHERE email='${req.body.email}'`;
+    const result = await sqlDB.query(query);
+    transporter.sendMail({
+      from: '"Sportradenenzo" <noreply@sportradenenzo.nl>',
+      to: req.body.email,
+      subject: "Password recovery",
+      html: "Please go to <a href='" + req.headers['x-forwarded-host'] + "/passwordrecovery/" + recoveryToken + "'>this link</a> to reset your password."
+    })
+    res.send(true);
+  });
+
+  app.patch('/api/password', async (req, res) => {
+    const passwordToStore = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null)
+    let now = new Date;
+    const nowString = now.toISOString().slice(0, 19).replace('T', ' ');
+    const query = `UPDATE account SET password='${passwordToStore}', recovery_token=null, token_expiry=null WHERE recovery_token='${req.body.token}' AND token_expiry>'${nowString}'`;
+    const result = await sqlDB.query(query);
+    console.log(result);
+    res.send(true);
   });
 };

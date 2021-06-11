@@ -38,6 +38,23 @@
   border-bottom-color: transparent;
 }
 
+/*use: approved*/
+.button_standard.green{
+  background-color: #10B981; /*green-500*/
+  border-bottom-color: #047857; /*green-700*/
+}
+
+.button_standard.green:hover:not(.disabled){
+  background-color: #34D399; /*green-400*/
+  border-bottom-color: #10B981; /*green-500*/
+}
+
+.button_standard.green:active:not(.disabled){
+  background-color: #047857; /*green-700*/
+  border-top-color: #065F46; /*green-800*/
+  border-bottom-color: transparent;
+}
+
 /*use: remove*/
 .button_standard.red{
   background-color: #EF4444; /*red-500*/

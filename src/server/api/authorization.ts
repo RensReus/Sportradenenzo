@@ -5,7 +5,7 @@ module.exports = (app) => {
 
   function getSecret() {
     let secret;
-    if (fs.existsSync('./src/server/jwtsecret.js')) {
+    if (fs.existsSync('./src/server/jwtsecret.js') || fs.existsSync('./build/server/jwtsecret.js')) {
       secret = require('../jwtsecret');
     } else {
       secret = process.env.JWT_SECRET;
@@ -14,8 +14,16 @@ module.exports = (app) => {
   }
 
   app.use((req, res, next) => {
+    const unauthenticated = [
+      '/api/login',
+      '/api/signup',
+      '/api/getinitialdata',
+      '/api/getlogin',
+      '/api/recoverytoken',
+      '/api/password'
+    ];
     // Check whether the page needs authentication
-    if (req.url === '/api/login' || req.url === '/api/signup' || req.url === '/api/getinitialdata' || req.url === '/api/getlogin') {
+    if (unauthenticated.indexOf(req.url) > -1) {
       next();
     } else {
       // get the token from the header if present

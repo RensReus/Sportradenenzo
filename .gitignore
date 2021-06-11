@@ -8,4 +8,5 @@ src/server/db/sqlDBlink.js
 src/server/db/sqlDBnewlink.js
 src/client/src/examples
 src/server/jwtsecret.js
+src/server/mailSecret.js
 src/server/db/Mongo/link.js

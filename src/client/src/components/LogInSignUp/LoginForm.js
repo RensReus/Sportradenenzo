@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import axios from 'axios';
+import PasswordRecoveryModal from './PasswordRecoveryModal';
 
 class LoginForm extends Component {
   constructor(props) {
@@ -88,6 +89,9 @@ class LoginForm extends Component {
         </button>
       </form>
       <div className="errordiv">{this.state.error}</div>
+      <div className="float-left">
+        <PasswordRecoveryModal/>
+      </div>
     </div>
     )
   }

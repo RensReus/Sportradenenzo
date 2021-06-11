@@ -20,6 +20,7 @@ import Rulesandpoints from './components/rulesandpoints';
 import Profile from './components/profile'
 import Fourofour from './components/fourofour'
 import Settings from './components/settings'
+import PasswordRecovery from './components/PasswordRecovery';
 
 //Import de standaard css stukken
 import './components/css/buttons.css'
@@ -81,6 +82,17 @@ class App extends Component {
   }
 
   componentDidMount = async () => {
+    const unauthorized = ['/passwordrecovery/'];
+    let noAuth = false;
+    unauthorized.forEach((url) => {
+      if(this.props.history.location.pathname.includes(url)){
+        noAuto = true;
+        return;
+      }
+    })
+    if (noAuth) {
+      return;
+    }
     //Eenmalig controleren of de gebruiker is ingelogd bij het initiele laden van de pagina
     //Na dit zal de authentication gaan via de interceptor
     if (localStorage.getItem('authToken')) {
@@ -207,6 +219,7 @@ class App extends Component {
           <Route exact path="/login" render={() => (
             this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : this.state.loading ? <></> : (<LogInSignUp history={this.props.history} Signup={false} />)
           )} />
+          <Route path="/passwordrecovery/:token" component={PasswordRecovery} history={this.props.history} />
           <ReactRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
