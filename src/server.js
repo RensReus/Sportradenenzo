@@ -11,7 +11,7 @@ startSchedule()
 
 // Mongo
 let configDB;
-if (fs.existsSync('./src/server/db/Mongo/link.js')) { // Kijken of er een config is
+if (fs.existsSync('./src/server/db/Mongo/link.js') || fs.existsSync('./build/server/db/Mongo/link.js')) {
   configDB = require('./server/db/Mongo/link.js');
 } else {
   configDB = process.env.DATABASE_LINK; // Zo niet gebruik heroku env var
@@ -21,16 +21,6 @@ mongoose.connect(configDB, { ssl: true, useUnifiedTopology: true, useNewUrlParse
 mongoose.connection.on('error', (err) => {
   console.log(err);
 });
-
-//Require https
-function requireHTTPS(req, res, next) {
-  console.log(req.headers);
-  // The 'x-forwarded-proto' check is for Heroku
-  if (!req.secure && req.get('x-forwarded-proto') !== 'https') {
-    return res.redirect('https://' + req.headers.host + req.url);
-  }
-  return next();
-}
 
 // Passport
 const passport = require('passport');
@@ -42,13 +32,11 @@ app.use(express.urlencoded({
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(passport.initialize());
 
-//app.use(requireHTTPS);
-
 // Express only serves static assets in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('build/client/build'));
   app.get('*', (_, res) => {
-    path.resolve(__dirname, 'client', 'build', 'index.html');
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
 } else {
   app.get('*', (_, res) => {

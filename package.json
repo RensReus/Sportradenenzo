@@ -24,8 +24,8 @@
     "tslib": "^2.2.0"
   },
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
-    "start-dev": "concurrently \"npm run server-dev\" \"npm run client\"",
+    "start": "concurrently \"npm run server-dev\" \"npm run client\"",
+    "start-dev": "echo \"This command has been deprecated. Use 'npm start'\" && concurrently \"npm run server-dev\" \"npm run client\"",
     "server": "node build/server.js",
     "server-dev": "nodemon --config \"nodemon.json\"/",
     "client": "node start-client.js",
