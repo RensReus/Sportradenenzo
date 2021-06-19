@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import Table from '../../../shared/table'
+import Table from '../../shared/table'
 
 class ResultsTables extends Component {
   render() {

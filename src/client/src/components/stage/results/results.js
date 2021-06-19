@@ -1,7 +1,7 @@
 import axios from 'axios';
-import ModalButton from '../../shared/modal'
 import Table from '../../shared/table'
-import ResultsTables from './resultsTables'
+import ResultsTables from './resultsTables.js'
+import SelectionComparison from './selectionComparison.js'
 import LoadingDiv from '../../shared/loadingDiv'
 import { updateArray } from '../helperfunctions'
 import { useHistory } from "react-router-dom";
@@ -13,8 +13,6 @@ const results = (props) => {
   const [loadingResults, setLoadingResults] = useState(false);
   const [stageSelectionResults, setStageSelectionResults] = useState([[], []]);
   const [userScores, setUserScores] = useState([[], []]);
-  const [allSelections, setAllSelections] = useState([[], []]);
-  const [notSelected, setNotSelected] = useState([[], []]); 
   const [stageResultsLengths, setStageResultsLengths] = useState([0, 0, 0, 0, 0]); 
   const [stageResults, setStageResults] = useState([[[], [], [], [], []], [[], [], [], [], []]]); 
   const [classificationDownloaded, setClassificationDownloaded] = useState([[false, false, false, false, false], [false, false, false, false, false]]); 
@@ -77,44 +75,11 @@ const results = (props) => {
     setLoadingResults(false);
   }
 
-  const getAllSelections = async () => { //TODO add loader
-    const budget = props.data.budget;
-    const res = await axios.post('/api/getAllSelections', { race_id: props.data.race_id, stage: props.data.stage, budgetParticipation: budget })
-    setAllSelections(updateArray(allSelections, res.data.allSelections, budget));
-    setNotSelected(updateArray(notSelected, res.data.notSelected, budget));
-  }
-
-  let allSelectionsPopup
   const budget = props.data.budget
 
-  //Results
-  // TODO move all logic and popup to separate file
-  let allSelections2 = allSelections[budget];
-  let notSelected2 = notSelected[budget];
-  var allSelectionsPopupContent = [];
-  var index = 0;
-  for (var i in allSelections2) {
-    var notSelectedTable = '';
-
-    if (index < notSelected2.length && allSelections2[i].title === notSelected2[index].username) {
-      notSelectedTable = <Table data={notSelected2[index].riders} title={"Niet Opgesteld"} />
-      index++;
-    }
-    var totalRiders = '';
-    if (parseInt(i) === allSelections2.length - 1) {
-      totalRiders = ' Totaal: ' + allSelections2[i].tableData.length
-    }
-    allSelectionsPopupContent.push(<div className="tableDiv"><Table data={allSelections2[i].tableData} title={allSelections2[i].title + totalRiders} coltype={allSelections2[i].coltype} />{notSelectedTable}</div>)
-  }
-  allSelectionsPopup = <ModalButton
-    cssClassButton={"buttonStandard " + props.data.racename}
-    content="Alle opstellingen "
-    modalContent={allSelectionsPopupContent}
-    callback={getAllSelections}
-  />
   return (
     <div className="stageContainer">
-      {allSelectionsPopup}
+      <SelectionComparison data={props.data} />
       <div className="res">
         <LoadingDiv loading={loadingPoule} />
         <Table data={stageSelectionResults[budget]} title={"Selectie"} />
