@@ -9,6 +9,7 @@ class stageInfo extends Component {
     this.props.updateStage(e.target.value);
   }
   starttimeString = (starttimeInput) => {
+    if (starttimeInput === "") return "";
     var starttime = new Date(starttimeInput);
     var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     return dayArray[starttime.getDay()] + " " + starttime.toLocaleString().replace(/-[0-9]{4}/,'').replace(':00','')

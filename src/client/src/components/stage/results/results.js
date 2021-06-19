@@ -34,6 +34,7 @@ const results = (props) => {
     setPouleTeamResultDownloaded([false, false]);
     setStageResults([[[], [], [], [], []], [[], [], [], [], []]]);
     const budget = raceData.budget;
+    getStageResults(raceData)
     const res = await axios.post('/api/getPouleTeamResults', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget })
     const data = res.data;
     if (data.mode === '404') {
@@ -43,7 +44,6 @@ const results = (props) => {
       setStageSelectionResults(updateArray(stageSelectionResults, data.teamresult, budget));
       setUserScores(updateArray(userScores, data.userScores, budget));
       setPouleTeamResultDownloaded(updateArray(pouleTeamResultDownloaded, true, budget));
-      getStageResults(raceData)
     }
   }
 

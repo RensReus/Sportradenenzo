@@ -9,16 +9,11 @@ import { connect } from 'react-redux'
 
 const Stage = (props) => {
   let history = useHistory();
-  const [modeTypeTime, setModeTypeTime] = useState({mode: '', stageType: '', starttime: ''})
-  const [stage, setStage] = useState(parseInt(props.match.params.stagenumber));
+  const [modeTypeTimeStage, setModeTypeTimeStage] = useState({mode: '', stageType: '', starttime: '', stage: parseInt(props.match.params.stagenumber)})
 
-  useEffect(() => { //TODO reduce updates 
-    setStage(parseInt(props.match.params.stagenumber));
-  }, [props])
-
-  useEffect(() => { // and maybe just remove this one
-    getStage(stage);
-  }, [stage])
+  useEffect(() => {
+    getStage(parseInt(props.match.params.stagenumber));
+  }, [])
 
   const getStage = async (stage) => {
     if (stage == 0 && modeTypeTime.mode === 'selection') {
@@ -27,38 +22,34 @@ const Stage = (props) => {
     }
     history.push('/stage/' + (stage).toString())
     document.title = "Etappe " + stage;
-
+    
     const res = await axios.post('/api/getstageinfo', { race_id: props.race_id, stage })
     if (res.data.mode === '404') {
       history.push('/');
     } else {
-      setModeTypeTime({mode: res.data.mode, stageType: res.data.stageType, starttime: res.data.starttime})
+      setModeTypeTimeStage({mode: res.data.mode, stageType: res.data.stageType, starttime: res.data.starttime, stage})
     }
-  }
-
-  const updateStage = (newStage) => {
-    setStage(parseInt(newStage))
   }
 
   const childData = {
     race_id: props.race_id,
-    stage,
+    stage: modeTypeTimeStage.stage,
     racename: props.racename,
-    starttime: modeTypeTime.starttime,
-    stageType: modeTypeTime.stageType,
+    starttime: modeTypeTimeStage.starttime,
+    stageType: modeTypeTimeStage.stageType,
     budget: props.budget ? 1 : 0,
-    mode: modeTypeTime.mode
+    mode: modeTypeTimeStage.mode
   }
 
   return (
     <div>
       {/* <div className='float-right'> */}
-      <StageInfo data={childData} updateStage={updateStage} />
+      <StageInfo data={childData} updateStage={getStage} />
       {/* </div> */}
 
-      {modeTypeTime.mode === 'selection' && stage !== 0 && <Selection data={childData} />}
+      {modeTypeTimeStage.mode === 'selection' && <Selection data={childData} />}
 
-      {modeTypeTime.mode === 'results' && <Results data={childData} />}
+      {modeTypeTimeStage.mode === 'results' && <Results data={childData} />}
     </div>
   )
 }
