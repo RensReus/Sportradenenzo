@@ -79,7 +79,7 @@ module.exports = function (app) {
     var ridersSameTeam = 0;
     for (var i = 0; i < results[1].rows.length; i++) {
       budget -= results[1].rows[i].price
-      if (results[0].team === results[1].rows[i].team) {
+      if (results[0].rows[0].team === results[1].rows[i].team) {
         ridersSameTeam += 1;
       }
     }
