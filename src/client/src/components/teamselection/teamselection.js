@@ -30,7 +30,6 @@ class Teamselection extends Component {
 
   initialRender = () => {
     const race_id = this.props.race_id;
-    console.log("props",this.props)
     if (sessionStorage.getItem('currentStageLink') === '/teamselection' && race_id !== null) {
       document.title = "Team Keuze " + this.props.racename.charAt(0).toUpperCase() + this.props.racename.slice(1);
       axios.post('/api/teamselection', { apilink: 'getridersandteam', race_id })
@@ -54,7 +53,7 @@ class Teamselection extends Component {
       this.redirect('/home')
     }
   }
-  
+
   getRemainingBudget = () => {
     let totalGewoon = 0;
     let totalBudget = 0;
@@ -108,19 +107,19 @@ class Teamselection extends Component {
   }
 
   handleChangeMinPrice = (e) => {
-    this.setState({minPrice: e.target.value}, () => {
+    this.setState({ minPrice: e.target.value }, () => {
       this.filter({ target: { value: this.state.filtervalue } })
     });
   }
-  
+
   handleChangeMaxPrice = (e) => {
-    this.setState({maxPrice: e.target.value}, () => {
+    this.setState({ maxPrice: e.target.value }, () => {
       this.filter({ target: { value: this.state.filtervalue } })
     });
   }
 
   handleChangeSkill = (e) => {
-    this.setState({skillFilter: e.target.value}, () => {
+    this.setState({ skillFilter: e.target.value }, () => {
       this.filter({ target: { value: this.state.filtervalue } })
     });
   }
@@ -136,19 +135,19 @@ class Teamselection extends Component {
       var allRiders = this.state.allRiders;
       for (var i in allRiders) {
         if (
-          (allRiders[i].name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").match(regex) 
-          || allRiders[i].team.match(regex)) 
-          && (!this.props.budget ? 1 : 0 || allRiders[i].price <= 750000) 
+          (allRiders[i].name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").match(regex)
+            || allRiders[i].team.match(regex))
+          && (!this.props.budget ? 1 : 0 || allRiders[i].price <= 750000)
           && allRiders[i].price >= this.state.minPrice
           && allRiders[i].price <= this.state.maxPrice
           && this.filterSkills({
-            'GC': allRiders[i].gc, 
-            'Climb': allRiders[i].climb, 
+            'GC': allRiders[i].gc,
+            'Climb': allRiders[i].climb,
             'Sprint': allRiders[i].sprint,
             'Punch': allRiders[i].punch,
             'Time Trial': allRiders[i].tt
           })
-          ){
+        ) {
           filteredRiders.push(allRiders[i])
         }
       }
@@ -171,19 +170,19 @@ class Teamselection extends Component {
     const budgetLeft = this.state.budgetLeft[this.props.budget ? 1 : 0]
     let minPriceDropdown = [];
     let maxPriceDropdown = [];
-    const priceArray = [50,75,100,150,200,250,300,350,400,450,500,550,600,650,700]
+    const priceArray = [50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700]
     priceArray.forEach(price => {
-      if(price*10000<=this.state.maxPrice){
-        minPriceDropdown.push(<option value={price*10000} key={'min'+price} className='minimalistic-dropdown-option'>{(price*10000).toLocaleString('nl', { useGrouping: true })}</option>);
+      if (price * 10000 <= this.state.maxPrice) {
+        minPriceDropdown.push(<option value={price * 10000} key={'min' + price} className='minimalistic-dropdown-option'>{(price * 10000).toLocaleString('nl', { useGrouping: true })}</option>);
       }
-      if(price*10000>=this.state.minPrice){
-        maxPriceDropdown.push(<option value={price*10000} key={'max'+price} className='minimalistic-dropdown-option'>{(price*10000).toLocaleString('nl', { useGrouping: true })}</option>);
+      if (price * 10000 >= this.state.minPrice) {
+        maxPriceDropdown.push(<option value={price * 10000} key={'max' + price} className='minimalistic-dropdown-option'>{(price * 10000).toLocaleString('nl', { useGrouping: true })}</option>);
       }
     });
     let skillsDropdown = []
     const skillName = ['Nothing', 'General Classification', 'Climbing', 'Sprinting', 'Punching', 'Time Trialing'];
     const skillCode = ['', 'GC', 'Climb', 'Sprint', 'Punch', 'Time Trial'];
-    for(var i = 0; i<skillName.length; i++){
+    for (var i = 0; i < skillName.length; i++) {
       skillsDropdown.push(<option value={skillCode[i]} key={skillCode[i]} className='minimalistic-dropdown-option'>{skillName[i]}</option>);
     }
     return (
@@ -220,7 +219,7 @@ class Teamselection extends Component {
                     {maxPriceDropdown}
                   </select>
                 </div>
-                <div className="pt-2 text-lg">...must have a (team)name like 
+                <div className="pt-2 text-lg">...must have a (team)name like
                   <input type="text" className="h-8 w-64 py-4 px-2 ml-2 text-base border-solid border-2 border-gray-200 rounded-md" placeholder="search..." value={this.state.filtervalue} onChange={(e) => { this.filter(e) }} />
                 </div>
               </div>
@@ -239,13 +238,13 @@ class Teamselection extends Component {
             </div>
             <div className="teamselection-tables w-full flex">
               <div className="ridertablecontainer w-1/2">
-                <Riderselectiontable 
-                  riders={allRiders} 
-                  selectionIDs={userSelection.map(rider => rider.rider_participation_id)} 
+                <Riderselectiontable
+                  riders={allRiders}
+                  selectionIDs={userSelection.map(rider => rider.rider_participation_id)}
                   selectionTeams={userSelection.map(rider => rider.team)} budget={budgetLeft}
-                  skillFilter={this.state.skillFilter} 
-                  addRemoveRider={this.addRemoveRider} 
-                  budgetParticipation={this.props.budget ? 1 : 0} 
+                  skillFilter={this.state.skillFilter}
+                  addRemoveRider={this.addRemoveRider}
+                  budgetParticipation={this.props.budget ? 1 : 0}
                 />
               </div>
               <div className="usertablecontainer w-1/2">
