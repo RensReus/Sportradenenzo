@@ -7,6 +7,7 @@ import './index.css';
 import _ from "lodash"
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { connect } from 'react-redux'
+import RulesPopup from '../shared/RulesPopup';
 
 class Teamselection extends Component {
   constructor(props) {
@@ -224,10 +225,13 @@ class Teamselection extends Component {
                 </div>
               </div>
               <div className="w-1/2 flex items-center flex-wrap mb-6 p-4">
-                <div className="w-1/2">
+                <div className="w-1/3">
                   <span>Budget: {budgetLeft.toLocaleString('nl', { useGrouping: true })}</span>
                 </div>
-                <div className="w-1/2 flex justify-end items-center space-x-14">
+                <div className="w-1/3">
+                  <RulesPopup page={"teamSelection"} raceName={this.props.racename}/>
+                </div>
+                <div className="w-1/3 flex justify-end items-center space-x-14">
                   {userSelection.length == 20 ?
                     <button className="button_standard blue" onClick={() => this.redirect('/stage/1')}>To stages <FontAwesomeIcon icon={faAngleRight} /></button>
                     :
