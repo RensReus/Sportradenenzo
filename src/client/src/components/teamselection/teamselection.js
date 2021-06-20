@@ -241,7 +241,8 @@ class Teamselection extends Component {
                 <Riderselectiontable
                   riders={allRiders}
                   selectionIDs={userSelection.map(rider => rider.rider_participation_id)}
-                  selectionTeams={userSelection.map(rider => rider.team)} budget={budgetLeft}
+                  selectionTeams={userSelection.map(rider => rider.team)}
+                  budget={budgetLeft}
                   skillFilter={this.state.skillFilter}
                   addRemoveRider={this.addRemoveRider}
                   budgetParticipation={this.props.budget ? 1 : 0}

@@ -10,21 +10,34 @@ class Selectionbutton extends Component {
             this.props.addRemoveRider('removeRider', this.props.riderID, this.props.budgetParticipation);
         }
     }
+
+    getHoverText = (selectable) => {
+        var reason = selectable.substring(13);
+        var texts = {
+            "teamComplete": "Jouw team is compleet",
+            "maxFourPerTeam": "Je mag max 4 renners per team hebben",
+            "notEnoughMoney": "Je heb genoeg geld meer"
+        }
+        return texts[reason];
+    }
+
     render() {
         let buttonText
         let className
+        let hoverText
         if (this.props.selected === 'unselected') {
             buttonText = <FontAwesomeIcon icon={faPlus} />
             className = 'button_standard small blue'
         } else if (this.props.selected === 'selected') {
             buttonText = <FontAwesomeIcon icon={faTimes} />
             className = 'button_standard small red'
-        } else if (this.props.selected === 'unselectable') {
+        } else if (this.props.selected.startsWith('unselectable')) {
+            hoverText = this.getHoverText(this.props.selected);
             buttonText = <FontAwesomeIcon icon={faPlus} />
             className = 'button_standard small gray disabled'
         }
         return (
-            <button className={className} onClick={() => this.addRemoveRider(this.props.riderID, this.props.budgetParticipation)}>{buttonText}</button>
+            <button className={className} title={hoverText} onClick={() => this.addRemoveRider(this.props.riderID, this.props.budgetParticipation)}>{buttonText}</button>
         )
     }
 }
@@ -52,7 +65,7 @@ class Riderrow extends Component {
                     specialtyValue = '★'.repeat(value);
                     highestValue = value;
                     if (key == 'GC') { highestValue = value * 1.5 }
-                    if (key == this.props.skillFilter) { highestValue = value + 10}
+                    if (key == this.props.skillFilter) { highestValue = value + 10 }
                 }
             }
         }
@@ -64,7 +77,7 @@ class Riderrow extends Component {
         return (
             <>
                 <tr className='riderRow'>
-                    <td className={this.props.selected} onClick={() => this.setState({showInfo: !this.state.showInfo})}>
+                    <td className={this.props.selected} onClick={() => this.setState({ showInfo: !this.state.showInfo })}>
                         <div>
                             <div>
                                 {this.props.name}
@@ -74,11 +87,11 @@ class Riderrow extends Component {
                             </div>
                         </div>
                     </td>
-                    <td className={this.props.selected} onClick={() => this.setState({showInfo: !this.state.showInfo})}><div>{specialty.specialty}<br/><span className="text-xl text-yellow-400">{specialty.specialtyValue}</span></div></td>
-                    <td className={this.props.selected} onClick={() => this.setState({showInfo: !this.state.showInfo})}>{this.props.price.toLocaleString('nl', { useGrouping: true })}</td>
+                    <td className={this.props.selected} onClick={() => this.setState({ showInfo: !this.state.showInfo })}><div>{specialty.specialty}<br /><span className="text-xl text-yellow-400">{specialty.specialtyValue}</span></div></td>
+                    <td className={this.props.selected} onClick={() => this.setState({ showInfo: !this.state.showInfo })}>{this.props.price.toLocaleString('nl', { useGrouping: true })}</td>
                     <td className={this.props.selected}><Selectionbutton selected={this.props.selected} addRemoveRider={this.props.addRemoveRider} riderID={this.props.riderID} budgetParticipation={this.props.budgetParticipation} /></td>
                 </tr>
-                {this.state.showInfo?
+                {this.state.showInfo ?
                     <tr className=''>
                         <td colSpan='4' className="bg-blue-100">
                             <div className="flex flex-row pl-8">
@@ -86,7 +99,7 @@ class Riderrow extends Component {
                             </div>
                         </td>
                     </tr>
-                :<></>
+                    : <></>
                 }
             </>
         )
@@ -97,18 +110,22 @@ class Riderselectiontable extends Component {
     render() {
         const selectionIDs = this.props.selectionIDs;
         const selectionLength = selectionIDs.length;
+        let forbiddenTeams = {}
+        for (var teamName of this.props.selectionTeams) {
+            if (!(teamName in forbiddenTeams)) forbiddenTeams[teamName] = 0;
+            forbiddenTeams[teamName] += 1;
+        }
+        forbiddenTeams = Object.fromEntries(Object.entries(forbiddenTeams).filter(([_, value]) => value >= 4));
         const rows = this.props.riders.map(({ name, team, price, rider_participation_id, gc, climb, sprint, punch, tt }) => {
             var selected = 'unselected';
             if (selectionIDs.includes(rider_participation_id)) {
                 selected = 'selected';
-            } else if ((this.props.budget < price + 500000 * (19 - selectionLength) || selectionLength >= 20 || teamCount >= 4) || (price > 750000 && this.props.budgetParticipation)) {
-                selected = 'unselectable';
-            }
-            var teamCount = 0;
-            for (var i in this.props.selectionTeams) {
-                if (this.props.selectionTeams[i] === team) {
-                    teamCount += 1;
-                }
+            } else if (selectionLength >= 20) {
+                selected = 'unselectable teamComplete';
+            } else if (team in forbiddenTeams) {
+                selected = 'unselectable maxFourPerTeam';
+            } else if ((this.props.budget < price + 500000 * (19 - selectionLength))) {
+                selected = 'unselectable notEnoughMoney';
             }
             return <Riderrow
                 name={name}
