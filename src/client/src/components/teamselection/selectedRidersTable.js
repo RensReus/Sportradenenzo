@@ -38,7 +38,7 @@ class UserRiderrow extends Component {
     )
   }
 }
-class SelectedRiders extends Component {Table
+class SelectedRidersTable extends Component {Table
   render() {
     const rows = this.props.selection.map(({ firstname, lastname, team, price, rider_participation_id}) => {
       return <UserRiderrow 
