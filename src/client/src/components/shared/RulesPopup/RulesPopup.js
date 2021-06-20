@@ -18,15 +18,15 @@ const RulesPopup = (props) => {
         <div className={cssClass2}>
           <div className>
             <button className="button_standard blue" onClick={() => setPage('teamSelection')}>Team Selectie</button>
-            <button className="button_standard blue" onClick={() => setPage('stageSelection')}>Etappe opstelling</button>
             <button className="button_standard blue" onClick={() => setPage('endPoints')}>Eind punten</button>
+            <button className="button_standard blue" onClick={() => setPage('stageSelection')}>Etappe opstelling</button>
             <button className="button_standard blue" onClick={() => setPage('stagePoints')}>Etappe punten</button>
             <button className="button_standard blue" onClick={() => setShowModal(!showModal)}>X</button>
           </div>
             {page == "teamSelection" && <TeamSelectionExplanation raceName={props.raceName}/>}
+            {page == "endPoints" && <EndPoints />}
             {page == "stageSelection" && <StageSelectionExplanation />}
-            {page == "endPoints" && <StagePoints />}
-            {page == "stagePoints" && <EndPoints />}
+            {page == "stagePoints" && <StagePoints />}
         </div>
       </div>
     </div>
