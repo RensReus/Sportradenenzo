@@ -46,7 +46,6 @@ class StatistiekenDropdown extends Component {
                 <Link className='navbar_dropdown_item' to='/statistics/teams'>Team overzichten</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/teamcomparisons'>Selectie vergelijking</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/overigestats'>Overige Statistieken</Link>]}
-                <Link className='navbar_dropdown_item' to='/rulesandpoints'>Regels en Punten uitleg</Link>
               </div>
             )
             : (

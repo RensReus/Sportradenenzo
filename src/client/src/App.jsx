@@ -16,7 +16,6 @@ import Admin from './components/admin';
 import Statistics from './components/statistics';
 import Charts from './components/charts';
 import Rider from './components/rider';
-import Rulesandpoints from './components/rulesandpoints';
 import Profile from './components/profile'
 import Fourofour from './components/fourofour'
 import Settings from './components/settings'
@@ -223,7 +222,6 @@ class App extends Component {
           <ReactRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
-          <ReactRoute path="/rulesandpoints" component={Rulesandpoints} history={this.props.history} />
           <ReactRoute exact path="/statistics/:selection" component={Statistics} history={this.props.history} race_id={this.state.race_id} />
           <ReactRoute path="/profile/id/:account_id" component={Profile} history={this.props.history} />
           <ReactRoute exact path="/profile/:username" component={Profile} history={this.props.history} />
