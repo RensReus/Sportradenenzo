@@ -66,67 +66,7 @@ module.exports = (app) => {
                 ${orderby}`
 
     var query = rankQuery + countQuery + scoreCountQuery;
-    const results = await sqlDB.query(query);
-    var headersRank = ["Race"];
-    var headersCount = ["User"];
-    var rowsRank = [];
-    var rowsCount = [];
-
-    var userCount = results[1].rows.length
-    // TODO combine this block with getstagevictories into a function
-    for (var i in results[0].rows) {//ranking per stage
-      var row = [results[0].rows[i].race];
-      for (var j in results[0].rows[i].usernames) {
-        row.push(results[0].rows[i].usernames[j] + " (" + results[0].rows[i].scores[j] + ")");
-      }
-      rowsRank.push(row);
-    }
-
-    for (var i in results[1].rows) {//aantal keer per ranking
-      var user = results[1].rows[i];
-      var row = new Array(userCount + 1).fill(0)
-      row[0] = user.username;
-      for (var j in user.ranks) {
-        row[user.ranks[j]] = user.rankcounts[j];
-      }
-      rowsCount.push(row);
-    }
-
-    //make headers
-    for (var i = 1; i < userCount + 1; i++) {
-      headersRank.push(i + "e");
-      headersCount.push(i + "e");
-    }
-
-    //sort rowsCount
-    rowsCount.sort(function (a, b) {
-      for (var i = 1; i < userCount + 1; i++) {
-        if (a[i] > b[i]) return false;
-        if (a[i] < b[i]) return true;
-      }
-      return false;
-    })
-    var rankTable = []
-    for (let i in rowsRank) {
-      let newRow = {};
-      for (let j in headersRank) {
-        newRow[headersRank[j]] = rowsRank[i][j]
-      }
-      rankTable.push(newRow)
-    }
-    var countTable = []
-    for (let i in rowsCount) {
-      let newRow = {};
-      for (let j in headersCount) {
-        newRow[headersCount[j]] = rowsCount[i][j]
-      }
-      countTable.push(newRow)
-    }
-    var tables = []
-    tables.push({ tableData: rankTable, title: "Ronde Uitslagen" })
-    tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
-    tables.push({ tableData: results[2].rows, title: "Score verdelingen" })
-    return { tables, title: "Ronde Winsten Overzicht" };
+    return await processVictoriesQuery(query, "Race")
   }
 
   getstagevictories = async (race_id, budgetparticipation) => {
@@ -146,7 +86,7 @@ module.exports = (app) => {
     var fourth = `COUNT(CASE WHEN stagescore >= 200 AND stagescore < 300 THEN 1 END) AS "200 "`
     var last = `COUNT(CASE WHEN stagescore >= 300 THEN 1 END) AS "300+"`
     var orderby = `ORDER BY "300+" DESC, "200 " DESC, "100 " DESC, "50 " DESC, "50-" DESC`
-    
+
     if (budgetparticipation) {
       first = `COUNT(CASE WHEN stagescore < 10 THEN 1 END) AS "10-"`
       second = `COUNT(CASE WHEN stagescore >= 10 AND stagescore < 30 THEN 1 END) AS "10 "`
@@ -164,15 +104,25 @@ module.exports = (app) => {
                 ${orderby}`
 
     var query = query1 + query2 + scoreCountQuery;
+    return await processVictoriesQuery(query, "Stage")
+  }
+
+  processVictoriesQuery = async (query, rankTitle) => {
     const results = await sqlDB.query(query);
-    var headersRank = ["Stage"];
+    var headersRank = [rankTitle];
     var headersCount = ["User"];
     var rowsRank = [];
     var rowsCount = [];
 
     var userCount = results[1].rows.length
     for (var i in results[0].rows) {//ranking per stage
-      var row = [results[0].rows[i].stagenr];
+      let row;
+      if (rankTitle === "Stage") {
+        row = [results[0].rows[i].stagenr];
+      }
+      if (rankTitle === "Race") {
+        row = [results[0].rows[i].race];
+      }
       for (var j in results[0].rows[i].usernames) {
         row.push(results[0].rows[i].usernames[j] + " (" + results[0].rows[i].scores[j] + ")");
       }
@@ -203,6 +153,7 @@ module.exports = (app) => {
       }
       return false;
     })
+
     var rankTable = []
     for (let i in rowsRank) {
       let newRow = {};
@@ -211,6 +162,7 @@ module.exports = (app) => {
       }
       rankTable.push(newRow)
     }
+
     var countTable = []
     for (let i in rowsCount) {
       let newRow = {};
@@ -219,13 +171,21 @@ module.exports = (app) => {
       }
       countTable.push(newRow)
     }
+
+    let titleVar
+    if (rankTitle === "Stage") {
+      titleVar = "Etappe";
+    }
+    if (rankTitle === "Race") {
+      titleVar = "Ronde";
+    }
+
     var tables = []
-    tables.push({ tableData: rankTable, title: "Etappe Uitslagen" })
+    tables.push({ tableData: rankTable, title: `${titleVar} Uitslagen` })
     tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
     tables.push({ tableData: results[2].rows, title: "Score verdelingen" })
-    return { tables, title: "Etappe Winsten Overzicht" };
+    return { tables, title: `${titleVar} Winsten Overzicht` };
   }
-
 
   getriderpointsall = async (race_id, budgetparticipation) => {
     var teamscore = `SUM(teamscore) AS "Team",`

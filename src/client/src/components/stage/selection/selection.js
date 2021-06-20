@@ -72,7 +72,7 @@ class Selection extends Component {
         <div className='w-1/2'>
           <SelecTable data={selecTableData} functions={selecTableFunctions} />
         </div>
-        <div className="prevClassifications w-1/2"> {/* TODO maak eigen component */}
+        <div className="prevClassifications w-1/2"> {/* TODO maak eigen component met static widths*/}
           <LoadingDiv loading={this.props.data.loading || this.state.loading} />
           <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0]} title="AK" /></div>
           <div style={{ display: prevClassifications[1].length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1]} title="Punten" /></div>
