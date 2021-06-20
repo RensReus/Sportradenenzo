@@ -32,11 +32,12 @@ module.exports = function (app) {
     if (participationResults.rows.length == 0) {
       return { noParticipation: true };
     } else {
-      // TODO parallel
-      const allRiders = await SQLread.getAllRiders(race_id)
-      const userSelectionGewoon = await SQLread.getTeamSelection(account_id, false, race_id)
-      const userSelectionBudget = await SQLread.getTeamSelection(account_id, true, race_id)
-      const race = await SQLread.getRace(race_id)
+      const allRidersCall = SQLread.getAllRiders(race_id)
+      const userSelectionGewoonCall = SQLread.getTeamSelection(account_id, false, race_id)
+      const userSelectionBudgetCall = SQLread.getTeamSelection(account_id, true, race_id)
+      const raceCall = SQLread.getRace(race_id)
+
+      let [allRiders, userSelectionGewoon, userSelectionBudget, race] = await Promise.all([allRidersCall, userSelectionGewoonCall, userSelectionBudgetCall, raceCall]);
 
       var IDsGewoon = [];
       var IDsBudget = [];
@@ -165,9 +166,10 @@ module.exports = function (app) {
 
   //Voor klassiekerspel:
   app.post('/api/getuserteamselection', async (req, res) => {
-    // TODO parallel
-    const userSelection = await SQLread.getTeamSelection(req.user.account_id, req.body.race, req.body.year);
-    const race = await SQLread.getRace(req.body.race, req.body.year);
+    const userSelectionCall = await SQLread.getTeamSelection(req.user.account_id, req.body.race, req.body.year);
+    const raceCall = await SQLread.getRace(req.body.race, req.body.year);
+
+    const [userSelection, race] = await Promise.all([userSelectionCall, raceCall]);
     var remainingBudget = race.budget - userSelection.reduce((a, b) => a + b, 0);
     res.send({ userSelection: userSelection, budget: remainingBudget });
   });
