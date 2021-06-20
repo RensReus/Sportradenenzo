@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Riderselectiontable from './riderselectiontable'
-import Userselectiontable from './userselectiontable'
+import Riderselectiontable from './riderSelectionTable'
+import SelectedRidersTable from './selectedRidersTable'
 import axios from 'axios';
 import './index.css';
 import _ from "lodash"
@@ -249,7 +249,7 @@ class Teamselection extends Component {
               </div>
               <div className="usertablecontainer w-1/2">
                 <div className="w-5/6 ml-auto">
-                  <Userselectiontable selection={userSelection} addRemoveRider={this.addRemoveRider} budgetParticipation={this.props.budget ? 1 : 0} />
+                  <SelectedRidersTable selection={userSelection} addRemoveRider={this.addRemoveRider} budgetParticipation={this.props.budget ? 1 : 0} />
                 </div>
               </div>
             </div>
