@@ -24,7 +24,6 @@ const Rows = (props) => {
 }
 
 const Row = (props) => {
-    console.log(props)
     return (
         <tr key={props.rowData.account_participation_id}>
             <td key="pos">{props.rowData[" "]}</td>
