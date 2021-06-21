@@ -12,11 +12,10 @@ const RulesPopup = (props) => {
 
   return (
     <div className="stageprofilebutton">
-      <button className={"button_standard blue"} onClick={() => setShowModal(!showModal)}>{"Uitleg/ Regels "}</button>
+      <button className="button_standard blue" onClick={() => setShowModal(!showModal)}>{"Uitleg/ Regels "}</button>
       <div className={cssClass}>
-
         <div className={cssClass2}>
-          <div className>
+          <div>
             <button className="button_standard blue" onClick={() => setPage('teamSelection')}>Team Selectie</button>
             <button className="button_standard blue" onClick={() => setPage('endPoints')}>Eind punten</button>
             <button className="button_standard blue" onClick={() => setPage('stageSelection')}>Etappe opstelling</button>
