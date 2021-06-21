@@ -17,7 +17,7 @@ class PasswordRecoveryForm extends Component {
     if(!this.preSubmitEmailCheck(email)){
       return;
     }
-    const res = await axios.patch('api/recoverytoken', { email: email })
+    const res = await axios.post('api/recoverytoken', { email: email })
     if(res){
       this.setState({
         emailSent: true,

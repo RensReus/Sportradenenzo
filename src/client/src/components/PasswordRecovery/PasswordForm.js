@@ -4,6 +4,9 @@ import axios from 'axios';
 class LoginForm extends Component {
   constructor(props) {
     super(props);
+    this.state = ({
+      success: false,
+    })
     this.submit = this.submit.bind(this);
   }
 
@@ -16,16 +19,14 @@ class LoginForm extends Component {
       return;
     }
     const res = await axios.patch('/api/password', { token: this.props.token, password: password })
-    if(res){
-
-    }
+    this.setState({success: res.data})
   }
 
   render() {
     return (
     <div className="flex flex-col max-w-full m-auto md:mr-12 md:ml-4 mt-12 bg-white p-5 shadow-2xl rounded-md">
       {this.state.success?
-      <div className="bg-green-200">Password has been reset, you can now log in.</div>
+      <div>Password has been reset, you can now log in.</div>
       :
       <>
       <div className="mt-1 mb-6 font-bold text-gray-600 text-center">

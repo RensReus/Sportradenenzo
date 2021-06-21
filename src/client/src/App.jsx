@@ -85,7 +85,7 @@ class App extends Component {
     let noAuth = false;
     unauthorized.forEach((url) => {
       if(this.props.history.location.pathname.includes(url)){
-        noAuto = true;
+        noAuth = true;
         return;
       }
     })
