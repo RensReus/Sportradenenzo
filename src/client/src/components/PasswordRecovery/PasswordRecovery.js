@@ -1,5 +1,4 @@
 import { Component } from 'react';
-import './index.css';
 import PasswordForm from './PasswordForm';
 
 class PasswordRecovery extends Component {

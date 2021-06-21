@@ -5,6 +5,7 @@ class PasswordRecoveryForm extends Component {
   constructor(props) {
     super(props);
     this.state = ({
+      emailCorrect: true,
       emailSent: false,
     });
     this.submitRecovery = this.submitRecovery.bind(this);
@@ -12,7 +13,10 @@ class PasswordRecoveryForm extends Component {
 
   submitRecovery = async (e) => {
     e.preventDefault();
-    const email = e.target.email.value;
+    const email = e.target.recovery_email.value;
+    if(!this.preSubmitEmailCheck(email)){
+      return;
+    }
     const res = await axios.patch('api/recoverytoken', { email: email })
     if(res){
       this.setState({
@@ -21,9 +25,22 @@ class PasswordRecoveryForm extends Component {
     }
   }
 
+  emailCheck = (e) => {
+    if(!this.state.emailCorrect || e.type === 'blur'){
+      const email = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      this.setState({emailCorrect: email.test(e.target.value)})
+    }
+  }
+
+  preSubmitEmailCheck = (submitEmail) => {
+    const email = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    this.setState({emailCorrect: email.test(submitEmail)})
+    return this.state.emailCorrect
+  }
+
   render() {
-    let submit;
-    this.state.signup? submit = this.signupSubmit : submit = this.loginSubmit
+    let emailInputClass;
+    this.state.emailCorrect? emailInputClass = "form-control" : emailInputClass = "form-control error";
 
     return (
     <div className="relative h-56 w-full m-auto md:w-1/6 md:min-w-min mt-12 bg-white p-5 shadow-2xl rounded-md">
@@ -38,7 +55,15 @@ class PasswordRecoveryForm extends Component {
       <form action="" onSubmit={this.submitRecovery}>
         <div className="ml-1 mb-1 text-sm text-gray-600">E-mail address</div>
         <div className="mb-4">
-          <input className="form-control" name="email" type="email" placeholder="Email Address" ref={(input) => { this.input = input; }} />
+          <input 
+            className= {emailInputClass}
+            name="recovery_email" 
+            type="email" 
+            placeholder="Email Address" 
+            ref={(input) => { this.input = input; }}
+            onChange = {this.emailCheck}
+            onBlur = {this.emailCheck}
+          />
         </div>
         <div className="min-h-min">
         {this.state.emailSent?
@@ -52,7 +77,6 @@ class PasswordRecoveryForm extends Component {
         }
         </div>
       </form>
-      <div className="errordiv">{this.state.error}</div>
     </div>
     )
   }

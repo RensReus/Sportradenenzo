@@ -52,6 +52,6 @@ input.completed {
     background-color: green;
 }
 
-input.error {
+input.adminError {
     background-color: red;
 }

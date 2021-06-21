@@ -29,14 +29,12 @@ class PasswordRecoveryModal extends Component {
     e.preventDefault();
     if (typeof (this.props.callback) === 'function') this.props.callback();
     this.setState({ visible: true });
-    document.addEventListener("keydown", this.hideModal)
   }
 
   hideModal = (e) => {
     e.preventDefault();
     if ((e.type === "click" && !window.getSelection().toString().length) || e.keyCode === 27) {
       this.setState({ visible: false });
-      document.removeEventListener("keydown", this.hideModal)
     }
   }
 
