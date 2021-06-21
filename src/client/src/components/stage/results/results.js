@@ -6,6 +6,8 @@ import LoadingDiv from '../../shared/loadingDiv'
 import { updateArray } from '../helperfunctions'
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from 'react';
+import PouleTable from './pouleTable';
+import jwt_decode from "jwt-decode";
 
 const results = (props) => {
   let history = useHistory();
@@ -13,10 +15,10 @@ const results = (props) => {
   const [loadingResults, setLoadingResults] = useState(false);
   const [stageSelectionResults, setStageSelectionResults] = useState([[], []]);
   const [userScores, setUserScores] = useState([[], []]);
-  const [stageResultsLengths, setStageResultsLengths] = useState([0, 0, 0, 0, 0]); 
-  const [stageResults, setStageResults] = useState([[[], [], [], [], []], [[], [], [], [], []]]); 
-  const [classificationDownloaded, setClassificationDownloaded] = useState([[false, false, false, false, false], [false, false, false, false, false]]); 
-  const [pouleTeamResultDownloaded, setPouleTeamResultDownloaded] = useState([false, false]); 
+  const [stageResultsLengths, setStageResultsLengths] = useState([0, 0, 0, 0, 0]);
+  const [stageResults, setStageResults] = useState([[[], [], [], [], []], [[], [], [], [], []]]);
+  const [classificationDownloaded, setClassificationDownloaded] = useState([[false, false, false, false, false], [false, false, false, false, false]]);
+  const [pouleTeamResultDownloaded, setPouleTeamResultDownloaded] = useState([false, false]);
   const [classificationIndex, setClassificationIndex] = useState(props.data.stageType === "FinalStandings" ? 1 : 0);
 
   useEffect(() => {
@@ -79,11 +81,15 @@ const results = (props) => {
 
   return (
     <div className="stageContainer">
-      <SelectionComparison data={props.data} />
+      {localStorage.getItem('authToken') ? (
+        jwt_decode(localStorage.getItem('authToken')).account_id <= 5 &&
+        <SelectionComparison title="Alle Opstellingen" data={props.data} />) : <></>
+      }
+
       <div className="res">
         <LoadingDiv loading={loadingPoule} />
         <Table data={stageSelectionResults[budget]} title={"Selectie"} />
-        <Table data={userScores[budget]} title={"Poule Stand"} coltype={{ "Stage": 1, "Total": 1 }} />
+        <PouleTable tableData={userScores[budget]} data={props.data} />
       </div>
       <div className="stage">
         <LoadingDiv loading={loadingResults} />

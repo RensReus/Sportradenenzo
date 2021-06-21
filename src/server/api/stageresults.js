@@ -58,7 +58,7 @@ module.exports = function (app) {
           WHERE ${selection_id} = ${selection_id_val}
           ORDER BY "Total" DESC, "Stage" DESC; `;
 
-      var userscoresQuery = `SELECT RANK() OVER(ORDER by totalscore DESC) AS " ", CONCAT('/profile/',account_id) AS "User_link", username AS "User", stagescore AS "Stage", totalscore AS "Total" FROM stage_selection
+      var userscoresQuery = `SELECT RANK() OVER(ORDER by totalscore DESC) AS " ", CONCAT('/profile/',account_id) AS "User_link", username AS "User", stagescore AS "Stage", totalscore AS "Total", account_id FROM stage_selection
           INNER JOIN account_participation USING(account_participation_id)
           INNER JOIN account USING(account_id)
           WHERE stage_id=${stage_id} AND budgetparticipation = ${budgetParticipation}

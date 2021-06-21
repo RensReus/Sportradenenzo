@@ -42,7 +42,7 @@ const selectionComparison = (props) => {
   return (
     <ModalButton
       cssClassButton={"buttonStandard " + props.data.racename}
-      content="Alle opstellingen "
+      content={props.title}
       modalContent={allSelectionsPopupContent}
       callback={getAllSelections}
     />
