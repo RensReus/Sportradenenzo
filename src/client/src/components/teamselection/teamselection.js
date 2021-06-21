@@ -29,6 +29,12 @@ class Teamselection extends Component {
     this.initialRender()
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props !== prevProps) {
+      this.filter({ target: { value: this.state.filtervalue } })
+    }
+  }
+
   initialRender = () => {
     const race_id = this.props.race_id;
     if (sessionStorage.getItem('currentStageLink') === '/teamselection' && race_id !== null) {
@@ -130,6 +136,7 @@ class Teamselection extends Component {
   }
 
   filter = (e) => {
+    console.log("render filter")
     this.setState({ filtervalue: e.target.value }, () => {
       var regex = new RegExp("\\w*" + this.state.filtervalue + "\\w*", 'i')
       var filteredRiders = [];
@@ -140,7 +147,7 @@ class Teamselection extends Component {
             || allRiders[i].team.match(regex))
           && (!this.props.budget ? 1 : 0 || allRiders[i].price <= 750000)
           && allRiders[i].price >= this.state.minPrice
-          && allRiders[i].price <= this.state.maxPrice
+          && allRiders[i].price <= (this.props.budget ? 750_000 : this.state.maxPrice)
           && this.filterSkills({
             'GC': allRiders[i].gc,
             'Climb': allRiders[i].climb,
