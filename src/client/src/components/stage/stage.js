@@ -17,7 +17,7 @@ const Stage = (props) => {
   }, [])
 
   const getStage = async (stage) => {
-    if (stage == 0 && modeTypeTime.mode === 'selection') {
+    if (stage == 0 && modeTypeTimeStage.mode === 'selection') {
       history.push('/teamselection')
       return;
     }
