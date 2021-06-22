@@ -187,14 +187,14 @@ module.exports = (app) => {
     expiry.setTime(expiry.getTime()+ 7 * 24 * 60 * 60 * 1000);
     const expiryString = expiry.toISOString().slice(0, 19).replace('T', ' ');
     const account_id = `(SELECT account_id FROM account WHERE email='${email}')`;
-    const query = `INSERT INTO account_token (account_id,type,expiry,token) VALUES (${account_id},'password_recovery','${expiryString}','${recoveryToken}')`;
+    const query = `INSERT INTO account_token (account_id,type,expiry,token) VALUES (${account_id},'email_verification','${expiryString}','${recoveryToken}')`;
     const res = await sqlDB.query(query);
     console.log(res)
     transporter.sendMail({
       from: '"Sportradenenzo" <noreply@sportradenenzo.nl>',
       to: email,
       subject: "Email verification",
-      html: "Please go to <a href='" + host + "/passwordrecovery/" + recoveryToken + "'>this link</a> to verify your email."
+      html: "Please go to <a href='" + host + "/verify/" + recoveryToken + "'>this link</a> to verify your email."
     })
   };
 
@@ -202,7 +202,7 @@ module.exports = (app) => {
     let now = new Date;
     const nowString = now.toISOString().slice(0, 19).replace('T', ' ');
     const account_id = `(SELECT account_id FROM account_token WHERE type='email_verification' AND token='${req.body.token}' AND expiry>'${nowString}')`
-    const query = `UPDATE account SET verfied=true WHERE account_id=${account_id}`;
+    const query = `UPDATE account SET verified=true WHERE account_id=${account_id}`;
     const result = await sqlDB.query(query);
     res.send(result.rowCount === 1);
   });

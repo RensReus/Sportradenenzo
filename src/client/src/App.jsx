@@ -19,6 +19,7 @@ import Rider from './components/rider';
 import Profile from './components/profile'
 import Fourofour from './components/fourofour'
 import Settings from './components/settings'
+import EmailVerification from './components/EmailVerification';
 import PasswordRecovery from './components/PasswordRecovery';
 
 //Import de standaard css stukken
@@ -81,7 +82,10 @@ class App extends Component {
   }
 
   componentDidMount = async () => {
-    const unauthorized = ['/passwordrecovery/'];
+    const unauthorized = [
+      '/passwordrecovery/',
+      '/verify/'
+    ];
     let noAuth = false;
     unauthorized.forEach((url) => {
       if(this.props.history.location.pathname.includes(url)){
@@ -219,6 +223,7 @@ class App extends Component {
             this.state.isLoggedIn ? (<Redirect to={this.state.redirect} />) : this.state.loading ? <></> : (<LogInSignUp history={this.props.history} Signup={false} />)
           )} />
           <Route path="/passwordrecovery/:token" component={PasswordRecovery} history={this.props.history} />
+          <Route path="/verify/:token" component={EmailVerification} history={this.props.history} />
           <ReactRoute exact path="/stage/:stagenumber" component={Stage} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <ReactRoute path="/teamselection" component={Teamselection} history={this.props.history} race_id={this.state.race_id} racename={this.state.racename} />
           <AdminRoute path="/admin-:subpage" component={Admin} history={this.props.history} />
