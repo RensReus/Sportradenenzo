@@ -7,12 +7,18 @@ import { useState } from 'react';
 class RacesTable extends Component {
   render() {
     let racelinks = this.props.races.map(race => {
-      return <button className={"raceButton " + race.name} key={race.name + race.year} onClick={() => this.props.goToRace(race)}><span className="h7 bold">Go to {race.name.charAt(0).toUpperCase() + race.name.slice(1)} - {race.year}</span></button>
+      return (
+        <div className="m-2">
+          <button className={"button_standard blue " + race.name} key={race.name + race.year} onClick={() => this.props.goToRace(race)}>
+            <span className="text-base bold">{race.name.charAt(0).toUpperCase() + race.name.slice(1)} - {race.year}</span>
+          </button>
+        </div>
+      )
     });
     return (
       <div>
         {this.props.title}:
-        {racelinks}
+        <div className="flex">{racelinks}</div>
       </div>
     )
   }
@@ -52,14 +58,13 @@ const Home = (props) => {
     return (
       <div className="standardContainer">
         <div className="activeRaces">
-          <RacesTable races={activeRaces} goToRace={goToRace} title={"Lopende Races"} />
+          <RacesTable races={activeRaces} goToRace={goToRace} title={"Open Races"} />
         </div>
+        {finishedRaces.length > 0?
         <div className="finishedRace">
-          <RacesTable races={finishedRaces} goToRace={goToRace} title={"Afgelopen Races"} />
+          <RacesTable races={finishedRaces} goToRace={goToRace} title={"Past Races"} />
         </div>
-        <img src={underConstruction} alt="still building" />
-            Coming Soon meer hier
-            stuur suggesties naar Arjen Peijen
+        :<></>}
       </div>
     )
   }

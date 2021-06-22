@@ -9,7 +9,6 @@
   font-weight: bold;
   padding: 0.75rem 1rem;
   min-width: 3rem;
-  max-width: 8rem;
 }
 
 .button_standard.small{
@@ -55,18 +54,18 @@
   border-bottom-color: transparent;
 }
 
-/*use: remove*/
-.button_standard.red{
+/*use: remove or vuelta*/
+.button_standard.red, .button_standard.vuelta{
   background-color: #EF4444; /*red-500*/
   border-bottom-color: #B91C1C; /*red-700*/
 }
 
-.button_standard.red:hover:not(.disabled){
+.button_standard.red:hover:not(.disabled), .button_standard.vuelta:hover:not(.disabled){
   background-color: #F87171; /*red-400*/
   border-bottom-color: #EF4444; /*red-500*/
 }
 
-.button_standard.red:active:not(.disabled){
+.button_standard.red:active:not(.disabled), .button_standard.vuelta:active:not(.disabled){
   background-color: #B91C1C; /*red-700*/
   border-top-color: #991B1B; /*red-800*/
   border-bottom-color: transparent;
@@ -92,6 +91,40 @@
 .button_standard.orange:active:not(.disabled){
   background-color: #C2410C; /*orange-700*/
   border-top-color: #9A3412; /*orange-800*/
+  border-bottom-color: transparent;
+}
+
+/*use: giro*/
+.button_standard.pink, .button_standard.giro{
+  background-color: #F472B6; /*pink-400*/
+  border-bottom-color: #DB2777; /*pink-600*/
+}
+
+.button_standard.pink:hover:not(.disabled), .button_standard.giro:hover:not(.disabled){
+  background-color: #F9A8D4; /*pink-300*/
+  border-bottom-color: #EC4899; /*pink-500*/
+}
+
+.button_standard.pink:active:not(.disabled), .button_standard.giro:active:not(.disabled){
+  background-color: #BE185D; /*pink-700*/
+  border-top-color: #9D174D; /*pink-800*/
+  border-bottom-color: transparent;
+}
+
+/*use: tour*/
+.button_standard.yellow, .button_standard.tour{
+  background-color: #FBBF24; /*pink-400*/
+  border-bottom-color: #D97706; /*pink-600*/
+}
+
+.button_standard.yellow:hover:not(.disabled), .button_standard.tour:hover:not(.disabled){
+  background-color: #FCD34D; /*pink-300*/
+  border-bottom-color: #F59E0B; /*pink-500*/
+}
+
+.button_standard.yellow:active:not(.disabled), .button_standard.tour:active:not(.disabled){
+  background-color: #B45309; /*pink-700*/
+  border-top-color: #92400E; /*pink-800*/
   border-bottom-color: transparent;
 }
 
