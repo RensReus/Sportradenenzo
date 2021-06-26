@@ -232,7 +232,7 @@ var processPCSresults = function ($, stageType) {
     if (hasResults > 0 && classifications[index] !== 'Teams') {// maybe doesnt prevent crashes
       var classification = classifications[index];
       var columns = [];
-      let currentClassificationTable = tableWrapper.children().eq(index + 3);
+      let currentClassificationTable = tableWrapper.children().eq(index + 4);
       currentClassificationTable.children().first().children().first().children().first().children().each(function (classindex, element) {
         columns.push($(this).text());
       })
@@ -378,7 +378,8 @@ var buildResultsQuery = function (ridersResults, TTTresult, teamWinners, stage) 
 var resultsProcessRiders = function (classification, columns, row) {
   var renCol = columns.indexOf("Rider");
   var teamCol = columns.indexOf("Team");
-  var pcs_id = row.children().eq(renCol).children().eq(1).attr('href').substring(6);
+
+  var pcs_id = row.children().eq(renCol).children().eq(0).children().eq(1).attr('href').substring(6);
   var team = row.children().eq(teamCol).children().eq(0).text();
 
   var timeCol = columns.indexOf('Time');
