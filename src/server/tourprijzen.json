@@ -13,7 +13,12 @@
       "FirstName": "Marcus",
       "LastName": "Burghardt",
       "NameShort": "M. Burghardt",
-      "Qualities": [{ "Type": 6, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
       "RiderId": 9
     },
     {
@@ -28,9 +33,18 @@
       "LastName": "Rolland",
       "NameShort": "P. Rolland",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 31
     },
@@ -39,16 +53,25 @@
       "BirthDate": "1989-01-07T00:00:00",
       "EventRiderId": 185029,
       "Price": 750000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 34,
       "Type": 5,
       "FirstName": "John",
       "LastName": "Degenkolb",
       "NameShort": "J. Degenkolb",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 4 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 4
+        }
       ],
       "RiderId": 44
     },
@@ -64,10 +87,22 @@
       "LastName": "Majka",
       "NameShort": "R. Majka",
       "Qualities": [
-        { "Type": 0, "Value": 3 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 3
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 45
     },
@@ -76,16 +111,25 @@
       "BirthDate": "1990-10-16T00:00:00",
       "EventRiderId": 185031,
       "Price": 5000000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 5,
       "Type": 4,
       "FirstName": "Sam",
       "LastName": "Bennett",
       "NameShort": "S. Bennett",
       "Qualities": [
-        { "Type": 3, "Value": 5 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 5
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 60
     },
@@ -100,7 +144,12 @@
       "FirstName": "Tim",
       "LastName": "Declercq",
       "NameShort": "T. Declercq",
-      "Qualities": [{ "Type": 6, "Value": 2 }],
+      "Qualities": [
+        {
+          "Type": 6,
+          "Value": 2
+        }
+      ],
       "RiderId": 68
     },
     {
@@ -115,10 +164,22 @@
       "LastName": "Formolo",
       "NameShort": "D. Formolo",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 4 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        }
       ],
       "RiderId": 72
     },
@@ -133,7 +194,12 @@
       "FirstName": "Carlos",
       "LastName": "Verona",
       "NameShort": "C. Verona",
-      "Qualities": [{ "Type": 1, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 1
+        }
+      ],
       "RiderId": 75
     },
     {
@@ -147,7 +213,12 @@
       "FirstName": "Jacopo",
       "LastName": "Guarnieri",
       "NameShort": "J. Guarnieri",
-      "Qualities": [{ "Type": 3, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 1
+        }
+      ],
       "RiderId": 130
     },
     {
@@ -162,11 +233,26 @@
       "LastName": "Poels",
       "NameShort": "W. Poels",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 4, "Value": 3 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 135
     },
@@ -182,11 +268,26 @@
       "LastName": "Sagan",
       "NameShort": "P. Sagan",
       "Qualities": [
-        { "Type": 2, "Value": 1 },
-        { "Type": 3, "Value": 4 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 4 },
-        { "Type": 6, "Value": 5 }
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 3,
+          "Value": 4
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        },
+        {
+          "Type": 6,
+          "Value": 5
+        }
       ],
       "RiderId": 141
     },
@@ -195,17 +296,29 @@
       "BirthDate": "1991-04-10T00:00:00",
       "EventRiderId": 185038,
       "Price": 1000000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 5,
       "Type": 5,
       "FirstName": "Yves",
       "LastName": "Lampaert",
       "NameShort": "Y. Lampaert",
       "Qualities": [
-        { "Type": 2, "Value": 3 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 4 }
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 4
+        }
       ],
       "RiderId": 167
     },
@@ -221,9 +334,18 @@
       "LastName": "Vliegen",
       "NameShort": "L. Vliegen",
       "Qualities": [
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 170
     },
@@ -239,9 +361,18 @@
       "LastName": "Politt",
       "NameShort": "N. Politt",
       "Qualities": [
-        { "Type": 2, "Value": 1 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 6, "Value": 3 }
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 3
+        }
       ],
       "RiderId": 174
     },
@@ -257,8 +388,14 @@
       "LastName": "Martin",
       "NameShort": "T. Martin",
       "Qualities": [
-        { "Type": 2, "Value": 3 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 203
     },
@@ -274,10 +411,22 @@
       "LastName": "Martin",
       "NameShort": "D. Martin",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 4 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        }
       ],
       "RiderId": 208
     },
@@ -293,9 +442,18 @@
       "LastName": "Vuillermoz",
       "NameShort": "A. Vuillermoz",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 219
     },
@@ -311,10 +469,22 @@
       "LastName": "Porte",
       "NameShort": "R. Porte",
       "Qualities": [
-        { "Type": 0, "Value": 4 },
-        { "Type": 1, "Value": 4 },
-        { "Type": 2, "Value": 4 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 4
+        },
+        {
+          "Type": 1,
+          "Value": 4
+        },
+        {
+          "Type": 2,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 231
     },
@@ -329,7 +499,12 @@
       "FirstName": "Jelle",
       "LastName": "Wallays",
       "NameShort": "J. Wallays",
-      "Qualities": [{ "Type": 6, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
       "RiderId": 233
     },
     {
@@ -344,11 +519,26 @@
       "LastName": "Kelderman",
       "NameShort": "W. Kelderman",
       "Qualities": [
-        { "Type": 0, "Value": 3 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 4, "Value": 3 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 3
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 240
     },
@@ -364,10 +554,22 @@
       "LastName": "Démare",
       "NameShort": "A. Démare",
       "Qualities": [
-        { "Type": 3, "Value": 5 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 3,
+          "Value": 5
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 247
     },
@@ -383,12 +585,30 @@
       "LastName": "Jungels",
       "NameShort": "B. Jungels",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 3 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 4 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 4
+        }
       ],
       "RiderId": 250
     },
@@ -404,12 +624,30 @@
       "LastName": "Lutsenko",
       "NameShort": "A. Lutsenko",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 4, "Value": 3 },
-        { "Type": 5, "Value": 2 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 255
     },
@@ -425,12 +663,30 @@
       "LastName": "Fuglsang",
       "NameShort": "J. Fuglsang",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 4 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 282
     },
@@ -446,9 +702,18 @@
       "LastName": "De Gendt",
       "NameShort": "T. De Gendt",
       "Qualities": [
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 3 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 305
     },
@@ -464,11 +729,26 @@
       "LastName": "Izagirre",
       "NameShort": "I. Izagirre",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 315
     },
@@ -484,9 +764,18 @@
       "LastName": "Henao",
       "NameShort": "S. Henao",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 316
     },
@@ -502,12 +791,30 @@
       "LastName": "Kwiatkowski",
       "NameShort": "M. Kwiatkowski",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 3 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 4 },
-        { "Type": 6, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        },
+        {
+          "Type": 6,
+          "Value": 3
+        }
       ],
       "RiderId": 319
     },
@@ -523,9 +830,18 @@
       "LastName": "Meurisse",
       "NameShort": "X. Meurisse",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 331
     },
@@ -541,11 +857,26 @@
       "LastName": "De Plus",
       "NameShort": "L. De Plus",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 5, "Value": 3 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 353
     },
@@ -561,11 +892,26 @@
       "LastName": "Boasson Hagen",
       "NameShort": "E. Boasson Hagen",
       "Qualities": [
-        { "Type": 2, "Value": 1 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 384
     },
@@ -595,9 +941,18 @@
       "LastName": "Quintana",
       "NameShort": "N. Quintana",
       "Qualities": [
-        { "Type": 0, "Value": 4 },
-        { "Type": 1, "Value": 4 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 4
+        },
+        {
+          "Type": 1,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 412
     },
@@ -606,17 +961,29 @@
       "BirthDate": "1989-05-06T00:00:00",
       "EventRiderId": 185060,
       "Price": 1500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 14,
       "Type": 2,
       "FirstName": "David",
       "LastName": "De La Cruz",
       "NameShort": "D. De La Cruz",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 413
     },
@@ -632,8 +999,14 @@
       "LastName": "De Buyst",
       "NameShort": "J. De Buyst",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 419
     },
@@ -649,11 +1022,26 @@
       "LastName": "López",
       "NameShort": "M. López",
       "Qualities": [
-        { "Type": 0, "Value": 4 },
-        { "Type": 1, "Value": 5 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 4
+        },
+        {
+          "Type": 1,
+          "Value": 5
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 433
     },
@@ -664,15 +1052,27 @@
       "Price": 1500000.0,
       "Status": 1,
       "TeamId": 52,
-      "Type": 1,
+      "Type": 2,
       "FirstName": "Chris",
       "LastName": "Froome",
       "NameShort": "C. Froome",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 1 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 470
     },
@@ -688,8 +1088,14 @@
       "LastName": "Gesink",
       "NameShort": "R. Gesink",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 475
     },
@@ -712,15 +1118,21 @@
       "BirthDate": "1987-07-05T00:00:00",
       "EventRiderId": 185066,
       "Price": 2000000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 14,
       "Type": 4,
       "FirstName": "Alexander",
       "LastName": "Kristoff",
       "NameShort": "A. Kristoff",
       "Qualities": [
-        { "Type": 3, "Value": 3 },
-        { "Type": 6, "Value": 3 }
+        {
+          "Type": 3,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 3
+        }
       ],
       "RiderId": 486
     },
@@ -736,9 +1148,18 @@
       "LastName": "Van der Sande",
       "NameShort": "T. Van der Sande",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 503
     },
@@ -754,12 +1175,30 @@
       "LastName": "Matthews",
       "NameShort": "M. Matthews",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 2, "Value": 3 },
-        { "Type": 3, "Value": 3 },
-        { "Type": 4, "Value": 5 },
-        { "Type": 5, "Value": 4 },
-        { "Type": 6, "Value": 3 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 3,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 5
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        },
+        {
+          "Type": 6,
+          "Value": 3
+        }
       ],
       "RiderId": 507
     },
@@ -788,7 +1227,12 @@
       "FirstName": "Luke",
       "LastName": "Rowe",
       "NameShort": "L. Rowe",
-      "Qualities": [{ "Type": 6, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
       "RiderId": 515
     },
     {
@@ -803,8 +1247,14 @@
       "LastName": "Theuns",
       "NameShort": "E. Theuns",
       "Qualities": [
-        { "Type": 3, "Value": 2 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 518
     },
@@ -813,13 +1263,18 @@
       "BirthDate": "1992-05-06T00:00:00",
       "EventRiderId": 185072,
       "Price": 1000000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 14,
       "Type": 2,
       "FirstName": "Jan",
       "LastName": "Polanc",
       "NameShort": "J. Polanc",
-      "Qualities": [{ "Type": 1, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 1
+        }
+      ],
       "RiderId": 522
     },
     {
@@ -834,9 +1289,18 @@
       "LastName": "Pedersen",
       "NameShort": "M. Pedersen",
       "Qualities": [
-        { "Type": 2, "Value": 2 },
-        { "Type": 3, "Value": 3 },
-        { "Type": 6, "Value": 3 }
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 3,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 3
+        }
       ],
       "RiderId": 532
     },
@@ -852,9 +1316,18 @@
       "LastName": "De Marchi",
       "NameShort": "A. De Marchi",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 567
     },
@@ -870,11 +1343,26 @@
       "LastName": "Urán",
       "NameShort": "R. Urán",
       "Qualities": [
-        { "Type": 0, "Value": 3 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 3
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 576
     },
@@ -890,11 +1378,26 @@
       "LastName": "Mollema",
       "NameShort": "B. Mollema",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 581
     },
@@ -910,9 +1413,18 @@
       "LastName": "Meintjes",
       "NameShort": "L. Meintjes",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 616
     },
@@ -928,8 +1440,14 @@
       "LastName": "van Poppel",
       "NameShort": "D. van Poppel",
       "Qualities": [
-        { "Type": 3, "Value": 2 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 621
     },
@@ -945,11 +1463,26 @@
       "LastName": "Bilbao",
       "NameShort": "P. Bilbao",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 625
     },
@@ -965,11 +1498,26 @@
       "LastName": "Kragh",
       "NameShort": "S. Kragh",
       "Qualities": [
-        { "Type": 2, "Value": 3 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 2 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 631
     },
@@ -985,10 +1533,22 @@
       "LastName": "Gilbert",
       "NameShort": "P. Gilbert",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 3 },
-        { "Type": 5, "Value": 3 },
-        { "Type": 6, "Value": 4 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 4
+        }
       ],
       "RiderId": 653
     },
@@ -1004,12 +1564,30 @@
       "LastName": "Nibali",
       "NameShort": "V. Nibali",
       "Qualities": [
-        { "Type": 0, "Value": 3 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 3 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 3
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 658
     },
@@ -1025,8 +1603,14 @@
       "LastName": "Bakelants",
       "NameShort": "J. Bakelants",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 664
     },
@@ -1042,12 +1626,30 @@
       "LastName": "Thomas",
       "NameShort": "G. Thomas",
       "Qualities": [
-        { "Type": 0, "Value": 5 },
-        { "Type": 1, "Value": 4 },
-        { "Type": 2, "Value": 5 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 4 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 5
+        },
+        {
+          "Type": 1,
+          "Value": 4
+        },
+        {
+          "Type": 2,
+          "Value": 5
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 666
     },
@@ -1063,11 +1665,26 @@
       "LastName": "Van Avermaet",
       "NameShort": "G. Van Avermaet",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 3 },
-        { "Type": 5, "Value": 3 },
-        { "Type": 6, "Value": 5 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 5
+        }
       ],
       "RiderId": 678
     },
@@ -1082,7 +1699,12 @@
       "FirstName": "Nacer",
       "LastName": "Bouhanni",
       "NameShort": "N. Bouhanni",
-      "Qualities": [{ "Type": 3, "Value": 3 }],
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 3
+        }
+      ],
       "RiderId": 691
     },
     {
@@ -1090,18 +1712,33 @@
       "BirthDate": "1990-05-28T00:00:00",
       "EventRiderId": 185087,
       "Price": 2000000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 12,
       "Type": 3,
       "FirstName": "Rohan",
       "LastName": "Dennis",
       "NameShort": "R. Dennis",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 5 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 5
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 692
     },
@@ -1117,10 +1754,22 @@
       "LastName": "Nizzolo",
       "NameShort": "G. Nizzolo",
       "Qualities": [
-        { "Type": 3, "Value": 4 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 3,
+          "Value": 4
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 693
     },
@@ -1136,9 +1785,18 @@
       "LastName": "Teunissen",
       "NameShort": "M. Teunissen",
       "Qualities": [
-        { "Type": 3, "Value": 2 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 702
     },
@@ -1154,9 +1812,18 @@
       "LastName": "Fraile",
       "NameShort": "O. Fraile",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 703
     },
@@ -1172,13 +1839,34 @@
       "LastName": "Alaphilippe",
       "NameShort": "J. Alaphilippe",
       "Qualities": [
-        { "Type": 0, "Value": 3 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 3, "Value": 2 },
-        { "Type": 4, "Value": 5 },
-        { "Type": 5, "Value": 5 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 3
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 5
+        },
+        {
+          "Type": 5,
+          "Value": 5
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 705
     },
@@ -1194,11 +1882,26 @@
       "LastName": "Latour",
       "NameShort": "P. Latour",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 719
     },
@@ -1214,10 +1917,22 @@
       "LastName": "Benoot",
       "NameShort": "T. Benoot",
       "Qualities": [
-        { "Type": 1, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 },
-        { "Type": 6, "Value": 3 }
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 3
+        }
       ],
       "RiderId": 723
     },
@@ -1233,12 +1948,30 @@
       "LastName": "Roglic",
       "NameShort": "P. Roglic",
       "Qualities": [
-        { "Type": 0, "Value": 5 },
-        { "Type": 1, "Value": 5 },
-        { "Type": 2, "Value": 5 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 5 },
-        { "Type": 5, "Value": 5 }
+        {
+          "Type": 0,
+          "Value": 5
+        },
+        {
+          "Type": 1,
+          "Value": 5
+        },
+        {
+          "Type": 2,
+          "Value": 5
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 5
+        },
+        {
+          "Type": 5,
+          "Value": 5
+        }
       ],
       "RiderId": 785
     },
@@ -1254,11 +1987,26 @@
       "LastName": "Wellens",
       "NameShort": "T. Wellens",
       "Qualities": [
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 4, "Value": 3 },
-        { "Type": 5, "Value": 3 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 788
     },
@@ -1274,8 +2022,14 @@
       "LastName": "Vakoc",
       "NameShort": "P. Vakoc",
       "Qualities": [
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 790
     },
@@ -1291,10 +2045,22 @@
       "LastName": "Stuyven",
       "NameShort": "J. Stuyven",
       "Qualities": [
-        { "Type": 3, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 4 }
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 4
+        }
       ],
       "RiderId": 792
     },
@@ -1310,10 +2076,22 @@
       "LastName": "Landa",
       "NameShort": "M. Landa",
       "Qualities": [
-        { "Type": 0, "Value": 4 },
-        { "Type": 1, "Value": 5 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 4
+        },
+        {
+          "Type": 1,
+          "Value": 5
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 803
     },
@@ -1324,15 +2102,27 @@
       "Price": 1500000.0,
       "Status": 1,
       "TeamId": 52,
-      "Type": 2,
+      "Type": 1,
       "FirstName": "Michael",
       "LastName": "Woods",
       "NameShort": "M. Woods",
       "Qualities": [
-        { "Type": 0, "Value": 3 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 4, "Value": 5 },
-        { "Type": 5, "Value": 5 }
+        {
+          "Type": 0,
+          "Value": 3
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 5
+        },
+        {
+          "Type": 5,
+          "Value": 5
+        }
       ],
       "RiderId": 815
     },
@@ -1341,17 +2131,29 @@
       "BirthDate": "1984-07-03T00:00:00",
       "EventRiderId": 185100,
       "Price": 500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 27,
       "Type": 2,
       "FirstName": "Nicolas",
       "LastName": "Roche",
       "NameShort": "N. Roche",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 848
     },
@@ -1367,9 +2169,18 @@
       "LastName": "Impey",
       "NameShort": "D. Impey",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 852
     },
@@ -1385,10 +2196,22 @@
       "LastName": "Kruijswijk",
       "NameShort": "S. Kruijswijk",
       "Qualities": [
-        { "Type": 0, "Value": 4 },
-        { "Type": 1, "Value": 4 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 4
+        },
+        {
+          "Type": 1,
+          "Value": 4
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 872
     },
@@ -1404,15 +2227,27 @@
       "LastName": "Colbrelli",
       "NameShort": "S. Colbrelli",
       "Qualities": [
-        { "Type": 3, "Value": 3 },
-        { "Type": 4, "Value": 3 },
-        { "Type": 5, "Value": 2 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 3,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 895
     },
     {
-      "Age": 34,
+      "Age": 35,
       "BirthDate": "1986-06-22T00:00:00",
       "EventRiderId": 185104,
       "Price": 500000.0,
@@ -1422,7 +2257,12 @@
       "FirstName": "Víctor",
       "LastName": "de la Parte",
       "NameShort": "V. de la Parte",
-      "Qualities": [{ "Type": 1, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 1
+        }
+      ],
       "RiderId": 897
     },
     {
@@ -1437,10 +2277,22 @@
       "LastName": "Konrad",
       "NameShort": "P. Konrad",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 898
     },
@@ -1456,10 +2308,22 @@
       "LastName": "Barguil",
       "NameShort": "W. Barguil",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 4 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        }
       ],
       "RiderId": 900
     },
@@ -1475,12 +2339,30 @@
       "LastName": "Teuns",
       "NameShort": "D. Teuns",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 4, "Value": 3 },
-        { "Type": 5, "Value": 4 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 982
     },
@@ -1496,10 +2378,22 @@
       "LastName": "Coquard",
       "NameShort": "B. Coquard",
       "Qualities": [
-        { "Type": 3, "Value": 3 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 985
     },
@@ -1515,8 +2409,14 @@
       "LastName": "Perez",
       "NameShort": "A. Perez",
       "Qualities": [
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 986
     },
@@ -1532,9 +2432,18 @@
       "LastName": "Ewan",
       "NameShort": "C. Ewan",
       "Qualities": [
-        { "Type": 3, "Value": 5 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 5
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 998
     },
@@ -1543,15 +2452,21 @@
       "BirthDate": "1994-06-17T00:00:00",
       "EventRiderId": 185111,
       "Price": 500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 38,
       "Type": 6,
       "FirstName": "Aimé",
       "LastName": "De Gendt",
       "NameShort": "A. De Gendt",
       "Qualities": [
-        { "Type": 4, "Value": 1 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 1001
     },
@@ -1567,9 +2482,18 @@
       "LastName": "Castroviejo",
       "NameShort": "J. Castroviejo",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 2, "Value": 3 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 1048
     },
@@ -1585,10 +2509,22 @@
       "LastName": "Vanmarcke",
       "NameShort": "S. Vanmarcke",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 4 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 4
+        }
       ],
       "RiderId": 1053
     },
@@ -1604,11 +2540,26 @@
       "LastName": "Yates",
       "NameShort": "S. Yates",
       "Qualities": [
-        { "Type": 0, "Value": 3 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 4 }
+        {
+          "Type": 0,
+          "Value": 3
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        }
       ],
       "RiderId": 1080
     },
@@ -1623,7 +2574,12 @@
       "FirstName": "Victor",
       "LastName": "Campenaerts",
       "NameShort": "V. Campenaerts",
-      "Qualities": [{ "Type": 2, "Value": 3 }],
+      "Qualities": [
+        {
+          "Type": 2,
+          "Value": 3
+        }
+      ],
       "RiderId": 1094
     },
     {
@@ -1638,10 +2594,22 @@
       "LastName": "Martin",
       "NameShort": "G. Martin",
       "Qualities": [
-        { "Type": 0, "Value": 3 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 3
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 1096
     },
@@ -1657,10 +2625,22 @@
       "LastName": "Haig",
       "NameShort": "J. Haig",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 1099
     },
@@ -1676,10 +2656,22 @@
       "LastName": "Mohoric",
       "NameShort": "M. Mohoric",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 3 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 1102
     },
@@ -1695,9 +2687,18 @@
       "LastName": "Naesen",
       "NameShort": "O. Naesen",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 4 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 4
+        }
       ],
       "RiderId": 1103
     },
@@ -1712,7 +2713,12 @@
       "FirstName": "Nans",
       "LastName": "Peters",
       "NameShort": "N. Peters",
-      "Qualities": [{ "Type": 1, "Value": 2 }],
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 2
+        }
+      ],
       "RiderId": 1168
     },
     {
@@ -1727,9 +2733,18 @@
       "LastName": "Cosnefroy",
       "NameShort": "B. Cosnefroy",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 4 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        }
       ],
       "RiderId": 1169
     },
@@ -1744,7 +2759,12 @@
       "FirstName": "Pascal",
       "LastName": "Ackermann",
       "NameShort": "P. Ackermann",
-      "Qualities": [{ "Type": 3, "Value": 4 }],
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 4
+        }
+      ],
       "RiderId": 1184
     },
     {
@@ -1758,7 +2778,12 @@
       "FirstName": "Ben",
       "LastName": "O'Connor",
       "NameShort": "B. O'Connor",
-      "Qualities": [{ "Type": 1, "Value": 3 }],
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 3
+        }
+      ],
       "RiderId": 1189
     },
     {
@@ -1773,10 +2798,22 @@
       "LastName": "Gaudu",
       "NameShort": "D. Gaudu",
       "Qualities": [
-        { "Type": 0, "Value": 3 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 4 }
+        {
+          "Type": 0,
+          "Value": 3
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        }
       ],
       "RiderId": 1190
     },
@@ -1792,11 +2829,26 @@
       "LastName": "Madouas",
       "NameShort": "V. Madouas",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 4, "Value": 3 },
-        { "Type": 5, "Value": 4 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 1194
     },
@@ -1812,11 +2864,26 @@
       "LastName": "Carapaz",
       "NameShort": "R. Carapaz",
       "Qualities": [
-        { "Type": 0, "Value": 5 },
-        { "Type": 1, "Value": 5 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 5
+        },
+        {
+          "Type": 1,
+          "Value": 5
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 1199
     },
@@ -1832,10 +2899,22 @@
       "LastName": "Mas",
       "NameShort": "E. Mas",
       "Qualities": [
-        { "Type": 0, "Value": 4 },
-        { "Type": 1, "Value": 4 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 4
+        },
+        {
+          "Type": 1,
+          "Value": 4
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 1204
     },
@@ -1851,8 +2930,14 @@
       "LastName": "Jansen",
       "NameShort": "A. Jansen",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 1209
     },
@@ -1868,11 +2953,26 @@
       "LastName": "Geoghegan Hart",
       "NameShort": "T. Geoghegan Hart",
       "Qualities": [
-        { "Type": 0, "Value": 4 },
-        { "Type": 1, "Value": 4 },
-        { "Type": 2, "Value": 2 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 4
+        },
+        {
+          "Type": 1,
+          "Value": 4
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 1211
     },
@@ -1888,10 +2988,22 @@
       "LastName": "Kämna",
       "NameShort": "L. Kämna",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 1214
     },
@@ -1907,12 +3019,30 @@
       "LastName": "van Aert",
       "NameShort": "W. van Aert",
       "Qualities": [
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 5 },
-        { "Type": 3, "Value": 4 },
-        { "Type": 4, "Value": 5 },
-        { "Type": 5, "Value": 5 },
-        { "Type": 6, "Value": 5 }
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 5
+        },
+        {
+          "Type": 3,
+          "Value": 4
+        },
+        {
+          "Type": 4,
+          "Value": 5
+        },
+        {
+          "Type": 5,
+          "Value": 5
+        },
+        {
+          "Type": 6,
+          "Value": 5
+        }
       ],
       "RiderId": 1225
     },
@@ -1928,8 +3058,14 @@
       "LastName": "Merlier",
       "NameShort": "T. Merlier",
       "Qualities": [
-        { "Type": 3, "Value": 4 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 4
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 5048
     },
@@ -1945,10 +3081,22 @@
       "LastName": "Aranburu",
       "NameShort": "A. Aranburu",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 3, "Value": 2 },
-        { "Type": 4, "Value": 3 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 5061
     },
@@ -1964,11 +3112,26 @@
       "LastName": "Higuita",
       "NameShort": "S. Higuita",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 5091
     },
@@ -1984,9 +3147,18 @@
       "LastName": "Kuss",
       "NameShort": "S. Kuss",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 4 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 5323
     },
@@ -2002,10 +3174,22 @@
       "LastName": "Hamilton",
       "NameShort": "L. Hamilton",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 5335
     },
@@ -2020,7 +3204,12 @@
       "FirstName": "Ivo",
       "LastName": "Oliveira",
       "NameShort": "I. Oliveira",
-      "Qualities": [{ "Type": 3, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 1
+        }
+      ],
       "RiderId": 5397
     },
     {
@@ -2035,8 +3224,14 @@
       "LastName": "Philipsen",
       "NameShort": "J. Philipsen",
       "Qualities": [
-        { "Type": 3, "Value": 3 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 5398
     },
@@ -2052,11 +3247,26 @@
       "LastName": "McNulty",
       "NameShort": "B. McNulty",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 2, "Value": 4 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 4
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 5426
     },
@@ -2072,11 +3282,26 @@
       "LastName": "Asgreen",
       "NameShort": "K. Asgreen",
       "Qualities": [
-        { "Type": 2, "Value": 3 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 },
-        { "Type": 6, "Value": 3 }
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 3
+        }
       ],
       "RiderId": 5436
     },
@@ -2092,12 +3317,30 @@
       "LastName": "van der Poel",
       "NameShort": "M. van der Poel",
       "Qualities": [
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 3, "Value": 2 },
-        { "Type": 4, "Value": 5 },
-        { "Type": 5, "Value": 5 },
-        { "Type": 6, "Value": 5 }
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 5
+        },
+        {
+          "Type": 5,
+          "Value": 5
+        },
+        {
+          "Type": 6,
+          "Value": 5
+        }
       ],
       "RiderId": 6357
     },
@@ -2113,8 +3356,14 @@
       "LastName": "Bol",
       "NameShort": "C. Bol",
       "Qualities": [
-        { "Type": 3, "Value": 3 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 6361
     },
@@ -2130,8 +3379,14 @@
       "LastName": "Paret-Peintre",
       "NameShort": "A. Paret-Peintre",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 6364
     },
@@ -2147,9 +3402,18 @@
       "LastName": "Vingegaard",
       "NameShort": "J. Vingegaard",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 6406
     },
@@ -2172,16 +3436,25 @@
       "BirthDate": "1998-09-16T00:00:00",
       "EventRiderId": 185146,
       "Price": 500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 44,
       "Type": 6,
       "FirstName": "Robert",
       "LastName": "Stannard",
       "NameShort": "R. Stannard",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 6427
     },
@@ -2197,12 +3470,30 @@
       "LastName": "Pogacar",
       "NameShort": "T. Pogacar",
       "Qualities": [
-        { "Type": 0, "Value": 5 },
-        { "Type": 1, "Value": 5 },
-        { "Type": 2, "Value": 4 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 5 },
-        { "Type": 5, "Value": 5 }
+        {
+          "Type": 0,
+          "Value": 5
+        },
+        {
+          "Type": 1,
+          "Value": 5
+        },
+        {
+          "Type": 2,
+          "Value": 4
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 5
+        },
+        {
+          "Type": 5,
+          "Value": 5
+        }
       ],
       "RiderId": 6432
     },
@@ -2218,11 +3509,26 @@
       "LastName": "Hirschi",
       "NameShort": "M. Hirschi",
       "Qualities": [
-        { "Type": 1, "Value": 2 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 5 },
-        { "Type": 5, "Value": 5 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 5
+        },
+        {
+          "Type": 5,
+          "Value": 5
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 6433
     },
@@ -2231,16 +3537,25 @@
       "BirthDate": "1994-02-13T00:00:00",
       "EventRiderId": 185149,
       "Price": 1500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 52,
       "Type": 4,
       "FirstName": "Hugo",
       "LastName": "Hofstetter",
       "NameShort": "H. Hofstetter",
       "Qualities": [
-        { "Type": 3, "Value": 2 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 86
     },
@@ -2255,7 +3570,12 @@
       "FirstName": "Jonas",
       "LastName": "Rickaert",
       "NameShort": "J. Rickaert",
-      "Qualities": [{ "Type": 3, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 1
+        }
+      ],
       "RiderId": 1000
     },
     {
@@ -2270,9 +3590,18 @@
       "LastName": "Küng",
       "NameShort": "S. Küng",
       "Qualities": [
-        { "Type": 2, "Value": 5 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 4 }
+        {
+          "Type": 2,
+          "Value": 5
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 4
+        }
       ],
       "RiderId": 528
     },
@@ -2302,13 +3631,34 @@
       "LastName": "Valverde",
       "NameShort": "A. Valverde",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 4 },
-        { "Type": 5, "Value": 4 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 4
+        },
+        {
+          "Type": 5,
+          "Value": 4
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 649
     },
@@ -2317,15 +3667,21 @@
       "BirthDate": "1989-08-28T00:00:00",
       "EventRiderId": 185154,
       "Price": 500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 119,
       "Type": 6,
       "FirstName": "Jens",
       "LastName": "Debusschere",
       "NameShort": "J. Debusschere",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 143
     },
@@ -2334,16 +3690,25 @@
       "BirthDate": "1988-04-16T00:00:00",
       "EventRiderId": 185155,
       "Price": 500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 26,
       "Type": 6,
       "FirstName": "Alexandre",
       "LastName": "Geniez",
       "NameShort": "A. Geniez",
       "Qualities": [
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 978
     },
@@ -2380,16 +3745,25 @@
       "BirthDate": "1994-08-18T00:00:00",
       "EventRiderId": 185158,
       "Price": 500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 52,
       "Type": 6,
       "FirstName": "Krists",
       "LastName": "Neilands",
       "NameShort": "K. Neilands",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 2010
     },
@@ -2405,11 +3779,26 @@
       "LastName": "Laporte",
       "NameShort": "C. Laporte",
       "Qualities": [
-        { "Type": 2, "Value": 1 },
-        { "Type": 3, "Value": 3 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 3,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 261
     },
@@ -2425,10 +3814,22 @@
       "LastName": "Cort",
       "NameShort": "M. Cort",
       "Qualities": [
-        { "Type": 3, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 349
     },
@@ -2437,7 +3838,7 @@
       "BirthDate": "1998-11-29T00:00:00",
       "EventRiderId": 185161,
       "Price": 500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 44,
       "Type": 6,
       "FirstName": "Barnabás",
@@ -2458,9 +3859,18 @@
       "LastName": "Nieuwenhuis",
       "NameShort": "J. Nieuwenhuis",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 6367
     },
@@ -2476,8 +3886,14 @@
       "LastName": "Mørkøv",
       "NameShort": "M. Mørkøv",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 1036
     },
@@ -2507,8 +3923,14 @@
       "LastName": "Eekhoff",
       "NameShort": "N. Eekhoff",
       "Qualities": [
-        { "Type": 4, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 6963
     },
@@ -2517,15 +3939,21 @@
       "BirthDate": "1989-02-09T00:00:00",
       "EventRiderId": 185166,
       "Price": 500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 24,
       "Type": 6,
       "FirstName": "Ramon",
       "LastName": "Sinkeldam",
       "NameShort": "R. Sinkeldam",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 962
     },
@@ -2540,7 +3968,12 @@
       "FirstName": "Miles",
       "LastName": "Scotson",
       "NameShort": "M. Scotson",
-      "Qualities": [{ "Type": 2, "Value": 2 }],
+      "Qualities": [
+        {
+          "Type": 2,
+          "Value": 2
+        }
+      ],
       "RiderId": 1183
     },
     {
@@ -2555,9 +3988,18 @@
       "LastName": "Cattaneo",
       "NameShort": "M. Cattaneo",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 1061
     },
@@ -2573,9 +4015,18 @@
       "LastName": "Bjerg",
       "NameShort": "M. Bjerg",
       "Qualities": [
-        { "Type": 2, "Value": 3 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 5389
     },
@@ -2584,16 +4035,25 @@
       "BirthDate": "1996-07-06T00:00:00",
       "EventRiderId": 185170,
       "Price": 1000000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 51,
       "Type": 2,
       "FirstName": "Mark",
       "LastName": "Padun",
       "NameShort": "M. Padun",
       "Qualities": [
-        { "Type": 1, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 5351
     },
@@ -2609,10 +4069,22 @@
       "LastName": "Ballerini",
       "NameShort": "D. Ballerini",
       "Qualities": [
-        { "Type": 3, "Value": 2 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 2001
     },
@@ -2628,9 +4100,18 @@
       "LastName": "Bevin",
       "NameShort": "P. Bevin",
       "Qualities": [
-        { "Type": 2, "Value": 3 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 2,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 699
     },
@@ -2660,11 +4141,26 @@
       "LastName": "Caruso",
       "NameShort": "D. Caruso",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 2 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 302
     },
@@ -2680,9 +4176,18 @@
       "LastName": "Buchmann",
       "NameShort": "E. Buchmann",
       "Qualities": [
-        { "Type": 0, "Value": 3 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 3
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 79
     },
@@ -2697,7 +4202,12 @@
       "FirstName": "Michael",
       "LastName": "Gogl",
       "NameShort": "M. Gogl",
-      "Qualities": [{ "Type": 5, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
       "RiderId": 1098
     },
     {
@@ -2712,9 +4222,18 @@
       "LastName": "Geschke",
       "NameShort": "S. Geschke",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 297
     },
@@ -2730,9 +4249,18 @@
       "LastName": "Hagen",
       "NameShort": "C. Hagen",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 6352
     },
@@ -2741,13 +4269,18 @@
       "BirthDate": "1988-10-03T00:00:00",
       "EventRiderId": 185179,
       "Price": 500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 52,
       "Type": 6,
       "FirstName": "Alex",
       "LastName": "Dowsett",
       "NameShort": "A. Dowsett",
-      "Qualities": [{ "Type": 2, "Value": 2 }],
+      "Qualities": [
+        {
+          "Type": 2,
+          "Value": 2
+        }
+      ],
       "RiderId": 49
     },
     {
@@ -2762,8 +4295,14 @@
       "LastName": "Viviani",
       "NameShort": "E. Viviani",
       "Qualities": [
-        { "Type": 3, "Value": 4 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 4
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 593
     },
@@ -2778,7 +4317,12 @@
       "FirstName": "Daniel",
       "LastName": "Oss",
       "NameShort": "D. Oss",
-      "Qualities": [{ "Type": 6, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
       "RiderId": 670
     },
     {
@@ -2792,7 +4336,12 @@
       "FirstName": "Lukas",
       "LastName": "Pöstlberger",
       "NameShort": "L. Pöstlberger",
-      "Qualities": [{ "Type": 6, "Value": 1 }],
+      "Qualities": [
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
       "RiderId": 606
     },
     {
@@ -2821,9 +4370,18 @@
       "LastName": "Herrada",
       "NameShort": "J. Herrada",
       "Qualities": [
-        { "Type": 1, "Value": 1 },
-        { "Type": 4, "Value": 1 },
-        { "Type": 5, "Value": 2 }
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
       ],
       "RiderId": 502
     },
@@ -2839,10 +4397,22 @@
       "LastName": "Chaves",
       "NameShort": "E. Chaves",
       "Qualities": [
-        { "Type": 0, "Value": 2 },
-        { "Type": 1, "Value": 3 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 3 }
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        }
       ],
       "RiderId": 715
     },
@@ -2858,10 +4428,22 @@
       "LastName": "García",
       "NameShort": "I. García",
       "Qualities": [
-        { "Type": 3, "Value": 2 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 3 }
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 3
+        }
       ],
       "RiderId": 1181
     },
@@ -2870,15 +4452,21 @@
       "BirthDate": "1985-06-08T00:00:00",
       "EventRiderId": 185187,
       "Price": 500000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 10,
       "Type": 6,
       "FirstName": "José Joaquín",
       "LastName": "Rojas",
       "NameShort": "J. Rojas",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 1 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        }
       ],
       "RiderId": 204
     },
@@ -2908,11 +4496,26 @@
       "LastName": "Bissegger",
       "NameShort": "S. Bissegger",
       "Qualities": [
-        { "Type": 2, "Value": 4 },
-        { "Type": 3, "Value": 2 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 1 }
+        {
+          "Type": 2,
+          "Value": 4
+        },
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
       ],
       "RiderId": 6972
     },
@@ -2928,10 +4531,22 @@
       "LastName": "Powless",
       "NameShort": "N. Powless",
       "Qualities": [
-        { "Type": 0, "Value": 1 },
-        { "Type": 1, "Value": 1 },
-        { "Type": 2, "Value": 1 },
-        { "Type": 5, "Value": 1 }
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
       ],
       "RiderId": 5324
     },
@@ -2961,10 +4576,22 @@
       "LastName": "Turgis",
       "NameShort": "A. Turgis",
       "Qualities": [
-        { "Type": 3, "Value": 1 },
-        { "Type": 4, "Value": 2 },
-        { "Type": 5, "Value": 1 },
-        { "Type": 6, "Value": 2 }
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
       ],
       "RiderId": 425
     },
@@ -2973,13 +4600,18 @@
       "BirthDate": "1993-10-29T00:00:00",
       "EventRiderId": 185193,
       "Price": 1000000.0,
-      "Status": 1,
+      "Status": 2,
       "TeamId": 26,
       "Type": 4,
       "FirstName": "Niccolò",
       "LastName": "Bonifazio",
       "NameShort": "N. Bonifazio",
-      "Qualities": [{ "Type": 3, "Value": 3 }],
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 3
+        }
+      ],
       "RiderId": 1095
     },
     {
@@ -2995,6 +4627,1121 @@
       "NameShort": "O. Goldstein",
       "Qualities": [],
       "RiderId": 5353
+    },
+    {
+      "Age": 22,
+      "BirthDate": "1998-07-09T00:00:00",
+      "EventRiderId": 185195,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 34,
+      "Type": 6,
+      "FirstName": "Harry",
+      "LastName": "Sweeny",
+      "NameShort": "H. Sweeny",
+      "Qualities": [],
+      "RiderId": 7224
+    },
+    {
+      "Age": 23,
+      "BirthDate": "1998-01-12T00:00:00",
+      "EventRiderId": 185196,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 34,
+      "Type": 6,
+      "FirstName": "Brent",
+      "LastName": "Van Moer",
+      "NameShort": "B. Van Moer",
+      "Qualities": [],
+      "RiderId": 6437
+    },
+    {
+      "Age": 30,
+      "BirthDate": "1990-07-03T00:00:00",
+      "EventRiderId": 185197,
+      "Price": 750000.0,
+      "Status": 2,
+      "TeamId": 49,
+      "Type": 2,
+      "FirstName": "Fabio",
+      "LastName": "Aru",
+      "NameShort": "F. Aru",
+      "Qualities": [
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 408
+    },
+    {
+      "Age": 25,
+      "BirthDate": "1996-03-31T00:00:00",
+      "EventRiderId": 185198,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 49,
+      "Type": 6,
+      "FirstName": "Sean",
+      "LastName": "Bennett",
+      "NameShort": "S. Bennett",
+      "Qualities": [],
+      "RiderId": 6390
+    },
+    {
+      "Age": 34,
+      "BirthDate": "1986-07-18T00:00:00",
+      "EventRiderId": 185199,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 49,
+      "Type": 6,
+      "FirstName": "Simon",
+      "LastName": "Clarke",
+      "NameShort": "S. Clarke",
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
+      ],
+      "RiderId": 26
+    },
+    {
+      "Age": 25,
+      "BirthDate": "1995-08-12T00:00:00",
+      "EventRiderId": 185200,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 49,
+      "Type": 6,
+      "FirstName": "Nicholas",
+      "LastName": "Dlamini",
+      "NameShort": "N. Dlamini",
+      "Qualities": [],
+      "RiderId": 5347
+    },
+    {
+      "Age": 28,
+      "BirthDate": "1993-06-13T00:00:00",
+      "EventRiderId": 185201,
+      "Price": 1500000.0,
+      "Status": 1,
+      "TeamId": 49,
+      "Type": 4,
+      "FirstName": "Max",
+      "LastName": "Walscheid",
+      "NameShort": "M. Walscheid",
+      "Qualities": [
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
+      "RiderId": 1215
+    },
+    {
+      "Age": 32,
+      "BirthDate": "1989-05-25T00:00:00",
+      "EventRiderId": 185202,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 52,
+      "Type": 6,
+      "FirstName": "Guillaume",
+      "LastName": "Boivin",
+      "NameShort": "G. Boivin",
+      "Qualities": [],
+      "RiderId": 399
+    },
+    {
+      "Age": 38,
+      "BirthDate": "1982-07-16T00:00:00",
+      "EventRiderId": 185203,
+      "Price": 1500000.0,
+      "Status": 1,
+      "TeamId": 52,
+      "Type": 4,
+      "FirstName": "André",
+      "LastName": "Greipel",
+      "NameShort": "A. Greipel",
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 2
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
+      "RiderId": 199
+    },
+    {
+      "Age": 35,
+      "BirthDate": "1985-08-22T00:00:00",
+      "EventRiderId": 185204,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 52,
+      "Type": 6,
+      "FirstName": "Reto",
+      "LastName": "Hollenstein",
+      "NameShort": "R. Hollenstein",
+      "Qualities": [],
+      "RiderId": 476
+    },
+    {
+      "Age": 27,
+      "BirthDate": "1993-12-07T00:00:00",
+      "EventRiderId": 185205,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 52,
+      "Type": 6,
+      "FirstName": "Rick",
+      "LastName": "Zabel",
+      "NameShort": "R. Zabel",
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 1
+        }
+      ],
+      "RiderId": 422
+    },
+    {
+      "Age": 29,
+      "BirthDate": "1992-05-21T00:00:00",
+      "EventRiderId": 185206,
+      "Price": 750000.0,
+      "Status": 1,
+      "TeamId": 12,
+      "Type": 6,
+      "FirstName": "Dylan",
+      "LastName": "van Baarle",
+      "NameShort": "D. van Baarle",
+      "Qualities": [
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 3
+        }
+      ],
+      "RiderId": 1076
+    },
+    {
+      "Age": 30,
+      "BirthDate": "1991-04-01T00:00:00",
+      "EventRiderId": 185207,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 51,
+      "Type": 5,
+      "FirstName": "Marco",
+      "LastName": "Haller",
+      "NameShort": "M. Haller",
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
+      "RiderId": 328
+    },
+    {
+      "Age": 22,
+      "BirthDate": "1999-06-13T00:00:00",
+      "EventRiderId": 185208,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 51,
+      "Type": 6,
+      "FirstName": "Fred",
+      "LastName": "Wright",
+      "NameShort": "F. Wright",
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
+      "RiderId": 6987
+    },
+    {
+      "Age": 27,
+      "BirthDate": "1994-04-11T00:00:00",
+      "EventRiderId": 185209,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 24,
+      "Type": 6,
+      "FirstName": "Bruno",
+      "LastName": "Armirail",
+      "NameShort": "B. Armirail",
+      "Qualities": [
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 5313
+    },
+    {
+      "Age": 30,
+      "BirthDate": "1991-04-09T00:00:00",
+      "EventRiderId": 185210,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 44,
+      "Type": 6,
+      "FirstName": "Luke",
+      "LastName": "Durbridge",
+      "NameShort": "L. Durbridge",
+      "Qualities": [
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
+      "RiderId": 322
+    },
+    {
+      "Age": 31,
+      "BirthDate": "1989-07-06T00:00:00",
+      "EventRiderId": 185211,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 44,
+      "Type": 6,
+      "FirstName": "Christopher",
+      "LastName": "Juul-Jensen",
+      "NameShort": "C. Juul-Jensen",
+      "Qualities": [
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 404
+    },
+    {
+      "Age": 32,
+      "BirthDate": "1988-06-27T00:00:00",
+      "EventRiderId": 185212,
+      "Price": 750000.0,
+      "Status": 1,
+      "TeamId": 44,
+      "Type": 6,
+      "FirstName": "Luka",
+      "LastName": "Mezgec",
+      "NameShort": "L. Mezgec",
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 3
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 146
+    },
+    {
+      "Age": 35,
+      "BirthDate": "1985-12-08T00:00:00",
+      "EventRiderId": 185213,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 24,
+      "Type": 6,
+      "FirstName": "Ignatas",
+      "LastName": "Konovalovas",
+      "NameShort": "I. Konovalovas",
+      "Qualities": [],
+      "RiderId": 205
+    },
+    {
+      "Age": 25,
+      "BirthDate": "1995-10-30T00:00:00",
+      "EventRiderId": 185214,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 48,
+      "Type": 6,
+      "FirstName": "Connor",
+      "LastName": "Swift",
+      "NameShort": "C. Swift",
+      "Qualities": [],
+      "RiderId": 6976
+    },
+    {
+      "Age": 31,
+      "BirthDate": "1989-09-11T00:00:00",
+      "EventRiderId": 185215,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 48,
+      "Type": 6,
+      "FirstName": "Anthony",
+      "LastName": "Delaplace",
+      "NameShort": "A. Delaplace",
+      "Qualities": [],
+      "RiderId": 498
+    },
+    {
+      "Age": 29,
+      "BirthDate": "1992-01-03T00:00:00",
+      "EventRiderId": 185216,
+      "Price": 750000.0,
+      "Status": 1,
+      "TeamId": 48,
+      "Type": 6,
+      "FirstName": "Daniel",
+      "LastName": "McLay",
+      "NameShort": "D. McLay",
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 2
+        }
+      ],
+      "RiderId": 701
+    },
+    {
+      "Age": 26,
+      "BirthDate": "1995-01-20T00:00:00",
+      "EventRiderId": 185217,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 48,
+      "Type": 6,
+      "FirstName": "Clément",
+      "LastName": "Russo",
+      "NameShort": "C. Russo",
+      "Qualities": [],
+      "RiderId": 5343
+    },
+    {
+      "Age": 24,
+      "BirthDate": "1996-11-17T00:00:00",
+      "EventRiderId": 185218,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 8,
+      "Type": 6,
+      "FirstName": "Stefan",
+      "LastName": "de Bod",
+      "NameShort": "S. de Bod",
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 1
+        }
+      ],
+      "RiderId": 6372
+    },
+    {
+      "Age": 35,
+      "BirthDate": "1986-03-13T00:00:00",
+      "EventRiderId": 185219,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 8,
+      "Type": 6,
+      "FirstName": "Dmitriy",
+      "LastName": "Gruzdev",
+      "NameShort": "D. Gruzdev",
+      "Qualities": [],
+      "RiderId": 481
+    },
+    {
+      "Age": 25,
+      "BirthDate": "1996-05-25T00:00:00",
+      "EventRiderId": 185220,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 25,
+      "Type": 6,
+      "FirstName": "Dorian",
+      "LastName": "Godon",
+      "NameShort": "D. Godon",
+      "Qualities": [],
+      "RiderId": 5078
+    },
+    {
+      "Age": 27,
+      "BirthDate": "1993-11-22T00:00:00",
+      "EventRiderId": 185221,
+      "Price": 1000000.0,
+      "Status": 1,
+      "TeamId": 10,
+      "Type": 2,
+      "FirstName": "Marc",
+      "LastName": "Soler",
+      "NameShort": "M. Soler",
+      "Qualities": [
+        {
+          "Type": 0,
+          "Value": 2
+        },
+        {
+          "Type": 1,
+          "Value": 3
+        },
+        {
+          "Type": 2,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
+      ],
+      "RiderId": 1097
+    },
+    {
+      "Age": 28,
+      "BirthDate": "1992-07-08T00:00:00",
+      "EventRiderId": 185222,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 10,
+      "Type": 6,
+      "FirstName": "Jorge",
+      "LastName": "Arcas",
+      "NameShort": "J. Arcas",
+      "Qualities": [],
+      "RiderId": 416
+    },
+    {
+      "Age": 31,
+      "BirthDate": "1990-05-08T00:00:00",
+      "EventRiderId": 185223,
+      "Price": 750000.0,
+      "Status": 1,
+      "TeamId": 121,
+      "Type": 6,
+      "FirstName": "Kristian",
+      "LastName": "Sbaragli",
+      "NameShort": "K. Sbaragli",
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 327
+    },
+    {
+      "Age": 30,
+      "BirthDate": "1990-08-03T00:00:00",
+      "EventRiderId": 185224,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 121,
+      "Type": 6,
+      "FirstName": "Silvan",
+      "LastName": "Dillier",
+      "NameShort": "S. Dillier",
+      "Qualities": [
+        {
+          "Type": 2,
+          "Value": 1
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
+      "RiderId": 969
+    },
+    {
+      "Age": 26,
+      "BirthDate": "1995-06-20T00:00:00",
+      "EventRiderId": 185225,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 119,
+      "Type": 6,
+      "FirstName": "Franck",
+      "LastName": "Bonnamour",
+      "NameShort": "F. Bonnamour",
+      "Qualities": [],
+      "RiderId": 434
+    },
+    {
+      "Age": 25,
+      "BirthDate": "1996-02-14T00:00:00",
+      "EventRiderId": 185226,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 119,
+      "Type": 6,
+      "FirstName": "Cyril",
+      "LastName": "Barthe",
+      "NameShort": "C. Barthe",
+      "Qualities": [],
+      "RiderId": 5376
+    },
+    {
+      "Age": 38,
+      "BirthDate": "1983-03-03T00:00:00",
+      "EventRiderId": 185227,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 119,
+      "Type": 6,
+      "FirstName": "Cyril",
+      "LastName": "Lemoine",
+      "NameShort": "C. Lemoine",
+      "Qualities": [],
+      "RiderId": 939
+    },
+    {
+      "Age": 37,
+      "BirthDate": "1983-07-22T00:00:00",
+      "EventRiderId": 185228,
+      "Price": 750000.0,
+      "Status": 1,
+      "TeamId": 5,
+      "Type": 6,
+      "FirstName": "Dries",
+      "LastName": "Devenyns",
+      "NameShort": "D. Devenyns",
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
+      "RiderId": 202
+    },
+    {
+      "Age": 36,
+      "BirthDate": "1985-05-21T00:00:00",
+      "EventRiderId": 185229,
+      "Price": 2500000.0,
+      "Status": 1,
+      "TeamId": 5,
+      "Type": 4,
+      "FirstName": "Mark",
+      "LastName": "Cavendish",
+      "NameShort": "M. Cavendish",
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 2
+        }
+      ],
+      "RiderId": 760
+    },
+    {
+      "Age": 26,
+      "BirthDate": "1995-03-03T00:00:00",
+      "EventRiderId": 185230,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 26,
+      "Type": 6,
+      "FirstName": "Cristián",
+      "LastName": "Rodríguez",
+      "NameShort": "C. Rodríguez",
+      "Qualities": [],
+      "RiderId": 641
+    },
+    {
+      "Age": 35,
+      "BirthDate": "1985-10-04T00:00:00",
+      "EventRiderId": 185231,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 26,
+      "Type": 6,
+      "FirstName": "Julien",
+      "LastName": "Simon",
+      "NameShort": "J. Simon",
+      "Qualities": [
+        {
+          "Type": 4,
+          "Value": 1
+        }
+      ],
+      "RiderId": 136
+    },
+    {
+      "Age": 27,
+      "BirthDate": "1993-10-21T00:00:00",
+      "EventRiderId": 185232,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 26,
+      "Type": 6,
+      "FirstName": "Fabien",
+      "LastName": "Doubey",
+      "NameShort": "F. Doubey",
+      "Qualities": [],
+      "RiderId": 1960
+    },
+    {
+      "Age": 29,
+      "BirthDate": "1991-07-24T00:00:00",
+      "EventRiderId": 185233,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 26,
+      "Type": 6,
+      "FirstName": "Jérémy",
+      "LastName": "Cabot",
+      "NameShort": "J. Cabot",
+      "Qualities": [],
+      "RiderId": 6915
+    },
+    {
+      "Age": 28,
+      "BirthDate": "1993-06-25T00:00:00",
+      "EventRiderId": 185234,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 38,
+      "Type": 6,
+      "FirstName": "Jonas",
+      "LastName": "Koch",
+      "NameShort": "J. Koch",
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 80
+    },
+    {
+      "Age": 26,
+      "BirthDate": "1995-05-23T00:00:00",
+      "EventRiderId": 185235,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 38,
+      "Type": 6,
+      "FirstName": "Lorenzo",
+      "LastName": "Rota",
+      "NameShort": "L. Rota",
+      "Qualities": [
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 638
+    },
+    {
+      "Age": 33,
+      "BirthDate": "1988-01-18T00:00:00",
+      "EventRiderId": 185236,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 38,
+      "Type": 6,
+      "FirstName": "Boy",
+      "LastName": "van Poppel",
+      "NameShort": "B. van Poppel",
+      "Qualities": [],
+      "RiderId": 298
+    },
+    {
+      "Age": 23,
+      "BirthDate": "1997-10-11T00:00:00",
+      "EventRiderId": 185237,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 38,
+      "Type": 6,
+      "FirstName": "Georg",
+      "LastName": "Zimmerman",
+      "NameShort": "G. Zimmerman",
+      "Qualities": [
+        {
+          "Type": 0,
+          "Value": 1
+        },
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
+      ],
+      "RiderId": 5463
+    },
+    {
+      "Age": 30,
+      "BirthDate": "1991-04-29T00:00:00",
+      "EventRiderId": 185238,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 49,
+      "Type": 6,
+      "FirstName": "Carlos",
+      "LastName": "Barbero",
+      "NameShort": "C. Barbero",
+      "Qualities": [
+        {
+          "Type": 3,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 615
+    },
+    {
+      "Age": 34,
+      "BirthDate": "1986-10-05T00:00:00",
+      "EventRiderId": 185239,
+      "Price": 750000.0,
+      "Status": 1,
+      "TeamId": 14,
+      "Type": 6,
+      "FirstName": "Rui",
+      "LastName": "Costa",
+      "NameShort": "R. Costa",
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
+      ],
+      "RiderId": 289
+    },
+    {
+      "Age": 32,
+      "BirthDate": "1989-02-07T00:00:00",
+      "EventRiderId": 185240,
+      "Price": 750000.0,
+      "Status": 1,
+      "TeamId": 14,
+      "Type": 6,
+      "FirstName": "Vegard",
+      "LastName": "Laengen",
+      "NameShort": "V. Laengen",
+      "Qualities": [],
+      "RiderId": 242
+    },
+    {
+      "Age": 29,
+      "BirthDate": "1992-03-17T00:00:00",
+      "EventRiderId": 185241,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 16,
+      "Type": 6,
+      "FirstName": "Julien",
+      "LastName": "Bernard",
+      "NameShort": "J. Bernard",
+      "Qualities": [],
+      "RiderId": 529
+    },
+    {
+      "Age": 29,
+      "BirthDate": "1991-07-22T00:00:00",
+      "EventRiderId": 185242,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 16,
+      "Type": 6,
+      "FirstName": "Kenny",
+      "LastName": "Elissonde",
+      "NameShort": "K. Elissonde",
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 523
+    },
+    {
+      "Age": 30,
+      "BirthDate": "1991-06-15T00:00:00",
+      "EventRiderId": 185243,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 16,
+      "Type": 6,
+      "FirstName": "Toms",
+      "LastName": "Skujinš",
+      "NameShort": "T. Skujinš",
+      "Qualities": [
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
+      ],
+      "RiderId": 618
+    },
+    {
+      "Age": 30,
+      "BirthDate": "1991-03-01T00:00:00",
+      "EventRiderId": 185244,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 13,
+      "Type": 6,
+      "FirstName": "Rubén",
+      "LastName": "Fernández",
+      "NameShort": "R. Fernández",
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 1075
+    },
+    {
+      "Age": 28,
+      "BirthDate": "1992-11-04T00:00:00",
+      "EventRiderId": 185245,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 27,
+      "Type": 6,
+      "FirstName": "Jasha",
+      "LastName": "Sütterlin",
+      "NameShort": "J. Sütterlin",
+      "Qualities": [
+        {
+          "Type": 2,
+          "Value": 2
+        }
+      ],
+      "RiderId": 334
+    },
+    {
+      "Age": 22,
+      "BirthDate": "1999-04-03T00:00:00",
+      "EventRiderId": 185246,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 27,
+      "Type": 6,
+      "FirstName": "Mark",
+      "LastName": "Donovan",
+      "NameShort": "M. Donovan",
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 2
+        },
+        {
+          "Type": 5,
+          "Value": 1
+        }
+      ],
+      "RiderId": 6555
+    },
+    {
+      "Age": 29,
+      "BirthDate": "1992-02-07T00:00:00",
+      "EventRiderId": 185247,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 42,
+      "Type": 6,
+      "FirstName": "Michael",
+      "LastName": "Valgren",
+      "NameShort": "M. Valgren",
+      "Qualities": [
+        {
+          "Type": 4,
+          "Value": 3
+        },
+        {
+          "Type": 5,
+          "Value": 3
+        },
+        {
+          "Type": 6,
+          "Value": 2
+        }
+      ],
+      "RiderId": 899
+    },
+    {
+      "Age": 23,
+      "BirthDate": "1998-01-24T00:00:00",
+      "EventRiderId": 185248,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 42,
+      "Type": 6,
+      "FirstName": "Jonas",
+      "LastName": "Rutsch",
+      "NameShort": "J. Rutsch",
+      "Qualities": [
+        {
+          "Type": 6,
+          "Value": 1
+        }
+      ],
+      "RiderId": 6964
+    },
+    {
+      "Age": 26,
+      "BirthDate": "1994-07-06T00:00:00",
+      "EventRiderId": 185249,
+      "Price": 500000.0,
+      "Status": 1,
+      "TeamId": 42,
+      "Type": 6,
+      "FirstName": "Ruben",
+      "LastName": "Guerreiro",
+      "NameShort": "R. Guerreiro",
+      "Qualities": [
+        {
+          "Type": 1,
+          "Value": 1
+        },
+        {
+          "Type": 4,
+          "Value": 1
+        },
+        {
+          "Type": 5,
+          "Value": 2
+        }
+      ],
+      "RiderId": 1218
     }
   ]
 }
