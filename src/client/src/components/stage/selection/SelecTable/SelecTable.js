@@ -12,9 +12,9 @@ class SelecTableRow extends Component {
     if (this.props.selected === 'selected') {
       updateRiderButton = <button className="button_standard small red" onClick={() => this.props.updateRider(this.props.riderID, 'remove')}><FontAwesomeIcon icon={faTimes} /></button>
       if (this.props.kopman === this.props.riderID) {
-        updateKopmanButton = <button className="selectbutton" onClick={() => this.props.updateKopman(this.props.riderID, 'remove')}><FontAwesomeIcon icon={solFaCheckCircle} /></button>
+        updateKopmanButton = <button className="button_standard small green" onClick={() => this.props.updateKopman(this.props.riderID, 'remove')}><FontAwesomeIcon icon={solFaCheckCircle} /></button>
       } else {
-        updateKopmanButton = <button className="selectbutton" onClick={() => this.props.updateKopman(this.props.riderID, 'set')}><FontAwesomeIcon icon={regFaCheckCircle} /></button>
+        updateKopmanButton = <button className="button_standard small yellow" onClick={() => this.props.updateKopman(this.props.riderID, 'set')}><FontAwesomeIcon icon={regFaCheckCircle} /></button>
       }
     } else if (this.props.selected === 'unselected') {
       updateRiderButton = <button className="button_standard small blue" onClick={() => this.props.updateRider(this.props.riderID, 'add')}><FontAwesomeIcon icon={faPlus} /></button>
@@ -64,9 +64,9 @@ class SelecTable extends Component {
           <thead>
             <tr>
               <th></th>
-              <th>Name</th>
+              <th>Naam</th>
               <th>Team</th>
-              <th>Leader</th>
+              <th>Kopman</th>
               <th>{selectionLength}/9</th>
             </tr>
           </thead>
