@@ -1,8 +1,10 @@
 var fs = require('fs');
 if (fs.existsSync('./src/server/db/sqlDBlink.js')) {
     var sqlDBstring = require('./sqlDBlink');
+    var connections = 1
 } else {
     var sqlDBstring = process.env.DATABASE_URL;
+    var connections = 3
 }
 
 const { Pool } = require('pg')
@@ -16,7 +18,7 @@ const pool = new Pool({
     connectionString: sqlDBstring,
     rejectUnauthorized: false,
     ssl: true,
-    max: 3
+    max: connections
 })
 
 module.exports = {
