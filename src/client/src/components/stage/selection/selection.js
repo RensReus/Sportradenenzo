@@ -3,6 +3,7 @@ import Table from '../../shared/table'
 import LoadingDiv from '../../shared/loadingDiv'
 import SelecTable from './SelecTable'
 import { getSelectionData, updateKopmanCall, updateRiderCall } from './selectionHelperFunctions'
+import jwt_decode from "jwt-decode";
 
 class Selection extends Component {
   constructor(props) {
@@ -56,18 +57,26 @@ class Selection extends Component {
       selectionIDs: this.state.stageSelection[budget].map(rider => rider.rider_participation_id),
       loading: this.props.data.loading || this.state.loading
     }
-
+    const authToken = localStorage.getItem('authToken')
+    const memberOfFabFour = authToken ? jwt_decode(localStorage.getItem('authToken')).account_id <= 5 : false;
+    let completeText = this.state.selectionsComplete[0] === 10 ? "Opstelling Compleet" : "Opstelling niet compleet"
     const selecTableFunctions = {
       updateRider: this.updateRider,
       updateKopman: this.updateKopman
     }
     return (
       <div className="">
-        <div className='hidden stagetext'>
-          <div className={"completeContainer " + ((this.state.selectionsComplete[0] + this.state.selectionsComplete[1]) === 20 ? "allCompleet" : "")}>Compleet:
+        <div className="w-1/5 stagetext">
+          {memberOfFabFour &&
+            <div className={"completeContainer " + ((this.state.selectionsComplete[0] + this.state.selectionsComplete[1]) === 20 ? "allCompleet" : "")}>Compleet:
             <div className="gewoonCompleet"><div style={{ width: this.state.selectionsComplete[0] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
-            <div className="budgetCompleet"><div style={{ width: this.state.selectionsComplete[1] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
-          </div>
+              <div className="budgetCompleet"><div style={{ width: this.state.selectionsComplete[1] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Budget</div></div>
+            </div>}
+          {!memberOfFabFour &&
+            <div className="completeContainerNewUsers ">
+              <div className="gewoonCompleet"><div style={{ width: this.state.selectionsComplete[0] * 10 + "%" }} className={"backgroundCompleetNewUsers teamSize"}></div><div className="textCompleet">{completeText}</div></div>
+            </div>
+          }
         </div>
         <div className='w-1/2'>
           <SelecTable data={selecTableData} functions={selecTableFunctions} />

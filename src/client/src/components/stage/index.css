@@ -188,6 +188,15 @@ div.classification {
         border: gray 2px solid;
         background: rgb(160,0,0);
     }
+
+    div.completeContainerNewUsers{
+        text-align: center;
+        height: 25px;
+        color: lightgray;
+        border: gray 2px solid;
+        background: rgb(160,0,0);
+    }
+
     div.gewoonCompleet {
         position: relative;
         left: 0;
@@ -210,6 +219,14 @@ div.classification {
         left: 0;
         top: 0;
         height: 21px
+    }
+
+    div.backgroundCompleetNewUsers{
+        position: absolute;
+        background: rgb(0,60,0);
+        left: 0;
+        top: 0;
+        height: 25px
     }
 
     div.textCompleet{
