@@ -11,7 +11,7 @@
 .modal-content {
     padding-top: 53px;
     position: fixed;
-    background: var(--background-color);
+    background: #374151;
     color: white;
     max-width: 90%;
     height: auto;
