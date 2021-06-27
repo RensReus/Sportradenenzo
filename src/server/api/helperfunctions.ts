@@ -12,11 +12,11 @@ module.exports = {
                                     WHERE account_id=${account_id} AND race_id=${race_id} AND budgetparticipation=${budgetParticipation})`;
         var stage_selection_id = `(SELECT stage_selection_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
 
-        var inSelection = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'bold black' ELSE '' END`
-        var inteam = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'bold gray' ELSE '' END`
+        var inSelection = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM stage_selection_rider WHERE stage_selection_id = ${stage_selection_id}) THEN 'inselection' ELSE '' END`
+        var inteam = `CASE WHEN rider_participation.rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider WHERE account_participation_id = ${account_participation_id}) THEN 'inteam' ELSE '' END`
         var rowClassName = `CONCAT(${inSelection},' ', ${inteam}) AS "rowClassName"`;
         var stage_idPrev = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${stagenr - 1})`;
-        var name = `CONCAT(firstname, ' ', lastname) AS "Name"`
+        var name = `CONCAT(initials, ' ', lastname) AS "Name"`
         var link = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link"`
         var team = `team AS "Team"`
 

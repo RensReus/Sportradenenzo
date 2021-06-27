@@ -5,22 +5,22 @@ table {
 }
 
 tr {
-    width: 100%;
+  width: 100%;
 }
 
 th{
-    background: var(--background-color-dark);
+    background: #374151;
     color: white
 }
 
 table > caption{
-    background: var(--background-color-darker);
+    background: #1F2937;
     color: white;
-    font-size: 25px;
+    font-size: 1.5rem;
+    line-height: 1.75rem;
     padding-top: 2px;
     padding-bottom: 2px;
     text-align: center;
-    box-shadow: 0px 1px gray;
     width: 100%
 }
 
@@ -37,7 +37,9 @@ th.sortable{
 th, td {
     padding: 6px 5px 5px 5px; /* compensatie voor box shadow */
     text-align: left;
-    font-size: 15px; 
+    font-size: 1rem;
+    min-width: 2rem; 
+    max-height: 2rem;
 }
 
 tr.bold > :first-child{
@@ -100,7 +102,11 @@ td.rank{
   }
 
   .table-standard th {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+  }
+
+  .table-standard.blue caption{
+    background-color: #3B82F6;
   }
 
   .table-standard.blue th{

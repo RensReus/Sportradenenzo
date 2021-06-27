@@ -4,6 +4,7 @@ import LoadingDiv from '../../shared/loadingDiv'
 import SelecTable from './SelecTable'
 import { getSelectionData, updateKopmanCall, updateRiderCall } from './selectionHelperFunctions'
 import jwt_decode from "jwt-decode";
+import './stageselection.css'
 
 class Selection extends Component {
   constructor(props) {
@@ -65,8 +66,8 @@ class Selection extends Component {
       updateKopman: this.updateKopman
     }
     return (
-      <div className="">
-        <div className="w-1/5 stagetext">
+      <div className="stageselection-container mt-2">
+        <div className="stagetext">
           {memberOfFabFour &&
             <div className={"completeContainer " + ((this.state.selectionsComplete[0] + this.state.selectionsComplete[1]) === 20 ? "allCompleet" : "")}>Compleet:
             <div className="gewoonCompleet"><div style={{ width: this.state.selectionsComplete[0] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
@@ -78,15 +79,23 @@ class Selection extends Component {
             </div>
           }
         </div>
-        <div className='w-1/2'>
+        <div className='row-start-1 col-start-1 row-span-3'>
           <SelecTable data={selecTableData} functions={selecTableFunctions} />
         </div>
-        <div className="prevClassifications w-1/2"> {/* TODO maak eigen component met static widths*/}
+        <div className="prevClassifications"> {/* TODO maak eigen component met static widths*/}
           <LoadingDiv loading={this.props.data.loading || this.state.loading} />
-          <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC"><Table data={prevClassifications[0]} title="AK" /></div>
-          <div style={{ display: prevClassifications[1].length ? 'block' : 'none', float: "left" }} className="Points"><Table data={prevClassifications[1]} title="Punten" /></div>
-          <div style={{ display: prevClassifications[2].length ? 'block' : 'none', float: "left" }} className="KOM"><Table data={prevClassifications[2]} title="Berg" /></div>
-          <div style={{ display: prevClassifications[3].length ? 'block' : 'none', float: "left" }} className="Youth"><Table data={prevClassifications[3]} title="Jong" /></div>
+          <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC">
+            <Table data={prevClassifications[0]} classNames="table-standard blue" title="AK" headers={false} colWidths={[9, 38, 38, 15]}/>
+          </div>
+          <div style={{ display: prevClassifications[1].length ? 'block' : 'none', float: "left" }} className="Points">
+            <Table data={prevClassifications[1]} classNames="table-standard blue" title="Punten" headers={false} colWidths={[9, 38, 38, 15]}/>
+          </div>
+          <div style={{ display: prevClassifications[2].length ? 'block' : 'none', float: "left" }} className="KOM">
+            <Table data={prevClassifications[2]} classNames="table-standard blue" title="Berg" headers={false} colWidths={[9, 38, 38, 15]}/>
+          </div>
+          <div style={{ display: prevClassifications[3].length ? 'block' : 'none', float: "left" }} className="Youth">
+            <Table data={prevClassifications[3]} classNames="table-standard blue" title="Jongeren" headers={false} colWidths={[9, 38, 38, 15]}/>
+          </div>
         </div>
       </div>
     )

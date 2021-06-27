@@ -6,7 +6,6 @@ import StageInfo from './info'
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux'
-import RulesPopup from '../shared/RulesPopup';
 
 const Stage = (props) => {
   let history = useHistory();
@@ -43,17 +42,11 @@ const Stage = (props) => {
   }
 
   return (
-    <div>
-      {/* <div className='float-right'> */}
+    <>
       <StageInfo data={childData} updateStage={getStage} />
-      {/* </div> */}
-      <div>
-        <RulesPopup page={"stageSelection"} raceName={props.racename} />
-      </div>
       {modeTypeTimeStage.mode === 'selection' && <Selection data={childData} />}
-
       {modeTypeTimeStage.mode === 'results' && <Results data={childData} />}
-    </div>
+    </>
   )
 }
 

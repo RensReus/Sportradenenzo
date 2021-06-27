@@ -1,0 +1,17 @@
+.stageinfo-container{
+  border: 2px solid #BFDBFE; /*blue-200*/
+  border-radius: 0.375rem;
+  display: flex;
+  height: 12rem;
+  padding: 1rem;
+  flex-direction: column;
+  margin: auto;
+  width: 24rem;
+};
+
+@media only screen and (min-width: 768px){
+  .stageinfo-container{
+    position: absolute;
+    left: 60%;
+  }
+}

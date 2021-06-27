@@ -2,6 +2,8 @@ import { Component } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight, faMountain, faClock } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import ModalButton from '../../shared/modal';
+import RulesPopup from '../../shared/RulesPopup';
+import './stageinfo.css'
 
 
 class stageInfo extends Component {
@@ -23,7 +25,7 @@ class stageInfo extends Component {
       <br></br>
       finish
       <br></br>
-      <img className='profileImage' src={'/images/stageProfiles/' + this.props.data.race_id + '/stage-' + this.props.data.stage + '-finish.jpg'} alt="" />
+      <img className='profileImage' src={'/images/stageProfiles/' + this.props.data.race_id + '/stage-' + this.props.data.stage + '-finish.png'} alt="" />
       <br></br>
       extra
       <br></br>
@@ -34,7 +36,7 @@ class stageInfo extends Component {
       dropdown.push(<option value={i} key={i} className='stage_select_dropdown_option'>{i}</option>);
     }
     return (
-      <div className="flex flex-col space-y-3 w-full sm:w-96 p-4 border-2 border-solid border-blue-200 rounded-md">
+      <div className="stageinfo-container space-y-4">
         <div className='flex items-center justify-center'>
           {(this.props.data.mode === 'selection' || this.props.data.stage !== 1) ?
             <button className="button_standard blue" onClick={() => this.props.updateStage(this.props.data.stage - 1)}>
@@ -67,13 +69,14 @@ class stageInfo extends Component {
             {this.starttimeString(this.props.data.starttime)}
           
         </div>
-        <div className='flex items-center'>
+        <div className='flex items-center space-x-24'>
         <ModalButton
           cssClassButton="button_standard blue"
           content="Profile "
           contentIcon={<FontAwesomeIcon icon={faMountain} />}
           modalContent={stageProfile}
         />
+        <RulesPopup page={"stageSelection"} raceName={this.props.racename} />
         </div>
       </div>
     )

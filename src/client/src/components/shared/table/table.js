@@ -88,6 +88,8 @@ class Table extends Component {
       desc: [],
       classNames: '',
       scrollShow: [],
+      headers: true,
+      colWidths: [],
     });
     this.onSort = this.onSort.bind(this);
     this.scrollClick = this.scrollClick.bind(this);
@@ -108,6 +110,8 @@ class Table extends Component {
     this.setState({
       data: this.props.data,
       classNames: this.props.classNames,
+      headers: this.props.headers?? true,
+      colWidths: this.props.colWidths?? [],
     })
     var scrollShow = this.state.scrollShow;
     if (this.props.maxRows < this.props.data.length) { //if more rows than allowed spread over multiple tabs
@@ -214,6 +218,10 @@ class Table extends Component {
     var scrollButtons = "";
     var scrollCount = 1;
     var columnSelector = "";
+    var colWidthElement = [];
+    this.state.colWidths.forEach(colWidth => {
+      colWidthElement.push(<col style={{width: colWidth.toString() + "%"}}/>);
+    })
     if (this.state.displayCols != null) {
       var checkboxes = [];
       for (var name in this.state.displayCols) {
@@ -236,8 +244,15 @@ class Table extends Component {
         var begin = this.props.maxRows * i;
         var end = Math.min(this.props.maxRows * (i + 1), this.state.data.length)
         tables.push(<table key={i} className={this.state.classNames} style={{ display: this.state.scrollShow[i] }}>
+          <colgroup>
+            {colWidthElement}
+          </colgroup>
           <caption>{this.props.title}</caption>
-          <Headers data={this.state.data} colNames={this.props.colNames} coltype={this.props.coltype} onSort={this.onSort} />
+          {this.state.headers?
+            <Headers data={this.state.data} colNames={this.props.colNames} coltype={this.props.coltype} onSort={this.onSort} />
+            :
+            <></>
+          }
           <Rows data={this.state.data.slice(begin, end)} />
         </table>)
 
@@ -249,8 +264,15 @@ class Table extends Component {
       </div>
     } else {
       tables = <table className={this.state.classNames} style={{ display: 'table' }}>
+        <colgroup>
+          {colWidthElement}
+        </colgroup>
         <caption>{this.props.title}</caption>
-        <Headers data={this.state.data} colNames={this.props.colNames} coltype={this.props.coltype} onSort={this.onSort} displayCols={this.state.displayCols} />
+        {this.state.headers?
+          <Headers data={this.state.data} colNames={this.props.colNames} coltype={this.props.coltype} onSort={this.onSort} displayCols={this.state.displayCols} />
+          :
+          <></>
+        }
         <Rows data={this.state.data} displayCols={this.state.displayCols} />
       </table>
     }
