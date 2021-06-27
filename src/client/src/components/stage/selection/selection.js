@@ -67,7 +67,7 @@ class Selection extends Component {
     }
     return (
       <div className="stageselection-container mt-2">
-        <div className="stagetext">
+        <div className="stagetext row-start-1 col-start-1 md:col-start-2">
           {memberOfFabFour &&
             <div className={"completeContainer " + ((this.state.selectionsComplete[0] + this.state.selectionsComplete[1]) === 20 ? "allCompleet" : "")}>Compleet:
             <div className="gewoonCompleet"><div style={{ width: this.state.selectionsComplete[0] * 10 + "%" }} className={"backgroundCompleet teamSize"}></div><div className="textCompleet">Gewoon</div></div>
@@ -79,10 +79,10 @@ class Selection extends Component {
             </div>
           }
         </div>
-        <div className='row-start-1 col-start-1 row-span-3'>
+        <div className='row-start-1 col-start-1 md:row-span-3'>
           <SelecTable data={selecTableData} functions={selecTableFunctions} />
         </div>
-        <div className="prevClassifications"> {/* TODO maak eigen component met static widths*/}
+        <div className="prevClassifications row-start-2 col-start-1 md:row-start-2 md:col-start-2"> {/* TODO maak eigen component met static widths*/}
           <LoadingDiv loading={this.props.data.loading || this.state.loading} />
           <div style={{ display: prevClassifications[0].length ? 'block' : 'none', float: "left" }} className="GC">
             <Table data={prevClassifications[0]} classNames="table-standard blue" title="AK" headers={false} colWidths={[9, 38, 38, 15]}/>
