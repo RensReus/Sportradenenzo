@@ -684,7 +684,7 @@ var getTimetoFinish = async (racename) => {
       case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
     }
 
-    if ($(this).children().eq(2).text().startsWith(startString)) {
+    if ($(this).children().eq(0).text().startsWith(startString)) {
       racebeschikbaar = true;
       if ($(this).children().eq(0).text() != 'finished') {
         var finish = $(this).children().eq(0).text().split(':').map(x => parseInt(x));
