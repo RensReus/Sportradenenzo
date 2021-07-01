@@ -636,7 +636,9 @@ var startSchedule = async () => {
         var stage = results.rows[0];
         if (!stage.finished) {
           var [stageFinished, newResultsRule] = await getTimetoFinish(race.name);
+          console.log([stageFinished, newResultsRule])
           if (stageFinished) {
+
             var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
 
             var response = await getResult(race, stage.stagenr)
@@ -675,7 +677,7 @@ var getTimetoFinish = async (racename) => {
   });
   var $ = cheerio.load(html);
   var rule = '';
-  var racebeschikbaar = false;
+  var response;
   $('.tblCont1').first().children().eq(1).children().eq(1).children().each(function () {
     var startString = ''
     switch (racename) {
@@ -684,33 +686,30 @@ var getTimetoFinish = async (racename) => {
       case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
     }
 
-    if ($(this).children().eq(0).text().startsWith(startString)) {
-      racebeschikbaar = true;
+    if ($(this).children().eq(2).text().startsWith(startString)) {
       if ($(this).children().eq(0).text() != 'finished') {
         var finish = $(this).children().eq(0).text().split(':').map(x => parseInt(x));
         var now = new Date();
         if (finish[0] - now.getHours() <= 1) { // als nog een uur of minder
           rule = '*/5 * * * *';// iedere 5 min checken 
           console.log("next run in 5 min", racename)
-          return [false, rule];
+          response = [false, rule];
         } else {
           rule = '15 * * * *';// ieder uur op XX:15
           console.log("next run in 1 hour", racename)
-          return [false, rule];
+          response = [false, rule];
         }
-
       } else {//als gefinisht
         rule = '* * * * *';// iedere 1 min checken 
         console.log("stage finished", racename)
-        return [true, rule];
+        response = [true, rule];
       }
     }
   });
-  if (!racebeschikbaar) { // trigger later
-    console.log("Race not available"), racename;
-    rule = '0 0 10 * *'; // check at 10am
-    return [false, rule];
-  }
+  if (response) return response;
+  console.log("Race not available"), racename;
+  rule = '0 0 10 * *'; // check at 10am
+  return [false, rule];
 }
 
 module.exports.getStartlist = getStartlist;
