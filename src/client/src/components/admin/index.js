@@ -95,7 +95,7 @@ class Outputtable extends Component {
       }
 
       tables.push(
-        <div id={tabNR} className="tabcontent" style={tabStyle}>
+        <div id={tabNR} className="tabcontent text-white" style={tabStyle}>
           <table>
             <thead>
               <tr>
@@ -413,7 +413,7 @@ class Admin extends Component {
     }
     var suggestionsPopUp = <div id="sugPopUp" style={popUpStyle}>{popupDivs}</div>
     return (
-      <div className="adminpageContainer" onClick={() => { this.setState({ autoCompleteActive: false }) }}>
+      <div className="adminpageContainer text-white" onClick={() => { this.setState({ autoCompleteActive: false }) }}>
         <div style={{ display: 'flex' }}>
           {buttons}
         </div>
