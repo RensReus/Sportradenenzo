@@ -50,7 +50,7 @@ module.exports = function (app) {
         teampoints = '';
         totalscore = `CASE ${kopman} THEN totalscore - teamscore + stagescore * .5 ELSE totalscore - teamscore END`
       }
-      var teamresultQuery = `SELECT COALESCE(CONCAT(stagepos, 'e'), '-') AS "   ", ${name}, COALESCE(${stagescore},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", ${teampoints} COALESCE(${totalscore},0) as "Total"
+      var teamresultQuery = `SELECT CASE WHEN stagepos IS NULL THEN '' ELSE CONCAT(stagepos, 'e') END AS "   ", ${name}, COALESCE(${stagescore},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", ${teampoints} COALESCE(${totalscore},0) as "Total"
           FROM ${selection} 
           INNER JOIN rider_participation USING(rider_participation_id)
           LEFT JOIN results_points ON results_points.rider_participation_id = rider_participation.rider_participation_id  AND results_points.stage_id = ${stage_id}
@@ -73,8 +73,8 @@ module.exports = function (app) {
       var teamresult = [];
       if (uitslagresults[0].rowCount) {
         teamresult = uitslagresults[0].rows;
-        var totalteam = { "Name": "Totaal", " ": "", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Team": 0, "Total": 0 }
-        if (budgetParticipation) totalteam = { "Name": "Totaal", "   ": "", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Total": 0 };
+        var totalteam = { " ": "", "Name": "Totaal", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Team": 0, "Total": 0 }
+        if (budgetParticipation) totalteam = { "   ": "", "Name": "Totaal", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Total": 0 };
         for (var i in teamresult) {
           totalteam.Stage += parseInt(teamresult[i].Stage);
           totalteam.AK += teamresult[i].AK;
@@ -198,7 +198,7 @@ module.exports = function (app) {
       }
       var rowClassName = `${inSelection} AS "rowClassName"`;
       var rider_score = `CASE WHEN kopman THEN totalscore ${minusTeampoints} + 0.5*stagescore ELSE totalscore ${minusTeampoints} END`
-      var selectionsQuery = `SELECT username, ARRAY_AGG(json_build_object('   ', COALESCE(CONCAT(stagepos, 'e'), '-'), 'Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score', COALESCE(${rider_score},0),'rowClassName',"rowClassName")) AS riders FROM
+      var selectionsQuery = `SELECT username, ARRAY_AGG(json_build_object('   ', CASE WHEN stagepos IS NULL THEN '' ELSE CONCAT(stagepos, 'e') END, 'Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score', COALESCE(${rider_score},0),'rowClassName',"rowClassName")) AS riders FROM
         (SELECT stagepos, username, CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, results_points.teamscore, ${kopman} as kopman, ${rowClassName} FROM  ${selection}
           INNER JOIN rider_participation USING (rider_participation_id)
           INNER JOIN rider USING (rider_id)
@@ -231,7 +231,7 @@ module.exports = function (app) {
           INNER JOIN results_points USING(rider_participation_id)
           WHERE totalscore > 0 AND stage_id = ${stage_id}) AND ${includedAccounts}`
 
-      var notSelectedQuery = `SELECT username, ARRAY_AGG(json_build_object('   ', COALESCE(CONCAT(stagepos, 'e'), '-'), 'Name', CONCAT(firstname, ' ', lastname), 'Score',totalscore ${minusTeampoints})) AS riders FROM ${allnotselected} 
+      var notSelectedQuery = `SELECT username, ARRAY_AGG(json_build_object('   ', CASE WHEN stagepos IS NULL THEN '' ELSE CONCAT(stagepos, 'e') END, 'Name', CONCAT(firstname, ' ', lastname), 'Score',totalscore ${minusTeampoints})) AS riders FROM ${allnotselected} 
           INNER JOIN account_participation USING(account_participation_id)
           INNER JOIN account USING(account_id)
           INNER JOIN rider_participation USING(rider_participation_id)
