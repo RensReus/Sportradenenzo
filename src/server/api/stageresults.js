@@ -56,7 +56,7 @@ module.exports = function (app) {
           LEFT JOIN results_points ON results_points.rider_participation_id = rider_participation.rider_participation_id  AND results_points.stage_id = ${stage_id}
           INNER JOIN rider USING(rider_id)
           WHERE ${selection_id} = ${selection_id_val}
-          ORDER BY "Total" DESC, "Stage" DESC; `;
+          ORDER BY stagepos asc; `;
 
       var userscoresQuery = `SELECT RANK() OVER(ORDER by totalscore DESC) AS " ", CONCAT('/profile/',account_id) AS "User_link", username AS "User", stagescore AS "Stage", totalscore AS "Total", account_id FROM stage_selection
           INNER JOIN account_participation USING(account_participation_id)
