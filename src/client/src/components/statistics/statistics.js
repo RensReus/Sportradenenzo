@@ -10,14 +10,14 @@ const statistics = (props) => {
   let history = useHistory();
   const [tables, setTables] = useState([]);
   const [details, setDetails] = useState(false);
-  const [showClassifications, setShowClassifications] = useState(false);
+  const [showSelectedOnly, setShowSelectedOnly] = useState(false);
 
   useEffect(() => {
     const getData = async (race_id, selection, budget) => {
       if (race_id === undefined) {
         history.push('/home')
       }
-      const res = await axios.post('/api/statistics', { selection, race_id, budgetparticipation: budget, details, showClassifications })
+      const res = await axios.post('/api/statistics', { selection, race_id, budgetparticipation: budget, details, showSelectedOnly })
       if (res.data.mode === '404') {
         history.push('/404');
       } else {
@@ -27,19 +27,19 @@ const statistics = (props) => {
       }
     }
     getData(props.race_id, props.match.params.selection, props.budget);
-  }, [props, details, showClassifications])
+  }, [props, details, showSelectedOnly])
 
   const detailsSwitch = () => {
     setDetails(!details);
   }
 
-  const classificationsPointsSwitch = () => {
-    setShowClassifications(!showClassifications);
+  const allSelectedSwitch = () => {
+    setShowSelectedOnly(!showSelectedOnly);
   }
 
   return (
     <div className="statisticsContainer">
-      {props.match.params.selection === "selectedriders" && <StateSwitchButton stateStrings={['Punten', 'Klassementen']} stateVar={showClassifications} stateVarSwitch={classificationsPointsSwitch} />}
+      {props.match.params.selection === "allriders" && <StateSwitchButton stateStrings={['Alle', 'Geselecteerde']} stateVar={showSelectedOnly} stateVarSwitch={allSelectedSwitch} />}
       {props.match.params.selection === "teams" && tables.length > 0 && <StateSwitchButton stateStrings={['Simpel', 'Details']} stateVar={details} stateVarSwitch={detailsSwitch} />}
       {tables}
     </div>

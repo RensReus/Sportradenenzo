@@ -1,17 +1,19 @@
 //In dit bestand staan alle calls die betrekking hebben tot de resultaten van een stage
 
 module.exports = (app) => {
+  // sql constants
+  var name_link = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link"`
+  var rider_name = `CONCAT(firstname, ' ', lastname) AS "Name"`
   const sqlDB = require('../db/sqlDB');
-  const async = require('async');
 
   app.post('/api/statistics', async (req, res) => {
     var race_id = req.body.race_id;
     var budgetparticipation = req.body.budgetparticipation;
-    const results = await getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, req.body.showClassifications)
+    const results = await getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, req.body.showSelectedOnly)
     res.send(results);
   })
 
-  getData = async (selection, race_id, budgetparticipation, account_id, details, showClassifications) => {
+  getData = async (selection, race_id, budgetparticipation, account_id, details, showSelectedOnly) => {
     if (selection === "rondewinsten") return await gettourvictories(budgetparticipation);
     var raceHasStartedQuery = `SELECT * FROM STAGE
     INNER JOIN race USING (race_id)
@@ -24,8 +26,8 @@ module.exports = (app) => {
     }
     switch (selection) {
       case "etappewinsten": return await getstagevictories(race_id, budgetparticipation);
-      case "allriders": return await getriderpointsall(race_id, budgetparticipation);
-      case "selectedriders": return await getriderpointsselected(race_id, budgetparticipation, showClassifications);
+      case "allriders": return await getriderpointsall(race_id, budgetparticipation, showSelectedOnly);
+      case "selectedriders": return await getriderpointsselected(race_id, budgetparticipation);
       case "missedpoints": return await missedpoints(race_id, budgetparticipation, account_id);
       case "missedpointsall": return await missedpointsall(race_id, budgetparticipation);
       case "teams": return await teams(race_id, budgetparticipation, account_id, details);
@@ -187,95 +189,94 @@ module.exports = (app) => {
     return { tables, title: `${titleVar} Winsten Overzicht` };
   }
 
-  getriderpointsall = async (race_id, budgetparticipation) => {
-    var teamscore = `SUM(teamscore) AS "Team",`
-    var teamscoreNotFinished = `0 AS "Team",`
-    var totalscore = `SUM(totalscore)`
-    var budgetFilter = ''
+  getriderpointsall = async (race_id, budgetparticipation, showSelectedOnly) => {
+    var userCount = "count(DISTINCT username)";
+    var userCountNS = "1";
+    var teamscore = ` SUM(teamscore)/${userCount} AS "Team",`
+    var teamscoreNS = ` SUM(teamscore)/${userCountNS} AS "Team",`
+    var totalscoreVal = `totalscore `
     if (budgetparticipation) {
       teamscore = '';
-      teamscoreNotFinished = ``
-      totalscore = `SUM(totalscore - teamscore)`
-      budgetFilter = 'AND price < 1000000'
+      teamscoreNS = '';
+      totalscoreVal = `totalscore - teamscore `
     }
-    var finishedAnyStage = `(SELECT rider_participation_id FROM results_points 
-      INNER JOIN stage USING(stage_id) 
-      WHERE race_id = ${race_id})`
-    var query = `SELECT CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team ", price AS "Price", SUM(stagescore) AS "Etappe",
-      SUM(gcscore) AS "AK", SUM(pointsscore) AS "Punten", SUM(komscore) AS "Berg", SUM(yocscore) AS "Jong", SUM(gcscore) + SUM(pointsscore) + SUM(komscore) + SUM(yocscore) AS "Klassement",
-      ${teamscore} ${totalscore} AS "Total", ROUND(${totalscore}*1e6/price,0) AS "PPM", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf" FROM results_points
-      INNER JOIN rider_participation USING (rider_participation_id)
+    var onlySelected = "";
+    if (showSelectedOnly) {
+      onlySelected = ""
+    }
+    var stageScore = `COALESCE(SUM(stagescore)/${userCount}, 0) AS "Etappe"`;
+    var gcScore = `COALESCE(SUM(gcscore)/${userCount}, 0) AS "AK"`;
+    var pointsScore = `COALESCE(SUM(pointsscore)/${userCount}, 0) AS "Punten"`;
+    var komScore = `COALESCE(SUM(komscore)/${userCount}, 0) AS "Berg"`;
+    var youthScore = `COALESCE(SUM(yocscore)/${userCount}, 0) AS "Jong"`;
+    var klassementScore = `COALESCE((SUM(gcscore) + SUM(pointsscore) + SUM(komscore) + SUM(yocscore))/${userCount}, 0) AS "Klassement"`;
+    var PPM = `COALESCE(ROUND(SUM(${totalscoreVal})/${userCount}*1e6/price,0),0) AS "PPM"`;
+    var totalScore = `COALESCE(SUM(${totalscoreVal})/${userCount},0) AS "Total"`;
+    var stageScoreNS = `COALESCE(SUM(stagescore)/${userCountNS}, 0) AS "Etappe"`;
+    var gcScoreNS = `COALESCE(SUM(gcscore)/${userCountNS}, 0) AS "AK"`;
+    var pointsScoreNS = `COALESCE(SUM(pointsscore)/${userCountNS}, 0) AS "Punten"`;
+    var komScoreNS = `COALESCE(SUM(komscore)/${userCountNS}, 0) AS "Berg"`;
+    var youthScoreNS = `COALESCE(SUM(yocscore)/${userCountNS}, 0) AS "Jong"`;
+    var klassementScoreNS = `COALESCE((SUM(gcscore) + SUM(pointsscore) + SUM(komscore) + SUM(yocscore))/${userCountNS}, 0) AS "Klassement"`;
+    var PPMNS = `COALESCE(ROUND(SUM(${totalscoreVal})/${userCountNS}*1e6/price,0),0) AS "PPM"`;
+    var totalScoreNS = `COALESCE(SUM(${totalscoreVal})/${userCountNS},0) AS "Total"`;
+    var notSelectedRiders = `UNION 
+      SELECT ${name_link}, ${rider_name}, team AS "Team ", price AS "Price", 
+      ${stageScoreNS},${gcScoreNS}, ${pointsScoreNS}, ${komScoreNS}, ${youthScoreNS},
+      ${klassementScoreNS}, ${teamscoreNS} ${totalScoreNS}, 
+      ${PPMNS}, CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf",
+      0 AS "Usercount", '' AS "Users" FROM rider_participation
+      LEFT JOIN results_points USING (rider_participation_id)
       INNER JOIN rider USING(rider_id)
-      WHERE rider_participation.race_id = ${race_id} ${budgetFilter}
+      WHERE rider_participation.race_id = ${race_id} ${onlySelected} AND NOT rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider)
+      GROUP BY "Name", "Name_link", "Team ", "Price", dnf`;
+    if (showSelectedOnly) {
+      notSelectedRiders = ""
+    }
+    var query = `SELECT ${name_link}, ${rider_name}, team AS "Team ", price AS "Price", 
+      ${stageScore},${gcScore}, ${pointsScore}, ${komScore}, ${youthScore},
+      ${klassementScore}, ${teamscore} ${totalScore}, 
+      ${PPM}, CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf",
+      ${userCount} AS "Usercount", string_agg(DISTINCT username, ', ') AS "Users" FROM rider_participation
+      LEFT JOIN results_points USING (rider_participation_id)
+      INNER JOIN rider USING(rider_id)
+      INNER JOIN team_selection_rider on rider_participation.rider_participation_id = team_selection_rider.rider_participation_id
+      INNER JOIN account_participation USING(account_participation_id)
+      INNER JOIN account USING (account_id)
+      WHERE rider_participation.race_id = ${race_id} AND rider_participation.rider_participation_id in (select rider_participation_id from team_selection_rider) AND budgetparticipation = ${budgetparticipation}
       GROUP BY "Name", "Name_link", "Team ", "Price", dnf
-      UNION
-      SELECT CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team ", price AS "Price", 0 AS "Etappe",
-      0 AS "AK", 0 AS "Punten", 0 AS "Berg", 0 AS "Jong", 0 AS "Klassement",
-      ${teamscoreNotFinished} 0 AS "Total", 0 AS "PPM", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf" FROM rider_participation
-      INNER JOIN rider USING(rider_id)
-      WHERE rider_participation.race_id = ${race_id} ${budgetFilter} AND rider_participation_id NOT IN ${finishedAnyStage}
+      ${notSelectedRiders}
       ORDER BY "Total" DESC`
     //0 for string 1 for number
-    var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Klassement": 1, "Team": 1, "Total": 1, "PPM": 1, "dnf": 0 };
-    var hiddenCols = ["AK", "Punten", "Berg", "Jong", "PPM"];
+    var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Klassement": 1, "Team": 1, "Total": 1, "PPM": 1, "Usercount": 1 };
+    var hiddenCols = ["AK", "Punten", "Berg", "Jong", "PPM", "Usercount"];
+
     const results = await sqlDB.query(query);
     let tables = [{
       tableData: results.rows,
       coltype,
       hiddenCols,
-      title: "Alle Renners"
+      title: showSelectedOnly ? "Alle Geselecteerde Renners" : "Alle Renners"
     }]
     return { tables, title: "Alle Renners Overzicht" };
   }
 
-  getriderpointsselected = async (race_id, budgetparticipation, showClassifications) => {
-    var teamscore = ` SUM(teamscore)/GREATEST(count(DISTINCT username),1) AS "Team",`
-    var totalscore = `totalscore `
-    if (budgetparticipation) {
-      teamscore = '';
-      totalscore = `totalscore - teamscore `
-    }
-    var query = `SELECT CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", team AS "Team ",price AS "Price", SUM(stagescore)/GREATEST(count(DISTINCT username),1) AS "Etappe",  
-    SUM(gcscore)/GREATEST(count(DISTINCT username),1) AS "AK", SUM(pointsscore)/GREATEST(count(DISTINCT username),1) AS "Punten", SUM(komscore)/GREATEST(count(DISTINCT username),1) AS "Berg", SUM(yocscore)/GREATEST(count(DISTINCT username),1) AS "Jong", SUM(yocscore) AS "Jong", 
-    (SUM(gcscore) + SUM(pointsscore) + SUM(komscore) + SUM(yocscore))/GREATEST(count(DISTINCT username),1) AS "Klassement", ${teamscore} SUM(${totalscore})/GREATEST(count(DISTINCT username),1) AS "Total", 
-    ROUND(SUM(${totalscore})/GREATEST(count(DISTINCT username),1)*1e6/price,0) AS "PPM", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf",
-    count(DISTINCT username) AS "Usercount", string_agg(DISTINCT username, ', ') AS "Users" FROM rider_participation
-    LEFT JOIN results_points USING (rider_participation_id)
-    INNER JOIN rider USING(rider_id)
-    INNER JOIN team_selection_rider on rider_participation.rider_participation_id = team_selection_rider.rider_participation_id
-    INNER JOIN account_participation USING(account_participation_id)
-    INNER JOIN account USING (account_id)
-    WHERE rider_participation.race_id = ${race_id} AND rider_participation.rider_participation_id in (select rider_participation_id from team_selection_rider) AND budgetparticipation = ${budgetparticipation}
-    GROUP BY "Name", "Name_link", "Team ", "Price", dnf
-    ORDER BY "Total" DESC`
-    //0 for string 1 for number
-    var coltype = { "Name": 0, "Team ": 0, "Price": 1, "Etappe": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Klassement": 1, "Team": 1, "Total": 1, "PPM": 1, "Usercount": 1 };
-    var hiddenCols = ["AK", "Punten", "Berg", "Jong", "PPM", "Usercount"];
-
-    if (showClassifications) {
-      query = getSelectedRidersClassificationsQuery(race_id, budgetparticipation);
-    }
+  getriderpointsselected = async (race_id, budgetparticipation) => {
+    var query = getSelectedRidersClassificationsQuery(race_id, budgetparticipation);
 
     const results = await sqlDB.query(query);
     let tables = [];
-    if (showClassifications) {
-      var classificationNames = ["AK", "Punten", "Berg", "Jong"];
 
-      for (const i = 0; i < results.length; i++) {
-        tables.push({
-          tableData: results[i].rows,
-          title: classificationNames[i]
-        })
-      }
-    } else {
-      tables = [{
-        tableData: results.rows,
-        coltype: coltype,
-        hiddenCols,
-        title: "Alle Geselecteerde Renners"
-      }]
+    var classificationNames = ["AK", "Punten", "Berg", "Jong"];
+
+    for (const i = 0; i < results.length; i++) {
+      tables.push({
+        tableData: results[i].rows,
+        title: classificationNames[i]
+      })
     }
-    return { tables, title: "Alle Geselecteerde Renners Overzicht" };
+
+    return { tables, title: "Klassementen" };
   }
 
   function getSelectedRidersClassificationsQuery(race_id, budgetparticipation) {
@@ -288,7 +289,7 @@ module.exports = (app) => {
     var query = ``;
     var classifications = ["gcpos", "pointspos", "kompos", "yocpos"];
     for (const classification of classifications) {
-      query += `SELECT ${classification} AS " ", CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name",price AS "Price", count(DISTINCT username) AS "Usercount", string_agg(DISTINCT username, ', ') AS "Users"
+      query += `SELECT ${classification} AS " ", ${name_link}, ${rider_name},price AS "Price", count(DISTINCT username) AS "Usercount", string_agg(DISTINCT username, ', ') AS "Users"
        FROM results_points 
        LEFT JOIN rider_participation USING (rider_participation_id)
        LEFT JOIN rider USING(rider_id)
@@ -435,15 +436,15 @@ module.exports = (app) => {
       teamscore = '';
       notSelectedteamscore = '';
     }
-    var columns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", COALESCE(SUM(${stagescore}),0) AS "Stage", COALESCE(SUM(gcscore),0) AS "AK", COALESCE(SUM(pointsscore),0) AS "Punten", COALESCE(SUM(komscore),0) AS "Berg", COALESCE(SUM(yocscore),0) AS "Jong" ${teamscore}, COALESCE(SUM(${totalscore}),0) AS "Total", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf", COALESCE(COUNT(rider_participation_id),0) AS "Selected", COALESCE(ROUND(SUM(${totalscore})/COUNT(rider_participation_id),0),0) AS "Per Etappe"`
-    var notSelectedColumns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", 0 AS "Stage", 0 AS "AK", 0 AS "Punten", 0 AS "Berg", 0 AS "Jong" ${notSelectedteamscore}, 0 AS "Total", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf", 0 AS "Selected", 0 AS "Per Etappe"`
+    var columns = `${name_link}, ${rider_name}, COALESCE(SUM(${stagescore}),0) AS "Stage", COALESCE(SUM(gcscore),0) AS "AK", COALESCE(SUM(pointsscore),0) AS "Punten", COALESCE(SUM(komscore),0) AS "Berg", COALESCE(SUM(yocscore),0) AS "Jong" ${teamscore}, COALESCE(SUM(${totalscore}),0) AS "Total", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf", COALESCE(COUNT(rider_participation_id),0) AS "Selected", COALESCE(ROUND(SUM(${totalscore})/COUNT(rider_participation_id),0),0) AS "Per Etappe"`
+    var notSelectedColumns = `${name_link}, ${rider_name}, 0 AS "Stage", 0 AS "AK", 0 AS "Punten", 0 AS "Berg", 0 AS "Jong" ${notSelectedteamscore}, 0 AS "Total", CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf", 0 AS "Selected", 0 AS "Per Etappe"`
     var coltype = { "Name": 0, "Stage": 1, "AK": 1, "Punten": 1, "Berg": 1, "Jong": 1, "Team": 1, "Total": 1, "Selected": 1, "Per Etappe": 1, "dnf": 0 };
     var orderBy = `"Total"`
     if (!details) {
       orderBy = `"Score"`
       coltype = {};
-      columns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", COALESCE(SUM(${totalscore}),0) AS "Score"`
-      notSelectedColumns = `CONCAT('/rider/',rider_participation.rider_id) AS "Name_link", CONCAT(firstname, ' ', lastname) AS "Name", 0 AS "Score"`
+      columns = `${name_link}, ${rider_name}, COALESCE(SUM(${totalscore}),0) AS "Score"`
+      notSelectedColumns = `${name_link}, ${rider_name}, 0 AS "Score"`
     }
     var alreadyFound = `SELECT rider_participation_id FROM rider
       INNER JOIN rider_participation USING(rider_id)
@@ -483,7 +484,7 @@ module.exports = (app) => {
                 ORDER BY "Uitvallers" DESC; `
 
     var betereUniekheidsQuery = `SELECT username AS "User", SUM("Usercount") AS "Uniekheid", ROUND(SUM("Usercount"*"Price")/1000000,2) AS "Uniekheid (Geld)" FROM (
-                    SELECT  CONCAT(firstname, ' ', lastname) AS "Name", rider_participation.rider_participation_id, team AS "Team ",price AS "Price",  
+                    SELECT  ${rider_name}, rider_participation.rider_participation_id, team AS "Team ",price AS "Price",  
                                 ABS(COUNT(DISTINCT username)-4) AS "Usercount", ARRAY_AGG(DISTINCT username) AS "Users" FROM rider_participation
                                 INNER JOIN rider USING(rider_id)
                                 LEFT JOIN team_selection_rider USING(rider_participation_id)
