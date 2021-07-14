@@ -8,6 +8,7 @@ import { useHistory } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import PouleTable from './pouleTable';
 import jwt_decode from "jwt-decode";
+import './results.css'
 
 const results = (props) => {
   let history = useHistory();

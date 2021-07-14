@@ -4,7 +4,7 @@ import LoadingDiv from '../../shared/loadingDiv'
 import SelecTable from './SelecTable'
 import { getSelectionData, updateKopmanCall, updateRiderCall } from './selectionHelperFunctions'
 import jwt_decode from "jwt-decode";
-import './stageselection.css'
+import './selection.css'
 
 class Selection extends Component {
   constructor(props) {

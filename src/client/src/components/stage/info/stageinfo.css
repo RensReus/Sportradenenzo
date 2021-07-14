@@ -1,3 +1,23 @@
+.stage_select_dropdown{
+  appearance: none;
+  background: transparent;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: 50%;
+  padding: 1rem;
+  padding-right: 1.5rem;
+  padding-left: 0.5rem;
+  font-size: 1.25rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  text-align: center;
+}
+
+.stage_select_dropdown_option{
+  font-size: 1rem;
+}
+
 .stageinfo-container{
   border: 2px solid #BFDBFE; /*blue-200*/
   border-radius: 0.375rem;
