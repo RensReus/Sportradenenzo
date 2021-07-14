@@ -40,13 +40,21 @@ class Selection extends Component {
   }
 
   updateKopman = async (rider_participation_id, setremove) => {
-    const updatedSelection = await updateKopmanCall(rider_participation_id, setremove, this.state, this.props)
-    this.setState(updatedSelection);
+    const startDate = new Date(this.state.starttime);
+    const now = new Date();
+    if (startDate > now) {
+      const updatedSelection = await updateKopmanCall(rider_participation_id, setremove, this.state, this.props)
+      this.setState(updatedSelection);
+    }
   }
 
   updateRider = async (rider_participation_id, addRemove) => {
-    const updatedSelection = await updateRiderCall(rider_participation_id, addRemove, this.state, this.props)
-    this.setState(updatedSelection);
+    const startDate = new Date(this.state.starttime);
+    const now = new Date();
+    if (startDate > now) {
+      const updatedSelection = await updateRiderCall(rider_participation_id, addRemove, this.state, this.props)
+      this.setState(updatedSelection);
+    }
   }
 
   render() {
