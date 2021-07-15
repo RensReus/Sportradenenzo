@@ -77,6 +77,12 @@
   border-bottom-color: #A1A1AA; /*gray-700*/
 }
 
+.klassementButton:disabled{
+  background-color: #D4D4D8; /*gray-500*/
+  border-bottom-color: #A1A1AA; /*gray-700*/
+  color: gray;
+}
+
 /*use: warning or landing*/
 .button_standard.orange{
   background-color: #F97316; /*orange-500*/
