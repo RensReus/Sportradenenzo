@@ -273,7 +273,7 @@ module.exports = function (app) {
     var racePointsQuery = `SELECT username as colorlabel, CONCAT(username, ' ', name, ' ', year) as label, finalscore as y FROM account_participation
                 INNER JOIN account USING(account_id)
                 INNER JOIN race USING(race_id)
-                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished
+                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished AND year > 2014
                 ORDER BY finalscore DESC;\n`
 
     var extraQuery = `SELECT username FROM account;`
@@ -305,7 +305,7 @@ module.exports = function (app) {
     var totalQuery = userresults.rows.reduce((query, user) => query + `SELECT CONCAT(name, ' ', year) AS label, finalscore AS y FROM account_participation
       INNER JOIN race USING(race_id)
       INNER JOIN account USING(account_id)
-      WHERE race.finished AND account_id = ${user.account_id} AND budgetparticipation = ${budgetparticipation} AND NOT race.name = 'classics'
+      WHERE race.finished AND account_id = ${user.account_id} AND budgetparticipation = ${budgetparticipation} AND NOT race.name = 'classics' AND year > 2014
       ORDER BY year, race.name;\n `, '')
 
     const results = await sqlDB.query(totalQuery);

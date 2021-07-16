@@ -42,7 +42,7 @@ module.exports = (app) => {
     var subquery = `(SELECT username, finalscore, CONCAT(year, ' ', name) AS race, rank() over (PARTITION BY race ORDER BY finalscore DESC) FROM account_participation
             INNER JOIN account USING (account_id)
             INNER JOIN race USING(race_id)
-            WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished = TRUE) AS subquery`
+            WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished = TRUE AND year > 2014) AS subquery`
     var rankQuery = `SELECT ARRAY_AGG(username ORDER BY finalscore DESC) as usernames, ARRAY_AGG(finalscore ORDER BY finalscore DESC) as scores, race FROM ${subquery} GROUP BY race; `;//ranking per stage
     var countQuery = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
             (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
