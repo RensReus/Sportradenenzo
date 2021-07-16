@@ -228,7 +228,7 @@ module.exports = (app) => {
       0 AS "Usercount", '' AS "Users" FROM rider_participation
       LEFT JOIN results_points USING (rider_participation_id)
       INNER JOIN rider USING(rider_id)
-      WHERE rider_participation.race_id = ${race_id} ${onlySelected} AND NOT rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider)
+      WHERE rider_participation.race_id = ${race_id} ${onlySelected} AND NOT rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider) AND price < 750000
       GROUP BY "Name", "Name_link", "Team ", "Price", dnf`;
     if (showSelectedOnly) {
       notSelectedRiders = ""
