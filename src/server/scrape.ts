@@ -164,10 +164,13 @@ var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id) =>
 
 var getResult = async (race, stagenr) => {
   var race_id = `(SELECT race_id FROM race WHERE year = ${race.year} AND name = '${race.name}')`
-  var stageQuery = `SELECT * FROM stage INNER JOIN race USING(race_id) WHERE stagenr = ${stagenr} AND race_id = ${race_id}`;
+  var stageQuery = `SELECT * FROM stage INNER JOIN race USING(race_id) WHERE stagenr = ${stagenr} AND race_id = ${race_id}; `;
+  var stageCountQuery = `SELECT COUNT(*) FROM stage WHERE race_id = ${race_id}; `
+  var query = stageQuery + stageCountQuery;
   //Get info about current stage
-  const stageResults = await sqlDB.query(stageQuery);
-  var stage = stageResults.rows[0];
+  const results = await sqlDB.query(query);
+  var stage = results[0].rows[0];
+  var isFinalStage = results[1].rows[0].count == stagenr + 1;
   var raceString = getRaceString(race.name, stage.stagename);
   var stage_id = stage.stage_id;
   var etLink = stage.type === 'FinalStandings' ? stagenr - 1 : stagenr;
@@ -202,9 +205,13 @@ var getResult = async (race, stagenr) => {
   if (ridersResults['all'].length) {// don't send if no results
     const res = await sqlDB.query(totalQuery);
     console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
-    return await calculateUserScores(race_id, stagenr, stage.type)
+  }
+  await calculateUserScores(race_id, stagenr, stage.type)
+  if (isFinalStage){
+    getResult(race, stagenr + 1);
+    console.log("Finalstandings process")
   } else {
-    return await calculateUserScores(race_id, stagenr, stage.type)
+    return "Processed Results"
   }
 }
 
