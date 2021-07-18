@@ -36,11 +36,15 @@ module.exports = function (app) {
       var selection = `stage_selection_rider`
       var selection_id = `stage_selection_id`
       var kopman = `rider_participation.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
+      var orderBy = `stagepos ASC`
+      var firstColumn = `CASE WHEN stagepos IS NULL OR stagepos = 0 THEN '' ELSE CONCAT(stagepos, 'e') END AS "   "`
       if (stageInfo.type === "FinalStandings") {
+        firstColumn = `CASE WHEN dnf THEN 'DNF' ELSE CONCAT(gcpos, 'e') END AS "AK"`
         kopman = 'WHEN FALSE'
         selection_id = `account_participation_id`
         selection = 'team_selection_rider'
         selection_id_val = account_participation_id;
+        orderBy = `"Total" DESC`
       }
       var stagescore = `CASE ${kopman} THEN stagescore * 1.5 ELSE stagescore END`
       var totalscore = `CASE ${kopman} THEN totalscore + stagescore * .5 ELSE totalscore END`
@@ -50,13 +54,13 @@ module.exports = function (app) {
         teampoints = '';
         totalscore = `CASE ${kopman} THEN totalscore - teamscore + stagescore * .5 ELSE totalscore - teamscore END`
       }
-      var teamresultQuery = `SELECT CASE WHEN stagepos IS NULL THEN '' ELSE CONCAT(stagepos, 'e') END AS "   ", ${name}, COALESCE(${stagescore},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", ${teampoints} COALESCE(${totalscore},0) as "Total"
+      var teamresultQuery = `SELECT ${firstColumn}, ${name}, COALESCE(${stagescore},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", ${teampoints} COALESCE(${totalscore},0) as "Total"
           FROM ${selection} 
           INNER JOIN rider_participation USING(rider_participation_id)
           LEFT JOIN results_points ON results_points.rider_participation_id = rider_participation.rider_participation_id  AND results_points.stage_id = ${stage_id}
           INNER JOIN rider USING(rider_id)
           WHERE ${selection_id} = ${selection_id_val}
-          ORDER BY stagepos asc; `;
+          ORDER BY ${orderBy}; `;
 
       var userscoresQuery = `SELECT RANK() OVER(ORDER by totalscore DESC) AS " ", CONCAT('/profile/',account_id) AS "User_link", username AS "User", stagescore AS "Stage", totalscore AS "Total", account_id FROM stage_selection
           INNER JOIN account_participation USING(account_participation_id)
