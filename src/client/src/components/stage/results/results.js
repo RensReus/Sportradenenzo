@@ -23,21 +23,21 @@ const results = (props) => {
   const [classificationIndex, setClassificationIndex] = useState(props.data.stageType === "FinalStandings" ? 1 : 0);
 
   useEffect(() => {
-    updateData(props.data);
+    updateData(props.data, true);
   }, [props.data])
 
   useEffect(() => {
-    getStageResults(props.data);
+    getStageResults(props.data, true);
   }, [classificationIndex])
 
-  const updateData = async (raceData) => {
-    setLoadingPoule(true);
-    setLoadingResults(true);
+  const updateData = async (raceData, showLoaders) => {
+    setLoadingPoule(showLoaders);
+    setLoadingResults(showLoaders);
     setClassificationDownloaded([[false, false, false, false, false], [false, false, false, false, false]]);
     setPouleTeamResultDownloaded([false, false]);
     setStageResults([[[], [], [], [], []], [[], [], [], [], []]]);
     const budget = raceData.budget;
-    getStageResults(raceData)
+    getStageResults(raceData, false)
     const res = await axios.post('/api/getPouleTeamResults', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget })
     const data = res.data;
     if (data.mode === '404') {
@@ -61,14 +61,14 @@ const results = (props) => {
       msToGo += 60 * 1000; // plus 60s if negative
     }
     setTimeout(function () {
-      updateData(props.data);
+      updateData(props.data, false);
     }, msToGo);
   }
 
-  const getStageResults = async (raceData) => {
+  const getStageResults = async (raceData, showLoaders) => {
     const budget = raceData.budget;
     if (!classificationDownloaded[budget][classificationIndex]) {
-      setLoadingResults(true); //TODO subtielere loader zodat je gewoon al de results ziet maar wel een kleine hint krijgt dat er misschien nog wat extra bij komt
+      setLoadingResults(showLoaders); //TODO subtielere loader zodat je gewoon al de results ziet maar wel een kleine hint krijgt dat er misschien nog wat extra bij komt
       const res = await axios.post('/api/getClassificationResults', { race_id: raceData.race_id, stage: raceData.stage, budgetParticipation: budget, classificationIndex });
       setClassificationDownloaded(updateArray(classificationDownloaded, true, budget, classificationIndex));
       setStageResults(updateArray(stageResults, res.data.stageResults, budget, classificationIndex));

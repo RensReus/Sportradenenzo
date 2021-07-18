@@ -2,12 +2,14 @@ import SelectionComparison from "./selectionComparison"
 
 const Headers = () => {
     return (
-        <tr key="headers">
-            <th key=" "></th>
-            <th key="User">User</th>
-            <th key="Etappe">Etappe</th>
-            <th key="Totaal">Totaal</th>
-        </tr>
+        <thead>
+            <tr key="headers">
+                <th key=" "></th>
+                <th key="User">User</th>
+                <th key="Etappe">Etappe</th>
+                <th key="Totaal">Totaal</th>
+            </tr>
+        </thead>
     )
 }
 
