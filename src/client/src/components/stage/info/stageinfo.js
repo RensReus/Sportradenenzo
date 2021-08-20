@@ -25,7 +25,7 @@ class stageInfo extends Component {
       <br></br>
       finish
       <br></br>
-      <img className='profileImage' src={'/images/stageProfiles/' + this.props.data.race_id + '/stage-' + this.props.data.stage + '-finish.png'} alt="" />
+      <img className='profileImage' src={'/images/stageProfiles/' + this.props.data.race_id + '/stage-' + this.props.data.stage + '-finish.jpg'} alt="" />
       <br></br>
       extra
       <br></br>
