@@ -36,7 +36,7 @@ module.exports = function (app) {
       var selection = `stage_selection_rider`
       var selection_id = `stage_selection_id`
       var kopman = `rider_participation.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
-      var orderBy = `stagepos ASC`
+      var orderBy = `CASE WHEN stagepos = 0 THEN 255 ELSE stagepos END ASC`
       var firstColumn = `CASE WHEN stagepos IS NULL OR stagepos = 0 THEN '' ELSE CONCAT(stagepos, 'e') END AS "   "`
       if (stageInfo.type === "FinalStandings") {
         firstColumn = `CASE WHEN dnf THEN 'DNF' ELSE CONCAT(gcpos, 'e') END AS "AK"`
@@ -202,7 +202,7 @@ module.exports = function (app) {
       }
       var rowClassName = `${inSelection} AS "rowClassName"`;
       var rider_score = `CASE WHEN kopman THEN totalscore ${minusTeampoints} + 0.5*stagescore ELSE totalscore ${minusTeampoints} END`
-      var selectionsQuery = `SELECT username, ARRAY_AGG(json_build_object('   ', CASE WHEN stagepos IS NULL THEN '' ELSE CONCAT(stagepos, 'e') END, 'Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score', COALESCE(${rider_score},0),'rowClassName',"rowClassName")) AS riders FROM
+      var selectionsQuery = `SELECT username, ARRAY_AGG(json_build_object('   ', CASE WHEN stagepos IS NULL OR stagepos = 0 THEN '' ELSE CONCAT(stagepos, 'e') END, 'Name', CASE WHEN kopman THEN CONCAT('* ', name) ELSE name END, 'Score', COALESCE(${rider_score},0),'rowClassName',"rowClassName")) AS riders FROM
         (SELECT stagepos, username, CONCAT(firstname, ' ', lastname) as name, results_points.stagescore, results_points.totalscore, results_points.teamscore, ${kopman} as kopman, ${rowClassName} FROM  ${selection}
           INNER JOIN rider_participation USING (rider_participation_id)
           INNER JOIN rider USING (rider_id)
@@ -235,7 +235,7 @@ module.exports = function (app) {
           INNER JOIN results_points USING(rider_participation_id)
           WHERE totalscore > 0 AND stage_id = ${stage_id}) AND ${includedAccounts}`
 
-      var notSelectedQuery = `SELECT username, ARRAY_AGG(json_build_object('   ', CASE WHEN stagepos IS NULL THEN '' ELSE CONCAT(stagepos, 'e') END, 'Name', CONCAT(firstname, ' ', lastname), 'Score',totalscore ${minusTeampoints})) AS riders FROM ${allnotselected} 
+      var notSelectedQuery = `SELECT username, ARRAY_AGG(json_build_object('   ', CASE WHEN stagepos IS NULL OR stagepos = 0 THEN '' ELSE CONCAT(stagepos, 'e') END, 'Name', CONCAT(firstname, ' ', lastname), 'Score',totalscore ${minusTeampoints})) AS riders FROM ${allnotselected} 
           INNER JOIN account_participation USING(account_participation_id)
           INNER JOIN account USING(account_id)
           INNER JOIN rider_participation USING(rider_participation_id)
