@@ -45,17 +45,11 @@ class SelecTable extends Component {
 
     const rows = teamSelectionSorted.map(({ firstname, lastname, team, rider_participation_id, dnf, country }) => {
       var name = firstname + " " + lastname;
-      var selected = 'unselected';
-      if (selectionIDs.includes(rider_participation_id)) {
-        selected = 'selected'
-      }
-      if (dnf) {
-        return <SelecTableRow name={name} team={team} country={country} selected='dnf' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.data.kopman} updateRider={this.props.functions.updateRider} />
-      } else if ((selectionLength >= 9 && selected !== 'selected')) {
-        return <SelecTableRow name={name} team={team} country={country} selected='unselectable' key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.data.kopman} updateRider={this.props.functions.updateRider} />
-      } else {
-          return <SelecTableRow name={name} team={team} country={country} selected={selected} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.data.kopman} updateRider={this.props.functions.updateRider} updateKopman={this.props.functions.updateKopman} />
-      }
+      var selectedState = "unselected"
+      selectedState = selectionLength >= 9 ? "unselectable" : selectedState;
+      selectedState = dnf ? "dnf" : selectedState;
+      selectedState = selectionIDs.includes(rider_participation_id) ? 'selected' : selectedState;
+      return <SelecTableRow name={name} team={team} country={country} selected={selectedState} key={rider_participation_id} riderID={rider_participation_id} kopman={this.props.data.kopman} updateRider={this.props.functions.updateRider} updateKopman={this.props.functions.updateKopman} />
     })
     return (
       <div className="selecTable w-full" style={{ position: 'relative' }}>
