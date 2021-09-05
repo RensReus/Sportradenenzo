@@ -12,7 +12,7 @@ export function BudgetSwitchButton() {
                 <input type="checkbox" onClick={() => dispatch(flip())}></input>
                 <span className="slider round"></span>
             </label>
-            <span className={budget ? 'bold' : 'bold grayedOut'}> Budget</span>
+            <span className={budget ? 'bold' : 'bold grayedOut'}> Budget </span>
         </div>
     )
 }

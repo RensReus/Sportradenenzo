@@ -13,11 +13,11 @@ const statistics = (props) => {
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
 
   useEffect(() => {
-    const getData = async (race_id, selection, budget) => {
+    const getData = async (race_id, selection, budgetparticipation, fabFourOnly) => {
       if (race_id === undefined) {
         history.push('/home')
       }
-      const res = await axios.post('/api/statistics', { selection, race_id, budgetparticipation: budget, details, showSelectedOnly })
+      const res = await axios.post('/api/statistics', { selection, race_id, budgetparticipation, fabFourOnly, details, showSelectedOnly })
       if (res.data.mode === '404') {
         history.push('/404');
       } else {
@@ -26,7 +26,7 @@ const statistics = (props) => {
         setTables(newTables);
       }
     }
-    getData(props.race_id, props.match.params.selection, props.budget);
+    getData(props.race_id, props.match.params.selection, props.budgetparticipation, props.fabFourOnly);
   }, [props, details, showSelectedOnly])
 
   const detailsSwitch = () => {
@@ -48,7 +48,10 @@ const statistics = (props) => {
 }
 
 const mapStateToProps = state => {
-  return { budget: state.budgetSwitch.value };
+  return { 
+    budgetparticipation: state.budgetSwitch.value,
+    fabFourOnly: state.fabFourSwitch.value
+   };
 };
 
 export default connect(mapStateToProps)(statistics);

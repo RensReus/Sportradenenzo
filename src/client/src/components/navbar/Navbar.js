@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { SRELogo } from '../shared/svg/all-icons.js'
 import BudgetSwitchButton from './budgetSwitchButton';
+import FabFourSwitchButton from './fabFourSwitchButton';
 import jwt_decode from "jwt-decode";
 
 class Navbar extends Component {
@@ -46,7 +47,7 @@ class Navbar extends Component {
           }
           {localStorage.getItem('authToken')? (
             jwt_decode(localStorage.getItem('authToken')).account_id <= 5 &&
-            <BudgetSwitchButton />) : <></>
+            <div className="flex"><BudgetSwitchButton /><FabFourSwitchButton /></div>) : <></>
           }
         </div>
         <div className="flex flex-row-reverse flex-grow items-center h-full">

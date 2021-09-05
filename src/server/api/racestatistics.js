@@ -9,12 +9,12 @@ module.exports = (app) => {
   app.post('/api/statistics', async (req, res) => {
     var race_id = req.body.race_id;
     var budgetparticipation = req.body.budgetparticipation;
-    const results = await getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, req.body.showSelectedOnly)
+    const results = await getData(req.body.selection, race_id, budgetparticipation, req.body.fabFourOnly, req.user.account_id, req.body.details, req.body.showSelectedOnly)
     res.send(results);
   })
 
-  getData = async (selection, race_id, budgetparticipation, account_id, details, showSelectedOnly) => {
-    if (selection === "rondewinsten") return await gettourvictories(budgetparticipation);
+  getData = async (selection, race_id, budgetparticipation, fabFourOnly, account_id, details, showSelectedOnly) => {
+    if (selection === "rondewinsten") return await gettourvictories(budgetparticipation, fabFourOnly);
     var raceHasStartedQuery = `SELECT * FROM STAGE
     INNER JOIN race USING (race_id)
     WHERE (starttime < now() AT TIME ZONE 'Europe/Paris' OR race.finished) AND race_id = ${race_id}
@@ -37,12 +37,13 @@ module.exports = (app) => {
   }
 
 
-  gettourvictories = async (budgetparticipation) => {
+  gettourvictories = async (budgetparticipation, fabFourOnly) => {
     // var poule_id = req.body.poule_id;
+    var includedAccounts = fabFourOnly ? 'AND account_id <= 5' : '';
     var subquery = `(SELECT username, finalscore, CONCAT(year, ' ', name) AS race, rank() over (PARTITION BY race ORDER BY finalscore DESC) FROM account_participation
             INNER JOIN account USING (account_id)
             INNER JOIN race USING(race_id)
-            WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished = TRUE AND year > 2014) AS subquery`
+            WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished = TRUE AND year > 2014 ${includedAccounts}) AS subquery`
     var rankQuery = `SELECT ARRAY_AGG(username ORDER BY finalscore DESC) as usernames, ARRAY_AGG(finalscore ORDER BY finalscore DESC) as scores, race FROM ${subquery} GROUP BY race; `;//ranking per stage
     var countQuery = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
             (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
@@ -63,7 +64,7 @@ module.exports = (app) => {
     var scoreCountQuery = `SELECT username AS "User", ${low}, ${second}, ${third}, ${high} from account_participation
                 INNER JOIN account USING(account_id)
                 INNER JOIN race USING(race_id)
-                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished
+                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished ${includedAccounts}
                 GROUP BY username
                 ${orderby}`
 
