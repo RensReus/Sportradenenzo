@@ -684,15 +684,15 @@ var getTimetoFinish = async (racename) => {
   var $ = cheerio.load(html);
   var rule = '';
   var response;
-  $('.tblCont1').first().children().eq(1).children().eq(1).children().each(function () {
+  $('.tblCont1.mt10 tr').each(function () {
     var startString = ''
     switch (racename) {
       case 'giro': startString = 'Giro d\'Italia'; break;
       case 'tour': startString = 'Tour de France'; break;
       case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
     }
-
-    if ($(this).children().eq(2).text().startsWith(startString)) {
+    // td 0 is time, td 3 is racename
+    if ($(this).children().eq(3).text().startsWith(startString)) {
       if ($(this).children().eq(0).text() != 'finished') {
         var finish = $(this).children().eq(0).text().split(':').map(x => parseInt(x));
         var now = new Date();
@@ -714,7 +714,7 @@ var getTimetoFinish = async (racename) => {
   });
   if (response) return response;
   console.log("Race not available"), racename;
-  rule = '0 0 10 * *'; // check at 10am
+  rule = '0 0 10 * *'; // check at 10:00
   return [false, rule];
 }
 
