@@ -27,7 +27,7 @@ module.exports = (app) => {
     switch (selection) {
       case "etappewinsten": return await getstagevictories(race_id, budgetparticipation);
       case "allriders": return await getriderpointsall(race_id, budgetparticipation, showSelectedOnly);
-      case "selectedriders": return await getriderpointsselected(race_id, budgetparticipation);
+      case "klassementen": return await getClassificationsWithSelectedRiders(race_id, budgetparticipation);
       case "missedpoints": return await missedpoints(race_id, budgetparticipation, account_id);
       case "missedpointsall": return await missedpointsall(race_id, budgetparticipation);
       case "teams": return await teams(race_id, budgetparticipation, account_id, details);
@@ -264,7 +264,7 @@ module.exports = (app) => {
     return { tables, title: "Alle Renners Overzicht" };
   }
 
-  getriderpointsselected = async (race_id, budgetparticipation) => {
+  getClassificationsWithSelectedRiders = async (race_id, budgetparticipation) => {
     var query = getSelectedRidersClassificationsQuery(race_id, budgetparticipation);
 
     const results = await sqlDB.query(query);

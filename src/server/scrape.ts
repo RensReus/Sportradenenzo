@@ -55,7 +55,7 @@ const getStartlist = async (race) => {
 var getQualities = (qualities: any): object => {
   var newQualities = { punch: 0, climb: 0, sprint: 0, tt: 0, gc: 0 }
   for (var quality of qualities) {
-    switch(quality.Type){
+    switch (quality.Type) {
       case 0: newQualities.gc = quality.Value; break;
       case 1: newQualities.climb = quality.Value; break;
       case 2: newQualities.tt = quality.Value; break;
@@ -207,7 +207,7 @@ var getResult = async (race, stagenr) => {
     console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
   }
   await calculateUserScores(race_id, stagenr, stage.type)
-  if (isFinalStage){
+  if (isFinalStage) {
     getResult(race, stagenr + 1);
     console.log("Finalstandings process")
   } else {
@@ -643,7 +643,6 @@ var startSchedule = async () => {
         var stage = results.rows[0];
         if (!stage.finished) {
           var [stageFinished, newResultsRule] = await getTimetoFinish(race.name);
-          console.log([stageFinished, newResultsRule])
           if (stageFinished) {
 
             var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`

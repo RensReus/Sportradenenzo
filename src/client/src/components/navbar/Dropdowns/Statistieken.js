@@ -39,9 +39,9 @@ class StatistiekenDropdown extends Component {
             ? (
               <div className="navbar_dropdown-content">
                 <Link className='navbar_dropdown_item' to='/statistics/rondewinsten'>Uitslagen per ronde</Link>
-                { this.props.showRaceSpecificData &&  [<Link className='navbar_dropdown_item' to='/statistics/etappewinsten'>Uitslagen per etappe</Link>,
+                { this.props.showRaceSpecificData && [<Link className='navbar_dropdown_item' to='/statistics/etappewinsten'>Uitslagen per etappe</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/allriders'>Alle renners</Link>,
-                <Link className='navbar_dropdown_item' to='/statistics/selectedriders'>Klassementen</Link>,
+                <Link className='navbar_dropdown_item' to='/statistics/klassementen'>Klassementen</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/missedpointsall'>Gemiste punten iedereen</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/teams'>Team overzichten</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/teamcomparisons'>Selectie vergelijking</Link>,
