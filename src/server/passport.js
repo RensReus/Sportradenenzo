@@ -43,8 +43,8 @@ module.exports = function (passport) {
             process.nextTick(async () => {
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
-                const account = await SQLread.getLogin(email.toLowerCase());
-                if (account != null) { //email is already taken
+                const acc = await SQLread.getLogin(email.toLowerCase());
+                if (acc != null) { //email is already taken
                     return done(false);
                 } else {
                     //still available make new user
