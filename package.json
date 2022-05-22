@@ -35,7 +35,7 @@
     "client": "node start-client.js",
     "lint": "eslint .",
     "build": "npm i --only=dev && npx tsc && cd src/client/ && npm i --only=dev && npm i --save @babel/runtime && npm run build && cd ../..  && node heroku-build.js",
-    "build-netlify": "npm i --only=dev && npm i typescript && npx tsc && cd src/client/ && npm i --only=dev && npm i --save @babel/runtime && npm run build && cd ../..  && node heroku-build.js"
+    "build-netlify": "npm i --only=dev && npx -p typescript tsc && cd src/client/ && npm i --only=dev && npm i --save @babel/runtime && npm run build && cd ../..  && node heroku-build.js"
   },
   "devDependencies": {
     "@types/express": "^4.17.11",
