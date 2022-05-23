@@ -1,17 +1,19 @@
 import { Component, useEffect } from 'react';
 import axios from 'axios';
-import underConstruction from '../../under_construction.gif'
 import { useHistory } from "react-router-dom";
 import { useState } from 'react';
+import SREButton from '../ui/SREButton'
 
 class RacesTable extends Component {
   render() {
     let racelinks = this.props.races.map(race => {
       return (
-        <div className="m-2">
-          <button className={"button_standard blue " + race.name} key={race.name + race.year} onClick={() => this.props.goToRace(race)}>
-            <span className="text-base bold">{race.name.charAt(0).toUpperCase() + race.name.slice(1)} - {race.year}</span>
-          </button>
+        <div className="m-2" key={race.name + race.year}>
+          <SREButton
+            color={race.name}
+            content={<span className="text-base bold">{race.name.charAt(0).toUpperCase() + race.name.slice(1)} - {race.year}</span>}
+            onClick={() => this.props.goToRace(race)}
+          />
         </div>
       )
     });

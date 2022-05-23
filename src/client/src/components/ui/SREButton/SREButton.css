@@ -1,0 +1,170 @@
+/*Default for all buttons*/
+.button_standard{
+  border-radius: 0.375rem;
+  border-top: 3px solid;
+  border-bottom: 3px solid;
+  border-color: transparent;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 0.75rem 1rem;
+  min-width: 3rem;
+}
+
+.button_standard.small{
+  padding: 0.5rem 0.75rem;
+  min-width: 2.5rem;
+}
+
+.button_standard:active:not(.disabled){
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), inset 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+/*use: primary*/
+.button_standard.blue{
+  background-color: #3B82F6; /*blue-500*/
+  border-bottom-color: #1D4ED8; /*blue-700*/
+}
+
+.button_standard.blue:hover:not(.disabled){
+  background-color: #60A5FA; /*blue-400*/
+  border-bottom-color: #3B82F6; /*blue-500*/
+}
+
+.button_standard.blue:active:not(.disabled){
+  background-color: #1D4ED8; /*blue-700*/
+  border-top-color: #1E40AF; /*blue-800*/
+  border-bottom-color: transparent;
+}
+
+/*use: approved*/
+.button_standard.green{
+  background-color: #10B981; /*green-500*/
+  border-bottom-color: #047857; /*green-700*/
+}
+
+.button_standard.green:hover:not(.disabled){
+  background-color: #34D399; /*green-400*/
+  border-bottom-color: #10B981; /*green-500*/
+}
+
+.button_standard.green:active:not(.disabled){
+  background-color: #047857; /*green-700*/
+  border-top-color: #065F46; /*green-800*/
+  border-bottom-color: transparent;
+}
+
+/*use: remove or vuelta*/
+.button_standard.red, .button_standard.vuelta{
+  background-color: #EF4444; /*red-500*/
+  border-bottom-color: #B91C1C; /*red-700*/
+}
+
+.button_standard.red:hover:not(.disabled), .button_standard.vuelta:hover:not(.disabled){
+  background-color: #F87171; /*red-400*/
+  border-bottom-color: #EF4444; /*red-500*/
+}
+
+.button_standard.red:active:not(.disabled), .button_standard.vuelta:active:not(.disabled){
+  background-color: #B91C1C; /*red-700*/
+  border-top-color: #991B1B; /*red-800*/
+  border-bottom-color: transparent;
+}
+
+/*use: disabled*/
+.button_standard.gray{
+  background-color: #D4D4D8; /*gray-500*/
+  border-bottom-color: #A1A1AA; /*gray-700*/
+}
+
+.klassementButton:disabled{
+  background-color: #D4D4D8; /*gray-500*/
+  border-bottom-color: #A1A1AA; /*gray-700*/
+  color: gray;
+}
+
+/*use: warning or landing*/
+.button_standard.orange{
+  background-color: #F97316; /*orange-500*/
+  border-bottom-color: #C2410C; /*orange-700*/
+}
+
+.button_standard.orange:hover:not(.disabled){
+  background-color: #FB923C; /*orange-400*/
+  border-bottom-color: #F97316; /*orange-500*/
+}
+
+.button_standard.orange:active:not(.disabled){
+  background-color: #C2410C; /*orange-700*/
+  border-top-color: #9A3412; /*orange-800*/
+  border-bottom-color: transparent;
+}
+
+/*use: giro*/
+.button_standard.pink, .button_standard.giro{
+  background-color: #F472B6; /*pink-400*/
+  border-bottom-color: #DB2777; /*pink-600*/
+}
+
+.button_standard.pink:hover:not(.disabled), .button_standard.giro:hover:not(.disabled){
+  background-color: #F9A8D4; /*pink-300*/
+  border-bottom-color: #EC4899; /*pink-500*/
+}
+
+.button_standard.pink:active:not(.disabled), .button_standard.giro:active:not(.disabled){
+  background-color: #BE185D; /*pink-700*/
+  border-top-color: #9D174D; /*pink-800*/
+  border-bottom-color: transparent;
+}
+
+/*use: tour*/
+.button_standard.yellow, .button_standard.tour{
+  background-color: #FBBF24; /*pink-400*/
+  border-bottom-color: #D97706; /*pink-600*/
+}
+
+.button_standard.yellow:hover:not(.disabled), .button_standard.tour:hover:not(.disabled){
+  background-color: #FCD34D; /*pink-300*/
+  border-bottom-color: #F59E0B; /*pink-500*/
+}
+
+.button_standard.yellow:active:not(.disabled), .button_standard.tour:active:not(.disabled){
+  background-color: #B45309; /*pink-700*/
+  border-top-color: #92400E; /*pink-800*/
+  border-bottom-color: transparent;
+}
+
+/*use: text button*/
+.button_standard.text{
+  background-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.button_standard.text.red{
+  color: #EF4444;
+}
+
+.button_standard.text:hover:not(.disabled){
+  background-color: transparent;
+  border-bottom-color: transparent;
+  opacity: 0.7;
+}
+
+.button_standard.text:active:not(.disabled){
+  background-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  transform: translateY(2px);
+}
+
+.button_standard.disabled{
+  cursor: not-allowed;
+}
+
+/*Icons inside buttons*/
+button > img{
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
