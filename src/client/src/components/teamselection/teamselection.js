@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Riderselectiontable from './riderSelectionTable'
+import AllSelectableRidersTable from './allSelectableRidersTable'
 import SelectedRidersTable from './selectedRidersTable'
 import axios from 'axios';
 import './index.css';
@@ -236,7 +236,7 @@ class Teamselection extends Component {
                   <span>Budget: {budgetLeft.toLocaleString('nl', { useGrouping: true })}</span>
                 </div>
                 <div className="w-1/3">
-                  <RulesPopup page={"teamSelection"} raceName={this.props.racename}/>
+                  <RulesPopup page={"teamSelection"} raceName={this.props.racename} />
                 </div>
                 <div className="w-1/3 flex justify-end items-center space-x-14">
                   {userSelection.length == 20 ?
@@ -249,7 +249,7 @@ class Teamselection extends Component {
             </div>
             <div className="teamselection-tables w-full flex">
               <div className="ridertablecontainer w-1/2">
-                <Riderselectiontable
+                <AllSelectableRidersTable
                   riders={allRiders}
                   selectionIDs={userSelection.map(rider => rider.rider_participation_id)}
                   selectionTeams={userSelection.map(rider => rider.team)}
