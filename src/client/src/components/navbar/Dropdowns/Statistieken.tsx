@@ -28,6 +28,9 @@ const StatistiekenDropdown = (props: StatistiekenDropdownProps) => {
               <Link className='navbar_dropdown_item' to='/statistics/missedpointsall' key={'missedpointsall'}>
                 Gemiste punten iedereen
               </Link>,
+              <Link className='navbar_dropdown_item' to='/statistics/missedPointsPerRider'>
+                Gemiste punten Per Renner
+              </Link>,
               <Link className='navbar_dropdown_item' to='/statistics/teams' key={'teams'}>
                 Team overzichten
               </Link>,

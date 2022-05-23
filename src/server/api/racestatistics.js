@@ -31,6 +31,7 @@ module.exports = (app) => {
       case "missedpoints": return await missedpoints(race_id, budgetparticipation, account_id);
       case "missedpointsall": return await missedpointsall(race_id, budgetparticipation);
       case "teams": return await teams(race_id, budgetparticipation, account_id, details);
+      case "missedPointsPerRider": return await missedPointsPerRider(race_id, budgetparticipation);
       case "teamcomparisons": return await teamcomparisons(race_id, budgetparticipation);
       case "overigestats": return await getadditionalstats(race_id, budgetparticipation);
     }
@@ -309,7 +310,7 @@ module.exports = (app) => {
   }
 
   missedpoints = async (race_id, budgetparticipation, account_id) => {
-    var account_participation_id = `(SELECT account_participation_id, FROM account_participation
+    var account_participation_id = `(SELECT account_participation_id FROM account_participation
                 WHERE account_id = ${account_id} AND race_id = ${race_id} AND budgetparticipation = ${budgetparticipation})`
     const outputArray = await missedPointsUser(account_participation_id, budgetparticipation)
     var tables = [{
@@ -464,6 +465,50 @@ module.exports = (app) => {
       INNER JOIN rider USING(rider_id)
       WHERE rider_participation_id NOT IN (${alreadyFound}) AND account_participation_id = ${account_participation_id}
       ORDER BY ${orderBy} DESC`
+
+    const results = await sqlDB.query(query);
+    return { tableData: results.rows, coltype };
+  }
+
+  missedPointsPerRider = async (race_id, budgetparticipation) => {
+    var usersQuery = `SELECT account_participation_id, username FROM account_participation 
+                INNER JOIN account USING (account_id)   
+                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
+                ORDER BY account_id;`
+    const results = await sqlDB.query(usersQuery);
+    const tables = [];
+    for (const account of results.rows) {
+      const teamoverzicht = await teamoverzichtuserOptimal(account.account_participation_id, budgetparticipation, race_id);
+      tables.push({ tableData: teamoverzicht.tableData, title: account.username, coltype: teamoverzicht.coltype })
+    };
+    return { tables, title: "Team Overzicht Iedereen" };
+  }
+
+  teamoverzichtuserOptimal = async (account_participation_id, budgetparticipation, race_id) => {
+    var rider_name = `CONCAT(firstname, ' ', lastname) AS "Name"`
+    var minusTeampoints = '';
+    var minusResultPointsTeampoints = '';
+    if (budgetparticipation) {
+      minusTeampoints = '- teamscore';
+      minusResultPointsTeampoints = '- results_points.teamscore';
+    }
+    var query = `SELECT "Name", COALESCE(actual,0) AS "Actual", COALESCE(perfect,0) AS "Perfect", COALESCE(perfect - actual,perfect) AS "Missed" FROM 
+        (SELECT ${rider_name}, SUM(results_points.totalscore ${minusResultPointsTeampoints}) as "actual" FROM stage_selection_rider 
+        INNER JOIN stage_selection USING (stage_selection_id )
+        INNER JOIN results_points USING (rider_participation_id, stage_id)
+        INNER JOIN rider_participation USING(rider_participation_id)
+        INNER JOIN rider USING(rider_id)
+        WHERE account_participation_id = ${account_participation_id} AND rider_participation.race_id  = ${race_id}
+        GROUP BY "Name" ) as act
+        FULL OUTER JOIN
+        (SELECT ${rider_name}, SUM(totalscore ${minusTeampoints}) AS "perfect" FROM rider_participation
+        LEFT JOIN results_points USING (rider_participation_id)
+        INNER JOIN rider USING(rider_id)
+        INNER JOIN team_selection_rider USING (rider_participation_id )
+        WHERE race_id = 24 AND account_participation_id = ${account_participation_id}
+        GROUP BY "Name" ) as per USING("Name")
+      ORDER BY "Missed" DESC`
+    var coltype = { 'Name': 0, 'Actual': 1, 'Perfect': 1, 'Missed': 1 }
 
     const results = await sqlDB.query(query);
     return { tableData: results.rows, coltype };
