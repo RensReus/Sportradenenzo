@@ -28,12 +28,12 @@
     "tslib": "^2.2.0"
   },
   "scripts": {
-    "start": "concurrently \"npm run server-dev\" \"npm run client\"",
-    "start-dev": "echo \"This command has been deprecated. Use 'npm start'\" && concurrently \"npm run server-dev\" \"npm run client\"",
+    "start": "npm run install-all && concurrently \"npm run server-dev\" \"npm run client\"",
     "server": "node build/server.js",
     "server-dev": "nodemon --config \"nodemon.json\"/",
     "client": "node start-client.js",
     "lint": "eslint .",
+    "install-all": "npm install && cd .\\src\\client\\ && npm install && cd ..\\..",
     "build": "npm i --production && npx tsc && cd src/client/ && npm i --production && npm i --save @babel/runtime && npm run build && cd ../..  && node heroku-build.js"
   },
   "devDependencies": {

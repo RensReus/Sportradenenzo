@@ -43,6 +43,7 @@ class StatistiekenDropdown extends Component {
                 <Link className='navbar_dropdown_item' to='/statistics/allriders'>Alle renners</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/klassementen'>Klassementen</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/missedpointsall'>Gemiste punten iedereen</Link>,
+                <Link className='navbar_dropdown_item' to='/statistics/missedPointsPerRider'>Gemiste punten Per Renner</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/teams'>Team overzichten</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/teamcomparisons'>Selectie vergelijking</Link>,
                 <Link className='navbar_dropdown_item' to='/statistics/overigestats'>Overige Statistieken</Link>]}
