@@ -23,22 +23,15 @@ class SREDropdown extends Component<SREDropdownProps, SREDropdownState> {
     this.handleWindowClick = this.handleWindowClick.bind(this);
   }
 
-  componentDidMount() {
-    document.addEventListener('click', this.handleWindowClick);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('click', this.handleWindowClick);
-  }
-
   toggleMenu(event: React.MouseEvent) {
     if (!this.state.showMenu) {
-      event.stopPropagation();
+      setTimeout(() => { document.addEventListener('click', this.handleWindowClick) }, 0);
     }
     this.setState({ showMenu: !this.state.showMenu })
   }
 
   handleWindowClick(event: MouseEvent) {
+    document.removeEventListener('click', this.handleWindowClick);
     this.setState({ showMenu: false })
   }
 
