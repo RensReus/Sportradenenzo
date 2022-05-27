@@ -32,17 +32,13 @@ class SREDropdown extends Component<SREDropdownProps, SREDropdownState> {
   }
 
   toggleMenu(event: React.MouseEvent) {
-    event.stopPropagation();
+    if (!this.state.showMenu) {
+      event.stopPropagation();
+    }
     this.setState({ showMenu: !this.state.showMenu })
   }
 
   handleWindowClick(event: MouseEvent) {
-    if (!event.target || !(event.target instanceof Element)) {
-      return;
-    }
-    if (event.target.className === "navbar_dropdown_item") {
-      return;
-    }
     this.setState({ showMenu: false })
   }
 
@@ -52,15 +48,15 @@ class SREDropdown extends Component<SREDropdownProps, SREDropdownState> {
       <div className="contents">
         <button onClick={this.toggleMenu}>
           <span>
-            { this.props.buttonText + ' ' }
-            <FontAwesomeIcon icon={this.state.showMenu ? (faAngleUp) : (faAngleDown)} /> 
+            {this.props.buttonText + ' '}
+            <FontAwesomeIcon icon={this.state.showMenu ? (faAngleUp) : (faAngleDown)} />
           </span>
         </button>
         {
           this.state.showMenu
             ? (
               <div className="navbar_dropdown-content">
-                { this.props.menuContent }
+                {this.props.menuContent}
               </div>
             )
             : (
