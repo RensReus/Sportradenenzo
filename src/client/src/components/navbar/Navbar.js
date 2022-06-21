@@ -1,8 +1,8 @@
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
 import './index.css';
-import StatsDropdown from './Dropdowns/Statistieken'
-import ChartsDropdown from './Dropdowns/Charts'
+import StatsDropdown from './Dropdowns/StatistiekenDropdown'
+import ChartsDropdown from './Dropdowns/ChartsDropdown';
 import SettingsDropdown from './Dropdowns/Settings'
 import MobileDropdown from './Dropdowns/Mobile'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -45,7 +45,7 @@ class Navbar extends Component {
               <span><FontAwesomeIcon icon={faShieldAlt} /> Admin</span>
             </Link>
           }
-          {localStorage.getItem('authToken')? (
+          {localStorage.getItem('authToken') ? (
             jwt_decode(localStorage.getItem('authToken')).account_id <= 5 &&
             <div className="flex"><BudgetSwitchButton /><FabFourSwitchButton /></div>) : <></>
           }

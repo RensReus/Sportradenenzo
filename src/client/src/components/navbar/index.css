@@ -1,12 +1,14 @@
 @media only screen and (min-width: 768px) {
   .navbar_link{
     display: block;
+    cursor: pointer;
   }
 }
 
 @media only screen and (max-width: 767px) {
   .navbar_link{
     display: none;
+    cursor: pointer;
   }
 }
 
