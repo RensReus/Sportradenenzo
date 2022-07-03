@@ -7,7 +7,6 @@
   },
   "proxy": "http://localhost:3001/",
   "devDependencies": {
-    "@types/lodash": "^4.14.170",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
     "@types/react-router-dom": "^5.3.3",
@@ -18,6 +17,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.170",
     "@babel/runtime": "^7.18.3",
     "react-scripts": "^5.0.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
