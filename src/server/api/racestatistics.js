@@ -32,6 +32,7 @@ module.exports = (app) => {
       case "missedpointsall": return await missedpointsall(race_id, budgetparticipation);
       case "missedPointsPerRider": return await missedPointsPerRider(race_id, budgetparticipation);
       case "teams": return await teams(race_id, budgetparticipation, account_id, details);
+      case "missedPointsPerRider": return await missedPointsPerRider(race_id, budgetparticipation);
       case "teamcomparisons": return await teamcomparisons(race_id, budgetparticipation);
       case "overigestats": return await getadditionalstats(race_id, budgetparticipation);
     }
