@@ -643,7 +643,6 @@ var startSchedule = async () => {
         var stage = results.rows[0];
         if (!stage.finished) {
           var [stageFinished, newResultsRule] = await getTimetoFinish(race.name);
-          console.log([stageFinished, newResultsRule])
           if (stageFinished) {
 
             var updateStageQuery = `UPDATE stage SET finished = TRUE WHERE stage_id = ${stage.stage_id}`
