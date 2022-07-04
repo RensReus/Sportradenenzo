@@ -3,7 +3,7 @@ import DropdownMenu from "../../shared/DropdownMenu";
 const StatistiekenDropdown = (props) => {
     return (
         <DropdownMenu {...props} name="Statistieken"
-            alwaysLinks={[{ url: "/statistics/totalscorespread", title: "Uitslagen per ronde" }]}
+            alwaysLinks={[{ url: "/statistics/rondewinsten", title: "Uitslagen per ronde" }]}
             raceOnlyLinks={[
                 { url: "/statistics/etappewinsten", title: "Uitslagen per etappe" },
                 { url: "/statistics/allriders", title: "Alle renners" },
