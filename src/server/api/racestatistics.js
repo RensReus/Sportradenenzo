@@ -470,7 +470,7 @@ module.exports = (app) => {
     return { tableData: results.rows, coltype };
   }
 
-  missedPointsPerRider = async (race_id, budgetparticipation) => { //TODO klopt nog niet helemaal misschien omdat de race niet klaar is?
+  missedPointsPerRider = async (race_id, budgetparticipation) => {
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
                 WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
@@ -481,7 +481,7 @@ module.exports = (app) => {
       const teamoverzicht = await teamoverzichtuserOptimal(account.account_participation_id, budgetparticipation, race_id);
       tables.push({ tableData: teamoverzicht.tableData, title: account.username, coltype: teamoverzicht.coltype })
     };
-    return { tables, title: "Team Overzicht Iedereen" };
+    return { tables, title: "Gemiste punten per Renner" };
   }
 
   teamoverzichtuserOptimal = async (account_participation_id, budgetparticipation, race_id) => {
@@ -498,19 +498,32 @@ module.exports = (app) => {
         INNER JOIN results_points USING (rider_participation_id, stage_id)
         INNER JOIN rider_participation USING(rider_participation_id)
         INNER JOIN rider USING(rider_id)
-        WHERE account_participation_id = ${account_participation_id} AND rider_participation.race_id  = ${race_id}
-        GROUP BY "Name" ) as act
+        WHERE account_participation_id = ${account_participation_id} AND rider_participation.race_id = ${race_id}
+        GROUP BY "Name"
+        UNION 
+        SELECT 'Kopman KOPMAN' AS "Name", CAST(SUM(results_points.stagescore *0.5) AS int) AS "actual" FROM stage_selection
+        INNER JOIN results_points ON results_points.rider_participation_id = stage_selection.kopman_id AND results_points.stage_id = stage_selection.stage_id
+        WHERE account_participation_id = ${account_participation_id}
+        GROUP BY "Name") as act
         FULL OUTER JOIN
         (SELECT ${rider_name}, SUM(totalscore ${minusTeampoints}) AS "perfect" FROM rider_participation
         LEFT JOIN results_points USING (rider_participation_id)
         INNER JOIN rider USING(rider_id)
         INNER JOIN team_selection_rider USING (rider_participation_id )
-        WHERE race_id = 24 AND account_participation_id = ${account_participation_id}
-        GROUP BY "Name" ) as per USING("Name")
-      ORDER BY "Missed" DESC`
+        WHERE race_id = ${race_id} AND account_participation_id = ${account_participation_id}
+        GROUP BY "Name"
+        UNION 
+        SELECT 'Kopman KOPMAN' AS "Name", SUM ("perfect") AS "perfect" FROM 
+        (SELECT results_points.stage_id, CAST(MAX(results_points.stagescore) * 0.5 AS int) AS "perfect" FROM results_points
+        INNER JOIN stage_selection_rider USING(rider_participation_id)
+        INNER JOIN stage_selection USING(stage_selection_id)
+        WHERE account_participation_id = ${account_participation_id}
+        GROUP BY results_points.stage_id) AS per) as per USING("Name")
+      ORDER BY "Missed" DESC, "Perfect" DESC`
     var coltype = { 'Name': 0, 'Actual': 1, 'Perfect': 1, 'Missed': 1 }
 
     const results = await sqlDB.query(query);
+    results.rows.push(results.rows.reduce((total, current) => { return { 'Name': "Total", 'Actual': total.Actual + current.Actual, 'Perfect': total.Perfect + current.Perfect, 'Missed': total.Missed + current.Missed } }));
     return { tableData: results.rows, coltype };
   }
 

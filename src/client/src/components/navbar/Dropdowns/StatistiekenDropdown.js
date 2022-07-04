@@ -9,7 +9,7 @@ const StatistiekenDropdown = (props) => {
                 { url: "/statistics/allriders", title: "Alle renners" },
                 { url: "/statistics/klassementen", title: "Klassementen" },
                 { url: "/statistics/missedpointsall", title: "Gemiste punten iedereen" },
-                { url: "/statistics/missedPointsPerRider", title: "Gemiste punten Per Renner" },
+                { url: "/statistics/missedPointsPerRider", title: "Gemiste punten per Renner" },
                 { url: "/statistics/teams", title: "Team overzichten" },
                 { url: "/statistics/teamcomparisons", title: "Selectie vergelijking" },
                 { url: "/statistics/overigestats", title: "Overige Statistieken" }
