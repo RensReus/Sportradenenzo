@@ -76,13 +76,13 @@ var startlistProcessRiders = async (raceString, scoritoPrices, year, race_id) =>
       var results_pointsQuery = `INSERT INTO results_points(stage_id, rider_participation_id) VALUES`;
       var startlist_IDs = '(';
 
-      $(".team").each(function (index, element) { //gaat ieder team af
-        var teamName = $(this).children().first().children().last().text();
-        $(this).children().eq(3).children().eq(0).children().each(function (index, element) { //gaat iedere renner af
-          var name_link_div = $(this).children().eq(1);
+      $(".team").each(function () { //gaat ieder team af
+        var teamName = $('b a', this).text();
+        $('li', this).each(function () { //gaat iedere renner af
+          var name_link_div = $('a', this);
           var name = name_link_div.text();
           var pcs_id = name_link_div.attr('href').substring(6);
-          var country = $(this).children().eq(0).attr("class").split(' ')[1];
+          var country = $('span', this).attr("class").split(' ')[1];
 
           // sla achternaam voor naam en voorletters op
           var i = 0
@@ -694,8 +694,9 @@ var getTimetoFinish = async (racename) => {
     }
     // td 0 is time, td 3 is racename
     if ($(this).children().eq(3).text().startsWith(startString)) {
-      if ($(this).children().eq(0).text() != 'finished') {
-        var finish = $(this).children().eq(0).text().split(':').map(x => parseInt(x));
+      var finishtime = $(this).children().eq(0).text();
+      if (finishtime != 'finished') {
+        var finish = finishtime.split(':').map(x => parseInt(x));
         var now = new Date();
         if (finish[0] - now.getHours() <= 1) { // als nog een uur of minder
           rule = '*/5 * * * *';// iedere 5 min checken 
