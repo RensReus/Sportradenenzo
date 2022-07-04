@@ -10,17 +10,17 @@ const app = express();
 startSchedule()
 
 // Mongo
-// let configDB;
-// if (fs.existsSync('./src/server/db/Mongo/link.js') || fs.existsSync('./build/server/db/Mongo/link.js')) {
-//   configDB = require('./server/db/Mongo/link.js');
-// } else {
-//   configDB = process.env.DATABASE_LINK; // Zo niet gebruik heroku env var
-// }
-// const mongoose = require('mongoose');
-// mongoose.connect(configDB, { ssl: true, useUnifiedTopology: true, useNewUrlParser: true }); // verbinden met sportradenenzo mongodb
-// mongoose.connection.on('error', (err) => {
-//   console.log(err);
-// });
+let configDB;
+if (fs.existsSync('./src/server/db/Mongo/link.js') || fs.existsSync('./build/server/db/Mongo/link.js')) {
+  configDB = require('./server/db/Mongo/link.js');
+} else {
+  configDB = process.env.DATABASE_LINK; // Zo niet gebruik heroku env var
+}
+const mongoose = require('mongoose');
+mongoose.connect(configDB, { ssl: true, useUnifiedTopology: true, useNewUrlParser: true }); // verbinden met sportradenenzo mongodb
+mongoose.connection.on('error', (err) => {
+  console.log(err);
+});
 
 // Passport
 const passport = require('passport');
