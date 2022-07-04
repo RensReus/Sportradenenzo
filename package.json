@@ -2,6 +2,10 @@
   "name": "sportradenenzo",
   "version": "0.3.0",
   "description": "Poulewebsite voor de beste poulegroep",
+  "engines": {
+    "node": "16.x",
+    "npm": "6.x"
+  },
   "repository": {
     "url": "https://github.com/RensReus/Sportradenenzo"
   },
