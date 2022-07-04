@@ -106,7 +106,7 @@ class Riderrow extends Component {
     }
 }
 
-class Riderselectiontable extends Component {
+class AllSelectableRidersTable extends Component {
     render() {
         const selectionIDs = this.props.selectionIDs;
         const selectionLength = selectionIDs.length;
@@ -167,4 +167,4 @@ class Riderselectiontable extends Component {
     }
 }
 
-export default Riderselectiontable
+export default AllSelectableRidersTable
