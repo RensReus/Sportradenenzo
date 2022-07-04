@@ -59,7 +59,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     box-sizing: border-box;
     min-height: 100vh;
     overflow: auto;
-    max-width: 1280px;
+    max-width: 1600px;
     margin: auto;
     padding-top: 70px;
   }
