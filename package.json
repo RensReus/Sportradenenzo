@@ -10,7 +10,7 @@
     "url": "https://github.com/RensReus/Sportradenenzo"
   },
   "dependencies": {
-    "async": "^3.2.0",
+    "async": "^3.2.2",
     "bcrypt-nodejs": "0.0.3",
     "cheerio": "^1.0.0-rc.6",
     "cookie-parser": "^1.4.5",
