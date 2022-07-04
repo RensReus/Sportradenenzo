@@ -29,7 +29,7 @@
   },
   "scripts": {
     "start": "npm run install-all && concurrently \"npm run server-dev\" \"npm run client\"",
-    "server": "node build/server.js",
+    "server": "node src/server.js",
     "server-dev": "nodemon --config \"nodemon.json\"/",
     "client": "node start-client.js",
     "lint": "eslint .",
