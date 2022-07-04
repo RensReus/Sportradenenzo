@@ -1,5 +1,5 @@
 module.exports = (app) => {
-  const race_backup = require('../db/Mongo/models/race_backup.js');
+  // const race_backup = require('../db/Mongo/models/race_backup.js');
   const sqlDB = require('../db/sqlDB');
   const scrape = require('../scrape')
 
@@ -58,7 +58,7 @@ module.exports = (app) => {
       const race = { name, year }
       const stage = parseInt(req.body.stage, 10);
       if (req.body.stage === 'all') {
-        for (var stageNum = 1; stageNum < 23; stageNum++){
+        for (var stageNum = 1; stageNum < 23; stageNum++) {
           await scrape.getResult(race, stageNum);
         }
         res.send('completed');
@@ -133,120 +133,120 @@ module.exports = (app) => {
     }
   });
 
-  app.post('/api/import', async (req, res) => {
-    if (req.user.admin) {
-      const race_idQuery = `SELECT race_id FROM race
-          WHERE year = ${req.body.year} AND name = '${req.body.raceName}';\n`;
-      const results = await sqlDB.query(race_idQuery);
-      const race_id = results.rows[0].race_id;
+  // app.post('/api/import', async (req, res) => {
+  //   if (req.user.admin) {
+  //     const race_idQuery = `SELECT race_id FROM race
+  //         WHERE year = ${req.body.year} AND name = '${req.body.raceName}';\n`;
+  //     const results = await sqlDB.query(race_idQuery);
+  //     const race_id = results.rows[0].race_id;
 
-      race_backup.findById(race_id, async (_, race) => {
-        // result_points
-        let results_pointsQuery: string;
-        if (race.results_points.length) { results_pointsQuery = 'INSERT INTO results_points VALUES'; }
-        for (const i of Object.keys(race.results_points)) {
-          if (i !== '0') { results_pointsQuery += ','; }
-          results_pointsQuery += '(';
-          for (var prop in race.results_points[i]) {
-            if (typeof race.results_points[i][prop] === 'string') {
-              results_pointsQuery += `'${race.results_points[i][prop]}',`;
-            } else {
-              results_pointsQuery += race.results_points[i][prop] + ',';
-            }
-          }
-          results_pointsQuery = results_pointsQuery.slice(0, -1) + ')';
-        }
-        if (race.results_points.length) { results_pointsQuery += 'ON CONFLICT(stage_id,rider_participation_id) DO NOTHING;\n'; }
-        // stage_selection_rider
-        let stage_selection_riderQuery: string;
-        if (race.stage_selection_rider.length) { stage_selection_riderQuery = 'INSERT INTO stage_selection_rider VALUES'; }
-        for (const i of Object.keys(race.stage_selection_rider)) {
-          if (i !== '0') { stage_selection_riderQuery += ','; }
-          stage_selection_riderQuery += '(';
-          for (var prop in race.stage_selection_rider[i]) {
-            if (typeof race.stage_selection_rider[i][prop] === 'string') {
-              stage_selection_riderQuery += `'${race.stage_selection_rider[i][prop]}',`
-            } else {
-              stage_selection_riderQuery += race.stage_selection_rider[i][prop] + ','
-            }
-          }
-          stage_selection_riderQuery = stage_selection_riderQuery.slice(0, -1) + ')'
-        }
-        if (race.stage_selection_rider.length) { stage_selection_riderQuery += 'ON CONFLICT(stage_selection_id,rider_participation_id) DO NOTHING;\n'; }
-        // team_selection_rider
-        let team_selection_riderQuery: string;
-        if (race.team_selection_rider.length) { team_selection_riderQuery = 'INSERT INTO team_selection_rider VALUES'; }
-        for (const i of Object.keys(race.team_selection_rider)) {
-          if (i !== '0') { team_selection_riderQuery += ','; }
-          team_selection_riderQuery += '(';
-          for (var prop in race.team_selection_rider[i]) {
-            if (typeof race.team_selection_rider[i][prop] === 'string') {
-              team_selection_riderQuery += `'${race.team_selection_rider[i][prop]}',`
-            } else {
-              team_selection_riderQuery += race.team_selection_rider[i][prop] + ','
-            }
-          }
-          team_selection_riderQuery = team_selection_riderQuery.slice(0, -1) + ')'
-        }
-        if (race.team_selection_rider.length) { team_selection_riderQuery += 'ON CONFLICT(account_participation_id,rider_participation_id) DO NOTHING;\n'; }
-        const totalQuery = results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
-        const results2 = await sqlDB.query(totalQuery);
-        console.log('IMPORTED ', req.body.raceName, req.body.year);
-        console.log(results2);
-        res.send('Import Succesful');
-      });
-    } else {
-      return res.status(401).send('Access denied. No admin');
-    }
-  });
+  //     race_backup.findById(race_id, async (_, race) => {
+  //       // result_points
+  //       let results_pointsQuery: string;
+  //       if (race.results_points.length) { results_pointsQuery = 'INSERT INTO results_points VALUES'; }
+  //       for (const i of Object.keys(race.results_points)) {
+  //         if (i !== '0') { results_pointsQuery += ','; }
+  //         results_pointsQuery += '(';
+  //         for (var prop in race.results_points[i]) {
+  //           if (typeof race.results_points[i][prop] === 'string') {
+  //             results_pointsQuery += `'${race.results_points[i][prop]}',`;
+  //           } else {
+  //             results_pointsQuery += race.results_points[i][prop] + ',';
+  //           }
+  //         }
+  //         results_pointsQuery = results_pointsQuery.slice(0, -1) + ')';
+  //       }
+  //       if (race.results_points.length) { results_pointsQuery += 'ON CONFLICT(stage_id,rider_participation_id) DO NOTHING;\n'; }
+  //       // stage_selection_rider
+  //       let stage_selection_riderQuery: string;
+  //       if (race.stage_selection_rider.length) { stage_selection_riderQuery = 'INSERT INTO stage_selection_rider VALUES'; }
+  //       for (const i of Object.keys(race.stage_selection_rider)) {
+  //         if (i !== '0') { stage_selection_riderQuery += ','; }
+  //         stage_selection_riderQuery += '(';
+  //         for (var prop in race.stage_selection_rider[i]) {
+  //           if (typeof race.stage_selection_rider[i][prop] === 'string') {
+  //             stage_selection_riderQuery += `'${race.stage_selection_rider[i][prop]}',`
+  //           } else {
+  //             stage_selection_riderQuery += race.stage_selection_rider[i][prop] + ','
+  //           }
+  //         }
+  //         stage_selection_riderQuery = stage_selection_riderQuery.slice(0, -1) + ')'
+  //       }
+  //       if (race.stage_selection_rider.length) { stage_selection_riderQuery += 'ON CONFLICT(stage_selection_id,rider_participation_id) DO NOTHING;\n'; }
+  //       // team_selection_rider
+  //       let team_selection_riderQuery: string;
+  //       if (race.team_selection_rider.length) { team_selection_riderQuery = 'INSERT INTO team_selection_rider VALUES'; }
+  //       for (const i of Object.keys(race.team_selection_rider)) {
+  //         if (i !== '0') { team_selection_riderQuery += ','; }
+  //         team_selection_riderQuery += '(';
+  //         for (var prop in race.team_selection_rider[i]) {
+  //           if (typeof race.team_selection_rider[i][prop] === 'string') {
+  //             team_selection_riderQuery += `'${race.team_selection_rider[i][prop]}',`
+  //           } else {
+  //             team_selection_riderQuery += race.team_selection_rider[i][prop] + ','
+  //           }
+  //         }
+  //         team_selection_riderQuery = team_selection_riderQuery.slice(0, -1) + ')'
+  //       }
+  //       if (race.team_selection_rider.length) { team_selection_riderQuery += 'ON CONFLICT(account_participation_id,rider_participation_id) DO NOTHING;\n'; }
+  //       const totalQuery = results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
+  //       const results2 = await sqlDB.query(totalQuery);
+  //       console.log('IMPORTED ', req.body.raceName, req.body.year);
+  //       console.log(results2);
+  //       res.send('Import Succesful');
+  //     });
+  //   } else {
+  //     return res.status(401).send('Access denied. No admin');
+  //   }
+  // });
 
 
-  app.post('/api/export', async (req, res) => {
-    if (req.user.admin) {
-      const race_idQuery = `SELECT race_id FROM race
-          WHERE year = ${req.body.year} AND name = '${req.body.raceName}';\n`;
-      const race_id = `(SELECT race_id FROM race
-        WHERE year = ${req.body.year} AND name = '${req.body.raceName}')`;
-      const results_pointsQuery = `SELECT results_points.* FROM results_points
-        INNER JOIN stage USING(stage_id)
-        WHERE race_id = ${race_id};\n`;
-      const stage_selection_riderQuery = `SELECT stage_selection_rider.* FROM stage_selection_rider
-        INNER JOIN stage_selection USING(stage_selection_id)
-        INNER JOIN stage USING(stage_id)
-        WHERE race_id = ${race_id};\n`;
-      const team_selection_riderQuery = `SELECT team_selection_rider.* FROM team_selection_rider
-        INNER JOIN account_participation USING(account_participation_id)
-        WHERE race_id = ${race_id};\n`;
+  // app.post('/api/export', async (req, res) => {
+  //   if (req.user.admin) {
+  //     const race_idQuery = `SELECT race_id FROM race
+  //         WHERE year = ${req.body.year} AND name = '${req.body.raceName}';\n`;
+  //     const race_id = `(SELECT race_id FROM race
+  //       WHERE year = ${req.body.year} AND name = '${req.body.raceName}')`;
+  //     const results_pointsQuery = `SELECT results_points.* FROM results_points
+  //       INNER JOIN stage USING(stage_id)
+  //       WHERE race_id = ${race_id};\n`;
+  //     const stage_selection_riderQuery = `SELECT stage_selection_rider.* FROM stage_selection_rider
+  //       INNER JOIN stage_selection USING(stage_selection_id)
+  //       INNER JOIN stage USING(stage_id)
+  //       WHERE race_id = ${race_id};\n`;
+  //     const team_selection_riderQuery = `SELECT team_selection_rider.* FROM team_selection_rider
+  //       INNER JOIN account_participation USING(account_participation_id)
+  //       WHERE race_id = ${race_id};\n`;
 
-      const totalQuery = race_idQuery + results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
-      const results = await sqlDB.query(totalQuery);
-      // race_backup.updateOne({_id:results[0].rows[0].race_id},{
-      //   $set: {"raceName":req.body.raceName,"year":req.body.year}
-      // },
-      // function(err, result) {
-      //   console.log(" updated",req.body.raceName)
-      // })
-      const raceToSave = new race_backup;
-      raceToSave._id = results[0].rows[0].race_id;
-      raceToSave.results_points = results[1].rows;
-      raceToSave.stage_selection_rider = results[2].rows;
-      raceToSave.team_selection_rider = results[3].rows;
-      raceToSave.save(
-        function (err) {
-          if (err) {
-            console.log(req.body.raceName, req.body.year, 'Not Backed Up');
-            res.send(err.toString())
-          } else {
-            console.log(req.body.raceName, req.body.year, 'Backed Up');
-            res.send('Export Succesful');
-          }
-        }
-      )
-      // data deleten moet voorlopig handmatig voor de veiligheid
+  //     const totalQuery = race_idQuery + results_pointsQuery + stage_selection_riderQuery + team_selection_riderQuery;
+  //     const results = await sqlDB.query(totalQuery);
+  //     // race_backup.updateOne({_id:results[0].rows[0].race_id},{
+  //     //   $set: {"raceName":req.body.raceName,"year":req.body.year}
+  //     // },
+  //     // function(err, result) {
+  //     //   console.log(" updated",req.body.raceName)
+  //     // })
+  //     const raceToSave = new race_backup;
+  //     raceToSave._id = results[0].rows[0].race_id;
+  //     raceToSave.results_points = results[1].rows;
+  //     raceToSave.stage_selection_rider = results[2].rows;
+  //     raceToSave.team_selection_rider = results[3].rows;
+  //     raceToSave.save(
+  //       function (err) {
+  //         if (err) {
+  //           console.log(req.body.raceName, req.body.year, 'Not Backed Up');
+  //           res.send(err.toString())
+  //         } else {
+  //           console.log(req.body.raceName, req.body.year, 'Backed Up');
+  //           res.send('Export Succesful');
+  //         }
+  //       }
+  //     )
+  //     // data deleten moet voorlopig handmatig voor de veiligheid
 
-      // console.log(req.body.raceName,req.body.year,'Removed From SQL')
-    } else {
-      return res.status(401).send('Access denied. No admin');
-    }
-  });
+  //     // console.log(req.body.raceName,req.body.year,'Removed From SQL')
+  //   } else {
+  //     return res.status(401).send('Access denied. No admin');
+  //   }
+  // });
 }

@@ -1,7 +1,7 @@
 module.exports = (app) => {
   const passport = require('passport');
   const crypto = require('crypto');
-  const refreshtoken = require('../db/Mongo/models/refreshtoken');
+  // const refreshtoken = require('../db/Mongo/models/refreshtoken');
   const sqlDB = require('../db/sqlDB');
   const fs = require('fs');
   const jwt = require('jsonwebtoken');
@@ -31,16 +31,16 @@ module.exports = (app) => {
     return token;
   }
 
-  function generateRefreshToken(user, refreshString) {
-    // Create the refrsh token
-    const reftoken = new refreshtoken({
-      account_id: user.account_id,
-      refreshString,
-    });
-    reftoken.save((err) => {
-      if (err) { throw err; }
-    });
-  }
+  // function generateRefreshToken(user, refreshString) {
+  //   // Create the refrsh token
+  //   const reftoken = new refreshtoken({
+  //     account_id: user.account_id,
+  //     refreshString,
+  //   });
+  //   reftoken.save((err) => {
+  //     if (err) { throw err; }
+  //   });
+  // }
 
   // Register a new account
   app.post('/api/signup', async (req, res, next) => {
@@ -63,7 +63,7 @@ module.exports = (app) => {
             }
             // Maak een refresh token aan
             const refreshString = crypto.randomBytes(40).toString('hex');
-            generateRefreshToken(user, refreshString);
+            // generateRefreshToken(user, refreshString);
             const token = generateToken(user, refreshString);
             return res.send({
               succes: true,
@@ -88,25 +88,25 @@ module.exports = (app) => {
         if (errLoggingIn) {
           return next(errLoggingIn);
         }
-        refreshtoken.find({ account_id: user.account_id }, (errFindingToken, result) => {
-          if (errFindingToken) { throw errFindingToken; }
-          let refreshString: string;
-          if (!result) {
-            // Als er geen refresh token is maak er een aan
-            refreshString = crypto.randomBytes(40).toString('hex');
-            generateRefreshToken(user, refreshString);
-          } else {
-            // Gebruik anders de gevonden string
-            refreshString = result.refreshString;
-          }
-          // Maak de authtoken aan
-          const token = generateToken(user, refreshString);
-          res.append('authorization', token);
-          return res.send({
-            succes: true,
-            token,
-          });
-        });
+        // refreshtoken.find({ account_id: user.account_id }, (errFindingToken, result) => {
+        //   if (errFindingToken) { throw errFindingToken; }
+        //   let refreshString: string;
+        //   if (!result) {
+        //     // Als er geen refresh token is maak er een aan
+        //     refreshString = crypto.randomBytes(40).toString('hex');
+        //     generateRefreshToken(user, refreshString);
+        //   } else {
+        //     // Gebruik anders de gevonden string
+        //     refreshString = result.refreshString;
+        //   }
+        //   // Maak de authtoken aan
+        //   const token = generateToken(user, refreshString);
+        //   res.append('authorization', token);
+        //   return res.send({
+        //     succes: true,
+        //     token,
+        //   });
+        // });
       });
     })(req, res, next);
   });
@@ -116,23 +116,23 @@ module.exports = (app) => {
     const expiredToken = jwt.decode(token); // Lees de info uit de expired token
     jwt.verify(token, getSecret(), (err, decoded) => {
       if (err) {
-        if (err.name === 'TokenExpiredError') {
-          refreshtoken.find({ account_id: expiredToken.account_id }, (err2, result) => {
-            if (err2) { throw err; }
-            if (!result) {
-              return res.send({ isLoggedIn: false, admin: false });
-            } else {
-              // Maak de authtoken aan met juiste string
-              const newToken = jwt.sign({
-                account_id: expiredToken.account_id,
-                email: expiredToken.email,
-                admin: expiredToken.admin,
-                refreshString: result.refreshString,
-              }, getSecret(), { expiresIn: 60 * 60 });
-              return res.send({ isLoggedIn: true, admin: expiredToken.admin });
-            }
-          });
-        }
+        // if (err.name === 'TokenExpiredError') {
+        //   refreshtoken.find({ account_id: expiredToken.account_id }, (err2, result) => {
+        //     if (err2) { throw err; }
+        //     if (!result) {
+        //       return res.send({ isLoggedIn: false, admin: false });
+        //     } else {
+        //       // Maak de authtoken aan met juiste string
+        //       const newToken = jwt.sign({
+        //         account_id: expiredToken.account_id,
+        //         email: expiredToken.email,
+        //         admin: expiredToken.admin,
+        //         refreshString: result.refreshString,
+        //       }, getSecret(), { expiresIn: 60 * 60 });
+        //       return res.send({ isLoggedIn: true, admin: expiredToken.admin });
+        //     }
+        //   });
+        // }
       } else {
         return res.send({ isLoggedIn: true, admin: decoded.admin });
       }
@@ -155,7 +155,7 @@ module.exports = (app) => {
     }
     const recoveryToken = crypto.randomBytes(10).toString('hex');
     let expiry = new Date;
-    expiry.setMinutes(expiry.getMinutes()+10);
+    expiry.setMinutes(expiry.getMinutes() + 10);
     const expiryString = expiry.toISOString().slice(0, 19).replace('T', ' ');
     const account_id = `(SELECT account_id FROM account WHERE email='${req.body.email}')`;
     const query = `INSERT INTO account_token (account_id,type,expiry,token) VALUES (${account_id},'password_recovery','${expiryString}','${recoveryToken}')`;
@@ -184,7 +184,7 @@ module.exports = (app) => {
   async function sendVerificationMail(host, email) {
     const recoveryToken = crypto.randomBytes(10).toString('hex');
     let expiry = new Date;
-    expiry.setTime(expiry.getTime()+ 7 * 24 * 60 * 60 * 1000);
+    expiry.setTime(expiry.getTime() + 7 * 24 * 60 * 60 * 1000);
     const expiryString = expiry.toISOString().slice(0, 19).replace('T', ' ');
     const account_id = `(SELECT account_id FROM account WHERE email='${email}')`;
     const query = `INSERT INTO account_token (account_id,type,expiry,token) VALUES (${account_id},'email_verification','${expiryString}','${recoveryToken}')`;
