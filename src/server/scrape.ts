@@ -55,7 +55,7 @@ const getStartlist = async (race) => {
 var getQualities = (qualities: any): object => {
   var newQualities = { punch: 0, climb: 0, sprint: 0, tt: 0, gc: 0 }
   for (var quality of qualities) {
-    switch(quality.Type){
+    switch (quality.Type) {
       case 0: newQualities.gc = quality.Value; break;
       case 1: newQualities.climb = quality.Value; break;
       case 2: newQualities.tt = quality.Value; break;
@@ -207,7 +207,7 @@ var getResult = async (race, stagenr) => {
     console.log("Processed results stage", stagenr, "Riders:", res[1].rowCount, "DNF:", ridersResults['dnf'].length)
   }
   await calculateUserScores(race_id, stagenr, stage.type)
-  if (isFinalStage){
+  if (isFinalStage) {
     getResult(race, stagenr + 1);
     console.log("Finalstandings process")
   } else {
@@ -685,15 +685,15 @@ var getTimetoFinish = async (racename) => {
   var $ = cheerio.load(html);
   var rule = '';
   var response;
-  $('.tblCont1').first().children().eq(1).children().eq(1).children().each(function () {
+  $('.tblCont1.mt10 tr').each(function () {
     var startString = ''
     switch (racename) {
       case 'giro': startString = 'Giro d\'Italia'; break;
       case 'tour': startString = 'Tour de France'; break;
       case 'vuelta': startString = 'La Vuelta ciclista a España'; break;
     }
-
-    if ($(this).children().eq(2).text().startsWith(startString)) {
+    // td 0 is time, td 3 is racename
+    if ($(this).children().eq(3).text().startsWith(startString)) {
       if ($(this).children().eq(0).text() != 'finished') {
         var finish = $(this).children().eq(0).text().split(':').map(x => parseInt(x));
         var now = new Date();
@@ -715,7 +715,7 @@ var getTimetoFinish = async (racename) => {
   });
   if (response) return response;
   console.log("Race not available"), racename;
-  rule = '0 0 10 * *'; // check at 10am
+  rule = '0 0 10 * *'; // check at 10:00
   return [false, rule];
 }
 
