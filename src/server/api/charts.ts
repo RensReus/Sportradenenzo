@@ -1,6 +1,8 @@
 module.exports = function (app) {
   const sqlDB = require('../db/sqlDB');
 
+  function includedAccounts(req) { return req.body.fabFourOnly ? 'AND account_id <= 5' : '' };
+
   function makeOptions(titletext, subtitle, axisYtitle, toolTip, data, extraFields) {
     var options = {
       title: {
@@ -24,11 +26,12 @@ module.exports = function (app) {
 
   app.post('/api/userscores', async (req, res) => {
     var race_id = req.body.race_id;
+    console.log(req.body)
     var query = `SELECT username, stagenr, totalscore FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester'
+            WHERE stage.race_id = ${race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester' ${includedAccounts(req)}
             ORDER BY username, stagenr`
     const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
@@ -90,7 +93,7 @@ module.exports = function (app) {
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
-            WHERE stage.race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished AND NOT username = 'tester'
+            WHERE stage.race_id = ${race_id} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished AND NOT username = 'tester' ${includedAccounts(req)}
             ORDER BY username, stagenr`
     const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
@@ -205,13 +208,13 @@ module.exports = function (app) {
     INNER JOIN account_participation USING(account_participation_id)
     INNER JOIN account USING(account_id)
     INNER JOIN stage USING(stage_id)
-    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation} AND stage.finished
+    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation} AND stage.finished ${includedAccounts(req)}
     ORDER BY stagescore DESC;\n`
 
     var avgQuery = `SELECT ROUND(AVG(stagescore),2), stagenr FROM stage_selection
     INNER JOIN stage USING(stage_id)
     INNER JOIN account_participation USING(account_participation_id)
-    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation}
+    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation} ${includedAccounts(req)}
     GROUP BY stagenr
     ORDER BY stagenr;\n`
 
@@ -244,7 +247,7 @@ module.exports = function (app) {
     var race_id = req.body.race_id;
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
                 INNER JOIN account USING (account_id)   
-                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation}
+                WHERE race_id = ${race_id} AND budgetparticipation = ${budgetparticipation} ${includedAccounts(req)}
                 ORDER BY account_id;`
     const userresults = await sqlDB.query(usersQuery);
     var totalQuery = userresults.rows.reduce((query, user) => query + `SELECT stagenr AS label, stagescore AS y FROM stage_selection
@@ -273,7 +276,7 @@ module.exports = function (app) {
     var racePointsQuery = `SELECT username as colorlabel, CONCAT(username, ' ', name, ' ', year) as label, finalscore as y FROM account_participation
                 INNER JOIN account USING(account_id)
                 INNER JOIN race USING(race_id)
-                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished AND year > 2014
+                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished AND year > 2014 ${includedAccounts(req)}
                 ORDER BY finalscore DESC;\n`
 
     var extraQuery = `SELECT username FROM account;`
@@ -305,7 +308,7 @@ module.exports = function (app) {
     var totalQuery = userresults.rows.reduce((query, user) => query + `SELECT CONCAT(name, ' ', year) AS label, finalscore AS y FROM account_participation
       INNER JOIN race USING(race_id)
       INNER JOIN account USING(account_id)
-      WHERE race.finished AND account_id = ${user.account_id} AND budgetparticipation = ${budgetparticipation} AND NOT race.name = 'classics' AND year > 2014
+      WHERE race.finished AND account_id = ${user.account_id} AND budgetparticipation = ${budgetparticipation} AND NOT race.name = 'classics' AND year > 2014 ${includedAccounts(req)}
       ORDER BY year, race.name;\n `, '')
 
     const results = await sqlDB.query(totalQuery);

@@ -272,7 +272,6 @@ var hasPositiveScore = function (rider: any, classification: any) {
   if (classification != "Points" && classification != "KOM") {
     return true;
   }
-  console.log(rider)
   return parseInt(rider.result) > 0;
 }
 
