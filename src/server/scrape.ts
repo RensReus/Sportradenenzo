@@ -259,11 +259,21 @@ var processPCSresults = function ($, stageType) {
         } else if (riderindex === 0) {//GT
           teamWinners[classification] = rider.team;
         }
-        ridersResults[classification].push(rider);//push riders to each classification list
+        if (hasPositiveScore(rider, classification)) { // don't add if negative points/Kom score
+          ridersResults[classification].push(rider);//push riders to each classification list
+        }
       })
     }
   })
   return [ridersResults, teamWinners];
+}
+
+var hasPositiveScore = function (rider: any, classification: any) {
+  if (classification != "Points" && classification != "KOM") {
+    return true;
+  }
+  console.log(rider)
+  return parseInt(rider.result) > 0;
 }
 
 var getClassifications = function ($, stageType) {
