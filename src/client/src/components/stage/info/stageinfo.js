@@ -14,7 +14,7 @@ class stageInfo extends Component {
     if (starttimeInput === "") return "";
     var starttime = new Date(starttimeInput);
     var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    return dayArray[starttime.getDay()] + " " + starttime.toLocaleString().replace(/-[0-9]{4}/,'').replace(':00','')
+    return dayArray[starttime.getDay()] + " " + starttime.toLocaleString().replace(/-[0-9]{4}/, '').replace(':00', '')
   }
 
   render() {
@@ -25,7 +25,7 @@ class stageInfo extends Component {
       <br></br>
       finish
       <br></br>
-      <img className='profileImage' src={'/images/stageProfiles/' + this.props.data.race_id + '/stage-' + this.props.data.stage + '-finish.jpg'} alt="" />
+      <img className='profileImage' src={'/images/stageProfiles/' + this.props.data.race_id + '/stage-' + this.props.data.stage + '-finish.jpg'} alt="finish" />
       <br></br>
       extra
       <br></br>
@@ -64,19 +64,19 @@ class stageInfo extends Component {
             </button>
           }
         </div>
-        
+
         <div className='m-auto'>
-            {this.starttimeString(this.props.data.starttime)}
-          
+          {this.starttimeString(this.props.data.starttime)}
+
         </div>
         <div className='flex items-center space-x-24'>
-        <ModalButton
-          cssClassButton="button_standard blue"
-          content="Profile "
-          contentIcon={<FontAwesomeIcon icon={faMountain} />}
-          modalContent={stageProfile}
-        />
-        <RulesPopup page={"stageSelection"} raceName={this.props.racename} />
+          <ModalButton
+            cssClassButton="button_standard blue"
+            content="Profile "
+            contentIcon={<FontAwesomeIcon icon={faMountain} />}
+            modalContent={stageProfile}
+          />
+          <RulesPopup page={"stageSelection"} raceName={this.props.racename} />
         </div>
       </div>
     )

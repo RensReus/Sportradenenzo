@@ -472,19 +472,5 @@ module.exports = function (app) {
     }
     return toAdd
   }
-
-  var selectionsCompleteQuery = function (race_id, stagenr, account_id) {
-    var account_participation_id = `(SELECT account_participation_id FROM account_participation 
-      WHERE account_id=${account_id} AND race_id=${race_id})`;
-    var stage_id = `(SELECT stage_id FROM stage WHERE race_id=${race_id} AND stagenr= ${stagenr})`;
-    var query = `SELECT COUNT(rider_participation_id) + CASE WHEN kopman_id IS NULL THEN 0 ELSE 1 END AS "complete", stage_selection_id, budgetparticipation FROM stage_selection 
-    LEFT JOIN stage_selection_rider USING (stage_selection_id )
-    INNER JOIN account_participation USING (account_participation_id )
-    INNER JOIN race USING (race_id) 
-    WHERE account_participation_id IN ${account_participation_id} AND stage_id = ${stage_id}
-    GROUP BY stage_selection_id, kopman_id, budgetparticipation 
-    ORDER BY budgetparticipation;\n `
-    return query
-  }
 }
 

@@ -12,10 +12,10 @@ module.exports = function (passport) {
 
     // used to serialize the user for the session
     passport.serializeUser((account, done) => {
-      account.rows?
-        done(null, account.rows[0].account_id)
-      :
-        done(null, account.account_id);
+        account.rows ?
+            done(null, account.rows[0].account_id)
+            :
+            done(null, account.account_id);
     });
 
     // used to deserialize the user
@@ -43,15 +43,15 @@ module.exports = function (passport) {
             process.nextTick(async () => {
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
-                const acc = await SQLread.getLogin(email.toLowerCase());
-                if (acc != null) { //email is already taken
+                const retrievedAcount = await SQLread.getLogin(email.toLowerCase());
+                if (retrievedAcount != null) { //email is already taken
                     return done(false);
                 } else {
                     //still available make new user
                     var passwordToStore = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
                     var emailToStore = email.toLowerCase();
-                    var account = await SQLwrite.addAccount(emailToStore, passwordToStore)
-                    done(account);
+                    var createdAccount = await SQLwrite.addAccount(emailToStore, passwordToStore)
+                    done(createdAccount);
                 }
             });
         }

@@ -11,4 +11,3 @@ src/server/jwtsecret.js
 src/server/mailSecret.js
 src/server/db/Mongo/link.js
 build
-src/client/build
