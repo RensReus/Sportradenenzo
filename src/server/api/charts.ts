@@ -26,7 +26,6 @@ module.exports = function (app) {
 
   app.post('/api/userscores', async (req, res) => {
     var race_id = req.body.race_id;
-    console.log(req.body)
     var query = `SELECT username, stagenr, totalscore FROM stage_selection
             INNER JOIN account_participation USING (account_participation_id)
             INNER JOIN account USING (account_id)
@@ -35,7 +34,6 @@ module.exports = function (app) {
             ORDER BY username, stagenr`
     const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
-      console.log("results", results.rows)
       res.send({ mode: '404' })
       return
     }
@@ -97,7 +95,6 @@ module.exports = function (app) {
             ORDER BY username, stagenr`
     const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
-      console.log("results", results.rows)
       res.send({ mode: '404' })
       return
     }

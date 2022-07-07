@@ -155,7 +155,7 @@ module.exports = (app) => {
     }
     const recoveryToken = crypto.randomBytes(10).toString('hex');
     let expiry = new Date;
-    expiry.setMinutes(expiry.getMinutes()+10);
+    expiry.setMinutes(expiry.getMinutes() + 10);
     const expiryString = expiry.toISOString().slice(0, 19).replace('T', ' ');
     const account_id = `(SELECT account_id FROM account WHERE email='${req.body.email}')`;
     const query = `INSERT INTO account_token (account_id,type,expiry,token) VALUES (${account_id},'password_recovery','${expiryString}','${recoveryToken}')`;
@@ -176,20 +176,17 @@ module.exports = (app) => {
     const account_id = `(SELECT account_id FROM account_token WHERE type='password_recovery' AND token='${req.body.token}' AND expiry>'${nowString}')`
     const query = `UPDATE account SET password='${passwordToStore}', recovery_token=null, token_expiry=null WHERE account_id=${account_id}`;
     const result = await sqlDB.query(query);
-    console.log(result)
-    console.log(result.rowCount === 1)
     res.send(result.rowCount === 1);
   });
 
   async function sendVerificationMail(host, email) {
     const recoveryToken = crypto.randomBytes(10).toString('hex');
     let expiry = new Date;
-    expiry.setTime(expiry.getTime()+ 7 * 24 * 60 * 60 * 1000);
+    expiry.setTime(expiry.getTime() + 7 * 24 * 60 * 60 * 1000);
     const expiryString = expiry.toISOString().slice(0, 19).replace('T', ' ');
     const account_id = `(SELECT account_id FROM account WHERE email='${email}')`;
     const query = `INSERT INTO account_token (account_id,type,expiry,token) VALUES (${account_id},'email_verification','${expiryString}','${recoveryToken}')`;
     const res = await sqlDB.query(query);
-    console.log(res)
     transporter.sendMail({
       from: '"Sportradenenzo" <noreply@sportradenenzo.nl>',
       to: email,
