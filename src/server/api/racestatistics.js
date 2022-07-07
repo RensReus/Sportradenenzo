@@ -200,48 +200,22 @@ module.exports = (app) => {
     var totalscoreVal = `totalscore `
     var budgetOnly = "";
     if (budgetparticipation) {
-      budgetOnly = "AND price < 750000"
+      budgetOnly = "AND price <= 750000"
       teamscore = '';
       teamscoreNS = '';
       totalscoreVal = `totalscore - teamscore `
     }
-    var onlySelected = "";
-    if (showSelectedOnly) {
-      onlySelected = ""
-    }
-    var stageScore = `COALESCE(SUM(stagescore)/${userCount}, 0) AS "Etappe"`;
-    var gcScore = `COALESCE(SUM(gcscore)/${userCount}, 0) AS "AK"`;
-    var pointsScore = `COALESCE(SUM(pointsscore)/${userCount}, 0) AS "Punten"`;
-    var komScore = `COALESCE(SUM(komscore)/${userCount}, 0) AS "Berg"`;
-    var youthScore = `COALESCE(SUM(yocscore)/${userCount}, 0) AS "Jong"`;
-    var klassementScore = `COALESCE((SUM(gcscore) + SUM(pointsscore) + SUM(komscore) + SUM(yocscore))/${userCount}, 0) AS "Klassement"`;
-    var PPM = `COALESCE(ROUND(SUM(${totalscoreVal})/${userCount}*1e6/price,0),0) AS "PPM"`;
-    var totalScore = `COALESCE(SUM(${totalscoreVal})/${userCount},0) AS "Total"`;
-    var stageScoreNS = `COALESCE(SUM(stagescore)/${userCountNS}, 0) AS "Etappe"`;
-    var gcScoreNS = `COALESCE(SUM(gcscore)/${userCountNS}, 0) AS "AK"`;
-    var pointsScoreNS = `COALESCE(SUM(pointsscore)/${userCountNS}, 0) AS "Punten"`;
-    var komScoreNS = `COALESCE(SUM(komscore)/${userCountNS}, 0) AS "Berg"`;
-    var youthScoreNS = `COALESCE(SUM(yocscore)/${userCountNS}, 0) AS "Jong"`;
-    var klassementScoreNS = `COALESCE((SUM(gcscore) + SUM(pointsscore) + SUM(komscore) + SUM(yocscore))/${userCountNS}, 0) AS "Klassement"`;
-    var PPMNS = `COALESCE(ROUND(SUM(${totalscoreVal})/${userCountNS}*1e6/price,0),0) AS "PPM"`;
-    var totalScoreNS = `COALESCE(SUM(${totalscoreVal})/${userCountNS},0) AS "Total"`;
     var notSelectedRiders = `UNION 
-      SELECT ${name_link}, ${rider_name}, team AS "Team ", price AS "Price", 
-      ${stageScoreNS},${gcScoreNS}, ${pointsScoreNS}, ${komScoreNS}, ${youthScoreNS},
-      ${klassementScoreNS}, ${teamscoreNS} ${totalScoreNS}, 
-      ${PPMNS}, CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf",
+      SELECT ${riderpointsallColumns(userCountNS)}
       0 AS "Usercount", '' AS "Users" FROM rider_participation
       LEFT JOIN results_points USING (rider_participation_id)
       INNER JOIN rider USING(rider_id)
-      WHERE rider_participation.race_id = ${race_id} ${onlySelected} AND NOT rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider) ${budgetOnly}
+      WHERE rider_participation.race_id = ${race_id} AND NOT rider_participation_id IN (SELECT rider_participation_id FROM team_selection_rider INNER JOIN account_participation USING (account_participation_id) WHERE budgetparticipation = ${budgetparticipation}) ${budgetOnly}
       GROUP BY "Name", "Name_link", "Team ", "Price", dnf`;
     if (showSelectedOnly) {
       notSelectedRiders = ""
     }
-    var query = `SELECT ${name_link}, ${rider_name}, team AS "Team ", price AS "Price", 
-      ${stageScore},${gcScore}, ${pointsScore}, ${komScore}, ${youthScore},
-      ${klassementScore}, ${teamscore} ${totalScore}, 
-      ${PPM}, CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf",
+    var query = `SELECT ${riderpointsallColumns(userCount)}
       ${userCount} AS "Usercount", string_agg(DISTINCT username, ', ') AS "Users" FROM rider_participation
       LEFT JOIN results_points USING (rider_participation_id)
       INNER JOIN rider USING(rider_id)
@@ -264,6 +238,21 @@ module.exports = (app) => {
       title: showSelectedOnly ? "Alle Geselecteerde Renners" : "Alle Renners"
     }]
     return { tables, title: "Alle Renners Overzicht" };
+  }
+
+  riderpointsallColums = (userCount) => {
+    var stageScore = `COALESCE(SUM(stagescore)/${userCount}, 0) AS "Etappe"`;
+    var gcScore = `COALESCE(SUM(gcscore)/${userCount}, 0) AS "AK"`;
+    var pointsScore = `COALESCE(SUM(pointsscore)/${userCount}, 0) AS "Punten"`;
+    var komScore = `COALESCE(SUM(komscore)/${userCount}, 0) AS "Berg"`;
+    var youthScore = `COALESCE(SUM(yocscore)/${userCount}, 0) AS "Jong"`;
+    var klassementScore = `COALESCE((SUM(gcscore) + SUM(pointsscore) + SUM(komscore) + SUM(yocscore))/${userCount}, 0) AS "Klassement"`;
+    var PPM = `COALESCE(ROUND(SUM(${totalscoreVal})/${userCount}*1e6/price,0),0) AS "PPM"`;
+    var totalScore = `COALESCE(SUM(${totalscoreVal})/${userCount},0) AS "Total"`;
+    return `${name_link}, ${rider_name}, team AS "Team ", price AS "Price", 
+    ${stageScore},${gcScore}, ${pointsScore}, ${komScore}, ${youthScore},
+    ${klassementScore}, ${teamscore} ${totalScore}, 
+    ${PPM}, CASE WHEN dnf THEN 'DNF' ELSE '' END AS "dnf",`
   }
 
   getClassificationsWithSelectedRiders = async (race_id, budgetparticipation) => {
