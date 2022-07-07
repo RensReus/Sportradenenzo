@@ -232,20 +232,16 @@ var processPCSresults = function ($, stageType) {
   var teamWinners = [];
 
   var classifications = getClassifications($, stageType);// list of available classifications
+  var hasResults = classifications.length > 0;
 
-  let tableWrapper = $(".w68.left.mb_w100");
-  tableWrapper.children().each(function (index, element) {
-    var hasResults = classifications.length;
-    if (hasResults > 0 && classifications[index] !== 'Teams') {// maybe doesnt prevent crashes
-      var classification = classifications[index];
-      var columns = [];
-      let currentClassificationTable = tableWrapper.children().eq(index + 4);
-      currentClassificationTable.children().first().children().first().children().first().children().each(function (classindex, element) {
-        columns.push($(this).text());
-      })
-      currentClassificationTable.children().first().children().eq(1).children().each(function (riderindex, element) {//voor iedere renner in de uitslag
+  $("table.results").each(function (classificationIndex) {
+    if (hasResults && classifications[classificationIndex] !== 'Teams') {
+      var classification = classifications[classificationIndex];
+      var columns = $('th', this).map((_, col) => $(col).text()).get();
+
+      $('tbody tr', this).each(function (riderindex) {//voor iedere renner in de uitslag
         var rider = resultsProcessRiders(classification, columns, $(this))
-        if (rider.DNF) {//doesn't add rider if pos==0
+        if (rider.DNF) {
           ridersResults['dnf'].push(rider);
           return
           // return false;// skip to next
