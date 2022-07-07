@@ -69,7 +69,7 @@ module.exports = function (app) {
       for (var user in data) {
         total += data[user].dataPoints[i].y;
       }
-      var avg = total / data.length;
+      var avg = Math.round(total / data.length);
       for (var user in data) {
         data[user].dataPoints[i].y -= avg;
       }
