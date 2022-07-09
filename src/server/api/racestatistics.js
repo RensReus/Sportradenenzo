@@ -240,7 +240,7 @@ module.exports = (app) => {
     return { tables, title: "Alle Renners Overzicht" };
   }
 
-  riderpointsallColums = (userCount) => {
+  riderpointsallColumns = (userCount) => {
     var stageScore = `COALESCE(SUM(stagescore)/${userCount}, 0) AS "Etappe"`;
     var gcScore = `COALESCE(SUM(gcscore)/${userCount}, 0) AS "AK"`;
     var pointsScore = `COALESCE(SUM(pointsscore)/${userCount}, 0) AS "Punten"`;
