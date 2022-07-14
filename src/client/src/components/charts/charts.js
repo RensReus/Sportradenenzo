@@ -23,11 +23,10 @@ const charts = (props) => {
         case "missedpointsspread":
         case "missedpointsspreadrelatief":
         case "totalscorespread":
-          extraParams = { perRace: grouped }
           apilink += grouped ? 'grouped' : ''
           break;
         case "scorespread":
-          extraParams = { perStage: grouped, excludeFinal: !showEind }
+          extraParams = { excludeFinal: !showEind }
           apilink += grouped ? 'grouped' : ''
           break;
       }

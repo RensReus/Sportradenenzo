@@ -380,13 +380,18 @@ module.exports = function (app) {
     for (var selectie of selecties) {
       var username = selectie.username;
       for (var rider of selectie.riders) {
-        var toAdd = { user: username, score: rider.Score };
-        if (riders.filter(function (r) { return r.name === rider.Name; }).length > 0) {
-          const index = riders.map(r => r.name).indexOf(rider.Name);
+        var riderName = rider.Name;
+        var toAdd = { user: username, score: rider.Score, kopman: false };
+        if (riderName.startsWith("* ")) {
+          riderName = riderName.substring(2);
+          toAdd.kopman = true;
+        }
+        if (riders.filter(function (r) { return r.name === riderName; }).length > 0) {
+          const index = riders.map(r => r.name).indexOf(riderName);
           riders[index].users.push(toAdd)
           riders[index].max = Math.max(riders[index].max, toAdd.score)
         } else {
-          var newrider = { name: rider.Name, users: [toAdd], max: toAdd.score, Name_link: rider.Name_link, rowClassName: rider.rowClassName }
+          var newrider = { name: riderName, users: [toAdd], max: toAdd.score, Name_link: rider.Name_link, rowClassName: rider.rowClassName }
           riders.push(newrider)
         }
       }
@@ -400,18 +405,7 @@ module.exports = function (app) {
         var possibleRiders = riders.filter(rider => rider.users.length <= selecties.length - lineCount)
         var toAdd = nextToAdd(riderLine, possibleRiders);
         if (toAdd == null) {
-          // for (var selectie of selecties) {
-          //   var username = selectie.username;
-          //   for (var rider of riderLine) {
-          //     const index = rider.users.findIndex(object => {
-          //       return object.user === username;
-          //     });
-          //     if (index == -1) {
-          //       riderLine.push({ name: "De monteur kwam langs", users: [{ user: username, score: 0 }] })
-          //     }
-          //   }
-          // }
-          // correct opvullen met empty space
+          // TODO correct opvullen met empty space, ff zoeken naar race waar deze situatie voorkwam
           break;
         } else {
           const indexToAdd = riders.findIndex(object => {
@@ -437,9 +431,10 @@ module.exports = function (app) {
           });
           if (index != -1) {
             var score = parseInt(rider.users[index].score);
+            var kopmanPrefix = rider.users[index].kopman ? "* " : "";
             total += score;
             ridersForUser.push({
-              Name: rider.name,
+              Name: kopmanPrefix + rider.name,
               Score: score,
               Name_link: rider.Name_link,
               rowClassName: rider.rowClassName

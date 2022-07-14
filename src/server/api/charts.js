@@ -1,5 +1,6 @@
 module.exports = function (app) {
   const sqlDB = require('../db/sqlDB');
+  const colors = ["#4f81bc", "#c0504e", "#9bbb58", "#23bfaa", "#8064a1", "#f79647", "#4e7151", "#33558b", "#e59566", "#4aacc5", "#77a033"];
 
   function includedAccounts(req) { return req.body.fabFourOnly ? 'AND account_id <= 5' : '' };
 
@@ -30,7 +31,7 @@ module.exports = function (app) {
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
             WHERE stage.race_id = ${race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester' ${includedAccounts(req)}
-            ORDER BY account_id, stagenr`
+            ORDER BY username, stagenr`
     const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
       res.send({ mode: '404' })
@@ -198,40 +199,18 @@ module.exports = function (app) {
     var race_id = req.body.race_id;
     var excludeFinalStr = ''
     if (req.body.extraParams.excludeFinal) excludeFinalStr = `AND NOT type = 'FinalStandings'`
-    var budgetparticipation = req.body.budgetparticipation;
 
-    var barQuery = `SELECT username as colorlabel, CONCAT(username, ' etappe ', stagenr) as label, stagescore as y FROM stage_selection
+    var barQuery = `SELECT username, CONCAT('etappe ', stagenr) as race, stagescore as y FROM stage_selection
     INNER JOIN account_participation USING(account_participation_id)
     INNER JOIN account USING(account_id)
     INNER JOIN stage USING(stage_id)
-    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation} AND stage.finished ${includedAccounts(req)}
+    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished ${includedAccounts(req)}
     ORDER BY stagescore DESC;\n`
 
-    var avgQuery = `SELECT ROUND(AVG(stagescore),2), stagenr FROM stage_selection
-    INNER JOIN stage USING(stage_id)
-    INNER JOIN account_participation USING(account_participation_id)
-    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${budgetparticipation} ${includedAccounts(req)}
-    GROUP BY stagenr
-    ORDER BY stagenr;\n`
-
-    if (req.body.extraParams.perStage) {
-      barQuery = ``
-
-    }
-    var totalQuery = barQuery + avgQuery;
+    var totalQuery = barQuery;
     const results = await sqlDB.query(totalQuery);
-    var data = [{
-      type: "column",
-      legendText: "Score",
-      showInLegend: true,
-      dataPoints: []
-    }]
-    var colors = { Arjen: '#487ab2', Rens: '#b84548', Sam: '#93b358', Yannick: '#2ab9a2' }
-    for (var i in results[0].rows) {
-      var row = results[0].rows[i];
-      row.color = colors[row.colorlabel];
-      data[0].dataPoints.push(row);
-    }
+    var data = buildSpread(results);
+
     var toolTip = { backgroundColor: 'black', fontColor: 'white' }
     var extraFields = { height: 700 }
     var options = makeOptions("Scores per etappe", "Hoogste scores per etappe", "Points", toolTip, data, extraFields)
@@ -268,28 +247,16 @@ module.exports = function (app) {
   })
 
   app.post('/api/totalscorespread', async (req, res) => {
-    var budgetparticipation = req.body.budgetparticipation;
-    var racePointsQuery = `SELECT username as colorlabel, CONCAT(username, ' ', name, ' ', year) as label, finalscore as y FROM account_participation
+    var racePointsQuery = `SELECT username, CONCAT(name, ' ', year) as race, finalscore as y FROM account_participation
                 INNER JOIN account USING(account_id)
                 INNER JOIN race USING(race_id)
-                WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished AND year > 2014 ${includedAccounts(req)}
+                WHERE budgetparticipation = ${req.body.budgetparticipation} AND NOT name = 'classics' AND finished AND year > 2014 ${includedAccounts(req)}
                 ORDER BY finalscore DESC;\n`
 
-    var extraQuery = `SELECT username FROM account;`
-    var totalQuery = racePointsQuery + extraQuery;
+    var totalQuery = racePointsQuery;
     const results = await sqlDB.query(totalQuery);
-    var data = [{
-      type: "column",
-      legendText: "Score",
-      showInLegend: true,
-      dataPoints: []
-    }]
-    var colors = { Arjen: '#487ab2', Rens: '#b84548', Sam: '#93b358', Yannick: '#2ab9a2' }
-    for (var i in results[0].rows) {
-      var row = results[0].rows[i];
-      row.color = colors[row.colorlabel];
-      data[0].dataPoints.push(row);
-    }
+    var data = buildSpread(results);
+
     var toolTip = { backgroundColor: 'black', fontColor: 'white' }
     var extraFields = { height: 700 }
     var options = makeOptions("Scores per race", "Hoogste scores per race", "Points", toolTip, data, extraFields)
@@ -322,9 +289,28 @@ module.exports = function (app) {
     res.send({ options, title: "Chart: Scores per race" });
   })
 
+  function buildSpread(results) {
+    var data = [{
+      type: "column",
+      legendText: "Score",
+      showInLegend: true,
+      dataPoints: []
+    }]
+
+    var users = []
+    for (var row of results.rows) { // consistent colors
+      var colorIndex = users.indexOf(row.username);
+      if (colorIndex == -1) {
+        colorIndex = users.length;
+        users.push(row.username);
+      }
+      data[0].dataPoints.push({ y: row.y, label: `${row.username} ${row.race}`, color: colors[colorIndex] });
+    }
+    return data;
+  }
+
   app.post('/api/missedpointsspread', async (req, res) => {
     var missedPoints = await missedpointsall(req.body.race_id, req.body.budgetparticipation);
-    var colors = ["#FF20FF", "#0020FF", "#80F020", "#2020FF", "#FF2020", "#202020"]
     var combinedPoints = []
     missedPoints.tables.forEach((missed, i) => {
       var color = colors[i];
@@ -364,7 +350,6 @@ module.exports = function (app) {
 
   app.post('/api/missedpointsspreadrelatief', async (req, res) => {
     var missedPoints = await missedpointsall(req.body.race_id, req.body.budgetparticipation);
-    var colors = ["#FF20FF", "#0020FF", "#80F020", "#8020FF", "#FF2020", "#202020"]
     var combinedPoints = []
     missedPoints.tables.forEach((missed, i) => {
       var color = colors[i];
