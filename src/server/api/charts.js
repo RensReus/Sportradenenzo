@@ -23,7 +23,6 @@ module.exports = function (app) {
     return options
   }
 
-
   app.post('/api/userscores', async (req, res) => {
     var race_id = req.body.race_id;
     var query = `SELECT username, stagenr, totalscore FROM stage_selection
@@ -31,7 +30,7 @@ module.exports = function (app) {
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
             WHERE stage.race_id = ${race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester' ${includedAccounts(req)}
-            ORDER BY username, stagenr`
+            ORDER BY account_id, stagenr`
     const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
       res.send({ mode: '404' })
@@ -321,5 +320,166 @@ module.exports = function (app) {
     var extraFields = { height: 700 }
     var options = makeOptions("Scores per race", "Scores per race", "Points", toolTip, data, extraFields)
     res.send({ options, title: "Chart: Scores per race" });
+  })
+
+  app.post('/api/missedpointsspread', async (req, res) => {
+    var missedPoints = await missedpointsall(req.body.race_id, req.body.budgetparticipation);
+    var colors = ["#FF20FF", "#0020FF", "#80F020", "#2020FF", "#FF2020", "#202020"]
+    var combinedPoints = []
+    missedPoints.tables.forEach((missed, i) => {
+      var color = colors[i];
+      for (var stage of missed.tableData) {
+        if (stage.Etappe == "Totaal") continue;
+        combinedPoints.push({ label: `${missed.title} etappe ${stage.Etappe}`, y: stage.Gemist, color })
+      }
+    });
+    var data = [{
+      type: "column",
+      legendText: "Gemist",
+      showInLegend: true,
+      dataPoints: combinedPoints.sort((a, b) => b.y - a.y)
+    }]
+    var toolTip = { backgroundColor: 'black', fontColor: 'white' }
+    var extraFields = { height: 700 }
+    var options = makeOptions("Gemiste punten per etappe", "Meeste gemiste punten per etappe", "Gemiste Punten", toolTip, data, extraFields)
+    res.send({ options, title: "Chart: Score Spreiding" });
+  })
+
+  app.post('/api/missedpointsspreadgrouped', async (req, res) => {
+    var missedPoints = await missedpointsall(req.body.race_id, req.body.budgetparticipation);
+
+    var data = missedPoints.tables.map((missed, i) => ({
+      type: "column",
+      name: missed.title,
+      legendText: missed.title,
+      showInLegend: true,
+      dataPoints: missed.tableData.slice(0, -1).map((stage) => { return { label: stage.Etappe, y: stage.Gemist } })
+    }))
+
+    var toolTip = { backgroundColor: 'black', fontColor: 'white', shared: true }
+    var extraFields = { height: 700 }
+    var options = makeOptions("Gemiste punten per etappe", "Meeste gemiste punten per etappe", "Gemist", toolTip, data, extraFields)
+    res.send({ options, title: "Chart: Score Spreiding" });
+  })
+
+  app.post('/api/missedpointsspreadrelatief', async (req, res) => {
+    var missedPoints = await missedpointsall(req.body.race_id, req.body.budgetparticipation);
+    var colors = ["#FF20FF", "#0020FF", "#80F020", "#8020FF", "#FF2020", "#202020"]
+    var combinedPoints = []
+    missedPoints.tables.forEach((missed, i) => {
+      var color = colors[i];
+      for (var stage of missed.tableData) {
+        if (stage.Etappe == "Totaal") continue;
+        combinedPoints.push({ label: `${missed.title} etappe ${stage.Etappe}`, y: Math.round(stage.Gemist / stage.Optimaal * 100), color })
+      }
+    });
+    var data = [{
+      type: "column",
+      legendText: "Gemist",
+      showInLegend: true,
+      dataPoints: combinedPoints.sort((a, b) => b.y - a.y)
+    }]
+    var toolTip = { backgroundColor: 'black', fontColor: 'white' }
+    var extraFields = { height: 700 }
+    var options = makeOptions("Percentage gemist per etappe", "Percentage gemist per etappe", "Procent Gemist", toolTip, data, extraFields)
+    res.send({ options, title: "Chart: Score Spreiding" });
+  })
+
+  app.post('/api/missedpointsspreadrelatiefgrouped', async (req, res) => {
+    var missedPoints = await missedpointsall(req.body.race_id, req.body.budgetparticipation);
+
+    var data = missedPoints.tables.map((missed, i) => ({
+      type: "column",
+      name: missed.title,
+      legendText: missed.title,
+      showInLegend: true,
+      dataPoints: missed.tableData.map((stage) => { return { label: stage.Etappe, y: Math.round(stage.Gemist / stage.Optimaal * 100) } })
+    }))
+
+    var toolTip = { backgroundColor: 'black', fontColor: 'white', shared: true }
+    var extraFields = { height: 700 }
+    var options = makeOptions("Percentage gemist per etappe", "Percentage gemist per etappe", "Procent Gemist", toolTip, data, extraFields)
+    res.send({ options, title: "Chart: Score Spreiding" });
+  })
+
+  app.post('/api/missedpoints', async (req, res) => {
+    var missedPoints = await missedpointsall(req.body.race_id, req.body.budgetparticipation);
+
+    var data = [];
+    for (var missed of missedPoints.tables) {
+      var dataset = {
+        type: "line",
+        name: missed.title,
+        showInLegend: true,
+        dataPoints: []
+      }
+      dataset.dataPoints.push({ x: 0, y: 0 })
+      var total = 0;
+      for (var stage of missed.tableData) {
+        if (stage.Etappe == "Totaal") continue;
+        total += stage.Gemist
+        dataset.dataPoints.push({ x: stage.Etappe, y: total })
+      }
+      data.push(dataset)
+    }
+
+    var userCount = missedPoints.tables.length;
+    for (var et in data[0].dataPoints) {
+      var avg = Math.round(data.reduce((tot, dataset) => tot + dataset.dataPoints[et].y, 0) / userCount);
+      for (var i in data) {
+        data[i].dataPoints[et].y -= avg;
+      }
+    }
+
+    var toolTip = { shared: true }
+    var extraFields = {
+      axisX: {
+        interval: 1,
+        title: "Stage"
+      }
+    }
+    var options = makeOptions("Gemist", "Totaal Gemist score na iedere etappe", "Gemist", toolTip, data, extraFields)
+    res.send({ options, title: "Gemiste Punten Verloop" });
+  })
+
+
+  app.post('/api/optimalpoints', async (req, res) => {
+    var missedPoints = await missedpointsall(req.body.race_id, req.body.budgetparticipation);
+
+    var data = [];
+    for (var missed of missedPoints.tables) {
+      var dataset = {
+        type: "line",
+        name: missed.title,
+        showInLegend: true,
+        dataPoints: []
+      }
+      dataset.dataPoints.push({ x: 0, y: 0 })
+      var total = 0;
+      for (var stage of missed.tableData) {
+        if (stage.Etappe == "Totaal") continue;
+        total += stage.Optimaal
+        dataset.dataPoints.push({ x: stage.Etappe, y: total })
+      }
+      data.push(dataset)
+    }
+
+    var userCount = missedPoints.tables.length;
+    for (var et in data[0].dataPoints) {
+      var avg = Math.round(data.reduce((tot, dataset) => tot + dataset.dataPoints[et].y, 0) / userCount);
+      for (var i in data) {
+        data[i].dataPoints[et].y -= avg;
+      }
+    }
+
+    var toolTip = { shared: true }
+    var extraFields = {
+      axisX: {
+        interval: 1,
+        title: "Stage"
+      }
+    }
+    var options = makeOptions("Optimaal", "Optimale score na iedere etappe", "Points", toolTip, data, extraFields)
+    res.send({ options, title: "Optimale Punten Verloop" });
   })
 }

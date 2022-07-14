@@ -20,6 +20,8 @@ const charts = (props) => {
       var apilink = '/api/' + chartname
       var extraParams = {}
       switch (chartname) {
+        case "missedpointsspread":
+        case "missedpointsspreadrelatief":
         case "totalscorespread":
           extraParams = { perRace: grouped }
           apilink += grouped ? 'grouped' : ''
@@ -51,7 +53,7 @@ const charts = (props) => {
       {chartname === "scorespread" &&
         <StateSwitchButton stateStrings={['Zonder', 'Met Eindklassement']} stateVar={showEind} stateVarSwitch={showEindSwitch} />
       }
-      {chartname.includes("scorespread") &&
+      {chartname.includes("spread") &&
         <StateSwitchButton stateStrings={['', 'Gegroepeerd']} stateVar={grouped} stateVarSwitch={groupedSwitch} />
       }
       <CanvasJSChart options={options} />

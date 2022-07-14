@@ -8,7 +8,11 @@ const ChartsDropdown = (props) => {
                 { url: "/charts/userscores", title: "Relatief Scoreverloop" },
                 { url: "/charts/userrank", title: "Ranking" },
                 { url: "/charts/riderpercentage", title: "Puntenaandeel Renner per Etappe" },
-                { url: "/charts/scorespread", title: "Score verdeling" }
+                { url: "/charts/scorespread", title: "Score verdeling" },
+                { url: "/charts/optimalpoints", title: "Optimale punten verloop" },
+                { url: "/charts/missedpoints", title: "Gemiste punten verloop" },
+                { url: "/charts/missedpointsspread", title: "Gemiste punten verdeling" },
+                { url: "/charts/missedpointsspreadrelatief", title: "Relatieve gemiste punten verdeling" }
             ]} />
     )
 }
