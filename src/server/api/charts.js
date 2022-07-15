@@ -31,7 +31,7 @@ module.exports = function (app) {
             INNER JOIN account USING (account_id)
             INNER JOIN stage USING (stage_id)
             WHERE stage.race_id = ${race_id} AND stage.finished AND budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester' ${includedAccounts(req)}
-            ORDER BY username, stagenr`
+            ORDER BY account_id, stagenr`
     const results = await sqlDB.query(query);
     if (results.rows.length === 0) {
       res.send({ mode: '404' })
