@@ -85,6 +85,75 @@ module.exports = function (app) {
     res.send({ options, title: "Chart: User Scores" });
   })
 
+
+  app.post('/api/totaalverloop', async (req, res) => {
+    var query = `SELECT username, username, CONCAT(name, ' ', year) as racename, finalscore FROM account_participation
+            INNER JOIN account USING (account_id)
+            INNER JOIN race USING (race_id)
+            WHERE budgetparticipation = ${req.body.budgetparticipation} AND NOT username = 'tester' ${includedAccounts(req)} AND NOT name = 'classics' AND finished AND year > 2014
+            ORDER BY account_id, year, name`
+    const results = await sqlDB.query(query);
+    if (results.rows.length === 0) {
+      res.send({ mode: '404' })
+      return
+    }
+    var username = results.rows[0].username;
+    var userObj = {
+      type: "line",
+      name: username,
+      showInLegend: true,
+      dataPoints: []
+    }
+    var data = [];
+    userObj.dataPoints.push({ x: 0, y: 0 })
+    var counter = 0;
+    var totalscore = 0;
+    for (var i in results.rows) {
+      if (userObj.name == results.rows[i].username) {
+        totalscore += results.rows[i].finalscore;
+        counter++;
+        username == "Sam"
+          ? userObj.dataPoints.push({ x: counter, y: totalscore, indexLabel: results.rows[i].racename })
+          : userObj.dataPoints.push({ x: counter, y: totalscore })
+      } else {
+        data.push(userObj);
+        username = results.rows[i].username;
+        userObj = {
+          type: "line",
+          name: username,
+          showInLegend: true,
+          dataPoints: []
+        }
+        userObj.dataPoints.push({ x: 0, y: 0 })
+        totalscore = results.rows[i].finalscore;
+        counter = 1;
+        username == "Sam"
+          ? userObj.dataPoints.push({ x: counter, y: totalscore, indexLabel: results.rows[i].racename })
+          : userObj.dataPoints.push({ x: counter, y: totalscore })
+      }
+    }
+    data.push(userObj)
+    for (i in userObj.dataPoints) {
+      var total = 0;
+      for (var user in data) {
+        total += data[user].dataPoints[i].y;
+      }
+      var avg = Math.round(total / data.length);
+      for (var user in data) {
+        data[user].dataPoints[i].y -= avg;
+      }
+    }
+    var toolTip = { shared: true }
+    var extraFields = {
+      axisX: {
+        interval: 1,
+        title: "Stage"
+      }
+    }
+    var options = makeOptions("Scores", "Score verschil na iedere race", "Points", toolTip, data, extraFields)
+    res.send({ options, title: "Chart: Totaal scores verloop" });
+  })
+
   app.post('/api/userrank', async (req, res) => {
     var race_id = req.body.race_id;
     var query = `SELECT username, stagenr, rank() over (PARTITION BY stagenr ORDER BY totalscore desc) FROM stage_selection
