@@ -1,11 +1,25 @@
-import { Component } from 'react';
+import { Component, MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from "@fortawesome/free-solid-svg-icons";
+import ChartsDropdown from './ChartsDropdown';
+import StatistiekenDropdown from './StatistiekenDropdown';
 
-class MobileDropdown extends Component {
-    constructor() {
-      super();
+interface MobileDropdownProps {
+  raceName: string,
+  currentStageLink: string, 
+  history: any,
+  isAdmin: boolean,
+  isLoggedIn: boolean,
+}
+
+interface MobileDropdownState {
+  showMenu: boolean,
+}
+
+class MobileDropdown extends Component<MobileDropdownProps, MobileDropdownState> {
+    constructor(props: MobileDropdownProps) {
+      super(props);
       
     this.state = {
         showMenu: false,
@@ -15,7 +29,7 @@ class MobileDropdown extends Component {
       this.closeMenu = this.closeMenu.bind(this);
     }
     
-  showMenu(event) {
+  showMenu(event: MouseEvent) {
     event.preventDefault();
 
     this.setState({ showMenu: true }, () => {

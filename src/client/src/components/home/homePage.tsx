@@ -3,8 +3,19 @@ import axios from 'axios';
 import { useHistory } from "react-router-dom";
 import { useState } from 'react';
 import SREButton from '../ui/SREButton'
+import { Race } from '../../models/Race';
 
-class RacesTable extends Component {
+interface RacesTableProps {
+  title: string,
+  races: Race[],
+  goToRace: (race: Race) => void,
+}
+
+interface HomeProps {
+  setRace: (race: Race) => void,
+}
+
+class RacesTable extends Component<RacesTableProps> {
   render() {
     let racelinks = this.props.races.map(race => {
       return (
@@ -26,7 +37,7 @@ class RacesTable extends Component {
   }
 }
 
-const Home = (props) => {
+const Home = (props: HomeProps) => {
   let history = useHistory();
   const [finishedRaces, setFinishedRaces] = useState([]);
   const [activeRaces, setActiveRaces] = useState([]);
@@ -47,7 +58,7 @@ const Home = (props) => {
     }
   },[activeRaces])
 
-  const goToRace = (race) => {
+  const goToRace = (race: any) => {
     props.setRace(race)
     if (race.stagenr === 0) {// before start
       history.push('/teamselection')

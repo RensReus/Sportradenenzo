@@ -1,1 +1,1 @@
-export { default } from "./EmailVerification"
+export { default } from "./EmailVerification.tsx"

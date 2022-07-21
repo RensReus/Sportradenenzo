@@ -32,7 +32,6 @@ import './components/css/tables.css'
 class App extends Component {
   constructor(props) {
     super(props);
-    //Start de response interceptor
     this.createAxiosResponseInterceptor();
     //De request interceptor voegt aan elke response naar de server de authtoken toe aan de request header
     axios.interceptors.request.use(

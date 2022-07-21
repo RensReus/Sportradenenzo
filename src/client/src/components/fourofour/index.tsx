@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import './index.css';
 
-class Fourofour extends Component{
+class Fourofour extends Component<{message:string}>{
     render(){
         return(
             <div className="fourofourContainer h5 bold">

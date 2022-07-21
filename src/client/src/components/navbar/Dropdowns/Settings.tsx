@@ -1,11 +1,19 @@
-import { Component } from 'react';
+import { Component, MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCog, faBars } from "@fortawesome/free-solid-svg-icons";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 
-class SettingsDropdown extends Component {
-    constructor() {
-      super();
+interface SettingsDropdownProps {
+  history: any,
+}
+
+interface SettingsDropdownState {
+  showMenu: boolean,
+}
+
+class SettingsDropdown extends Component<SettingsDropdownProps, SettingsDropdownState> {
+    constructor(props: SettingsDropdownProps) {
+      super(props);
       
     this.state = {
         showMenu: false,
@@ -15,7 +23,7 @@ class SettingsDropdown extends Component {
       this.closeMenu = this.closeMenu.bind(this);
     }
     
-  showMenu(event) {
+  showMenu(event: MouseEvent) {
     event.preventDefault();
 
     this.setState({ showMenu: true }, () => {

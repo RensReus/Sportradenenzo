@@ -1,8 +1,21 @@
 import { Component } from 'react';
 import axios from 'axios';
 
-class EmailVerfication extends Component {
-  constructor(props) {
+interface EmailVerficationProps {
+  match: {
+    params: {
+      token: string
+    }
+  }
+}
+
+interface EmailVerficationState {
+  tried: boolean,
+  success: boolean,
+}
+
+class EmailVerfication extends Component<EmailVerficationProps, EmailVerficationState> {
+  constructor(props: EmailVerficationProps) {
     super(props);
     this.state = ({
       tried: false,

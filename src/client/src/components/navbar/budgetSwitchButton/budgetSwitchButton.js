@@ -6,14 +6,17 @@ export function BudgetSwitchButton() {
     const dispatch = useDispatch();
     const budget = useSelector((state) => state.budgetSwitch.value)
     return (
-        <div className='budgettext h7'>
-            <span className={budget ? 'bold grayedOut' : 'bold'}></span>
-            <label className="switch">
-                <input type="checkbox" onClick={() => dispatch(flip())}></input>
-                <span className="slider round"></span>
-            </label>
-            <span className={budget ? 'bold' : 'bold grayedOut'}> Budget </span>
-        </div>
+      <div className="pl-2 w-28">
+        <label className="switch">
+          <div class="flex cursor-pointer gap-x-2">
+            <div class="min-w-full h-4">
+              <input type="checkbox" onClick={() => dispatch(flip())}></input>
+              <div className="slider round"></div>
+            </div>
+            <div className='bold -mt-1'> Budget </div>
+          </div>
+        </label>
+      </div>
     )
 }
 

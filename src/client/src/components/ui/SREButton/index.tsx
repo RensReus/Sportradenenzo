@@ -1,7 +1,7 @@
 import './SREButton.css';
 
 type SREButtonProps = {
-  color: "blue" | "red" | "yellow" | "pink" | "gray" | "giro" | "tour" | "vuelta";
+  color: "blue" | "red" | "yellow" | "pink" | "gray" | "giro" | "tour" | "vuelta" | "classics";
   content?: any;
   disabled?: boolean;
   onClick: () => any;
