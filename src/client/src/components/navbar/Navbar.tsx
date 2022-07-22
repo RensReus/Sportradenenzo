@@ -29,7 +29,7 @@ const Navbar = (props: NavbarProps) => {
 
   return (
     <div className={
-      "flex fixed justify-left items-center select-none shadow-lg z-50 " +
+      "flex fixed justify-left items-center select-none shadow-lg z-50 overflow-auto " +
       "bg-gray-800 text-gray-400 h-12 w-full border-t-2 border-solid gap-x-4 " +
       "border-" + raceColor + " " + (props.isLoggedIn? "" : "hidden")
     }>

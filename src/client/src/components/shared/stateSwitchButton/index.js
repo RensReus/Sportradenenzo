@@ -2,12 +2,16 @@ import React, { Component } from "react";
 class stateSwitchButton extends Component {
     render() {
         return (
-          <div className="pointer" onClick={this.props.stateVarSwitch} >
+          <div className="pl-2 w-32">
             <label className="switch">
-              <span className={this.props.stateVar ? 'bold grayedOut' : 'bold'}>{this.props.stateStrings[0]} </span>
-              <input type="checkbox" defaultChecked={this.props.stateVar}></input>
-              <span className="slider round"></span>
-              <span className={this.props.stateVar ? 'bold' : 'bold grayedOut'}> {this.props.stateStrings[1]}</span>
+              <div class="flex cursor-pointer gap-x-2">
+                <span>{this.props.stateStrings[0]}</span>
+                <div class="min-w-full h-4">
+                  <input type="checkbox" onClick={this.props.stateVarSwitch}></input>
+                  <div className="slider round"></div>
+                </div>
+                <div className='bold -mt-1'>{this.props.stateStrings[1]}</div>
+              </div>
             </label>
           </div>
         )
