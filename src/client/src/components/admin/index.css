@@ -100,23 +100,35 @@ table.outputTable{
   /* Loading data css */
   .loadingData.true{
     position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     top: 0;
     bottom: 0;
     left: 0; 
     right: 0;
     height: 100%;
     width: 100%;
-    background-color: rgba(100,100,100,0.7);
+    background-color: rgba(255, 255, 255, 0.5);
     text-align: center;
     vertical-align: center;
   }
 
   .loadingData > img {
-    display: block;
-    margin: auto;
-    width: 100%;
+    animation: rotation 2s infinite linear;
+    max-width: 32px;
   }
 
   .loadingData.false{
     display: none;
   }
+
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
+  

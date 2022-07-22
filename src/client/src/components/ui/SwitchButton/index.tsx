@@ -1,4 +1,4 @@
-import './index.css';
+import './switchButton.css';
 
 interface SwitchButtonProps {
   action: () => {};
