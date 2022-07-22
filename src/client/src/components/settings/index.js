@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import StateSwitchButton from '../shared/stateSwitchButton';
+import { Component } from 'react';
+import SwitchButton from '../ui/SwitchButton';
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -31,7 +31,7 @@ class Home extends Component {
       <div className="w-full md:w-1/2 m-auto p-4 bg-white shadow-lg">
         <div className="text-2xl mb-2">Lokale Settings</div>
         <div className="text-base mt-3">Redirect automatisch naar race op Homepage
-          <StateSwitchButton stateStrings={['Off', 'On']} stateVar={this.state.autoRedirectOnHomepage} stateVarSwitch={this.autoRedirectOnHomepageSwitch} />
+          <SwitchButton labelLeft='Off' labelRight='On' value={this.state.autoRedirectOnHomepage} action={this.autoRedirectOnHomepageSwitch}/>
         </div>
         <div className='text-base mt-3'>Darkmode</div>
         <select id="selectBox" onChange={this.darkModeSwitch}>

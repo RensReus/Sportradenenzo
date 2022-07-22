@@ -1,7 +1,7 @@
 import './index.css';
 import axios from 'axios';
 import Table from '../shared/table'
-import StateSwitchButton from '../shared/stateSwitchButton';
+import SwitchButton from '../ui/SwitchButton';
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux'
@@ -39,8 +39,10 @@ const statistics = (props) => {
 
   return (
     <div className="statisticsContainer">
-      {props.match.params.selection === "allriders" && <StateSwitchButton stateStrings={['Alle', 'Geselecteerde']} stateVar={showSelectedOnly} stateVarSwitch={allSelectedSwitch} />}
-      {props.match.params.selection === "teams" && tables.length > 0 && <StateSwitchButton stateStrings={['Simpel', 'Details']} stateVar={details} stateVarSwitch={detailsSwitch} />}
+      {props.match.params.selection === "allriders" && 
+      <SwitchButton labelLeft='Alle' labelRight='Geselecteerde' value={showSelectedOnly} action={allSelectedSwitch} />}
+      {props.match.params.selection === "teams" && tables.length > 0 && 
+      <SwitchButton labelLeft='Simpel' labelRight='Details' value={details} action={detailsSwitch} />}
       {tables}
     </div>
 
