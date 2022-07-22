@@ -48,7 +48,7 @@ const Navbar = (props: NavbarProps) => {
           }
           {localStorage.getItem('authToken') ? (
             jwt_decode<AuthToken>(localStorage.getItem('authToken')?? "").account_id <= 5 &&
-            <div className="flex pt-2"><BudgetSwitchButton /><FabFourSwitchButton /></div>) : <></>
+            <div className="flex gap-x-2"><BudgetSwitchButton /><FabFourSwitchButton /></div>) : <></>
           }
         </div>
         <div className='flex md:hidden gap-x-4'>
@@ -56,7 +56,7 @@ const Navbar = (props: NavbarProps) => {
           {!props.isLoading && <StatsDropdown showRaceSpecificData={race !== null} />}
           {localStorage.getItem('authToken') ? (
             jwt_decode<AuthToken>(localStorage.getItem('authToken')?? "").account_id <= 5 &&
-            <div className="flex text-md pt-1"><BudgetSwitchButton /><FabFourSwitchButton /></div>) : <></>
+            <div className="flex text-md"><BudgetSwitchButton /><FabFourSwitchButton /></div>) : <></>
           }
         </div>
       </div>
