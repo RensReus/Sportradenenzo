@@ -47,7 +47,7 @@ module.exports = (app) => {
             INNER JOIN race USING(race_id)
             WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished = TRUE AND year > 2014 ${includedAccounts()}) AS subquery`
     var rankQuery = `SELECT ARRAY_AGG(username ORDER BY finalscore DESC) as usernames, ARRAY_AGG(finalscore ORDER BY finalscore DESC) as scores, race FROM ${subquery} GROUP BY race; `;//ranking per stage
-    var countQuery = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
+    var rankCountQuery = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
             (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
             GROUP BY username; \n`//aantal keer per ranking
 
@@ -68,9 +68,24 @@ module.exports = (app) => {
                 INNER JOIN race USING(race_id)
                 WHERE budgetparticipation = ${budgetparticipation} AND NOT name = 'classics' AND finished ${includedAccounts()}
                 GROUP BY username
-                ${orderby}`
+                ${orderby};\n `
 
-    var query = rankQuery + countQuery + scoreCountQuery;
+    var winnerName = `(SELECT username FROM account INNER JOIN account_participation using(account_id) WHERE race_id = a.race_id ORDER BY finalscore DESC LIMIT 1)`
+
+    var allwinners = `SELECT name, ${winnerName} from account_participation a
+      INNER JOIN race USING (race_id )
+      INNER JOIN account USING (account_id )
+      WHERE NOT name = 'classics' AND finished = TRUE AND year > 2014
+      GROUP BY name, race_id`
+
+    var winsPerRaceQuery = `SELECT username AS " ",
+      COUNT(CASE WHEN name = 'giro' THEN 1 END) AS Giro,
+      COUNT(CASE WHEN name = 'tour' THEN 1 END) AS Tour,
+      COUNT(CASE WHEN name = 'vuelta' THEN 1 END) AS Vuelta
+      FROM (${allwinners}) AS allwinners
+      GROUP BY username`
+
+    var query = rankQuery + rankCountQuery + scoreCountQuery + winsPerRaceQuery;
     return await processVictoriesQuery(query, "Race")
   }
 
@@ -80,10 +95,10 @@ module.exports = (app) => {
     INNER JOIN account USING (account_id)
     INNER JOIN stage USING (stage_id)
     WHERE stage.race_id = ${race_id} AND NOT username = 'tester' AND budgetparticipation = ${budgetparticipation} AND stage.finished ${includedAccounts()}) AS subquery`
-    var query1 = `SELECT ARRAY_AGG(username ORDER BY stagescore DESC) as usernames, ARRAY_AGG(stagescore ORDER BY stagescore DESC) as scores, stagenr FROM ${subquery} GROUP BY stagenr; `;//ranking per stage
-    var query2 = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
+    var rankQuery = `SELECT ARRAY_AGG(username ORDER BY stagescore DESC) as usernames, ARRAY_AGG(stagescore ORDER BY stagescore DESC) as scores, stagenr FROM ${subquery} GROUP BY stagenr; `;
+    var countPerRank = `SELECT username, ARRAY_AGG(rank) as ranks, ARRAY_AGG(count) as rankcounts FROM 
     (SELECT username, rank, COUNT(rank) FROM ${subquery} GROUP BY username,rank) b
-    GROUP BY username; \n`//aantal keer per ranking
+    GROUP BY username; \n`
 
     var first = `COUNT(CASE WHEN stagescore < 50 THEN 1 END) AS "50-"`
     var second = `COUNT(CASE WHEN stagescore >= 50 AND stagescore < 100 THEN 1 END) AS "50 "`
@@ -106,9 +121,9 @@ module.exports = (app) => {
                 INNER JOIN stage USING(stage_id)
                 WHERE budgetparticipation = ${budgetparticipation} AND stage.race_id = ${race_id} AND account_participation.race_id = ${race_id} AND finished AND NOT type = 'FinalStandings' ${includedAccounts()}
                 GROUP BY username
-                ${orderby}`
+                ${orderby}; `
 
-    var query = query1 + query2 + scoreCountQuery;
+    var query = rankQuery + countPerRank + scoreCountQuery;
     return await processVictoriesQuery(query, "Stage")
   }
 
@@ -189,6 +204,9 @@ module.exports = (app) => {
     tables.push({ tableData: rankTable, title: `${titleVar} Uitslagen` })
     tables.push({ tableData: countTable, title: "Hoe vaak welke positie" })
     tables.push({ tableData: results[2].rows, title: "Score verdelingen" })
+    if (rankTitle === "Race") {
+      tables.push({ tableData: results[3].rows, title: "Overwinningen Per Race" })
+    }
     return { tables, title: `${titleVar} Winsten Overzicht` };
   }
 

@@ -34,7 +34,7 @@
     "server-dev": "nodemon --config \"nodemon.json\"/",
     "client": "node start-client.js",
     "lint": "eslint .",
-    "install-all": "npm install && cd .\\src\\client\\ && npm install && cd ..\\..",
+    "install-all": "npm install && cd .\\src\\client\\ && npm install --legacy-peer-deps && cd ..\\..",
     "build": "npm i --only=dev && npx -p typescript tsc && cd src/client/ && npm i --only=dev && npm i --save @babel/runtime && npm run build && cd ../..  && node heroku-build.js"
   },
   "devDependencies": {
