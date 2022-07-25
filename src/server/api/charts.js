@@ -85,7 +85,6 @@ module.exports = function (app) {
     res.send({ options, title: "Chart: User Scores" });
   })
 
-
   app.post('/api/totaalverloop', async (req, res) => {
     var query = `SELECT username, username, CONCAT(name, ' ', year) as racename, finalscore FROM account_participation
             INNER JOIN account USING (account_id)
@@ -136,11 +135,13 @@ module.exports = function (app) {
     for (i in userObj.dataPoints) {
       var total = 0;
       for (var user in data) {
-        total += data[user].dataPoints[i].y;
+        total += data[user].dataPoints[i]?.y || 0;
       }
       var avg = Math.round(total / data.length);
       for (var user in data) {
-        data[user].dataPoints[i].y -= avg;
+        if (data[user].dataPoints[i]) {
+          data[user].dataPoints[i].y -= avg;
+        }
       }
     }
     var toolTip = { shared: true }

@@ -38,15 +38,17 @@ module.exports = function (app) {
       var kopman = `rider_participation.rider_participation_id WHEN (SELECT kopman_id FROM stage_selection WHERE account_participation_id = ${account_participation_id} AND stage_id=${stage_id})`
       var orderBy = `CASE WHEN stagepos = 0 THEN 255 ELSE stagepos END ASC`
       var firstColumn = `CASE WHEN stagepos IS NULL OR stagepos = 0 THEN '' ELSE CONCAT(stagepos, 'e') END AS "   "`
+      var stagescore = `CASE ${kopman} THEN stagescore * 1.5 ELSE stagescore END`
+      var stageColumn = `COALESCE(${stagescore},0) AS "Stage",`
       if (stageInfo.type === "FinalStandings") {
-        firstColumn = `CASE WHEN dnf THEN 'DNF' ELSE CONCAT(gcpos, 'e') END AS "AK"`
+        stageColumn = ``;
+        firstColumn = `CASE WHEN dnf THEN 'DNF' ELSE CONCAT(gcpos, 'e') END AS "   "`
         kopman = 'WHEN FALSE'
         selection_id = `account_participation_id`
         selection = 'team_selection_rider'
         selection_id_val = account_participation_id;
         orderBy = `"Total" DESC`
       }
-      var stagescore = `CASE ${kopman} THEN stagescore * 1.5 ELSE stagescore END`
       var totalscore = `CASE ${kopman} THEN totalscore + stagescore * .5 ELSE totalscore END`
       var name = `CASE ${kopman} THEN CONCAT('*', firstname, ' ', lastname) ELSE CONCAT(firstname, ' ', lastname) END  AS "Name"`
       var teampoints = ` COALESCE(teamscore,0) as "Team",`;
@@ -54,7 +56,7 @@ module.exports = function (app) {
         teampoints = '';
         totalscore = `CASE ${kopman} THEN totalscore - teamscore + stagescore * .5 ELSE totalscore - teamscore END`
       }
-      var teamresultQuery = `SELECT ${firstColumn}, ${name}, COALESCE(${stagescore},0) AS "Stage", COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", ${teampoints} COALESCE(${totalscore},0) as "Total"
+      var teamresultQuery = `SELECT ${firstColumn}, ${name}, ${stageColumn} COALESCE(gcscore,0) AS "AK", COALESCE(pointsscore,0) AS "Punten", COALESCE(komscore,0) AS "Berg", COALESCE(yocscore,0) AS "Jong", ${teampoints} COALESCE(${totalscore},0) as "Total"
           FROM ${selection} 
           INNER JOIN rider_participation USING(rider_participation_id)
           LEFT JOIN results_points ON results_points.rider_participation_id = rider_participation.rider_participation_id  AND results_points.stage_id = ${stage_id}
@@ -79,6 +81,10 @@ module.exports = function (app) {
         teamresult = uitslagresults[0].rows;
         var totalteam = { " ": "", "Name": "Totaal", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Team": 0, "Total": 0 }
         if (budgetParticipation) totalteam = { "   ": "", "Name": "Totaal", "Stage": 0, "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Total": 0 };
+        if (stageInfo.type === "FinalStandings") {
+          var totalteam = { " ": "", "Name": "Totaal", "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Team": 0, "Total": 0 }
+          if (budgetParticipation) totalteam = { "   ": "", "Name": "Totaal", "AK": 0, "Punten": 0, "Berg": 0, "Jong": 0, "Total": 0 };
+        }
         for (var i in teamresult) {
           totalteam.Stage += parseInt(teamresult[i].Stage);
           totalteam.AK += teamresult[i].AK;
