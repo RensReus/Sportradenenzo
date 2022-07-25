@@ -57,6 +57,7 @@ require('./server/api/admin')(app);
 require('./server/api/authentication')(app);
 require('./server/api/manualupdate')(app);
 require('./server/api/racestatistics')(app);
+require('./server/api/raceEndStatistics')(app);
 require('./server/api/charts')(app);
 require('./server/api/stageresults')(app);
 require('./server/api/stageselection')(app);

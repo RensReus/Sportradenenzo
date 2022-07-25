@@ -10,10 +10,11 @@ import Navbar from './components/navbar';
 
 import LogInSignUp from './components/LogInSignUp';
 import Home from './components/home';
-import Stage from './components/stage'
+import Stage from './components/stage';
 import Teamselection from './components/teamselection';
 import Admin from './components/admin';
 import Statistics from './components/statistics';
+import WrapUp from './components/wrapup';
 import Charts from './components/charts';
 import Rider from './components/rider';
 import Profile from './components/profile'
@@ -233,6 +234,7 @@ class App extends Component {
           <ReactRoute path="/home" component={Home} history={this.props.history} setRace={this.setRace} />
           <ReactRoute path="/404" component={Fourofour} history={this.props.history} message={this.state.message} />
           <ReactRoute path="/settings" component={Settings} history={this.props.history} />
+          <ReactRoute exact path="/wrapup" component={WrapUp} history={this.props.history} race_id={this.state.race_id}/>
         </div>
       </div>
     );
