@@ -70,13 +70,18 @@ module.exports = (app) => {
                 GROUP BY username
                 ${orderby};\n `
 
-    var winnerName = `(SELECT username FROM account INNER JOIN account_participation using(account_id) WHERE race_id = a.race_id ORDER BY finalscore DESC LIMIT 1)`
+    var winnerName = `(SELECT username FROM account
+      INNER JOIN account_participation using(account_id)
+      WHERE race_id = a.race_id AND budgetparticipation = ${budgetparticipation} ${includedAccounts()}
+      ORDER BY finalscore DESC
+      LIMIT 1)`
 
     var allwinners = `SELECT name, ${winnerName} from account_participation a
       INNER JOIN race USING (race_id )
       INNER JOIN account USING (account_id )
       WHERE NOT name = 'classics' AND finished = TRUE AND year > 2014
-      GROUP BY name, race_id`
+      GROUP BY name, race_id
+      HAVING ${winnerName} IS NOT NULL`
 
     var winsPerRaceQuery = `SELECT username AS " ",
       COUNT(CASE WHEN name = 'giro' THEN 1 END) AS Giro,
@@ -84,6 +89,8 @@ module.exports = (app) => {
       COUNT(CASE WHEN name = 'vuelta' THEN 1 END) AS Vuelta
       FROM (${allwinners}) AS allwinners
       GROUP BY username`
+
+    console.log(allwinners)
 
     var query = rankQuery + rankCountQuery + scoreCountQuery + winsPerRaceQuery;
     return await processVictoriesQuery(query, "Race")
