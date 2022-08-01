@@ -90,8 +90,6 @@ module.exports = (app) => {
       FROM (${allwinners}) AS allwinners
       GROUP BY username`
 
-    console.log(allwinners)
-
     var query = rankQuery + rankCountQuery + scoreCountQuery + winsPerRaceQuery;
     return await processVictoriesQuery(query, "Race")
   }
