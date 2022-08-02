@@ -17,6 +17,7 @@ class manualupdate extends Component {
     this.changeGSKText = this.changeGSKText.bind(this);
     this.changeGRKText = this.changeGRKText.bind(this);
     this.changeGRText = this.changeGRText.bind(this);
+    this.changeYear = this.changeYear.bind(this);
     this.changeGRTextCopy = this.changeGRTextCopy.bind(this);
 
     this.handleChangeYear = this.handleChangeYear.bind(this);
@@ -96,6 +97,12 @@ class manualupdate extends Component {
     });
   }
 
+  changeYear(event) {
+    this.setState({
+      year: event.target.value
+    });
+  }
+
   changeGRText(event) {
     this.setState({
       grStage: event.target.value
@@ -162,14 +169,6 @@ class manualupdate extends Component {
         <div className="raceType">
           <div className="title">Grote Ronde</div>
           <div className="grMainRow">
-            <div>year</div>
-            <select value={this.state.year} onChange={this.handleChangeYear}>
-              <option value="2022">2022</option>
-              <option value="2023">2023</option>
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-            </select>
-
             <div>Name</div>
             <select value={this.state.raceName} onChange={this.handleChangeName}>
               <option value="giro">Giro</option>
@@ -177,6 +176,11 @@ class manualupdate extends Component {
               <option value="vuelta">Vuelta</option>
             </select>
           </div>
+
+          <form className="row">
+            <div className="discription">year </div>
+            <input className={"inputfield " + this.state.grStatus} id="gr" ref="gr" placeholder="year" value={this.state.year} onChange={this.changeYear} />
+          </form>
 
           <div className="row">
             <button onClick={this.getStartlist}>Get Startlist</button>
