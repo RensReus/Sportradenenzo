@@ -182,14 +182,7 @@ var getResult = async (race, stagenr) => {
   })
   var $ = cheerio.load(html);
 
-  var TTTresult = []; // TODO clean up TTT code
-  if (stage.type === 'TTT') {// TTTresults is teamnames
-    $(".resTTTh").first().parent(function () {
-      $(this).children('.tttRidersCont').each(function () {
-        TTTresult.push($(this).children().eq(0).children().eq(1).children().eq(1).text());
-      })
-    })
-  }
+  var TTTresult = stage.type === 'TTT' ? $(".results-ttt .team", this).map((_, row) => row.children().eq(1).text().trim()) : [];
 
   var [ridersResults, teamWinners] = processPCSresults($, stage.type);
 
@@ -342,7 +335,6 @@ var buildResultsQuery = function (ridersResults, TTTresult, teamWinners, stage) 
       VALUES`
   var classifications = ['Stage', 'GC', 'Points', 'KOM', 'Youth']
   for (var i in ridersResults['all']) {
-
     var pcs_id = ridersResults['all'][i].pcs_id;
     var teamRider = ridersResults['all'][i].team;
     var teamscore = 0;
