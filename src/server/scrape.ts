@@ -32,7 +32,7 @@ const getStartlist = async (race) => {
         break;
       case "vuelta":
         raceString = "vuelta-a-espana";
-        prijzenfile = "./src/server/vueltaprijzen.txt";
+        prijzenfile = "./src/server/vueltaprijzen.json";
         break;
     }
     fs.readFile(prijzenfile, function (err, file) {

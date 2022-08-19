@@ -40,6 +40,7 @@ class PasswordRecoveryModal extends Component {
 
   render() {
     const buttonText = this.props.buttonText
+    return (<></>);
     return (
       <>
         <button className='bg-transparent h-6 ml-2 mt-2' onClick={this.showModal}><span className="text-xs text-blue-500">Forgot password?</span></button>

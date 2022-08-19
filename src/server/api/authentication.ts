@@ -160,12 +160,12 @@ module.exports = (app) => {
     const account_id = `(SELECT account_id FROM account WHERE email='${req.body.email}')`;
     const query = `INSERT INTO account_token (account_id,type,expiry,token) VALUES (${account_id},'password_recovery','${expiryString}','${recoveryToken}')`;
     await sqlDB.query(query);
-    transporter.sendMail({
+    /*transporter.sendMail({
       from: '"Sportradenenzo" <noreply@sportradenenzo.nl>',
       to: req.body.email,
       subject: "Password recovery",
       html: "Please go to <a href='" + req.headers['x-forwarded-host'] + "/passwordrecovery/" + recoveryToken + "'>this link</a> to reset your password."
-    })
+    })*/
     res.send(true);
   });
 
