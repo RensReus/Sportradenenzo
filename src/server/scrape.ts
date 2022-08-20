@@ -182,7 +182,12 @@ var getResult = async (race, stagenr) => {
   })
   var $ = cheerio.load(html);
 
-  var TTTresult = stage.type === 'TTT' ? $(".results-ttt .team", this).map((_, row) => row.children().eq(1).text().trim()) : [];
+  var TTTresult = []
+  if (stage.type === 'TTT') {
+    $(".results-ttt .team").each(function (index, element) {
+      TTTresult.push($(this).children().eq(1).text().trim());
+    });
+  }
 
   var [ridersResults, teamWinners] = processPCSresults($, stage.type);
 
@@ -228,8 +233,8 @@ var processPCSresults = function ($, stageType) {
   var hasResults = classifications.length > 0;
 
   $("table.result-cont").each(function (classificationIndex) {
-    if (hasResults && classifications[classificationIndex] !== 'Teams') {
-      var classification = classifications[classificationIndex];
+    var classification = classifications[classificationIndex];
+    if (hasResults && classification !== 'Teams' && classificationIndex < classifications.length) {
       var columns = $('th', this).map((_, col) => $(col).text()).get();
 
       $('tbody tr', this).each(function (riderindex) {//voor iedere renner in de uitslag
