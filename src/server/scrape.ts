@@ -227,7 +227,7 @@ var processPCSresults = function ($, stageType) {
   var classifications = getClassifications($, stageType);// list of available classifications
   var hasResults = classifications.length > 0;
 
-  $("table.results").each(function (classificationIndex) {
+  $("table.result-cont").each(function (classificationIndex) {
     if (hasResults && classifications[classificationIndex] !== 'Teams') {
       var classification = classifications[classificationIndex];
       var columns = $('th', this).map((_, col) => $(col).text()).get();
@@ -382,8 +382,8 @@ var buildResultsQuery = function (ridersResults, TTTresult, teamWinners, stage) 
 var resultsProcessRiders = function (classification, columns, row) {
   var renCol = columns.indexOf("Rider");
   var teamCol = columns.indexOf("Team");
-
-  var pcs_id = row.children().eq(renCol).children().eq(0).children().eq(1).attr('href').substring(6);
+  
+  var pcs_id = row.children().eq(renCol).children().eq(0).children().eq(5).attr('href').substring(6);
   var team = row.children().eq(teamCol).children().eq(0).text();
 
   var timeCol = columns.indexOf('Time');
