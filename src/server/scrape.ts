@@ -1,3 +1,5 @@
+import { html } from "cheerio";
+
 const cheerio = require('cheerio');
 const request = require('request-promise');
 const schedule = require('node-schedule');
@@ -232,13 +234,16 @@ var processPCSresults = function ($, stageType) {
   var classifications = getClassifications($, stageType);// list of available classifications
   var hasResults = classifications.length > 0;
 
-  $("table.result-cont").each(function (classificationIndex) {
+  $("table.results").each(function (classificationIndex) {
     var classification = classifications[classificationIndex];
     if (hasResults && classification !== 'Teams' && classificationIndex < classifications.length) {
       var columns = $('th', this).map((_, col) => $(col).text()).get();
 
       $('tbody tr', this).each(function (riderindex) {//voor iedere renner in de uitslag
         var rider = resultsProcessRiders(classification, columns, $(this))
+        if (!rider.pcs_id) {
+          return;
+        }
         if (rider.DNF) {
           ridersResults['dnf'].push(rider);
           return
@@ -388,7 +393,8 @@ var resultsProcessRiders = function (classification, columns, row) {
   var renCol = columns.indexOf("Rider");
   var teamCol = columns.indexOf("Team");
   
-  var pcs_id = row.children().eq(renCol).children().eq(0).children().eq(5).attr('href').substring(6);
+  var pcs_id = row.children().eq(renCol).children().eq(0).children().eq(1).attr('href')?.substring(6);
+  console.log(pcs_id)
   var team = row.children().eq(teamCol).children().eq(0).text();
 
   var timeCol = columns.indexOf('Time');
