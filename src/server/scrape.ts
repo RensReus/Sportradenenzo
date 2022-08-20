@@ -232,13 +232,24 @@ var processPCSresults = function ($, stageType) {
   var teamWinners = [];
 
   var classifications = getClassifications($, stageType);// list of available classifications
+  console.log(classifications)
   var hasResults = classifications.length > 0;
+  const indexMap = new Map([
+    [0, 0],
+    [1, 1],
+    [2, 2],
+    [5, 3],
+    [7, 4],
+    [9, 5],
+  ])
 
   $("table.results").each(function (classificationIndex) {
-    var classification = classifications[classificationIndex];
-    if (hasResults && classification !== 'Teams' && classificationIndex < classifications.length) {
+    if ($(this).parent().attr('data-subtab') == 2 || !indexMap.get(classificationIndex)) {
+      return;
+    }
+    var classification = classifications[indexMap.get(classificationIndex)];
+    if (hasResults && classification !== 'Teams' && indexMap.get(classificationIndex) < classifications.length) {
       var columns = $('th', this).map((_, col) => $(col).text()).get();
-
       $('tbody tr', this).each(function (riderindex) {//voor iedere renner in de uitslag
         var rider = resultsProcessRiders(classification, columns, $(this))
         if (!rider.pcs_id) {
@@ -392,13 +403,13 @@ var buildResultsQuery = function (ridersResults, TTTresult, teamWinners, stage) 
 var resultsProcessRiders = function (classification, columns, row) {
   var renCol = columns.indexOf("Rider");
   var teamCol = columns.indexOf("Team");
-  
+
   var pcs_id = row.children().eq(renCol).children().eq(0).children().eq(1).attr('href')?.substring(6);
-  console.log(pcs_id)
   var team = row.children().eq(teamCol).children().eq(0).text();
 
   var timeCol = columns.indexOf('Time');
   var pntCol = columns.indexOf('Points');
+
   var result = timeCol + 1 ? row.children().eq(timeCol).children().eq(0).text() : row.children().eq(pntCol).text();
   if (result == '' && timeCol != -1) result = row.children().eq(timeCol).text();
 
