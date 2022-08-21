@@ -192,7 +192,7 @@ var getResult = async (race, stagenr) => {
   }
 
   var [ridersResults, teamWinners] = processPCSresults($, stage.type);
-
+  
   updateDNFriders(ridersResults['dnf'], stage.race_id);
 
   setStageToComplete(ridersResults, stage.stagenr, race_id);
@@ -232,25 +232,14 @@ var processPCSresults = function ($, stageType) {
   var teamWinners = [];
 
   var classifications = getClassifications($, stageType);// list of available classifications
-  console.log(classifications)
   var hasResults = classifications.length > 0;
-  const indexMap = new Map([
-    [0, 0],
-    [1, 1],
-    [2, 2],
-    [5, 3],
-    [7, 4],
-    [9, 5],
-  ])
 
-  $("table.results").each(function (classificationIndex) {
-    if ($(this).parent().attr('data-subtab') == 2 || !indexMap.get(classificationIndex)) {
-      return;
-    }
-    var classification = classifications[indexMap.get(classificationIndex)];
-    if (hasResults && classification !== 'Teams' && indexMap.get(classificationIndex) < classifications.length) {
-      var columns = $('th', this).map((_, col) => $(col).text()).get();
-      $('tbody tr', this).each(function (riderindex) {//voor iedere renner in de uitslag
+  $('div[data-subtab=1]').each(function (classificationIndex) {
+    const table = $(this).children().eq(0);
+    var classification = classifications[classificationIndex];
+    if (hasResults && classification !== 'Teams' && classificationIndex < classifications.length) {
+      var columns = $('th', table).map((_, col) => $(col).text()).get();
+      $('tbody tr', table).each(function (riderindex) {//voor iedere renner in de uitslag
         var rider = resultsProcessRiders(classification, columns, $(this))
         if (!rider.pcs_id) {
           return;
