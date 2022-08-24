@@ -403,7 +403,7 @@ module.exports = function (app) {
       }
     }
     var ridersCombined = []
-    riders = riders.sort((r2, r1) => r1.users.length - r2.users.length || r1.max - r2.max);
+    riders = riders.sort((r1, r2) => r1.users.length - r2.users.length || r1.max - r2.max);
     var allselectedridersData = riders.map(x => { return { Name: x.name, Geselecteerd: x.users.length, rowClassName: x.rowClassName } });
     while (riders.length > 0) {
       var riderLine = [riders.pop()];
@@ -455,7 +455,7 @@ module.exports = function (app) {
     }
     output.push({
       title: "",
-      tableData: allselectedridersData
+      tableData: allselectedridersData.reverse()
     })
     return output;
   }
