@@ -540,24 +540,24 @@ module.exports = (app) => {
                 GROUP BY "User"
                 ORDER BY "Uitvallers" DESC; `
 
-    var betereUniekheidsQuery = `SELECT username AS "User", SUM("Usercount") AS "Uniekheid", ROUND(SUM("Usercount"*"Price")/1000000,2) AS "Uniekheid (Geld)" FROM (
-                    SELECT  ${rider_name}, rider_participation.rider_participation_id, team AS "Team ",price AS "Price",  
-                                ABS(COUNT(DISTINCT username)-4) AS "Usercount", ARRAY_AGG(DISTINCT username) AS "Users" FROM rider_participation
-                                INNER JOIN rider USING(rider_id)
-                                LEFT JOIN team_selection_rider USING(rider_participation_id)
-                                LEFT JOIN account_participation USING(account_participation_id)
-                                LEFT JOIN account USING (account_id)
-                                WHERE rider_participation.race_id = ${race_id} AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND NOT username = 'tester' AND budgetparticipation = ${budgetparticipation} ${includedAccounts()}
-                                GROUP BY "Name", "Team ", "Price", rider_participation.rider_participation_id
-                    ORDER BY "Usercount" DESC, "Users") as a
-                    INNER JOIN team_selection_rider USING(rider_participation_id)
-                    INNER JOIN account_participation USING(account_participation_id)
-                    INNER JOIN account USING(account_id)
-                    WHERE budgetparticipation = ${budgetparticipation} ${includedAccounts()}
-                    GROUP BY "User"
-                    ORDER BY "Uniekheid" DESC; `
+    var budget = budgetparticipation ? "11250000" : "budget";
+    var totalplayers = `(SELECT COUNT(*) FROM account_participation WHERE race_id = ${race_id} and budgetparticipation = ${budgetparticipation})`
+    var uniekQuery = `SELECT username AS "User", Round(SUM(uniek)*100, 1) as "Uniekheid" FROM
+                        (SELECT rider_participation.rider_participation_id,
+                        (1.0-(COUNT(DISTINCT account_participation_id)-1.0)/(${totalplayers} -1.0))*price/${budget} AS uniek FROM rider_participation
+                        INNER JOIN race USING (race_id )
+                        LEFT JOIN team_selection_rider USING(rider_participation_id)
+                        LEFT JOIN account_participation USING(account_participation_id)
+                        WHERE rider_participation.race_id = ${race_id} AND rider_participation.rider_participation_id in (SELECT rider_participation_id FROM team_selection_rider) AND budgetparticipation = ${budgetparticipation} ${includedAccounts()}
+                        GROUP BY budget, rider_participation.rider_participation_id) as uniekheidRenners 
+                      INNER JOIN team_selection_rider USING(rider_participation_id)
+                      INNER JOIN account_participation USING(account_participation_id)
+                      INNER JOIN account USING(account_id)
+                      WHERE budgetparticipation = ${budgetparticipation} ${includedAccounts()}
+                      GROUP BY "User"
+                      ORDER BY "Uniekheid" DESC; `
 
-    var totalQuery = selectedRidersQuery + uitgevallenQuery + betereUniekheidsQuery;
+    var totalQuery = selectedRidersQuery + uitgevallenQuery + uniekQuery;
     var titles = ['Verschillende Gekozen Renners', 'Uitgevallen Renners', `Uniekste team`, `Uniekste team(beter)`]
     var coltypes = [{}, { "Uitvallers": 1, "Waarde": 1 }, {}, { "Uniekheid": 1, "Uniekheid (Geld)": 1 }]
     const results = await sqlDB.query(totalQuery);
