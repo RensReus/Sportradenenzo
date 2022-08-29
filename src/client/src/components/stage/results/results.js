@@ -7,7 +7,6 @@ import { updateArray } from '../helperfunctions'
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import PouleTable from './pouleTable';
-import jwt_decode from "jwt-decode";
 import './results.css'
 
 const results = (props) => {
@@ -82,10 +81,7 @@ const results = (props) => {
 
   return (
     <div className="stageContainer">
-      {localStorage.getItem('authToken') ? (
-        jwt_decode(localStorage.getItem('authToken')).account_id <= 5 &&
-        <SelectionComparison title="Alle Opstellingen" data={props.data} />) : <></>
-      }
+      <SelectionComparison title="Alle Opstellingen" data={props.data} />
 
       <div className="res">
         <LoadingDiv loading={loadingPoule} />

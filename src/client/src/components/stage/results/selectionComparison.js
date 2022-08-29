@@ -9,18 +9,18 @@ const selectionComparison = (props) => {
   const [notSelected, setNotSelected] = useState([[], []]);
 
   const budget = props.data.budget;
+  const fabFourOnly = props.data.fabFourOnly;
 
   const getAllSelections = async () => { //TODO add loader
     var res;
-    if (props.userToCompareId !== undefined){
-      res = await axios.post('/api/getSelectionComparison', { race_id: props.data.race_id, stage: props.data.stage, budgetParticipation: budget, userToCompareId: props.userToCompareId })
+    if (props.userToCompareId !== undefined) {
+      res = await axios.post('/api/getSelectionComparison', { race_id: props.data.race_id, stage: props.data.stage, budgetParticipation: budget, fabFourOnly, userToCompareId: props.userToCompareId })
     } else {
-      res = await axios.post('/api/getAllSelections', { race_id: props.data.race_id, stage: props.data.stage, budgetParticipation: budget })
+      res = await axios.post('/api/getAllSelections', { race_id: props.data.race_id, stage: props.data.stage, budgetParticipation: budget, fabFourOnly })
     }
     setAllSelections(updateArray(allSelections, res.data.allSelections, budget));
     setNotSelected(updateArray(notSelected, res.data.notSelected, budget));
   }
-
 
   let allSelections2 = allSelections[budget];
   let notSelected2 = notSelected[budget];

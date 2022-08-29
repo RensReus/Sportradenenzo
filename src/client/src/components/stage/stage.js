@@ -38,7 +38,8 @@ const Stage = (props) => {
     starttime: modeTypeTimeStage.starttime,
     stageType: modeTypeTimeStage.stageType,
     budget: props.budget ? 1 : 0,
-    mode: modeTypeTimeStage.mode
+    mode: modeTypeTimeStage.mode,
+    fabFourOnly: props.fabFourOnly
   }
 
   return (
@@ -51,7 +52,10 @@ const Stage = (props) => {
 }
 
 const mapStateToProps = state => {
-  return { budget: state.budgetSwitch.value };
+  return {
+    budgetparticipation: state.budgetSwitch.value,
+    fabFourOnly: state.fabFourSwitch.value
+  };
 };
 
 export default connect(mapStateToProps)(Stage);
