@@ -53,7 +53,7 @@ const Stage = (props) => {
 
 const mapStateToProps = state => {
   return {
-    budgetparticipation: state.budgetSwitch.value,
+    budget: state.budgetSwitch.value,
     fabFourOnly: state.fabFourSwitch.value
   };
 };
