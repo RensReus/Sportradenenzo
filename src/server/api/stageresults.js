@@ -200,8 +200,10 @@ module.exports = function (app) {
       var selection_id = `stage_selection.stage_id = ${stage_id}`
       var kopman = `kopman_id = rider_participation.rider_participation_id`
       var stage_selection_join = `INNER JOIN stage_selection USING(stage_selection_id)`
+      var stage_selection_join_finalstandings = ``
       if (typeResults.rows[0].type === "FinalStandings") {
         stage_selection_join = ``
+        stage_selection_join_finalstandings = `INNER JOIN stage_selection ON stage_selection.account_participation_id = account_participation.account_participation_id AND ${selection_id}`
         kopman = `FALSE`
         selection = `team_selection_rider`
         selection_id = `account_participation.race_id = ${race_id}`
@@ -216,6 +218,7 @@ module.exports = function (app) {
           ${stage_selection_join}
           INNER JOIN account_participation USING(account_participation_id)
           INNER JOIN account USING(account_id)
+          ${stage_selection_join_finalstandings}
           LEFT JOIN results_points ON results_points.rider_participation_id = rider_participation.rider_participation_id  AND results_points.stage_id = ${stage_id}
           WHERE ${selection_id} AND budgetparticipation = ${budgetParticipation} AND ${includedAccounts}
           ) a
