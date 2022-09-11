@@ -53,7 +53,7 @@ const wrapup = (props: WrapUpProps) => {
         setBestDealTable(bestDealsTable);
         const bestRidersTable = mapToTable(bestAndWorst.bestRiders, "Beste renners");
         setBestRidersTable(bestRidersTable);
-        const bestRidersExclTeamTable = mapToTable(bestAndWorst.bestDealsExclTeam, "Beste renners (Excl. Teampunten)");
+        const bestRidersExclTeamTable = mapToTable(bestAndWorst.bestDealsExclTeam, "Beste deals (Excl. Teampunten)");
         setBestRidersExclTeamTable(bestRidersExclTeamTable);
         const worstRidersTable = mapToTable(bestAndWorst.worstRiders, "Grootste miskopen");
         setWorstRidersTable(worstRidersTable);
