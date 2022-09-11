@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleLeft, faAngleRight, faMountain, faClock } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
+import { faAngleLeft, faAngleRight, faMountain } from "@fortawesome/free-solid-svg-icons"; //Pijltjes next/prev stage  //Berg voor de stageprofielknop // add/remove riders
 import ModalButton from '../../shared/modal';
 import RulesPopup from '../../shared/RulesPopup';
 import './stageinfo.css'
@@ -11,7 +11,7 @@ class stageInfo extends Component {
     this.props.updateStage(e.target.value);
   }
   starttimeString = (starttimeInput) => {
-    if (starttimeInput === "") return "";
+    if (starttimeInput === "" || this.props.data.stageType === "FinalStandings") return "";
     var starttime = new Date(starttimeInput);
     var dayArray = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     return dayArray[starttime.getDay()] + " " + starttime.toLocaleString().replace(/-[0-9]{4}/, '').replace(':00', '')

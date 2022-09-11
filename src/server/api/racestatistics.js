@@ -9,10 +9,8 @@ module.exports = (app) => {
   const sqlDB = require('../db/sqlDB');
 
   app.post('/api/statistics', async (req, res) => {
-    var race_id = req.body.race_id;
-    var budgetparticipation = req.body.budgetparticipation;
     fabFourOnly = req.body.fabFourOnly;
-    const results = await getData(req.body.selection, race_id, budgetparticipation, req.user.account_id, req.body.details, req.body.showSelectedOnly)
+    const results = await getData(req.body.selection, req.body.race_id, req.body.budgetparticipation, req.user.account_id, req.body.details, req.body.showSelectedOnly)
     res.send(results);
   })
 

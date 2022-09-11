@@ -8,6 +8,7 @@ import { useHistory } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import PouleTable from './pouleTable';
 import './results.css'
+import SREButton from '../../ui/SREButton';
 
 const results = (props) => {
   let history = useHistory();
@@ -81,6 +82,12 @@ const results = (props) => {
 
   return (
     <div className="stageContainer">
+      {props.data.stageType === "FinalStandings" &&
+        <SREButton
+          color={props.data.racename}
+          content={<span className="text-base bold">Wrap Up</span>}
+          onClick={() => history.push("/wrapup")}
+        />}
       <SelectionComparison title="Alle Opstellingen" data={props.data} />
 
       <div className="res">
