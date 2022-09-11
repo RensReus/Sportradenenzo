@@ -267,14 +267,13 @@ module.exports = function (app) {
 
   app.post('/api/scorespread', async (req, res) => {
     var race_id = req.body.race_id;
-    var excludeFinalStr = ''
-    if (req.body.extraParams.excludeFinal) excludeFinalStr = `AND NOT type = 'FinalStandings'`
+    var excludeEindpunten = req.body.extraParams.excludeFinal ? `AND NOT type = 'FinalStandings'` : ``;
 
     var barQuery = `SELECT username, CONCAT('etappe ', stagenr) as race, stagescore as y FROM stage_selection
     INNER JOIN account_participation USING(account_participation_id)
     INNER JOIN account USING(account_id)
     INNER JOIN stage USING(stage_id)
-    WHERE stage.race_id = ${race_id} ${excludeFinalStr} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished ${includedAccounts(req)}
+    WHERE stage.race_id = ${race_id} ${excludeEindpunten} AND budgetparticipation = ${req.body.budgetparticipation} AND stage.finished ${includedAccounts(req)}
     ORDER BY stagescore DESC;\n`
 
     var totalQuery = barQuery;
@@ -288,6 +287,7 @@ module.exports = function (app) {
   })
 
   app.post('/api/scorespreadgrouped', async (req, res) => {
+    var excludeEindpunten = req.body.extraParams.excludeFinal ? `AND NOT type = 'FinalStandings'` : ``;
     var budgetparticipation = req.body.budgetparticipation;
     var race_id = req.body.race_id;
     var usersQuery = `SELECT account_participation_id, username FROM account_participation 
@@ -298,7 +298,7 @@ module.exports = function (app) {
     var totalQuery = userresults.rows.reduce((query, user) => query + `SELECT stagenr AS label, stagescore AS y FROM stage_selection
       INNER JOIN account_participation USING(account_participation_id)
       INNER JOIN stage USING(stage_id)
-      WHERE stage.finished AND account_participation_id = ${user.account_participation_id}
+      WHERE stage.finished ${excludeEindpunten} AND account_participation_id = ${user.account_participation_id}
       ORDER BY stagenr;\n `, '')
 
     const results = await sqlDB.query(totalQuery);

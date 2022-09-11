@@ -1,5 +1,5 @@
 import axios from 'axios';
-import SwitchButton  from '../ui/SwitchButton'
+import SwitchButton from '../ui/SwitchButton'
 import CanvasJSChart from './CanvasJSChart';
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from 'react';
@@ -51,12 +51,12 @@ const charts = (props) => {
     <div className="statisticsContainer">
       {chartname === "scorespread" &&
         <div class="my-2">
-          <SwitchButton labelRight='Inclusief eindklassement' action={showEindSwitch} value={showEind}/>
+          <SwitchButton labelRight='Inclusief eindklassement' action={showEindSwitch} value={showEind} />
         </div>
       }
       {chartname.includes("spread") &&
         <div class="my-2">
-          <SwitchButton labelRight='Gegroepeerd' action={groupedSwitch} value={!grouped}/>
+          <SwitchButton labelRight='Gegroepeerd' action={groupedSwitch} value={!grouped} />
         </div>
       }
       <CanvasJSChart options={options} />
