@@ -14,7 +14,7 @@
     "bcrypt-nodejs": "0.0.3",
     "cheerio": "^1.0.0-rc.6",
     "cookie-parser": "^1.4.5",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "fs-extra": "^9.1.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.4.2",
